@@ -1,6 +1,8 @@
 import log from '../lib/logger';
 import { useSettingsStore } from '../stores/useSettingsStore';
 
+export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
+
 interface PerplexityResponse {
   choices: Array<{
     message: {
@@ -20,11 +22,13 @@ interface PerplexityRequest {
 
 const API_URL = 'https://api.perplexity.ai/chat/completions';
 
-export async function getOptimizationSuggestions(processNames: string[]): Promise<string[]> {
+export async function getOptimizationSuggestions(
+  processNames: string[],
+): Promise<ApiResult<string[]>> {
   const apiKey = useSettingsStore.getState().perplexityApiKey;
   if (!apiKey) {
     log.error('Perplexity API key is not set');
-    throw new Error('Perplexity API キーが未設定です。設定画面で入力してください。');
+    return { ok: false, error: 'Perplexity API キーが未設定です。設定画面で入力してください。' };
   }
 
   const prompt = `以下は現在 CPU を多く使用しているプロセスです:
@@ -55,14 +59,14 @@ ${processNames.join(', ')}
     });
 
     if (!response.ok) {
-      throw new Error(`Perplexity API error: ${response.status}`);
+      return { ok: false, error: `HTTP ${response.status}` };
     }
 
     const data: PerplexityResponse = await response.json();
     const content = data.choices[0]?.message?.content;
 
     if (!content) {
-      throw new Error('No content in Perplexity response');
+      return { ok: false, error: 'No content in response' };
     }
 
     // 番号付きリストを配列に変換
@@ -74,9 +78,9 @@ ${processNames.join(', ')}
       .slice(0, 3);
 
     log.info(`Received ${suggestions.length} suggestions from Perplexity`);
-    return suggestions;
-  } catch (error) {
-    log.error({ error }, 'Failed to get suggestions from Perplexity');
-    throw new Error('AI提案の取得に失敗しました');
+    return { ok: true, data: suggestions };
+  } catch (err) {
+    log.error({ err }, 'Failed to get suggestions from Perplexity');
+    return { ok: false, error: err instanceof Error ? err.message : 'AI提案の取得に失敗しました' };
   }
 }

@@ -49,9 +49,13 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     set({ isSuggestionsLoading: true, error: null });
     try {
       const processNames = await invoke<string[]>('get_ai_suggestions');
-      const suggestions = await getOptimizationSuggestions(processNames);
-      log.info({ count: suggestions.length }, 'ops: suggestions fetched');
-      set({ suggestions });
+      const result = await getOptimizationSuggestions(processNames);
+      if (!result.ok) {
+        set({ error: result.error });
+        return;
+      }
+      log.info({ count: result.data.length }, 'ops: suggestions fetched');
+      set({ suggestions: result.data });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       log.error({ err }, 'ops: fetch suggestions failed');

@@ -138,7 +138,10 @@ describe('useOpsStore', () => {
     ];
 
     vi.mocked(invoke).mockResolvedValueOnce(mockProcessNames);
-    vi.mocked(getOptimizationSuggestions).mockResolvedValueOnce(mockSuggestions);
+    vi.mocked(getOptimizationSuggestions).mockResolvedValueOnce({
+      ok: true,
+      data: mockSuggestions,
+    });
 
     await useOpsStore.getState().fetchSuggestions();
 
@@ -176,7 +179,10 @@ describe('useOpsStore', () => {
   it('fetchSuggestions clears previous error on success', async () => {
     useOpsStore.setState({ error: 'old error' });
     vi.mocked(invoke).mockResolvedValueOnce(['chrome.exe']);
-    vi.mocked(getOptimizationSuggestions).mockResolvedValueOnce(['Test suggestion']);
+    vi.mocked(getOptimizationSuggestions).mockResolvedValueOnce({
+      ok: true,
+      data: ['Test suggestion'],
+    });
 
     await useOpsStore.getState().fetchSuggestions();
 
