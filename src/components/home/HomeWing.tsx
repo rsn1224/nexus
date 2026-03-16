@@ -477,7 +477,26 @@ export default function HomeWing(): React.ReactElement {
               )}
               <div>
                 GPU{'     '}
-                <span style={{ color: 'var(--color-accent-500)' }}>{hwInfo.gpuName || 'N/A'}</span>
+                <span
+                  style={{
+                    color: hwInfo.gpuName ? 'var(--color-accent-500)' : 'var(--color-text-muted)',
+                  }}
+                >
+                  {hwInfo.gpuName ?? 'N/A'}
+                </span>
+              </div>
+              <div>
+                VRAM{'    '}
+                <span
+                  style={{
+                    color:
+                      hwInfo.gpuVramTotalMb != null
+                        ? 'var(--color-accent-500)'
+                        : 'var(--color-text-muted)',
+                  }}
+                >
+                  {hwInfo.gpuVramTotalMb != null ? `${hwInfo.gpuVramTotalMb} MB` : 'N/A'}
+                </span>
               </div>
             </>
           ) : (

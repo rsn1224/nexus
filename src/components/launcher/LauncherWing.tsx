@@ -205,6 +205,7 @@ export default function LauncherWing(): React.ReactElement {
   const searchQuery = useLauncherStore((s) => s.searchQuery);
   const autoBoostEnabled = useLauncherStore((s) => s.autoBoostEnabled);
   const toggleAutoBoost = useLauncherStore((s) => s.toggleAutoBoost);
+  const launchGame = useLauncherStore((s) => s.launchGame);
   const scanGames = useLauncherStore((s) => s.scanGames);
   const toggleFavorite = useLauncherStore((s) => s.toggleFavorite);
   const setSortMode = useLauncherStore((s) => s.setSortMode);
@@ -214,7 +215,7 @@ export default function LauncherWing(): React.ReactElement {
   const handleLaunchGame = async (appId: number) => {
     if (autoBoostEnabled) setIsBoosting(true);
     try {
-      await useLauncherStore.getState().launchGame(appId);
+      await launchGame(appId);
     } finally {
       setIsBoosting(false);
     }
