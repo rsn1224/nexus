@@ -1,7 +1,9 @@
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
+import { launcherPageSuggestions } from '../../lib/localAi';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import type { GameInfo } from '../../types';
+import AiPanel from '../shared/AiPanel';
 
 // ─── GameCard Props Interface ───────────────────────────────────────────────────────
 
@@ -233,6 +235,11 @@ export default function LauncherWing(): React.ReactElement {
     return filtered;
   }, [games, sortMode, favorites, lastPlayed, searchQuery]);
 
+  const launcherSuggestions = useMemo(
+    () => launcherPageSuggestions(games.length, favorites.length),
+    [games.length, favorites.length],
+  );
+
   return (
     <div style={{ padding: '16px', height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* ── ヘッダー ── */}
@@ -438,6 +445,7 @@ export default function LauncherWing(): React.ReactElement {
           </div>
         )}
       </div>
+      <AiPanel suggestions={launcherSuggestions} />
     </div>
   );
 }

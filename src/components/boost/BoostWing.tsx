@@ -1,7 +1,10 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { boostPageSuggestions } from '../../lib/localAi';
 import { useBoostStore } from '../../stores/useBoostStore';
+import { usePulseStore } from '../../stores/usePulseStore';
 import { useWinoptStore } from '../../stores/useWinoptStore';
+import AiPanel from '../shared/AiPanel';
 
 export default function BoostWing(): React.ReactElement {
   const { lastResult, isRunning, error, runBoost } = useBoostStore();
@@ -33,6 +36,15 @@ export default function BoostWing(): React.ReactElement {
       void fetchNetSettings();
     }
   }, [activeTab, fetchWinSettings, fetchNetSettings]);
+
+  const cpuPercent = usePulseStore((s) =>
+    s.snapshots.length > 0 ? (s.snapshots[s.snapshots.length - 1]?.cpuPercent ?? null) : null,
+  );
+
+  const boostSuggestions = useMemo(
+    () => boostPageSuggestions(winSettings, netSettings, cpuPercent),
+    [winSettings, netSettings, cpuPercent],
+  );
 
   const handleRunBoost = async () => {
     await runBoost(threshold);
@@ -611,6 +623,7 @@ export default function BoostWing(): React.ReactElement {
           </div>
         )}
       </div>
+      <AiPanel suggestions={boostSuggestions} />
     </div>
   );
 }

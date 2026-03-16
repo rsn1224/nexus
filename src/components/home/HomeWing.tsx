@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
+import { homePageSuggestions } from '../../lib/localAi';
 import { useHardwareStore } from '../../stores/useHardwareStore';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useNavStore } from '../../stores/useNavStore';
@@ -7,6 +8,7 @@ import { useOpsStore } from '../../stores/useOpsStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
+import AiPanel from '../shared/AiPanel';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -64,8 +66,17 @@ export default function HomeWing(): React.ReactElement {
     }
   }, [fetchProcesses, fetchStorage, fetchHardware, isPolling, startPolling]);
 
-  const topProcesses = getTopCpuProcesses(processes);
-  const activeProcessCount = processes.filter((p: SystemProcess) => p.cpuPercent > 1).length;
+  const topProcesses = useMemo(() => getTopCpuProcesses(processes, 3), [processes]);
+
+  const suggestions = useMemo(
+    () => homePageSuggestions(latestSnapshot ?? null, drives, hwInfo),
+    [latestSnapshot, drives, hwInfo],
+  );
+
+  const activeProcessCount = useMemo(
+    () => processes.filter((p: SystemProcess) => p.cpuPercent > 1).length,
+    [processes],
+  );
 
   return (
     <div style={{ padding: '16px', height: '100%', overflowY: 'auto' }}>
@@ -568,6 +579,7 @@ export default function HomeWing(): React.ReactElement {
           パフォーマンス計測 — 近日公開
         </div>
       </div>
+      <AiPanel suggestions={suggestions} />
     </div>
   );
 }
