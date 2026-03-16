@@ -1,75 +1,265 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import type { GameInfo } from '../../types';
 
-// ─── LauncherWing ──────────────────────────────────────────────────────────────
+// ─── GameCard Props Interface ───────────────────────────────────────────────────────
+
+interface GameCardProps {
+  game: GameInfo;
+  isFavorite: boolean;
+  lastPlayedAt: number | undefined;
+  onLaunch: (appId: number) => void;
+  onToggleFavorite: (appId: number) => void;
+}
+
+// ─── Helper Functions ───────────────────────────────────────────────────────────────
+
+function formatLastPlayed(timestamp: number | undefined): string {
+  if (!timestamp) return '未プレイ';
+  const diff = Date.now() - timestamp;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days === 0) return '今日';
+  if (days === 1) return '昨日';
+  if (days < 7) return `${days}日前`;
+  if (days < 30) return `${Math.floor(days / 7)}週間前`;
+  return `${Math.floor(days / 30)}ヶ月前`;
+}
+
+const sortBtnStyle = (active: boolean): React.CSSProperties => ({
+  fontFamily: 'var(--font-mono)',
+  fontSize: '9px',
+  padding: '3px 8px',
+  background: active ? 'var(--color-cyan-500)' : 'transparent',
+  color: active ? 'var(--color-base-900)' : 'var(--color-text-muted)',
+  border: `1px solid ${active ? 'var(--color-cyan-500)' : 'var(--color-border-subtle)'}`,
+  borderRadius: '3px',
+  cursor: 'pointer',
+  letterSpacing: '0.05em',
+});
+
+// ─── GameCard Component ─────────────────────────────────────────────────────────────
+
+function GameCard({
+  game,
+  isFavorite,
+  lastPlayedAt,
+  onLaunch,
+  onToggleFavorite,
+}: GameCardProps): React.ReactElement {
+  const [imgError, setImgError] = useState(false);
+
+  return (
+    <div
+      style={{
+        background: 'var(--color-base-800)',
+        border: '1px solid var(--color-border-subtle)',
+        borderRadius: '4px',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* サムネイル */}
+      {!imgError && (
+        <img
+          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.app_id}/header.jpg`}
+          alt={game.name}
+          onError={() => setImgError(true)}
+          style={{
+            width: '100%',
+            height: '94px',
+            objectFit: 'cover',
+            borderRadius: '3px 3px 0 0',
+            display: 'block',
+            background: 'var(--color-base-700)',
+          }}
+        />
+      )}
+      {imgError && (
+        <div
+          style={{
+            width: '100%',
+            height: '94px',
+            background: 'var(--color-base-700)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            color: 'var(--color-text-muted)',
+          }}
+        >
+          NO IMAGE
+        </div>
+      )}
+
+      {/* カード本体 */}
+      <div
+        style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}
+      >
+        {/* ゲーム名行 + お気に入りボタン */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(game.app_id);
+            }}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: isFavorite ? 'var(--color-accent-500)' : 'var(--color-text-muted)',
+              fontSize: '13px',
+              padding: '0',
+              lineHeight: 1,
+              flexShrink: 0,
+            }}
+          >
+            {isFavorite ? '\u2605' : '\u2606'}
+          </button>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              color: 'var(--color-text-primary)',
+              letterSpacing: '0.02em',
+              flex: 1,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+            title={game.name}
+          >
+            {game.name}
+          </div>
+        </div>
+
+        {/* サイズ */}
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            color: 'var(--color-text-muted)',
+          }}
+        >
+          {game.size_gb === 0 ? '-- GB' : `${game.size_gb.toFixed(1)} GB`}
+        </div>
+
+        {/* 最終プレイ */}
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            color: 'var(--color-text-muted)',
+          }}
+        >
+          {formatLastPlayed(lastPlayedAt)}
+        </div>
+
+        {/* LAUNCH ボタン */}
+        <button
+          type="button"
+          onClick={() => onLaunch(game.app_id)}
+          style={{
+            marginTop: 'auto',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            padding: '4px 0',
+            background: 'var(--color-accent-500)',
+            color: 'var(--color-base-900)',
+            border: 'none',
+            borderRadius: '2px',
+            cursor: 'pointer',
+            letterSpacing: '0.05em',
+            width: '100%',
+          }}
+        >
+          \u25b6 LAUNCH
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── LauncherWing Component ───────────────────────────────────────────────────────
 
 export default function LauncherWing(): React.ReactElement {
   const games = useLauncherStore((s) => s.games);
   const isScanning = useLauncherStore((s) => s.isScanning);
   const error = useLauncherStore((s) => s.error);
+  const favorites = useLauncherStore((s) => s.favorites);
+  const lastPlayed = useLauncherStore((s) => s.lastPlayed);
+  const sortMode = useLauncherStore((s) => s.sortMode);
+  const searchQuery = useLauncherStore((s) => s.searchQuery);
+  const autoBoostEnabled = useLauncherStore((s) => s.autoBoostEnabled);
   const scanGames = useLauncherStore((s) => s.scanGames);
   const launchGame = useLauncherStore((s) => s.launchGame);
-
-  const [hoveredRow, setHoveredRow] = useState<number | null>(null);
-  const [lastScanTime, setLastScanTime] = useState<Date | null>(null);
+  const toggleFavorite = useLauncherStore((s) => s.toggleFavorite);
+  const setSortMode = useLauncherStore((s) => s.setSortMode);
+  const setSearchQuery = useLauncherStore((s) => s.setSearchQuery);
+  const toggleAutoBoost = useLauncherStore((s) => s.toggleAutoBoost);
 
   useEffect(() => {
     void scanGames();
   }, [scanGames]);
 
-  useEffect(() => {
-    if (games.length > 0 && lastScanTime === null) {
-      setLastScanTime(new Date());
+  const sortedGames = useMemo(() => {
+    let filtered = games.filter(
+      (g) => searchQuery === '' || g.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    );
+
+    switch (sortMode) {
+      case 'recent':
+        filtered = [...filtered].sort((a, b) => {
+          const ta = lastPlayed[a.app_id] ?? 0;
+          const tb = lastPlayed[b.app_id] ?? 0;
+          return tb - ta;
+        });
+        break;
+      case 'favorites':
+        filtered = [...filtered].sort((a, b) => {
+          const fa = favorites.includes(a.app_id) ? 1 : 0;
+          const fb = favorites.includes(b.app_id) ? 1 : 0;
+          if (fb !== fa) return fb - fa;
+          return a.name.localeCompare(b.name);
+        });
+        break;
+      case 'name':
+        filtered = [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+        break;
     }
-  }, [games, lastScanTime]);
-
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-  };
-
-  const buttonStyle = {
-    fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
-    padding: '2px 8px',
-    background: 'var(--color-accent-500)',
-    color: 'var(--color-base-900)',
-    border: 'none',
-    borderRadius: '3px',
-    cursor: 'pointer',
-    letterSpacing: '0.05em',
-  };
+    return filtered;
+  }, [games, sortMode, favorites, lastPlayed, searchQuery]);
 
   return (
     <div style={{ padding: '16px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
-      <div style={{ marginBottom: '16px' }}>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
-            fontWeight: 700,
-            color: 'var(--color-cyan-500)',
-            letterSpacing: '0.15em',
-            marginBottom: '4px',
-          }}
-        >
-          ▶ ゲーム起動
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--color-text-muted)',
-            marginBottom: '8px',
-          }}
-        >
-          {games.length} GAMES
-          {lastScanTime && (
-            <span style={{ marginLeft: '16px' }}>LAST SCAN {formatTime(lastScanTime)}</span>
-          )}
-        </div>
+      {/* ── ヘッダー ── */}
+      <div
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '11px',
+          fontWeight: 700,
+          color: 'var(--color-cyan-500)',
+          letterSpacing: '0.15em',
+          marginBottom: '12px',
+        }}
+      >
+        ▶ ゲーム起動
+      </div>
+
+      {/* ── コントロールバー ── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '10px',
+          flexWrap: 'wrap',
+        }}
+      >
+        {/* SCAN */}
         <button
           type="button"
           onClick={() => void scanGames()}
@@ -88,16 +278,87 @@ export default function LauncherWing(): React.ReactElement {
         >
           {isScanning ? 'SCANNING...' : 'SCAN'}
         </button>
+
+        {/* ソートボタン */}
+        <button
+          type="button"
+          onClick={() => setSortMode('name')}
+          style={sortBtnStyle(sortMode === 'name')}
+        >
+          NAME
+        </button>
+        <button
+          type="button"
+          onClick={() => setSortMode('recent')}
+          style={sortBtnStyle(sortMode === 'recent')}
+        >
+          最近
+        </button>
+        <button
+          type="button"
+          onClick={() => setSortMode('favorites')}
+          style={sortBtnStyle(sortMode === 'favorites')}
+        >
+          \u2605優先
+        </button>
+
+        {/* 検索 */}
+        <input
+          type="search"
+          placeholder="検索..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          style={{
+            marginLeft: 'auto',
+            padding: '3px 8px',
+            background: 'var(--color-base-800)',
+            border: '1px solid var(--color-border-subtle)',
+            borderRadius: '3px',
+            color: 'var(--color-text-primary)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            width: '140px',
+          }}
+        />
       </div>
 
-      {/* Error Banner */}
+      {/* ── AutoBoost トグル ── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+        <button
+          type="button"
+          onClick={toggleAutoBoost}
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            padding: '3px 8px',
+            background: autoBoostEnabled ? 'var(--color-accent-500)' : 'transparent',
+            color: autoBoostEnabled ? 'var(--color-base-900)' : 'var(--color-text-muted)',
+            border: `1px solid ${autoBoostEnabled ? 'var(--color-accent-500)' : 'var(--color-border-subtle)'}`,
+            borderRadius: '3px',
+            cursor: 'pointer',
+          }}
+        >
+          {autoBoostEnabled ? '\u26a1 AUTO BOOST: ON' : '\u26a1 AUTO BOOST: OFF'}
+        </button>
+        <span
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            color: 'var(--color-text-muted)',
+          }}
+        >
+          起動時にプロセス最適化を自動実行
+        </span>
+      </div>
+
+      {/* ── エラーバナー ── */}
       {error && (
         <div
           style={{
             borderBottom: '1px solid var(--color-danger-600)',
             background: 'var(--color-base-800)',
             padding: '8px 12px',
-            marginBottom: '16px',
+            marginBottom: '12px',
           }}
         >
           <div
@@ -112,7 +373,7 @@ export default function LauncherWing(): React.ReactElement {
         </div>
       )}
 
-      {/* Table Container */}
+      {/* ── カードグリッド ── */}
       <div style={{ flex: 1, overflowY: 'auto' }}>
         {isScanning ? (
           <div
@@ -120,7 +381,7 @@ export default function LauncherWing(): React.ReactElement {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '100%',
+              height: '200px',
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
               color: 'var(--color-text-muted)',
@@ -128,13 +389,27 @@ export default function LauncherWing(): React.ReactElement {
           >
             SCANNING STEAM LIBRARY...
           </div>
+        ) : sortedGames.length === 0 && searchQuery !== '' ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '200px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              color: 'var(--color-text-muted)',
+            }}
+          >
+            「{searchQuery}」に一致するゲームが見つかりません
+          </div>
         ) : games.length === 0 ? (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              height: '100%',
+              height: '200px',
               fontFamily: 'var(--font-mono)',
               fontSize: '11px',
               color: 'var(--color-text-muted)',
@@ -143,110 +418,24 @@ export default function LauncherWing(): React.ReactElement {
             NO GAMES — PRESS SCAN TO DETECT STEAM LIBRARY
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead>
-              <tr>
-                <th
-                  scope="col"
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid var(--color-border-subtle)',
-                    padding: '4px 8px',
-                    textAlign: 'left',
-                    fontWeight: 'normal',
-                  }}
-                >
-                  NAME
-                </th>
-                <th
-                  scope="col"
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid var(--color-border-subtle)',
-                    padding: '4px 8px',
-                    textAlign: 'left',
-                    fontWeight: 'normal',
-                    width: '100px',
-                  }}
-                >
-                  APP ID
-                </th>
-                <th
-                  scope="col"
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid var(--color-border-subtle)',
-                    padding: '4px 8px',
-                    textAlign: 'left',
-                    fontWeight: 'normal',
-                    width: '80px',
-                  }}
-                >
-                  SIZE
-                </th>
-                <th
-                  scope="col"
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '10px',
-                    color: 'var(--color-text-muted)',
-                    letterSpacing: '0.1em',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid var(--color-border-subtle)',
-                    padding: '4px 8px',
-                    textAlign: 'left',
-                    fontWeight: 'normal',
-                    width: '80px',
-                  }}
-                >
-                  ACTIONS
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {games.map((game: GameInfo, index: number) => (
-                <tr
-                  key={game.app_id}
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '11px',
-                    color: 'var(--color-text-secondary)',
-                    borderBottom: '1px solid var(--color-border-subtle)',
-                    background: hoveredRow === index ? 'var(--color-base-800)' : 'transparent',
-                  }}
-                  onMouseEnter={() => setHoveredRow(index)}
-                  onMouseLeave={() => setHoveredRow(null)}
-                >
-                  <td style={{ padding: '6px 8px' }}>{game.name}</td>
-                  <td style={{ padding: '6px 8px', width: '100px' }}>{game.app_id}</td>
-                  <td style={{ padding: '6px 8px', width: '80px' }}>
-                    {game.size_gb === 0 ? '--' : `${game.size_gb.toFixed(1)} GB`}
-                  </td>
-                  <td style={{ padding: '6px 8px', width: '80px' }}>
-                    <button
-                      type="button"
-                      onClick={() => void launchGame(game.app_id)}
-                      style={buttonStyle}
-                    >
-                      ▶ LAUNCH
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+              gap: '12px',
+            }}
+          >
+            {sortedGames.map((game) => (
+              <GameCard
+                key={game.app_id}
+                game={game}
+                isFavorite={favorites.includes(game.app_id)}
+                lastPlayedAt={lastPlayed[game.app_id]}
+                onLaunch={launchGame}
+                onToggleFavorite={toggleFavorite}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>
