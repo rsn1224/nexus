@@ -109,9 +109,6 @@ pub fn run() {
             beacon::get_events,
             beacon::clear_events,
             beacon::validate_path,
-            // LAUNCHER
-            launcher::scan_steam_games,
-            launcher::launch_game,
             // SECURITY
             security::run_vulnerability_scan,
             security::run_secret_scan,
@@ -121,8 +118,6 @@ pub fn run() {
             signal::remove_signal_feed,
             signal::toggle_signal_feed,
             signal::check_feed_now,
-            // BOOST
-            boost::run_boost,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

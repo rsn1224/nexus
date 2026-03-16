@@ -185,7 +185,7 @@ export default function HomeWing(): React.ReactElement {
               RAM:{' '}
               <span style={{ color: 'var(--color-text-primary)' }}>
                 {memUsed !== null && memTotal !== null
-                  ? `${memUsed.toFixed(1)} / ${memTotal.toFixed(1)} GB`
+                  ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB`
                   : '--'}
               </span>
             </div>
