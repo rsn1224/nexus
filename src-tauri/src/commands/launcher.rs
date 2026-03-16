@@ -7,7 +7,6 @@ use std::path::PathBuf;
 use tracing::info;
 
 #[derive(Debug, serde::Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct GameInfo {
     pub app_id: u32,
     pub name: String,

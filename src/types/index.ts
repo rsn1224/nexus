@@ -85,10 +85,10 @@ export interface TrafficSnapshot {
 
 // ─── LAUNCHER ────────────────────────────────────────────────────────────────
 export interface GameInfo {
-  appId: number;
+  app_id: number;
   name: string;
-  installPath: string;
-  sizeGb: number;
+  install_path: string;
+  size_gb: number;
 }
 
 // ─── OPS ─────────────────────────────────────────────────────────────────────

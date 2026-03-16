@@ -178,7 +178,7 @@ export default function LauncherWing() {
           <tbody>
             {games.map((game, i) => (
               <tr
-                key={game.appId}
+                key={game.app_id}
                 style={{
                   background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)',
                   borderBottom: '1px solid var(--color-border-subtle)',
@@ -207,7 +207,7 @@ export default function LauncherWing() {
                     width: '80px',
                   }}
                 >
-                  {game.appId}
+                  {game.app_id}
                 </td>
                 <td
                   style={{
@@ -219,12 +219,12 @@ export default function LauncherWing() {
                     width: '70px',
                   }}
                 >
-                  {game.sizeGb > 0 ? `${game.sizeGb.toFixed(1)} GB` : '—'}
+                  {game.size_gb > 0 ? `${game.size_gb.toFixed(1)} GB` : '—'}
                 </td>
                 <td style={{ padding: '6px 8px', width: '80px' }}>
                   <button
                     type="button"
-                    onClick={() => launchGame(game.appId)}
+                    onClick={() => launchGame(game.app_id)}
                     style={{
                       fontFamily: 'var(--font-mono)',
                       fontSize: '9px',

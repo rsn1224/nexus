@@ -218,7 +218,7 @@ export default function LauncherWing(): React.ReactElement {
             <tbody>
               {games.map((game: GameInfo, index: number) => (
                 <tr
-                  key={game.appId}
+                  key={game.app_id}
                   style={{
                     fontFamily: 'var(--font-mono)',
                     fontSize: '11px',
@@ -230,14 +230,14 @@ export default function LauncherWing(): React.ReactElement {
                   onMouseLeave={() => setHoveredRow(null)}
                 >
                   <td style={{ padding: '6px 8px' }}>{game.name}</td>
-                  <td style={{ padding: '6px 8px', width: '100px' }}>{game.appId}</td>
+                  <td style={{ padding: '6px 8px', width: '100px' }}>{game.app_id}</td>
                   <td style={{ padding: '6px 8px', width: '80px' }}>
-                    {game.sizeGb === 0 ? '--' : `${game.sizeGb.toFixed(1)} GB`}
+                    {game.size_gb === 0 ? '--' : `${game.size_gb.toFixed(1)} GB`}
                   </td>
                   <td style={{ padding: '6px 8px', width: '80px' }}>
                     <button
                       type="button"
-                      onClick={() => void launchGame(game.appId)}
+                      onClick={() => void launchGame(game.app_id)}
                       style={buttonStyle}
                     >
                       ▶ LAUNCH
