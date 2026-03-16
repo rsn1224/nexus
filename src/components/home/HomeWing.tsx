@@ -1,10 +1,26 @@
+import { invoke } from '@tauri-apps/api/core';
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useNavStore } from '../../stores/useNavStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import type { SystemProcess } from '../../types';
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+interface DriveInfo {
+  name: string;
+  total_gb: number;
+  free_gb: number;
+  used_percent: number;
+}
+
+interface HardwareInfo {
+  cpu_name: string;
+  cpu_temp_c: number | null;
+  gpu_name: string | null;
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -34,6 +50,10 @@ export default function HomeWing(): React.ReactElement {
   const games = useLauncherStore((s) => s.games);
   const navigate = useNavStore((s) => s.navigate);
 
+  // Storage and Hardware state
+  const [storageInfo, setStorageInfo] = useState<DriveInfo[]>([]);
+  const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
+
   useEffect(() => {
     // Auto-fetch data on mount
     void fetchProcesses();
@@ -41,6 +61,26 @@ export default function HomeWing(): React.ReactElement {
     if (!isPolling) {
       startPolling();
     }
+    // Fetch storage info once
+    const fetchStorage = async () => {
+      try {
+        const drives = await invoke<DriveInfo[]>('get_storage_info');
+        setStorageInfo(drives);
+      } catch (error) {
+        console.error('Failed to fetch storage info:', error);
+      }
+    };
+    // Fetch hardware info once
+    const fetchHardware = async () => {
+      try {
+        const hardware = await invoke<HardwareInfo>('get_hardware_info');
+        setHardwareInfo(hardware);
+      } catch (error) {
+        console.error('Failed to fetch hardware info:', error);
+      }
+    };
+    void fetchStorage();
+    void fetchHardware();
   }, [fetchProcesses, isPolling, startPolling]);
 
   const topProcesses = getTopCpuProcesses(processes);
@@ -344,6 +384,118 @@ export default function HomeWing(): React.ReactElement {
               {diskWrite !== null ? `${diskWrite.toFixed(0)} KB/s` : '--'}
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Storage Card */}
+      <div
+        style={{
+          marginTop: '16px',
+          background: 'var(--color-base-800)',
+          border: '1px solid var(--color-border-subtle)',
+          borderRadius: '4px',
+          padding: '12px',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            fontWeight: 600,
+            color: 'var(--color-cyan-500)',
+            letterSpacing: '0.1em',
+            marginBottom: '8px',
+          }}
+        >
+          ストレージ
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: 'var(--color-text-secondary)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+          }}
+        >
+          {storageInfo.length > 0 ? (
+            storageInfo.map((drive) => (
+              <div key={drive.name}>
+                {drive.name}
+                {'  '}
+                <span style={{ color: 'var(--color-accent-500)' }}>
+                  {drive.free_gb.toFixed(0)} / {drive.total_gb.toFixed(0)} GB (
+                  {drive.used_percent.toFixed(0)}%)
+                </span>
+              </div>
+            ))
+          ) : (
+            <div>
+              <span style={{ color: 'var(--color-accent-500)' }}>読み込み中...</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Hardware Card */}
+      <div
+        style={{
+          marginTop: '16px',
+          background: 'var(--color-base-800)',
+          border: '1px solid var(--color-border-subtle)',
+          borderRadius: '4px',
+          padding: '12px',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            fontWeight: 600,
+            color: 'var(--color-cyan-500)',
+            letterSpacing: '0.1em',
+            marginBottom: '8px',
+          }}
+        >
+          ハードウェア
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: 'var(--color-text-secondary)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+          }}
+        >
+          {hardwareInfo ? (
+            <>
+              <div>
+                CPU{'     '}
+                <span style={{ color: 'var(--color-accent-500)' }}>{hardwareInfo.cpu_name}</span>
+              </div>
+              {hardwareInfo.cpu_temp_c !== null && (
+                <div>
+                  TEMP{'    '}
+                  <span style={{ color: 'var(--color-accent-500)' }}>
+                    {hardwareInfo.cpu_temp_c.toFixed(1)}°C
+                  </span>
+                </div>
+              )}
+              <div>
+                GPU{'     '}
+                <span style={{ color: 'var(--color-accent-500)' }}>
+                  {hardwareInfo.gpu_name || 'N/A'}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div>
+              <span style={{ color: 'var(--color-accent-500)' }}>読み込み中...</span>
+            </div>
+          )}
         </div>
       </div>
 

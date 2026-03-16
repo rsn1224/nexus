@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    archive, beacon, boost, chrono, launcher, link, pulse, security, signal, vault,
+    archive, beacon, boost, chrono, hardware, launcher, link, pulse, security, signal, storage, vault,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -84,6 +84,10 @@ pub fn run() {
             archive::delete_note,
             // PULSE
             pulse::get_resource_snapshot,
+            // STORAGE
+            storage::get_storage_info,
+            // HARDWARE
+            hardware::get_hardware_info,
             // BOOST
             boost::run_boost,
             // LAUNCHER
