@@ -70,7 +70,8 @@ pub fn get_resource_snapshot(
 
     // メモリ情報
     let total_memory = s.sys.total_memory();
-    let used_memory = s.sys.used_memory();
+    let available_memory = s.sys.available_memory();
+    let used_memory = total_memory.saturating_sub(available_memory);
 
     // ディスクI/O情報（差分を計算）
     let current_read: u64 = s.sys.processes()
