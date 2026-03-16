@@ -594,6 +594,183 @@ export interface ExecutionLog {
 
 ---
 
+### タスク 6 — BoostWing 実装
+
+**ステータス**: pending
+**担当**: Cascade
+**前提**: タスク2完了済み（BoostWing プレースホルダーが存在すること）
+**背景**: HomeWing の [BOOST] ボタンから遷移するワンクリック最適化画面。CPU 使用率が閾値以上の非保護プロセスを IDLE 優先度に下げる。新規 Rust コマンドは1つのみ、既存 `ops.rs` を最大活用。
+
+#### 仕様（Claude Code 記入）
+
+**変更ファイル一覧**:
+
+| ファイル | 変更種別 | 内容 |
+|---|---|---|
+| `src-tauri/src/commands/boost.rs` | 新規 | `run_boost` コマンド |
+| `src-tauri/src/commands/mod.rs` | 修正 | `pub mod boost` 追加 |
+| `src-tauri/src/lib.rs` | 修正 | invoke_handler に `run_boost` 登録 |
+| `src/types/index.ts` | 修正 | `BoostAction` / `BoostResult` 型追加 |
+| `src/stores/useBoostStore.ts` | 新規 | `runBoost` / `lastResult` / `isRunning` / `error` |
+| `src/components/boost/BoostWing.tsx` | 修正 | プレースホルダーを実装に差し替え |
+
+---
+
+#### 1. Rust — `src-tauri/src/commands/boost.rs`
+
+**型定義**:
+
+```rust
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct BoostAction {
+    pub label: String,       // "chrome.exe (CPU 34%)" など
+    pub action_type: String, // "set_priority" | "skipped"
+    pub success: bool,
+    pub detail: String,      // "OK" or エラー内容
+}
+
+#[derive(Debug, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct BoostResult {
+    pub actions: Vec<BoostAction>,
+    pub duration_ms: u64,
+    pub score_delta: i32,    // 現状は actions.len() as i32
+}
+```
+
+**コマンド**:
+
+```rust
+// CPU 使用率が閾値以上の非保護プロセスを IDLE 優先度に下げる
+// threshold_percent: 対象とする最低 CPU%（デフォルト 15.0）
+#[tauri::command]
+pub fn run_boost(threshold_percent: Option<f32>) -> Result<BoostResult, AppError>
+```
+
+**実装方針**:
+
+```rust
+// 1. ops::list_processes() を呼び出す
+// 2. cpu_percent >= threshold かつ can_terminate=true のプロセスを抽出
+// 3. 各プロセスに ops::set_process_priority(pid, "idle") を直接呼び出す
+//    （invoke 経由ではなく Rust 関数として直接呼ぶ）
+// 4. 実行時間を計測して BoostResult を返す
+```
+
+**テスト**:
+
+```rust
+#[test]
+fn test_run_boost_high_threshold() {
+    // 閾値99%なら対象0件 → actions.len() == 0
+    let result = run_boost(Some(99.0));
+    assert!(result.is_ok());
+    assert_eq!(result.unwrap().actions.len(), 0); // OK in tests
+}
+```
+
+---
+
+#### 2. TypeScript 型 — `src/types/index.ts` に追記
+
+```typescript
+// ─── BOOST ───────────────────────────────────────────────────────────────────
+export interface BoostAction {
+  label: string;
+  actionType: 'set_priority' | 'skipped';
+  success: boolean;
+  detail: string;
+}
+
+export interface BoostResult {
+  actions: BoostAction[];
+  durationMs: number;
+  scoreDelta: number;
+}
+```
+
+---
+
+#### 3. Zustand ストア — `src/stores/useBoostStore.ts`
+
+```typescript
+interface BoostStore {
+  lastResult: BoostResult | null;
+  isRunning: boolean;
+  error: string | null;
+  runBoost: (threshold?: number) => Promise<void>;
+}
+```
+
+---
+
+#### 4. BoostWing レイアウト
+
+```
+┌──────────────────────────────────────────────────────────┐
+│  ▶ BOOST / OPTIMIZER                   [▶ RUN BOOST]     │
+├──────────────────────────────────────────────────────────┤
+│  THRESHOLD: [15] %                                       │
+│                                                          │
+│  (未実行)                                                │
+│  READY — PRESS RUN BOOST TO OPTIMIZE                    │
+│                                                          │
+│  (実行中)                                                │
+│  RUNNING...                                              │
+│                                                          │
+│  (完了後)                                                │
+│  BOOST COMPLETE · {N} ACTIONS · {X}ms                   │
+│  ──────────────────────────────────────────────────────  │
+│  PROCESS              ACTION       STATUS                │
+│  chrome.exe (34%)     SET IDLE     ✓ OK                  │
+│  discord.exe (18%)    SET IDLE     ✗ ACCESS DENIED       │
+│                                                          │
+│  (アクション0件)                                         │
+│  NO PROCESSES ABOVE THRESHOLD — SYSTEM IS CLEAN         │
+└──────────────────────────────────────────────────────────┘
+```
+
+**各パーツ仕様**:
+
+- ヘッダー: `▶ BOOST / OPTIMIZER`（font-mono 11px 700 cyan-500）、`[▶ RUN BOOST]` primary ボタン（accent-500 背景）、実行中は `RUNNING...` + disabled
+- THRESHOLD 入力: `<input type="number">` min=1 max=99 defaultValue=15、width 48px、font-mono 11px、background `--color-base-800`、border `--color-border-subtle`、text-align center
+- 結果サマリー: `BOOST COMPLETE · {N} ACTIONS · {durationMs}ms`（success-500 / muted）
+- テーブル: PROCESS（flex:1）/ ACTION（80px）/ STATUS（100px）、success=true → `✓ OK`（success-500）、false → `✗ {detail}`（danger-500）
+- 行 hover: `useState<number | null>` + `role="row"` で Biome 対応
+- エラーバナー: `error` 非 null 時に表示（border `--color-danger-600`、background `--color-base-800`）
+
+#### 受け入れ条件
+
+- [ ] THRESHOLD 入力（1〜99、デフォルト15）が機能する
+- [ ] [▶ RUN BOOST] クリックで `run_boost(threshold)` が実行される
+- [ ] 実行中は `RUNNING...` 表示 + ボタン disabled
+- [ ] 完了後にアクション一覧テーブルが表示される
+- [ ] アクション0件時は "NO PROCESSES ABOVE THRESHOLD" を表示
+- [ ] エラー時はバナーを表示
+- [ ] `npm run typecheck` PASS / `npm run check` PASS / `npm run test` PASS / `cargo test` PASS / `cargo clippy -- -D warnings` PASS
+
+#### T6-DESIGN.md 準拠チェックポイント
+
+- [ ] CSS 変数のみ使用（`rgba()` / `#rrggbb` なし）
+- [ ] CSS `:hover` 不使用 → `useState` のみ
+- [ ] [▶ RUN BOOST] ボタン: primary スタイル（accent-500 背景、base-900 テキスト）
+- [ ] font-mono 統一、サイズ規約通り（ヘッダー11px / 本文12px / メタ10px）
+
+#### T6-Cascade 記入欄
+
+- **実装内容**:
+- **テスト実行結果**: `npm run typecheck` [ ] PASS / `npm run check` [ ] PASS / `npm run test` [ ] PASS / `cargo test` [ ] PASS
+- **特記事項**:
+
+#### T6-Claude Code レビュー結果
+
+- **判定**: [ ] PASS / [ ] REQUIRES_CHANGES
+- **指摘事項**:
+- **レビュー日**:
+
+---
+
 ## 完了タスク
 
 ### タスク 1 — GPO 統合スモークテスト
