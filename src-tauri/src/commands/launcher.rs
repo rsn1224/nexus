@@ -1,11 +1,13 @@
 // Launcher Wing — Steam ゲームスキャン・起動機能
 
 use crate::error::AppError;
+use std::collections::HashSet;
 use std::fs;
 use std::path::PathBuf;
 use tracing::info;
 
 #[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct GameInfo {
     pub app_id: u32,
     pub name: String,
@@ -52,15 +54,27 @@ fn parse_vdf_pair(line: &str) -> Option<(&str, &str)> {
 
 /// libraryfolders.vdf から追加ライブラリパスを収集
 fn collect_library_steamapps(steam_path: &std::path::Path) -> Vec<PathBuf> {
-    let mut paths = vec![steam_path.join("steamapps")];
+    let default_steamapps = steam_path.join("steamapps");
+    let mut seen: HashSet<PathBuf> = HashSet::new();
+    let mut paths = Vec::new();
 
-    let vdf = steam_path.join("steamapps").join("libraryfolders.vdf");
+    if default_steamapps.exists() {
+        seen.insert(default_steamapps.clone());
+        paths.push(default_steamapps.clone());
+    }
+
+    let vdf = default_steamapps.join("libraryfolders.vdf");
     if let Ok(content) = fs::read_to_string(&vdf) {
         for line in content.lines() {
-            if let Some((_, value)) = parse_vdf_pair(line) {
+            if let Some((key, value)) = parse_vdf_pair(line) {
+                // Only process "path" keys to avoid matching non-path values
+                if key != "path" {
+                    continue;
+                }
                 if value.contains(":\\") || value.starts_with('/') {
                     let candidate = PathBuf::from(value).join("steamapps");
-                    if candidate.exists() {
+                    if candidate.exists() && !seen.contains(&candidate) {
+                        seen.insert(candidate.clone());
                         paths.push(candidate);
                     }
                 }

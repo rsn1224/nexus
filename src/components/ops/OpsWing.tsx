@@ -401,8 +401,8 @@ export default function OpsWing(): React.ReactElement {
         </div>
       </div>
 
-      {/* Error banner (processes tab only) */}
-      {error && activeTab === 'processes' && (
+      {/* Error banner */}
+      {error && (activeTab === 'processes' || activeTab === 'ai') && (
         <div
           style={{
             padding: '8px 16px',
