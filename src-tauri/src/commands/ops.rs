@@ -135,7 +135,11 @@ pub fn set_process_priority(pid: u32, priority: String) -> Result<(), AppError> 
         .map_err(|e| AppError::Command(format!("wmic failed: {e}")))?;
 
     if output.status.success() {
-        info!(pid, priority = priority.as_str(), "set_process_priority: done");
+        info!(
+            pid,
+            priority = priority.as_str(),
+            "set_process_priority: done"
+        );
         Ok(())
     } else {
         Err(AppError::Command(format!(
@@ -204,10 +208,13 @@ mod tests {
     #[test]
     fn test_list_processes_has_can_terminate() {
         let processes = list_processes().expect("should succeed"); // OK in tests
-        // システムプロセスが1件以上 can_terminate=false であること
+                                                                   // システムプロセスが1件以上 can_terminate=false であること
         let protected = processes.iter().filter(|p| !p.can_terminate).count();
         // 実行環境によっては保護プロセスが0件のこともあるため上限のみ確認
-        assert!(protected <= processes.len(), "protected count should not exceed total");
+        assert!(
+            protected <= processes.len(),
+            "protected count should not exceed total"
+        );
     }
 
     #[test]
@@ -219,6 +226,9 @@ mod tests {
     #[test]
     fn test_set_process_priority_invalid_priority() {
         let result = set_process_priority(1, "super_high".to_string());
-        assert!(result.is_err(), "invalid priority string should return error");
+        assert!(
+            result.is_err(),
+            "invalid priority string should return error"
+        );
     }
 }

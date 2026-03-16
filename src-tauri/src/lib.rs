@@ -1,7 +1,9 @@
 mod commands;
 mod error;
 
-use crate::commands::{archive, beacon, chrono, launcher, link, ops, pulse, recon, security, signal, vault};
+use crate::commands::{
+    archive, beacon, boost, chrono, launcher, link, ops, pulse, recon, script, security, signal, vault,
+};
 use std::collections::HashMap;
 use std::sync::Mutex;
 use tracing::info;
@@ -82,6 +84,15 @@ pub fn run() {
             signal::remove_signal_feed,
             signal::toggle_signal_feed,
             signal::check_feed_now,
+            // BOOST
+            boost::run_boost,
+            // SCRIPT
+            script::list_scripts,
+            script::add_script,
+            script::delete_script,
+            script::run_script,
+            script::get_execution_logs,
+            script::clear_execution_logs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

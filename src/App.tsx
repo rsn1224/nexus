@@ -10,6 +10,7 @@ import NetoptWing from './components/netopt/NetoptWing';
 import OpsWing from './components/ops/OpsWing';
 import PulseWing from './components/pulse/PulseWing';
 import ReconWing from './components/recon/ReconWing';
+import ScriptWing from './components/script/ScriptWing';
 import SettingsWing from './components/settings/SettingsWing';
 import StorageWing from './components/storage/StorageWing';
 import WindowsWing from './components/windows/WindowsWing';
@@ -24,6 +25,7 @@ const WING_COMPONENTS: Record<WingId, React.ReactNode> = {
   hardware: <HardwareWing />,
   ops: <OpsWing />,
   launcher: <LauncherWing />,
+  script: <ScriptWing />,
   advisor: <AdvisorWing />,
   recon: <ReconWing />,
   netopt: <NetoptWing />,

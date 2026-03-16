@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+# nexus — pre-commit quality gate
+# Cascade / Claude Code どちらのコミットも同じ基準で検証する
+
+set -euo pipefail
+
+PROJECT_DIR="$(git rev-parse --show-toplevel)"
+RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
+
+echo -e "${YELLOW}[pre-commit] nexus quality gate 開始...${NC}"
+
+# ── TS ファイルが staged されているか確認 ──────────────────────────────
+STAGED_TS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(ts|tsx)$' || true)
+STAGED_RS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.rs$' || true)
+
+# ── Biome check ───────────────────────────────────────────────────────
+if [ -n "$STAGED_TS" ]; then
+  echo -e "${YELLOW}[1/3] Biome check...${NC}"
+  cd "$PROJECT_DIR"
+  if ! npx biome check ./src 2>&1; then
+    echo -e "${RED}[FAIL] Biome check 失敗。npm run check を実行して修正してください。${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}[OK] Biome${NC}"
+
+  # ── TypeScript typecheck ─────────────────────────────────────────
+  echo -e "${YELLOW}[2/3] TypeScript typecheck...${NC}"
+  if ! npx tsc --noEmit 2>&1; then
+    echo -e "${RED}[FAIL] TypeScript エラー。修正してください。${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}[OK] TypeScript${NC}"
+fi
+
+# ── Cargo clippy ──────────────────────────────────────────────────────
+if [ -n "$STAGED_RS" ]; then
+  echo -e "${YELLOW}[3/3] cargo clippy...${NC}"
+  cd "$PROJECT_DIR/src-tauri"
+  if ! cargo clippy -- -D warnings 2>&1; then
+    echo -e "${RED}[FAIL] clippy 失敗。cargo clippy -- -D warnings を実行して修正してください。${NC}"
+    exit 1
+  fi
+  echo -e "${GREEN}[OK] cargo clippy${NC}"
+fi
+
+echo -e "${GREEN}[pre-commit] 全チェック通過 ✓${NC}"

@@ -27,10 +27,7 @@ fn find_steam_path() -> Option<PathBuf> {
         .map(|p| PathBuf::from(p).join("Steam"))
         .collect();
 
-    candidates
-        .into_iter()
-        .chain(from_env)
-        .find(|p| p.exists())
+    candidates.into_iter().chain(from_env).find(|p| p.exists())
 }
 
 // ─── VDF パーサー（簡易版） ────────────────────────────────────────────────────

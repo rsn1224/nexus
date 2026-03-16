@@ -17,6 +17,9 @@ pub enum AppError {
     #[error("Not found: {0}")]
     NotFound(String),
 
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+
     #[error("Unauthorized: {0}")]
     Unauthorized(String),
 }

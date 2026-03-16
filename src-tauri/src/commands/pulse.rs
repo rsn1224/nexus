@@ -10,7 +10,7 @@ use tracing::info;
 #[serde(rename_all = "camelCase")]
 pub struct ResourceSnapshot {
     pub timestamp: u64,
-    pub cpu_percent: f32, // global CPU 使用率
+    pub cpu_percent: f32,        // global CPU 使用率
     pub cpu_temp_c: Option<f32>, // CPU 温度（取得不可なら None）
     pub mem_used_mb: u64,
     pub mem_total_mb: u64,

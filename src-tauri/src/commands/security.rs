@@ -1,10 +1,10 @@
+use regex::Regex;
+use serde::Deserialize;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
 use tauri::{AppHandle, Manager};
-use serde::Deserialize;
-use regex::Regex;
 use tracing::{info, warn};
 
 use crate::error::AppError;
@@ -12,10 +12,16 @@ use crate::error::AppError;
 // ─── Secret Detection Patterns ────────────────────────────────────────────────
 
 const SECRET_PATTERNS: &[(&str, &str)] = &[
-    ("Generic API Key", r#"(?i)(api[_-]?key|apikey)\s*[=:]\s*['"]?[A-Za-z0-9\-_]{20,}"#),
+    (
+        "Generic API Key",
+        r#"(?i)(api[_-]?key|apikey)\s*[=:]\s*['"]?[A-Za-z0-9\-_]{20,}"#,
+    ),
     ("Bearer Token", r#"Bearer\s+[A-Za-z0-9\-_.~+/]{20,}"#),
     ("AWS Access Key", r#"AKIA[0-9A-Z]{16}"#),
-    ("Generic Secret", r#"(?i)(secret|token|password)\s*[=:]\s*['"]?[A-Za-z0-9\-_!@#$%]{16,}"#),
+    (
+        "Generic Secret",
+        r#"(?i)(secret|token|password)\s*[=:]\s*['"]?[A-Za-z0-9\-_!@#$%]{16,}"#,
+    ),
     ("Perplexity Key", r#"pplx-[A-Za-z0-9]{48}"#),
 ];
 
@@ -24,8 +30,8 @@ const SECRET_PATTERNS: &[(&str, &str)] = &[
 #[derive(serde::Serialize, Debug)]
 pub struct NpmVulnerability {
     pub name: String,
-    pub severity: String,   // "critical" | "high" | "moderate" | "low"
-    pub via: Vec<String>,   // 依存元パッケージ名
+    pub severity: String, // "critical" | "high" | "moderate" | "low"
+    pub via: Vec<String>, // 依存元パッケージ名
     pub fix_available: bool,
 }
 
@@ -53,17 +59,17 @@ pub struct VulnerabilityReport {
     pub npm: Vec<NpmVulnerability>,
     pub cargo: Vec<CargoVulnerability>,
     pub summary: VulnerabilitySummary,
-    pub scanned_at: String,   // ISO8601 文字列（フロント側で Date 変換）
+    pub scanned_at: String, // ISO8601 文字列（フロント側で Date 変換）
 }
 
 // ─── Secret Detection Types ────────────────────────────────────────────────
 
 #[derive(serde::Serialize, Debug)]
 pub struct DetectedSecret {
-    pub file: String,         // ワークスペースルートからの相対パス
+    pub file: String, // ワークスペースルートからの相対パス
     pub line: u32,
     pub pattern_name: String,
-    pub preview: String,      // マスク済み表示用（最大40文字）
+    pub preview: String, // マスク済み表示用（最大40文字）
 }
 
 #[derive(serde::Serialize, Debug, Clone, Copy)]
@@ -76,7 +82,7 @@ pub struct SecretSummary {
 pub struct SecretReport {
     pub secrets: Vec<DetectedSecret>,
     pub summary: SecretSummary,
-    pub scanned_at: String,   // ISO8601
+    pub scanned_at: String, // ISO8601
 }
 
 // ─── Vulnerability Scan Implementation ───────────────────────────────────────
@@ -112,7 +118,10 @@ pub async fn run_vulnerability_scan(app: AppHandle) -> Result<VulnerabilityRepor
     };
 
     let summary = calculate_vulnerability_summary(&npm_vulns, &cargo_vulns);
-    info!("Vulnerability scan completed: {} total vulnerabilities", summary.total);
+    info!(
+        "Vulnerability scan completed: {} total vulnerabilities",
+        summary.total
+    );
 
     Ok(VulnerabilityReport {
         npm: npm_vulns,
@@ -306,8 +315,13 @@ pub fn run_secret_scan(app: AppHandle) -> Result<SecretReport, AppError> {
     let mut files_affected = std::collections::HashSet::new();
 
     for file_path in &target_files {
-        let content = fs::read_to_string(file_path)
-            .map_err(|e| AppError::Io(format!("Failed to read file {}: {}", file_path.display(), e)))?;
+        let content = fs::read_to_string(file_path).map_err(|e| {
+            AppError::Io(format!(
+                "Failed to read file {}: {}",
+                file_path.display(),
+                e
+            ))
+        })?;
 
         let line_secrets = scan_file_for_secrets(&content, file_path, workspace_root)?;
         if !line_secrets.is_empty() {
@@ -321,7 +335,10 @@ pub fn run_secret_scan(app: AppHandle) -> Result<SecretReport, AppError> {
         files_affected: files_affected.len() as u32,
     };
 
-    info!("Secret scan completed: {} secrets found in {} files", summary.total, summary.files_affected);
+    info!(
+        "Secret scan completed: {} secrets found in {} files",
+        summary.total, summary.files_affected
+    );
 
     Ok(SecretReport {
         secrets,
@@ -352,9 +369,7 @@ fn collect_target_files(scan_dir: &Path) -> Result<Vec<std::path::PathBuf>, AppE
 
 fn is_excluded_dir(path: &Path) -> bool {
     let path_str = path.to_string_lossy();
-    path_str.contains("node_modules")
-        || path_str.contains("target")
-        || path_str.contains(".git")
+    path_str.contains("node_modules") || path_str.contains("target") || path_str.contains(".git")
 }
 
 fn scan_file_for_secrets(
@@ -365,8 +380,9 @@ fn scan_file_for_secrets(
     let mut secrets = Vec::new();
 
     for (pattern_name, pattern) in SECRET_PATTERNS {
-        let regex = Regex::new(pattern)
-            .map_err(|e| AppError::Command(format!("Invalid regex pattern {}: {}", pattern_name, e)))?;
+        let regex = Regex::new(pattern).map_err(|e| {
+            AppError::Command(format!("Invalid regex pattern {}: {}", pattern_name, e))
+        })?;
 
         for (line_num, line) in content.lines().enumerate() {
             if let Some(mat) = regex.find(line) {
@@ -452,12 +468,9 @@ mod tests {
         pplx-abcdef1234567890abcdef1234567890abcdef123456
         "#;
 
-        let secrets = scan_file_for_secrets(
-            test_content,
-            Path::new("test.ts"),
-            Path::new("/workspace"),
-        )
-        .unwrap(); // OK in tests
+        let secrets =
+            scan_file_for_secrets(test_content, Path::new("test.ts"), Path::new("/workspace"))
+                .unwrap(); // OK in tests
 
         assert!(!secrets.is_empty());
     }

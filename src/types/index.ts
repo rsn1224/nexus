@@ -1,15 +1,54 @@
-// ─── Wing IDs ────────────────────────────────────────────────────────────────
+// ─── BOOST ────────────────────────────────────────────────────────────────
+export interface BoostAction {
+  label: string;
+  actionType: 'set_priority' | 'skipped';
+  success: boolean;
+  detail: string;
+}
+
+export interface BoostResult {
+  actions: BoostAction[];
+  durationMs: number;
+  scoreDelta: number;
+}
+
+// ─── SCRIPT ────────────────────────────────────────────────────────────────
+export interface ScriptEntry {
+  id: string;
+  name: string;
+  path: string;
+  scriptType: 'powershell' | 'python';
+  description: string;
+  createdAt: number;
+}
+
+export interface ExecutionLog {
+  id: string;
+  scriptId: string;
+  scriptName: string;
+  startedAt: number;
+  durationMs: number;
+  exitCode: number;
+  stdout: string;
+  stderr: string;
+}
+
+// ─── WING IDs ────────────────────────────────────────────────────────────────
 export type WingId =
-  | 'recon'
+  | 'home'
+  | 'boost'
+  | 'windows'
   | 'pulse'
-  | 'beacon'
+  | 'hardware'
   | 'ops'
-  | 'security'
-  | 'vault'
-  | 'archive'
-  | 'chrono'
-  | 'link'
-  | 'signal';
+  | 'launcher'
+  | 'script'
+  | 'advisor'
+  | 'recon'
+  | 'netopt'
+  | 'storage'
+  | 'log'
+  | 'settings';
 
 export interface WingStatus {
   id: WingId;
