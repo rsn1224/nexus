@@ -364,7 +364,7 @@ export const useNavStore = create<NavStore>(() => ({
 
 ### タスク 4 — LauncherWing 実装
 
-**ステータス**: pending
+**ステータス**: done
 **担当**: Cascade
 **前提**: タスク2完了済み（LauncherWing プレースホルダーが存在すること）
 **背景**: ゲームライブラリ画面を実装する。既存の `launcher.rs`（`scan_steam_games` / `launch_game`）と `useLauncherStore` をそのまま活用し、新規 Rust コードは不要。
@@ -425,15 +425,17 @@ export const useNavStore = create<NavStore>(() => ({
 
 #### T4-Cascade 記入欄
 
-- **実装内容**:
-- **テスト実行結果**: `npm run typecheck` [ ] PASS / `npm run check` [ ] PASS / `npm run test` [ ] PASS
-- **特記事項**:
+- **実装内容**: LauncherWing を table/thead/tbody 構造で実装。ヘッダー・エラーバナー・空状態・スキャン中ステート・hover（useState）・LAUNCH ボタン（primary）をすべて実装。
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS（126 tests）
+- **特記事項**: ARIA 対応のため div → table 要素に変更。CSS :hover 不使用、hoveredRow state で管理。
 
 #### T4-Claude Code レビュー結果
 
-- **判定**: [ ] PASS / [ ] REQUIRES_CHANGES
+- **判定**: [x] PASS（1件微修正あり）
 - **指摘事項**:
-- **レビュー日**:
+  - LAUNCH ボタンのテキストが `LAUNCH` → 仕様の `▶ LAUNCH` に修正（Claude Code が直接修正）
+  - 受け入れ条件・DESIGN.md 準拠チェック全項目通過を確認
+- **レビュー日**: 2026-03-16
 
 ---
 
