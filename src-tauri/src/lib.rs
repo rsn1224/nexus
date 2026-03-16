@@ -6,7 +6,7 @@ use crate::commands::{
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
-use sysinfo::System;
+use sysinfo::{Networks, System};
 use tracing::info;
 
 // ─── Application State ────────────────────────────────────────────────────────
@@ -19,6 +19,7 @@ pub struct PulseState {
     pub sys: System,
     pub last_disk_read: u64,
     pub last_disk_write: u64,
+    pub networks: Networks,
 }
 
 impl Default for PulseState {
@@ -43,10 +44,13 @@ impl PulseState {
             .map(|p| p.disk_usage().written_bytes)
             .sum();
         
+        let networks = Networks::new_with_refreshed_list();
+        
         Self {
             sys,
             last_disk_read: initial_read,
             last_disk_write: initial_write,
+            networks,
         }
     }
 }

@@ -17,6 +17,8 @@ const MOCK_SNAPSHOT: ResourceSnapshot = {
   memTotalMb: 8192,
   diskReadKb: 1024,
   diskWriteKb: 2048,
+  netRecvKb: 0,
+  netSentKb: 0,
 };
 
 function resetStore(): void {

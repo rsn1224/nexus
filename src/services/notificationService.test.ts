@@ -20,6 +20,8 @@ function makeSnapshot(overrides: Partial<ResourceSnapshot> = {}): ResourceSnapsh
     memTotalMb: 16384, // 25% usage
     diskReadKb: 0,
     diskWriteKb: 0,
+    netRecvKb: 0,
+    netSentKb: 0,
     ...overrides,
   };
 }

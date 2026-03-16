@@ -18,6 +18,8 @@ pub struct ResourceSnapshot {
     pub mem_total_mb: u64,
     pub disk_read_kb: u64,  // 全ディスク合計読み取り
     pub disk_write_kb: u64, // 全ディスク合計書き込み
+    pub net_recv_kb: u64,   // ネットワーク受信 KB/s
+    pub net_sent_kb: u64,   // ネットワーク送信 KB/s
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -90,6 +92,17 @@ pub fn get_resource_snapshot(
     s.last_disk_read = current_read;
     s.last_disk_write = current_write;
 
+    // ネットワーク I/O（KB/s を計算）
+    s.networks.refresh();
+    let net_recv_kb: u64 = s.networks
+        .values()
+        .map(|n| n.received())
+        .sum::<u64>() / 1024;
+    let net_sent_kb: u64 = s.networks
+        .values()
+        .map(|n| n.transmitted())
+        .sum::<u64>() / 1024;
+
     let snapshot = ResourceSnapshot {
         timestamp: now_millis()?,
         cpu_percent,
@@ -98,6 +111,8 @@ pub fn get_resource_snapshot(
         mem_total_mb: total_memory / (1024 * 1024), // bytes to MB
         disk_read_kb,
         disk_write_kb,
+        net_recv_kb,
+        net_sent_kb,
     };
 
     info!(
@@ -107,6 +122,8 @@ pub fn get_resource_snapshot(
         mem_total = snapshot.mem_total_mb,
         disk_read = snapshot.disk_read_kb,
         disk_write = snapshot.disk_write_kb,
+        net_recv = snapshot.net_recv_kb,
+        net_sent = snapshot.net_sent_kb,
         "get_resource_snapshot: done"
     );
 

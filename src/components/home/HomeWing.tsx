@@ -16,6 +16,13 @@ function getTopCpuProcesses(processes: SystemProcess[], limit: number = 3): Syst
   return [...processes].sort((a, b) => b.cpuPercent - a.cpuPercent).slice(0, limit);
 }
 
+function formatNetSpeed(kb: number): string {
+  if (kb >= 1024) {
+    return `${(kb / 1024).toFixed(1)} MB/s`;
+  }
+  return `${kb.toFixed(0)} KB/s`;
+}
+
 // ─── HomeWing ────────────────────────────────────────────────────────────────
 
 export default function HomeWing(): React.ReactElement {
@@ -32,6 +39,8 @@ export default function HomeWing(): React.ReactElement {
   const memTotal = latestSnapshot?.memTotalMb ?? null;
   const diskRead = latestSnapshot?.diskReadKb ?? null;
   const diskWrite = latestSnapshot?.diskWriteKb ?? null;
+  const netRecv = latestSnapshot?.netRecvKb ?? null;
+  const netSent = latestSnapshot?.netSentKb ?? null;
   const isPolling = usePulseStore((s) => s.isPolling);
   const startPolling = usePulseStore((s) => s.startPolling);
 
@@ -465,6 +474,53 @@ export default function HomeWing(): React.ReactElement {
               <span style={{ color: 'var(--color-accent-500)' }}>読み込み中...</span>
             </div>
           )}
+        </div>
+      </div>
+
+      {/* Network Speed Card */}
+      <div
+        style={{
+          marginTop: '16px',
+          background: 'var(--color-base-800)',
+          border: '1px solid var(--color-border-subtle)',
+          borderRadius: '4px',
+          padding: '12px',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            fontWeight: 600,
+            color: 'var(--color-cyan-500)',
+            letterSpacing: '0.1em',
+            marginBottom: '8px',
+          }}
+        >
+          ネットワーク
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: 'var(--color-text-secondary)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+          }}
+        >
+          <div>
+            DOWN{'    '}
+            <span style={{ color: 'var(--color-accent-500)' }}>
+              {netRecv !== null ? formatNetSpeed(netRecv) : '--'}
+            </span>
+          </div>
+          <div>
+            UP{'      '}
+            <span style={{ color: 'var(--color-accent-500)' }}>
+              {netSent !== null ? formatNetSpeed(netSent) : '--'}
+            </span>
+          </div>
         </div>
       </div>
 

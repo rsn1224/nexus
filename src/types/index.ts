@@ -151,6 +151,8 @@ export interface ResourceSnapshot {
   memTotalMb: number;
   diskReadKb: number;
   diskWriteKb: number;
+  netRecvKb: number; // ← 追加
+  netSentKb: number; // ← 追加
 }
 
 // ─── CHRONO ───────────────────────────────────────────────────────────────────
