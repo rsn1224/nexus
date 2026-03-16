@@ -34,18 +34,20 @@ impl PulseState {
         sys.refresh_memory();
         sys.refresh_cpu_all();
         sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
-        
-        let initial_read: u64 = sys.processes()
+
+        let initial_read: u64 = sys
+            .processes()
             .values()
             .map(|p| p.disk_usage().read_bytes)
             .sum();
-        let initial_write: u64 = sys.processes()
+        let initial_write: u64 = sys
+            .processes()
             .values()
             .map(|p| p.disk_usage().written_bytes)
             .sum();
-        
+
         let networks = Networks::new_with_refreshed_list();
-        
+
         Self {
             sys,
             last_disk_read: initial_read,
