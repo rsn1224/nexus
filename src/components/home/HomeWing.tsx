@@ -19,22 +19,15 @@ export default function HomeWing(): React.ReactElement {
   const processes = useOpsStore((s) => s.processes);
   const fetchProcesses = useOpsStore((s) => s.fetchProcesses);
 
-  const cpuPercent = usePulseStore(
-    (s) =>
-      (s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1]?.cpuPercent : null) ?? null,
+  const latestSnapshot = usePulseStore((s) =>
+    s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
   );
-  const memUsed = usePulseStore(
-    (s) =>
-      (s.snapshots.length > 0
-        ? (s.snapshots[s.snapshots.length - 1]?.memUsedMb ?? 0) / 1024
-        : null) ?? null,
-  );
-  const memTotal = usePulseStore(
-    (s) =>
-      (s.snapshots.length > 0
-        ? (s.snapshots[s.snapshots.length - 1]?.memTotalMb ?? 0) / 1024
-        : null) ?? null,
-  );
+
+  const cpuPercent = latestSnapshot?.cpuPercent ?? null;
+  const memUsed = latestSnapshot?.memUsedMb ?? null;
+  const memTotal = latestSnapshot?.memTotalMb ?? null;
+  const diskRead = latestSnapshot?.diskReadKb ?? null;
+  const diskWrite = latestSnapshot?.diskWriteKb ?? null;
   const isPolling = usePulseStore((s) => s.isPolling);
   const startPolling = usePulseStore((s) => s.startPolling);
 
@@ -44,7 +37,11 @@ export default function HomeWing(): React.ReactElement {
   useEffect(() => {
     // Auto-fetch data on mount
     void fetchProcesses();
-  }, [fetchProcesses]);
+    // Auto-start pulse polling
+    if (!isPolling) {
+      startPolling();
+    }
+  }, [fetchProcesses, isPolling, startPolling]);
 
   const topProcesses = getTopCpuProcesses(processes);
   const activeProcessCount = processes.filter((p: SystemProcess) => p.cpuPercent > 1).length;
@@ -283,6 +280,69 @@ export default function HomeWing(): React.ReactElement {
             >
               ⚡ 今すぐ最適化
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* System Status Card */}
+      <div
+        style={{
+          marginTop: '16px',
+          background: 'var(--color-base-800)',
+          border: '1px solid var(--color-border-subtle)',
+          borderRadius: '4px',
+          padding: '12px',
+        }}
+      >
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            fontWeight: 600,
+            color: 'var(--color-cyan-500)',
+            letterSpacing: '0.1em',
+            marginBottom: '8px',
+          }}
+        >
+          システムステータス
+        </div>
+        <div
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '12px',
+            color: 'var(--color-text-secondary)',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+          }}
+        >
+          <div>
+            CPU{'     '}
+            <span style={{ color: 'var(--color-accent-500)' }}>
+              {cpuPercent !== null ? `${cpuPercent.toFixed(1)}%` : '--'}
+            </span>
+          </div>
+          <div>
+            MEM{'     '}
+            <span style={{ color: 'var(--color-accent-500)' }}>
+              {memUsed !== null && memTotal !== null
+                ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB (${(
+                    (memUsed / memTotal) * 100
+                  ).toFixed(0)}%)`
+                : '--'}
+            </span>
+          </div>
+          <div>
+            DISK R{'  '}
+            <span style={{ color: 'var(--color-accent-500)' }}>
+              {diskRead !== null ? `${diskRead.toFixed(0)} KB/s` : '--'}
+            </span>
+          </div>
+          <div>
+            DISK W{'  '}
+            <span style={{ color: 'var(--color-accent-500)' }}>
+              {diskWrite !== null ? `${diskWrite.toFixed(0)} KB/s` : '--'}
+            </span>
           </div>
         </div>
       </div>

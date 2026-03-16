@@ -38,7 +38,6 @@ export type WingId =
   | 'home'
   | 'boost'
   | 'windows'
-  | 'pulse'
   | 'hardware'
   | 'ops'
   | 'launcher'

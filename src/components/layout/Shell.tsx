@@ -19,10 +19,7 @@ const SIDEBAR_ZONES = [
   },
   {
     label: '監視',
-    wings: [
-      { id: 'pulse', label: 'システム監視' },
-      { id: 'hardware', label: 'ハードウェア' },
-    ],
+    wings: [{ id: 'hardware', label: 'ハードウェア' }],
   },
   {
     label: 'コントロール',

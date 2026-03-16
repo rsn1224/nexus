@@ -8,7 +8,6 @@ import Shell from './components/layout/Shell';
 import LogWing from './components/log/LogWing';
 import NetoptWing from './components/netopt/NetoptWing';
 import OpsWing from './components/ops/OpsWing';
-import PulseWing from './components/pulse/PulseWing';
 import ReconWing from './components/recon/ReconWing';
 import ScriptWing from './components/script/ScriptWing';
 import SettingsWing from './components/settings/SettingsWing';
@@ -21,7 +20,6 @@ const WING_COMPONENTS: Record<WingId, React.ReactNode> = {
   home: <HomeWing />,
   boost: <BoostWing />,
   windows: <WindowsWing />,
-  pulse: <PulseWing />,
   hardware: <HardwareWing />,
   ops: <OpsWing />,
   launcher: <LauncherWing />,
