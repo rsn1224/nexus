@@ -34,8 +34,12 @@ fn now_millis() -> Result<u64, AppError> {
 pub fn get_resource_snapshot() -> Result<ResourceSnapshot, AppError> {
     info!("get_resource_snapshot: collecting system metrics");
 
-    let mut sys = System::new();
-    sys.refresh_cpu_usage();
+    let mut sys = System::new_all();
+    
+    // sysinfoはrefresh後に少し待たないと正確なCPU使用率が取れない
+    std::thread::sleep(std::time::Duration::from_millis(200));
+    
+    sys.refresh_cpu_all();
     sys.refresh_memory();
 
     // CPU使用率（グローバル）
