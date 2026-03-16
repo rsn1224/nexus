@@ -41,6 +41,7 @@ pub fn get_resource_snapshot() -> Result<ResourceSnapshot, AppError> {
     std::thread::sleep(std::time::Duration::from_millis(200));
     
     sys.refresh_cpu_all();
+    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
     sys.refresh_memory();
 
     // CPU使用率（グローバル）
@@ -68,9 +69,15 @@ pub fn get_resource_snapshot() -> Result<ResourceSnapshot, AppError> {
     let total_memory = sys.total_memory();
     let used_memory = sys.used_memory();
 
-    // ディスクI/O情報（sysinfo v0.32ではサポートされていないため0）
-    let disk_read_kb = 0u64;
-    let disk_write_kb = 0u64;
+    // ディスクI/O情報（全プロセスのディスク使用量を合計）
+    let disk_read_kb: u64 = sys.processes()
+        .values()
+        .map(|p| p.disk_usage().read_bytes / 1024) // bytes to KB
+        .sum();
+    let disk_write_kb: u64 = sys.processes()
+        .values()
+        .map(|p| p.disk_usage().written_bytes / 1024) // bytes to KB
+        .sum();
 
     let snapshot = ResourceSnapshot {
         timestamp: now_millis()?,
