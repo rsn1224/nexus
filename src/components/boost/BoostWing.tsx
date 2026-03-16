@@ -66,10 +66,10 @@ export default function BoostWing(): React.ReactElement {
         fontWeight: 600,
         padding: '8px 16px',
         background: 'transparent',
-        color: activeTab === id ? 'var(--color-cyan-500)' : 'var(--color-text-muted)',
+        color: activeTab === id ? 'var(--color-accent-500)' : 'var(--color-text-muted)',
         border: 'none',
         borderBottom:
-          activeTab === id ? '2px solid var(--color-cyan-500)' : '2px solid transparent',
+          activeTab === id ? '2px solid var(--color-accent-500)' : '2px solid transparent',
         cursor: 'pointer',
         transition: 'all 0.2s ease',
       }}
@@ -86,10 +86,11 @@ export default function BoostWing(): React.ReactElement {
     return (
       <div
         style={{
-          padding: '8px 12px',
+          padding: '8px 16px',
           marginBottom: '16px',
-          background: 'var(--color-danger-500)',
-          color: 'var(--color-base-900)',
+          background: 'rgba(239, 68, 68, 0.1)',
+          borderBottom: '1px solid var(--color-danger-600)',
+          color: 'var(--color-danger-500)',
           fontFamily: 'var(--font-mono)',
           fontSize: '10px',
           borderRadius: '3px',
@@ -118,6 +119,9 @@ export default function BoostWing(): React.ReactElement {
             fontWeight: 700,
             color: 'var(--color-cyan-500)',
             letterSpacing: '0.15em',
+            flexShrink: 0,
+            paddingBottom: '8px',
+            borderBottom: '1px solid var(--color-border-subtle)',
           }}
         >
           ▶ 最適化
@@ -274,7 +278,9 @@ export default function BoostWing(): React.ReactElement {
                           <td
                             style={{
                               padding: '8px',
-                              color: 'var(--color-text-primary)',
+                              color: action.isProtected
+                                ? 'var(--color-text-muted)'
+                                : 'var(--color-text-primary)',
                               borderBottom: '1px solid var(--color-border-subtle)',
                             }}
                           >
@@ -283,7 +289,9 @@ export default function BoostWing(): React.ReactElement {
                           <td
                             style={{
                               padding: '8px',
-                              color: 'var(--color-text-primary)',
+                              color: action.isProtected
+                                ? 'var(--color-text-muted)'
+                                : 'var(--color-text-primary)',
                               borderBottom: '1px solid var(--color-border-subtle)',
                             }}
                           >
@@ -292,13 +300,35 @@ export default function BoostWing(): React.ReactElement {
                           <td
                             style={{
                               padding: '8px',
-                              color: action.success
-                                ? 'var(--color-accent-500)'
-                                : 'var(--color-danger-500)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
                               borderBottom: '1px solid var(--color-border-subtle)',
                             }}
                           >
-                            {action.success ? '成功' : '失敗'}
+                            <span
+                              style={{
+                                color: action.success
+                                  ? 'var(--color-success-500)'
+                                  : 'var(--color-danger-500)',
+                              }}
+                            >
+                              {action.success ? '✓' : '✗'}
+                            </span>
+                            {action.isProtected && (
+                              <span
+                                style={{
+                                  fontFamily: 'var(--font-mono)',
+                                  fontSize: '9px',
+                                  padding: '1px 4px',
+                                  border: '1px solid var(--color-text-muted)',
+                                  color: 'var(--color-text-muted)',
+                                  letterSpacing: '0.05em',
+                                }}
+                              >
+                                PROT
+                              </span>
+                            )}
                           </td>
                         </tr>
                       ))}

@@ -2,6 +2,16 @@ use crate::error::AppError;
 use serde::Serialize;
 use std::time::Instant;
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const PROTECTED_PROCESSES: &[&str] = &[
+    "system", "smss.exe", "csrss.exe", "wininit.exe",
+    "winlogon.exe", "lsass.exe", "services.exe",
+    "svchost.exe", "dwm.exe", "explorer.exe",
+    "msmpeng.exe", "msseces.exe", "avp.exe",
+    "nexus.exe",
+];
+
 // ─── Types ─────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Serialize, Clone)]
@@ -11,6 +21,7 @@ pub struct BoostAction {
     pub action_type: String,
     pub success: bool,
     pub detail: String,
+    pub is_protected: bool,
 }
 
 #[derive(Debug, Serialize, Clone)]
@@ -26,21 +37,43 @@ pub struct BoostResult {
 /// CPU 使用率が閾値以上の非保護プロセスを IDLE 優先度に下げる
 #[tauri::command]
 pub fn run_boost(_threshold_percent: Option<f32>) -> Result<BoostResult, AppError> {
-    let start_time = Instant::now();
-    
-    // Simulate boost functionality until ops is re-implemented
-    let actions = vec![
-        BoostAction {
-            label: "システム最適化".to_string(),
-            action_type: "skipped".to_string(),
-            success: true,
-            detail: "プロセス管理機能は統合中".to_string(),
-        }
+    let start = Instant::now();
+
+    let sim_entries: &[(&str, bool)] = &[
+        ("システム最適化", false),
+        ("explorer.exe", true),
+        ("svchost.exe", true),
+        ("chrome.exe", false),
     ];
-    
-    let duration_ms = start_time.elapsed().as_millis() as u64;
+
+    let actions: Vec<BoostAction> = sim_entries
+        .iter()
+        .map(|(name, _protected)| {
+            // 保護チェック: to_lowercase() してから as_str() で比較
+            let name_lower = name.to_lowercase();
+            let is_protected = PROTECTED_PROCESSES.contains(&name_lower.as_str());
+
+            BoostAction {
+                label: name.to_string(),
+                action_type: if is_protected {
+                    "skipped_protected".to_string()
+                } else {
+                    "skipped".to_string()
+                },
+                success: true,
+                detail: if is_protected {
+                    "保護済みプロセス — スキップ".to_string()
+                } else {
+                    "プロセス管理機能は統合中".to_string()
+                },
+                is_protected,
+            }
+        })
+        .collect();
+
+    let duration_ms = start.elapsed().as_millis() as u64;
     let score_delta = actions.len() as i32;
-    
+
     Ok(BoostResult {
         actions,
         duration_ms,
@@ -56,11 +89,16 @@ mod tests {
 
     #[test]
     fn test_run_boost_high_threshold() {
-        // 閾値∞でも現在はシミュレーション機能を返すため、actions.len() == 1 になる
         let result = run_boost(Some(f32::INFINITY));
         assert!(result.is_ok());
         let r = result.unwrap(); // OK in tests: verifying success path
-        assert_eq!(r.actions.len(), 1);
-        assert_eq!(r.actions[0].action_type, "skipped");
+        // シミュレーション entries は 4件
+        assert_eq!(r.actions.len(), 4);
+        // explorer.exe と svchost.exe は skipped_protected
+        let protected: Vec<_> = r.actions.iter()
+            .filter(|a| a.is_protected)
+            .collect();
+        assert_eq!(protected.len(), 2);
+        assert!(protected.iter().all(|a| a.action_type == "skipped_protected"));
     }
 }

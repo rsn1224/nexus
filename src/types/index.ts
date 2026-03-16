@@ -1,9 +1,10 @@
 // ─── BOOST ────────────────────────────────────────────────────────────────
 export interface BoostAction {
   label: string;
-  actionType: 'set_priority' | 'skipped';
+  actionType: 'set_priority' | 'skipped' | 'skipped_protected';
   success: boolean;
   detail: string;
+  isProtected: boolean;
 }
 
 export interface BoostResult {
