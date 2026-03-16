@@ -55,6 +55,16 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
     set({ error: null });
 
     try {
+      if (get().autoBoostEnabled) {
+        try {
+          await invoke('run_boost', { thresholdPercent: null });
+          log.info('launcher: auto boost executed before game launch');
+        } catch (err) {
+          log.error({ err }, 'launcher: auto boost failed (launch continues)');
+          // boost 失敗はゲーム起動を妨げない
+        }
+      }
+
       await invoke('launch_game', { appId });
       log.info({ appId }, 'launcher: game launched');
 
@@ -62,16 +72,6 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
       const nextLastPlayed = { ...get().lastPlayed, [appId]: Date.now() };
       localStorage.setItem(LAST_PLAYED_KEY, JSON.stringify(nextLastPlayed));
       set({ lastPlayed: nextLastPlayed });
-
-      if (get().autoBoostEnabled) {
-        try {
-          const { useOpsStore } = await import('./useOpsStore');
-          await useOpsStore.getState().fetchProcesses();
-          log.info('launcher: auto refresh triggered after game launch');
-        } catch (err) {
-          log.error({ err }, 'launcher: auto refresh failed');
-        }
-      }
     } catch (err) {
       log.error({ err, appId }, 'launcher: launch game failed');
       const errorMessage = err instanceof Error ? err.message : String(err);

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
+import { useLauncherStore } from '../../stores/useLauncherStore';
 import type { LogLevel } from '../../stores/useLogStore';
 import { useLogStore } from '../../stores/useLogStore';
 import { usePulseStore } from '../../stores/usePulseStore';
@@ -91,6 +92,8 @@ function SettingsTabContent(): React.ReactElement {
   const isPolling = usePulseStore((s) => s.isPolling);
   const startPolling = usePulseStore((s) => s.startPolling);
   const stopPolling = usePulseStore((s) => s.stopPolling);
+  const autoBoostEnabled = useLauncherStore((s) => s.autoBoostEnabled);
+  const toggleAutoBoost = useLauncherStore((s) => s.toggleAutoBoost);
 
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [keySaved, setKeySaved] = useState(false);
@@ -199,6 +202,59 @@ function SettingsTabContent(): React.ReactElement {
         >
           {perplexityApiKey ? '\u2713 API キー設定済み' : '※ 未設定の場合 AI 提案は表示されません'}
         </div>
+      </div>
+
+      {/* ── AUTO BOOST トグル ── */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '10px 0',
+          borderBottom: '1px solid var(--color-border-subtle)',
+        }}
+      >
+        <div>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              color: 'var(--color-text-primary)',
+              letterSpacing: '0.08em',
+            }}
+          >
+            AUTO BOOST ON LAUNCH
+          </div>
+          <div
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '10px',
+              color: 'var(--color-text-muted)',
+              marginTop: '2px',
+            }}
+          >
+            ゲーム起動時に自動でプロセス最適化を実行します
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={toggleAutoBoost}
+          style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            padding: '2px 10px',
+            background: autoBoostEnabled ? 'var(--color-accent-500)' : 'transparent',
+            color: autoBoostEnabled ? 'var(--color-base-900)' : 'var(--color-text-secondary)',
+            border: `1px solid ${
+              autoBoostEnabled ? 'var(--color-accent-500)' : 'var(--color-border-subtle)'
+            }`,
+            cursor: 'pointer',
+            letterSpacing: '0.1em',
+            transition: 'all 0.1s ease',
+          }}
+        >
+          {autoBoostEnabled ? 'ON' : 'OFF'}
+        </button>
       </div>
     </div>
   );

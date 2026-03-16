@@ -13,6 +13,8 @@ interface GameCardProps {
   lastPlayedAt: number | undefined;
   onLaunch: (appId: number) => void;
   onToggleFavorite: (appId: number) => void;
+  isBoosting: boolean;
+  autoBoostEnabled: boolean;
 }
 
 // ─── Helper Functions ───────────────────────────────────────────────────────────────
@@ -46,8 +48,10 @@ function GameCard({
   game,
   isFavorite,
   lastPlayedAt,
-  onLaunch,
+  onLaunch: handleLaunchGame,
   onToggleFavorite,
+  isBoosting,
+  autoBoostEnabled,
 }: GameCardProps): React.ReactElement {
   const [imgError, setImgError] = useState(false);
 
@@ -163,22 +167,26 @@ function GameCard({
         {/* LAUNCH ボタン */}
         <button
           type="button"
-          onClick={() => onLaunch(game.app_id)}
+          onClick={() => handleLaunchGame(game.app_id)}
+          disabled={autoBoostEnabled && isBoosting}
           style={{
             marginTop: 'auto',
             fontFamily: 'var(--font-mono)',
             fontSize: '9px',
             padding: '4px 0',
-            background: 'var(--color-accent-500)',
-            color: 'var(--color-base-900)',
+            background:
+              autoBoostEnabled && isBoosting ? 'var(--color-base-600)' : 'var(--color-accent-500)',
+            color:
+              autoBoostEnabled && isBoosting ? 'var(--color-text-muted)' : 'var(--color-base-900)',
             border: 'none',
             borderRadius: '2px',
-            cursor: 'pointer',
+            cursor: autoBoostEnabled && isBoosting ? 'default' : 'pointer',
             letterSpacing: '0.05em',
             width: '100%',
+            opacity: autoBoostEnabled && isBoosting ? 0.5 : 1,
           }}
         >
-          \u25b6 LAUNCH
+          {autoBoostEnabled && isBoosting ? '\u25b6 BOOSTING...' : '\u25b6 LAUNCH'}
         </button>
       </div>
     </div>
@@ -196,12 +204,21 @@ export default function LauncherWing(): React.ReactElement {
   const sortMode = useLauncherStore((s) => s.sortMode);
   const searchQuery = useLauncherStore((s) => s.searchQuery);
   const autoBoostEnabled = useLauncherStore((s) => s.autoBoostEnabled);
+  const toggleAutoBoost = useLauncherStore((s) => s.toggleAutoBoost);
   const scanGames = useLauncherStore((s) => s.scanGames);
-  const launchGame = useLauncherStore((s) => s.launchGame);
   const toggleFavorite = useLauncherStore((s) => s.toggleFavorite);
   const setSortMode = useLauncherStore((s) => s.setSortMode);
   const setSearchQuery = useLauncherStore((s) => s.setSearchQuery);
-  const toggleAutoBoost = useLauncherStore((s) => s.toggleAutoBoost);
+  const [isBoosting, setIsBoosting] = useState(false);
+
+  const handleLaunchGame = async (appId: number) => {
+    if (autoBoostEnabled) setIsBoosting(true);
+    try {
+      await useLauncherStore.getState().launchGame(appId);
+    } finally {
+      setIsBoosting(false);
+    }
+  };
 
   useEffect(() => {
     void scanGames();
@@ -438,8 +455,10 @@ export default function LauncherWing(): React.ReactElement {
                 game={game}
                 isFavorite={favorites.includes(game.app_id)}
                 lastPlayedAt={lastPlayed[game.app_id]}
-                onLaunch={launchGame}
+                onLaunch={handleLaunchGame}
                 onToggleFavorite={toggleFavorite}
+                isBoosting={isBoosting}
+                autoBoostEnabled={autoBoostEnabled}
               />
             ))}
           </div>
