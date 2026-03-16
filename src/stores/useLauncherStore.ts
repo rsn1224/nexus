@@ -40,7 +40,7 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
     set({ error: null });
 
     try {
-      await invoke('launch_game', { app_id: appId });
+      await invoke('launch_game', { appId });
       log.info({ appId }, 'launcher: game launched');
 
       if (get().autoBoostEnabled) {
