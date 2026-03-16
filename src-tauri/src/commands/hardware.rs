@@ -1,11 +1,12 @@
 // Hardware Wing — ハードウェア情報取得機能
 
 use crate::error::AppError;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sysinfo::{Components, System};
 use tracing::info;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct HardwareInfo {
     pub cpu_name: String,
     pub cpu_temp_c: Option<f32>,
@@ -44,8 +45,21 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
         }
     };
 
-    // GPU名（sysinfoでは取得不可、将来拡張用）
-    let gpu_name: Option<String> = None;
+    // GPU名取得（PowerShell経由）
+    let gpu_name = std::process::Command::new("powershell")
+        .args([
+            "-NoProfile",
+            "-NonInteractive", 
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            "(Get-CimInstance Win32_VideoController | Select-Object -First 1 -ExpandProperty Name)"
+        ])
+        .output()
+        .ok()
+        .and_then(|o| String::from_utf8(o.stdout).ok())
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty());
 
     info!(
         cpu_name = %cpu_name,

@@ -1,26 +1,14 @@
-import { invoke } from '@tauri-apps/api/core';
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useHardwareStore } from '../../stores/useHardwareStore';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useNavStore } from '../../stores/useNavStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import { usePulseStore } from '../../stores/usePulseStore';
+import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
-
-interface DriveInfo {
-  name: string;
-  total_gb: number;
-  free_gb: number;
-  used_percent: number;
-}
-
-interface HardwareInfo {
-  cpu_name: string;
-  cpu_temp_c: number | null;
-  gpu_name: string | null;
-}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -50,38 +38,22 @@ export default function HomeWing(): React.ReactElement {
   const games = useLauncherStore((s) => s.games);
   const navigate = useNavStore((s) => s.navigate);
 
-  // Storage and Hardware state
-  const [storageInfo, setStorageInfo] = useState<DriveInfo[]>([]);
-  const [hardwareInfo, setHardwareInfo] = useState<HardwareInfo | null>(null);
+  // Storage and Hardware stores
+  const fetchStorage = useStorageStore((s) => s.fetchStorage);
+  const drives = useStorageStore((s) => s.drives);
+  const fetchHardware = useHardwareStore((s) => s.fetchHardware);
+  const hwInfo = useHardwareStore((s) => s.info);
 
   useEffect(() => {
     // Auto-fetch data on mount
     void fetchProcesses();
+    void fetchStorage();
+    void fetchHardware();
     // Auto-start pulse polling
     if (!isPolling) {
       startPolling();
     }
-    // Fetch storage info once
-    const fetchStorage = async () => {
-      try {
-        const drives = await invoke<DriveInfo[]>('get_storage_info');
-        setStorageInfo(drives);
-      } catch (error) {
-        console.error('Failed to fetch storage info:', error);
-      }
-    };
-    // Fetch hardware info once
-    const fetchHardware = async () => {
-      try {
-        const hardware = await invoke<HardwareInfo>('get_hardware_info');
-        setHardwareInfo(hardware);
-      } catch (error) {
-        console.error('Failed to fetch hardware info:', error);
-      }
-    };
-    void fetchStorage();
-    void fetchHardware();
-  }, [fetchProcesses, isPolling, startPolling]);
+  }, [fetchProcesses, fetchStorage, fetchHardware, isPolling, startPolling]);
 
   const topProcesses = getTopCpuProcesses(processes);
   const activeProcessCount = processes.filter((p: SystemProcess) => p.cpuPercent > 1).length;
@@ -419,14 +391,13 @@ export default function HomeWing(): React.ReactElement {
             gap: '4px',
           }}
         >
-          {storageInfo.length > 0 ? (
-            storageInfo.map((drive) => (
+          {drives.length > 0 ? (
+            drives.map((drive) => (
               <div key={drive.name}>
                 {drive.name}
                 {'  '}
                 <span style={{ color: 'var(--color-accent-500)' }}>
-                  {drive.free_gb.toFixed(0)} / {drive.total_gb.toFixed(0)} GB (
-                  {drive.used_percent.toFixed(0)}%)
+                  {drive.usedPercent.toFixed(0)}% ({drive.freeGb.toFixed(0)} GB 空き)
                 </span>
               </div>
             ))
@@ -470,25 +441,23 @@ export default function HomeWing(): React.ReactElement {
             gap: '4px',
           }}
         >
-          {hardwareInfo ? (
+          {hwInfo ? (
             <>
               <div>
                 CPU{'     '}
-                <span style={{ color: 'var(--color-accent-500)' }}>{hardwareInfo.cpu_name}</span>
+                <span style={{ color: 'var(--color-accent-500)' }}>{hwInfo.cpuName}</span>
               </div>
-              {hardwareInfo.cpu_temp_c !== null && (
+              {hwInfo.cpuTempC !== null && (
                 <div>
                   TEMP{'    '}
                   <span style={{ color: 'var(--color-accent-500)' }}>
-                    {hardwareInfo.cpu_temp_c.toFixed(1)}°C
+                    {hwInfo.cpuTempC.toFixed(1)}°C
                   </span>
                 </div>
               )}
               <div>
                 GPU{'     '}
-                <span style={{ color: 'var(--color-accent-500)' }}>
-                  {hardwareInfo.gpu_name || 'N/A'}
-                </span>
+                <span style={{ color: 'var(--color-accent-500)' }}>{hwInfo.gpuName || 'N/A'}</span>
               </div>
             </>
           ) : (

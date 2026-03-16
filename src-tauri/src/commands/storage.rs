@@ -1,11 +1,12 @@
 // Storage Wing — ドライブ情報取得機能
 
 use crate::error::AppError;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use sysinfo::Disks;
 use tracing::info;
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DriveInfo {
     pub name: String,
     pub total_gb: f64,

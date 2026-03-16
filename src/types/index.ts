@@ -36,6 +36,21 @@ export interface ExecutionLog {
 // ─── WING IDs ────────────────────────────────────────────────────────────────
 export type WingId = 'home' | 'boost' | 'launcher' | 'settings';
 
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+export interface DriveInfo {
+  name: string;
+  totalGb: number;
+  freeGb: number;
+  usedPercent: number;
+}
+
+// ─── HARDWARE ────────────────────────────────────────────────────────────────
+export interface HardwareInfo {
+  cpuName: string;
+  cpuTempC: number | null;
+  gpuName: string | null;
+}
+
 export interface WingStatus {
   id: WingId;
   label: string;
