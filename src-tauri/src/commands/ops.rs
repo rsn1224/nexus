@@ -116,23 +116,22 @@ pub fn kill_process(pid: u32) -> Result<(), AppError> {
 #[tauri::command]
 pub fn set_process_priority(pid: u32, priority: String) -> Result<(), AppError> {
     let priority_class = match priority.as_str() {
-        "high" => "HIGH_PRIORITY_CLASS",
-        "normal" => "NORMAL_PRIORITY_CLASS",
-        "idle" => "IDLE_PRIORITY_CLASS",
+        "high" => "High",
+        "normal" => "Normal",
+        "idle" => "Idle",
         _ => return Err(AppError::Command(format!("Invalid priority: {priority}"))),
     };
 
-    let output = Command::new("wmic")
+    let output = Command::new("powershell")
         .args([
-            "process",
-            "where",
-            &format!("ProcessId={pid}"),
-            "call",
-            "setpriority",
-            priority_class,
+            "-Command",
+            &format!(
+                "$proc = Get-Process -Id {} -ErrorAction SilentlyContinue; if ($proc) {{ $proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::{} }}",
+                pid, priority_class
+            ),
         ])
         .output()
-        .map_err(|e| AppError::Command(format!("wmic failed: {e}")))?;
+        .map_err(|e| AppError::Command(format!("PowerShell failed: {e}")))?;
 
     if output.status.success() {
         info!(
