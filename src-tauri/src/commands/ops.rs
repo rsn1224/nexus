@@ -124,10 +124,12 @@ pub fn set_process_priority(pid: u32, priority: String) -> Result<(), AppError> 
 
     let output = Command::new("powershell")
         .args([
+            "-NoProfile",
+            "-NonInteractive", 
+            "-ExecutionPolicy", "Bypass",
             "-Command",
             &format!(
-                "$proc = Get-Process -Id {} -ErrorAction SilentlyContinue; if ($proc) {{ $proc.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::{} }}",
-                pid, priority_class
+                "(Get-Process -Id {pid} -ErrorAction SilentlyContinue).PriorityClass = '{priority_class}'"
             ),
         ])
         .output()
