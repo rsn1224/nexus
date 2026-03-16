@@ -65,7 +65,14 @@ fn run_powershell(command: &str) -> Result<String, AppError> {
     info!("Executing PowerShell: {}", command);
     
     let output = std::process::Command::new("powershell")
-        .args(["-Command", command])
+        .args([
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            command,
+        ])
         .output()
         .map_err(|e| {
             AppError::Command(format!("Failed to execute PowerShell: {}", e))
