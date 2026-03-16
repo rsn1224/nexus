@@ -1,4 +1,5 @@
 import log from '../lib/logger';
+import { useSettingsStore } from '../stores/useSettingsStore';
 
 interface PerplexityResponse {
   choices: Array<{
@@ -17,13 +18,13 @@ interface PerplexityRequest {
   max_tokens?: number;
 }
 
-const API_KEY = import.meta.env.VITE_PERPLEXITY_API_KEY;
 const API_URL = 'https://api.perplexity.ai/chat/completions';
 
 export async function getOptimizationSuggestions(processNames: string[]): Promise<string[]> {
-  if (!API_KEY) {
-    log.error('PERPLEXITY_API_KEY is not set');
-    throw new Error('PERPLEXITY_API_KEY が未設定です');
+  const apiKey = useSettingsStore.getState().perplexityApiKey;
+  if (!apiKey) {
+    log.error('Perplexity API key is not set');
+    throw new Error('Perplexity API キーが未設定です。設定画面で入力してください。');
   }
 
   const prompt = `以下は現在 CPU を多く使用しているプロセスです:
@@ -47,7 +48,7 @@ ${processNames.join(', ')}
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(request),

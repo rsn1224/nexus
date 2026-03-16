@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import log from '../lib/logger';
 import { checkAndNotify } from '../services/notificationService';
 import type { ResourceSnapshot } from '../types';
+import { useSettingsStore } from './useSettingsStore';
 
 // ─── Store shape ──────────────────────────────────────────────────────────────
 
@@ -21,7 +22,6 @@ interface PulseStore {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const MAX_SNAPSHOTS = 60; // 最大保持数
-const POLL_INTERVAL_MS = 2000; // 2秒間隔
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
@@ -47,7 +47,7 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
     // ポーリングを開始
     const interval = setInterval(() => {
       void get().fetchSnapshot();
-    }, POLL_INTERVAL_MS) as unknown as number;
+    }, useSettingsStore.getState().pollIntervalMs) as unknown as number;
 
     set({
       isPolling: true,
