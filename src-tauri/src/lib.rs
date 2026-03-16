@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    archive, beacon, boost, chrono, hardware, launcher, link, pulse, security, signal, storage, vault,
+    archive, beacon, boost, chrono, hardware, launcher, link, pulse, security, signal, storage, vault, winopt,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -122,6 +122,14 @@ pub fn run() {
             signal::remove_signal_feed,
             signal::toggle_signal_feed,
             signal::check_feed_now,
+            // WINOPT
+            winopt::get_win_settings,
+            winopt::apply_win_setting,
+            winopt::revert_win_setting,
+            winopt::get_net_settings,
+            winopt::flush_dns_cache,
+            winopt::apply_net_setting,
+            winopt::revert_net_setting,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

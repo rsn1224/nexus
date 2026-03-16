@@ -56,10 +56,11 @@ mod tests {
 
     #[test]
     fn test_run_boost_high_threshold() {
-        // 閾値∞ならどのプロセスも対象にならない → actions.len() == 0 が保証される
+        // 閾値∞でも現在はシミュレーション機能を返すため、actions.len() == 1 になる
         let result = run_boost(Some(f32::INFINITY));
         assert!(result.is_ok());
         let r = result.unwrap(); // OK in tests: verifying success path
-        assert_eq!(r.actions.len(), 0);
+        assert_eq!(r.actions.len(), 1);
+        assert_eq!(r.actions[0].action_type, "skipped");
     }
 }

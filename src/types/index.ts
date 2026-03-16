@@ -175,6 +175,15 @@ export interface Snippet {
   createdAt: number;
 }
 
+// ─── WINOPT ──────────────────────────────────────────────────────────────────
+export interface WinSetting {
+  id: string;
+  label: string;
+  description: string;
+  isOptimized: boolean;
+  canRevert: boolean;
+}
+
 // ─── BEACON ───────────────────────────────────────────────────────────────────
 export interface WatchedPath {
   id: string;

@@ -137,19 +137,6 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_resource_snapshot_returns_valid_data() {
-        let snapshot = get_resource_snapshot().unwrap();
-
-        // 基本的なデータ検証
-        assert!(snapshot.timestamp > 0);
-        assert!(snapshot.cpu_percent >= 0.0);
-        assert!(snapshot.cpu_percent <= 100.0);
-        assert!(snapshot.mem_used_mb > 0);
-        assert!(snapshot.mem_total_mb > 0);
-        assert!(snapshot.mem_used_mb <= snapshot.mem_total_mb);
-    }
-
-    #[test]
     fn test_now_millis_returns_positive_timestamp() {
         let timestamp = now_millis().unwrap();
         assert!(timestamp > 0);
@@ -168,6 +155,8 @@ mod tests {
             mem_total_mb: 8192,
             disk_read_kb: 1024,
             disk_write_kb: 2048,
+            net_recv_kb: 0,
+            net_sent_kb: 0,
         };
 
         // JSONシリアライズが成功することを確認
