@@ -1,34 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
-import AdvisorWing from './components/advisor/AdvisorWing';
 import BoostWing from './components/boost/BoostWing';
-import HardwareWing from './components/hardware/HardwareWing';
 import HomeWing from './components/home/HomeWing';
 import LauncherWing from './components/launcher/LauncherWing';
 import Shell from './components/layout/Shell';
-import LogWing from './components/log/LogWing';
-import NetoptWing from './components/netopt/NetoptWing';
-import OpsWing from './components/ops/OpsWing';
-import ReconWing from './components/recon/ReconWing';
-import ScriptWing from './components/script/ScriptWing';
 import SettingsWing from './components/settings/SettingsWing';
-import StorageWing from './components/storage/StorageWing';
-import WindowsWing from './components/windows/WindowsWing';
 import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
 const WING_COMPONENTS: Record<WingId, React.ReactNode> = {
   home: <HomeWing />,
   boost: <BoostWing />,
-  windows: <WindowsWing />,
-  hardware: <HardwareWing />,
-  ops: <OpsWing />,
   launcher: <LauncherWing />,
-  script: <ScriptWing />,
-  advisor: <AdvisorWing />,
-  recon: <ReconWing />,
-  netopt: <NetoptWing />,
-  storage: <StorageWing />,
-  log: <LogWing />,
   settings: <SettingsWing />,
 };
 

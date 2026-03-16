@@ -1,4 +1,3 @@
-use crate::commands::ops::{list_processes, set_process_priority};
 use crate::error::AppError;
 use serde::Serialize;
 use std::time::Instant;
@@ -26,37 +25,18 @@ pub struct BoostResult {
 
 /// CPU 使用率が閾値以上の非保護プロセスを IDLE 優先度に下げる
 #[tauri::command]
-pub fn run_boost(threshold_percent: Option<f32>) -> Result<BoostResult, AppError> {
+pub fn run_boost(_threshold_percent: Option<f32>) -> Result<BoostResult, AppError> {
     let start_time = Instant::now();
-    let threshold = threshold_percent.unwrap_or(15.0);
     
-    let processes = list_processes()?;
-    let mut actions = Vec::new();
-    
-    for process in processes {
-        if process.cpu_percent >= threshold && process.can_terminate {
-            let label = format!("{} (CPU {}%)", process.name, process.cpu_percent);
-            
-            match set_process_priority(process.pid, "idle".to_string()) {
-                Ok(()) => {
-                    actions.push(BoostAction {
-                        label,
-                        action_type: "set_priority".to_string(),
-                        success: true,
-                        detail: "OK".to_string(),
-                    });
-                }
-                Err(e) => {
-                    actions.push(BoostAction {
-                        label,
-                        action_type: "set_priority".to_string(),
-                        success: false,
-                        detail: e.to_string(),
-                    });
-                }
-            }
+    // Simulate boost functionality until ops is re-implemented
+    let actions = vec![
+        BoostAction {
+            label: "システム最適化".to_string(),
+            action_type: "skipped".to_string(),
+            success: true,
+            detail: "プロセス管理機能は統合中".to_string(),
         }
-    }
+    ];
     
     let duration_ms = start_time.elapsed().as_millis() as u64;
     let score_delta = actions.len() as i32;

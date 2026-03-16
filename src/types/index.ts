@@ -34,20 +34,7 @@ export interface ExecutionLog {
 }
 
 // ─── WING IDs ────────────────────────────────────────────────────────────────
-export type WingId =
-  | 'home'
-  | 'boost'
-  | 'windows'
-  | 'hardware'
-  | 'ops'
-  | 'launcher'
-  | 'script'
-  | 'advisor'
-  | 'recon'
-  | 'netopt'
-  | 'storage'
-  | 'log'
-  | 'settings';
+export type WingId = 'home' | 'boost' | 'launcher' | 'settings';
 
 export interface WingStatus {
   id: WingId;

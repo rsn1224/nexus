@@ -11,45 +11,16 @@ const SIDEBAR_ZONES = [
     wings: [{ id: 'home', label: 'ホーム' }],
   },
   {
-    label: '最適化',
-    wings: [
-      { id: 'boost', label: '最適化' },
-      { id: 'windows', label: 'Windows' },
-    ],
+    label: null,
+    wings: [{ id: 'boost', label: '最適化' }],
   },
   {
-    label: '監視',
-    wings: [{ id: 'hardware', label: 'ハードウェア' }],
+    label: null,
+    wings: [{ id: 'launcher', label: 'ゲーム' }],
   },
   {
-    label: 'コントロール',
-    wings: [{ id: 'ops', label: 'プロセス管理' }],
-  },
-  {
-    label: 'ゲーム',
-    wings: [
-      { id: 'launcher', label: 'ゲーム起動' },
-      { id: 'advisor', label: 'アドバイザー' },
-    ],
-  },
-  {
-    label: 'ネットワーク',
-    wings: [
-      { id: 'recon', label: 'スキャン' },
-      { id: 'netopt', label: '最適化 (NET)' },
-    ],
-  },
-  {
-    label: '自動化',
-    wings: [{ id: 'script', label: 'スクリプト' }],
-  },
-  {
-    label: 'システム',
-    wings: [
-      { id: 'storage', label: 'ストレージ' },
-      { id: 'log', label: 'ログ' },
-      { id: 'settings', label: '設定' },
-    ],
+    label: null,
+    wings: [{ id: 'settings', label: '設定' }],
   },
 ] as const;
 

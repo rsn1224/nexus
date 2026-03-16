@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    archive, beacon, boost, chrono, launcher, link, ops, pulse, recon, script, security, signal, vault,
+    archive, beacon, boost, chrono, launcher, link, pulse, security, signal, vault,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -71,16 +71,6 @@ pub fn run() {
         })
         .manage(Mutex::new(PulseState::new()))
         .invoke_handler(tauri::generate_handler![
-            // RECON
-            recon::scan_network,
-            recon::get_traffic_snapshot,
-            recon::ping_device,
-            recon::resolve_hostname,
-            // OPS
-            ops::list_processes,
-            ops::get_ai_suggestions,
-            ops::kill_process,
-            ops::set_process_priority,
             // VAULT
             vault::list_vault_entries,
             vault::unlock_vault,
@@ -94,6 +84,11 @@ pub fn run() {
             archive::delete_note,
             // PULSE
             pulse::get_resource_snapshot,
+            // BOOST
+            boost::run_boost,
+            // LAUNCHER
+            launcher::scan_steam_games,
+            launcher::launch_game,
             // CHRONO
             chrono::list_tasks,
             chrono::save_task,
@@ -124,13 +119,6 @@ pub fn run() {
             signal::check_feed_now,
             // BOOST
             boost::run_boost,
-            // SCRIPT
-            script::list_scripts,
-            script::add_script,
-            script::delete_script,
-            script::run_script,
-            script::get_execution_logs,
-            script::clear_execution_logs,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
