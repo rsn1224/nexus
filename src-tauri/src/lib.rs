@@ -6,12 +6,47 @@ use crate::commands::{
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
+use sysinfo::System;
 use tracing::info;
 
 // ─── Application State ────────────────────────────────────────────────────────
 
 pub struct WatcherState {
     pub watchers: Mutex<HashMap<String, notify::RecommendedWatcher>>,
+}
+
+pub struct PulseState {
+    pub sys: System,
+    pub last_disk_read: u64,
+    pub last_disk_write: u64,
+}
+
+impl Default for PulseState {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl PulseState {
+    pub fn new() -> Self {
+        let mut sys = System::new();
+        sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+        
+        let initial_read: u64 = sys.processes()
+            .values()
+            .map(|p| p.disk_usage().read_bytes)
+            .sum();
+        let initial_write: u64 = sys.processes()
+            .values()
+            .map(|p| p.disk_usage().written_bytes)
+            .sum();
+        
+        Self {
+            sys,
+            last_disk_read: initial_read,
+            last_disk_write: initial_write,
+        }
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -32,6 +67,7 @@ pub fn run() {
         .manage(WatcherState {
             watchers: Mutex::new(HashMap::new()),
         })
+        .manage(Mutex::new(PulseState::new()))
         .invoke_handler(tauri::generate_handler![
             // RECON
             recon::scan_network,

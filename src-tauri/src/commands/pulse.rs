@@ -1,7 +1,9 @@
 use crate::error::AppError;
 use serde::{Deserialize, Serialize};
+use std::sync::Mutex;
 use std::time::{SystemTime, UNIX_EPOCH};
-use sysinfo::{Components, System};
+use sysinfo::{Components, Process};
+use tauri::State;
 use tracing::info;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -31,21 +33,24 @@ fn now_millis() -> Result<u64, AppError> {
 
 /// リソース使用率のスナップショットを取得する。
 #[tauri::command]
-pub fn get_resource_snapshot() -> Result<ResourceSnapshot, AppError> {
+pub fn get_resource_snapshot(
+    state: State<'_, Mutex<crate::PulseState>>
+) -> Result<ResourceSnapshot, AppError> {
     info!("get_resource_snapshot: collecting system metrics");
 
-    let mut sys = System::new();
-    sys.refresh_cpu_all();
+    let mut s = state.lock().unwrap();
     
-    // sysinfoはrefresh後に少し待たないと正確なCPU使用率が取れない
+    // CPU使用率の取得
+    s.sys.refresh_cpu_all();
     std::thread::sleep(std::time::Duration::from_millis(200));
+    s.sys.refresh_cpu_all();
     
-    sys.refresh_cpu_all();
-    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
-    sys.refresh_memory();
+    // プロセス情報の更新（ディスクI/O取得のため）
+    s.sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+    s.sys.refresh_memory();
 
     // CPU使用率（グローバル）
-    let cpu_percent = sys.global_cpu_usage();
+    let cpu_percent = s.sys.global_cpu_usage();
 
     // CPU 温度（"CPU" または "Core" ラベルのコンポーネントの平均）
     let cpu_temp_c = {
@@ -66,18 +71,25 @@ pub fn get_resource_snapshot() -> Result<ResourceSnapshot, AppError> {
     };
 
     // メモリ情報
-    let total_memory = sys.total_memory();
-    let used_memory = sys.used_memory();
+    let total_memory = s.sys.total_memory();
+    let used_memory = s.sys.used_memory();
 
-    // ディスクI/O情報（全プロセスのディスク使用量を合計）
-    let disk_read_kb: u64 = sys.processes()
+    // ディスクI/O情報（差分を計算）
+    let current_read: u64 = s.sys.processes()
         .values()
-        .map(|p| p.disk_usage().read_bytes / 1024) // bytes to KB
+        .map(|p: &Process| p.disk_usage().read_bytes)
         .sum();
-    let disk_write_kb: u64 = sys.processes()
+    let current_write: u64 = s.sys.processes()
         .values()
-        .map(|p| p.disk_usage().written_bytes / 1024) // bytes to KB
+        .map(|p: &Process| p.disk_usage().written_bytes)
         .sum();
+    
+    let disk_read_kb = current_read.saturating_sub(s.last_disk_read) / 1024;
+    let disk_write_kb = current_write.saturating_sub(s.last_disk_write) / 1024;
+    
+    // 現在の値を保存
+    s.last_disk_read = current_read;
+    s.last_disk_write = current_write;
 
     let snapshot = ResourceSnapshot {
         timestamp: now_millis()?,
