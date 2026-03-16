@@ -40,14 +40,12 @@ pub fn get_resource_snapshot(
 
     let mut s = state.lock().unwrap();
     
-    // CPU使用率の取得
+    // 正しいrefresh順序：メモリ → CPU → プロセス
+    s.sys.refresh_memory();
     s.sys.refresh_cpu_all();
     std::thread::sleep(std::time::Duration::from_millis(200));
     s.sys.refresh_cpu_all();
-    
-    // プロセス情報の更新（ディスクI/O取得のため）
     s.sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
-    s.sys.refresh_memory();
 
     // CPU使用率（グローバル）
     let cpu_percent = s.sys.global_cpu_usage();

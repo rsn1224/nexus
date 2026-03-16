@@ -29,7 +29,9 @@ impl Default for PulseState {
 
 impl PulseState {
     pub fn new() -> Self {
-        let mut sys = System::new();
+        let mut sys = System::new_all();
+        sys.refresh_memory();
+        sys.refresh_cpu_all();
         sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
         
         let initial_read: u64 = sys.processes()
