@@ -34,7 +34,7 @@ export default function BoostWing(): React.ReactElement {
             letterSpacing: '0.15em',
           }}
         >
-          ▶ BOOST / OPTIMIZER
+          ▶ 最適化
         </div>
         <button
           type="button"

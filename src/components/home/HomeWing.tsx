@@ -63,7 +63,7 @@ export default function HomeWing(): React.ReactElement {
             marginBottom: '4px',
           }}
         >
-          ▶ HOME / DASHBOARD
+          ▶ ホーム
         </div>
         <div
           style={{

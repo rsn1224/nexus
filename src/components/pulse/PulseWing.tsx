@@ -167,7 +167,7 @@ export default function PulseWing(): React.ReactElement {
               letterSpacing: '0.15em',
             }}
           >
-            ▶ PULSE / RESOURCES
+            ▶ システム監視
           </span>
           {isPolling && (
             <span

@@ -7,47 +7,51 @@ import type { WingId } from '../../types';
 
 const SIDEBAR_ZONES = [
   {
-    label: null, // HOME は単独
-    wings: [{ id: 'home', label: 'HOME' }],
+    label: null,
+    wings: [{ id: 'home', label: 'ホーム' }],
   },
   {
-    label: 'OPTIMIZE',
+    label: '最適化',
     wings: [
-      { id: 'boost', label: 'BOOST' },
-      { id: 'windows', label: 'WINDOWS' },
+      { id: 'boost', label: '最適化' },
+      { id: 'windows', label: 'Windows' },
     ],
   },
   {
-    label: 'MONITOR',
+    label: '監視',
     wings: [
-      { id: 'pulse', label: 'PULSE' },
-      { id: 'hardware', label: 'HARDWARE' },
+      { id: 'pulse', label: 'システム監視' },
+      { id: 'hardware', label: 'ハードウェア' },
     ],
   },
   {
-    label: 'CONTROL',
-    wings: [{ id: 'ops', label: 'OPS' }],
+    label: 'コントロール',
+    wings: [{ id: 'ops', label: 'プロセス管理' }],
   },
   {
-    label: 'GAME',
+    label: 'ゲーム',
     wings: [
-      { id: 'launcher', label: 'LAUNCHER' },
-      { id: 'advisor', label: 'ADVISOR' },
+      { id: 'launcher', label: 'ゲーム起動' },
+      { id: 'advisor', label: 'アドバイザー' },
     ],
   },
   {
-    label: 'NETWORK',
+    label: 'ネットワーク',
     wings: [
-      { id: 'recon', label: 'RECON' },
-      { id: 'netopt', label: 'NETOPT' },
+      { id: 'recon', label: 'スキャン' },
+      { id: 'netopt', label: '最適化 (NET)' },
     ],
   },
   {
-    label: 'SYSTEM',
+    label: '自動化',
+    wings: [{ id: 'script', label: 'スクリプト' }],
+  },
+  {
+    label: 'システム',
     wings: [
-      { id: 'storage', label: 'STORAGE' },
-      { id: 'log', label: 'LOG' },
-      { id: 'settings', label: 'SETTINGS' },
+      { id: 'storage', label: 'ストレージ' },
+      { id: 'log', label: 'ログ' },
+      { id: 'settings', label: '設定' },
     ],
   },
 ] as const;

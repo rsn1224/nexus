@@ -109,7 +109,7 @@ export default function ScriptWing(): React.ReactElement {
             letterSpacing: '0.15em',
           }}
         >
-          ▶ SCRIPT / AUTOMATION
+          ▶ スクリプト
         </div>
         <button
           type="button"

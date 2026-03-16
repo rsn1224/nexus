@@ -55,7 +55,7 @@ export default function LauncherWing(): React.ReactElement {
             marginBottom: '4px',
           }}
         >
-          ▶ LAUNCHER / GAMES
+          ▶ ゲーム起動
         </div>
         <div
           style={{

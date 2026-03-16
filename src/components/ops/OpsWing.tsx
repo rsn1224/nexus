@@ -311,7 +311,7 @@ export default function OpsWing(): React.ReactElement {
               letterSpacing: '0.15em',
             }}
           >
-            ▶ OPS
+            ▶ プロセス管理
           </span>
           <div style={{ display: 'flex', gap: '4px' }}>
             <button
