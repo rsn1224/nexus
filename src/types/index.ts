@@ -49,6 +49,10 @@ export interface HardwareInfo {
   cpuName: string;
   cpuTempC: number | null;
   gpuName: string | null;
+  gpuVramTotalMb: number | null;
+  gpuVramUsedMb: number | null;
+  gpuTempC: number | null;
+  gpuUsagePercent: number | null;
 }
 
 export interface WingStatus {
