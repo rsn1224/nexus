@@ -5,7 +5,6 @@ import { usePulseStore } from '../../stores/usePulseStore';
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const GRAPH_HEIGHT = 60;
-const GRAPH_WIDTH = 300;
 
 // ─── Helper Components ───────────────────────────────────────────────────────────
 
@@ -90,7 +89,7 @@ function MiniGraph({
 
   const points = data
     .map((value, index) => {
-      const x = data.length > 1 ? (index / (data.length - 1)) * GRAPH_WIDTH : GRAPH_WIDTH / 2;
+      const x = data.length > 1 ? (index / (data.length - 1)) * 300 : 150;
       const y = GRAPH_HEIGHT - ((value - min) / range) * GRAPH_HEIGHT;
       return `${x},${y}`;
     })
@@ -108,12 +107,17 @@ function MiniGraph({
       >
         {label} ({unit})
       </div>
-      <svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} aria-label={`${label} graph`}>
+      <svg
+        viewBox={`0 0 300 ${GRAPH_HEIGHT}`}
+        preserveAspectRatio="none"
+        style={{ width: '100%', height: `${GRAPH_HEIGHT}px`, display: 'block' }}
+        aria-label={`${label} graph`}
+      >
         <title>{label} Time Series</title>
         <polyline points={points} fill="none" stroke={color} strokeWidth="2" />
         {data.map((value, index) => {
-          const x = data.length > 1 ? (index / (data.length - 1)) * GRAPH_WIDTH : GRAPH_WIDTH / 2;
-          const y = GRAPH_HEIGHT - (value / max) * GRAPH_HEIGHT;
+          const x = data.length > 1 ? (index / (data.length - 1)) * 300 : 150;
+          const y = GRAPH_HEIGHT - ((value - min) / range) * GRAPH_HEIGHT;
           const id = `point-${index}-${value.toFixed(2)}`;
           return <circle key={id} cx={x} cy={y} r="1" fill={color} />;
         })}
