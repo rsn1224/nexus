@@ -441,7 +441,7 @@ export const useNavStore = create<NavStore>(() => ({
 
 ### タスク 5 — ScriptWing 実装（新規 Wing）
 
-**ステータス**: pending
+**ステータス**: done
 **担当**: Cascade
 **前提**: タスク2完了済み
 **背景**: PowerShell / Python スクリプトの登録・トリガー管理・実行ログを管理する自動化 Wing を新規実装する。既存コマンドに相当するものがないため Rust コマンドを新規作成する。
@@ -577,15 +577,20 @@ export interface ExecutionLog {
 
 #### T5-Cascade 記入欄
 
-- **実装内容**:
-- **テスト実行結果**: `npm run typecheck` [ ] PASS / `npm run check` [ ] PASS / `npm run test` [ ] PASS / `cargo test` [ ] PASS
-- **特記事項**:
+- **実装内容**: script.rs（list/add/delete/run/get_logs/clear_logs）、useScriptStore.ts、ScriptWing.tsx（2パネルレイアウト、追加フォーム、2ステップ削除確認）、Shell.tsx AUTOMATION ゾーン追加。
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS / `cargo test` [x] PASS（56 passed, 1 ignored）
+- **特記事項**: Shell.tsx に AUTOMATION ゾーンと `script` WingId を追加。`#[ignore]` テスト追加。
 
 #### T5-Claude Code レビュー結果
 
-- **判定**: [ ] PASS / [ ] REQUIRES_CHANGES
+- **判定**: [x] PASS（4件修正済み）
 - **指摘事項**:
-- **レビュー日**:
+  1. `unwrap()` on `Mutex::lock()` × 3箇所 → `.map_err(|e| AppError::Command(...))` に修正
+  2. `add_log_to_memory` の冗長な二重 `len > 50` チェック → 1つに統合
+  3. エラーメッセージ `"Invalid script path"` → `"Unknown script type"` に修正
+  4. `<button>` 内に `<button>` ネスト（無効 HTML）→ 外側を `<div>` に変更、Biome `noStaticElementInteractions` 対応で `hoveredScript` state も除去
+  5. 全品質ゲート通過確認（typecheck/check/test/clippy/cargo test）
+- **レビュー日**: 2026-03-16
 
 ---
 
