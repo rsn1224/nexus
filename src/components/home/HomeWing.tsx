@@ -72,7 +72,7 @@ export default function HomeWing(): React.ReactElement {
             color: 'var(--color-text-muted)',
           }}
         >
-          SYSTEM OVERVIEW AND QUICK ACTIONS
+          システム概要とクイックアクション
         </div>
       </div>
 
@@ -103,7 +103,7 @@ export default function HomeWing(): React.ReactElement {
               marginBottom: '8px',
             }}
           >
-            OPS / PROCESSES
+            プロセス管理
           </div>
           <div
             style={{
@@ -113,11 +113,12 @@ export default function HomeWing(): React.ReactElement {
             }}
           >
             <div style={{ marginBottom: '4px' }}>
-              Active: <span style={{ color: 'var(--color-accent-500)' }}>{activeProcessCount}</span>
+              アクティブ:{' '}
+              <span style={{ color: 'var(--color-accent-500)' }}>{activeProcessCount}</span>
             </div>
             {topProcesses.length > 0 && (
               <div style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>
-                Top CPU:
+                CPU上位:
                 {topProcesses.map((p: SystemProcess) => (
                   <div key={p.pid} style={{ marginLeft: '8px' }}>
                     {p.name} ({p.cpuPercent.toFixed(1)}%)
@@ -147,7 +148,7 @@ export default function HomeWing(): React.ReactElement {
               marginBottom: '8px',
             }}
           >
-            PULSE / SYSTEM
+            システム監視
           </div>
           <div
             style={{
@@ -201,7 +202,7 @@ export default function HomeWing(): React.ReactElement {
               marginBottom: '8px',
             }}
           >
-            LAUNCHER / GAMES
+            ゲーム起動
           </div>
           <div
             style={{
@@ -211,7 +212,7 @@ export default function HomeWing(): React.ReactElement {
             }}
           >
             <div style={{ marginBottom: '4px' }}>
-              Games: <span style={{ color: 'var(--color-accent-500)' }}>{games.length}</span>
+              ゲーム数: <span style={{ color: 'var(--color-accent-500)' }}>{games.length}</span>
             </div>
             {games.length > 0 && (
               <div style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>
@@ -244,7 +245,7 @@ export default function HomeWing(): React.ReactElement {
               marginBottom: '8px',
             }}
           >
-            QUICK ACTIONS
+            クイックアクション
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
@@ -263,7 +264,7 @@ export default function HomeWing(): React.ReactElement {
                 letterSpacing: '0.05em',
               }}
             >
-              {isPolling ? '■ MONITORING' : '▶ START MONITORING'}
+              {isPolling ? '■ 監視中' : '▶ 監視開始'}
             </button>
             <button
               type="button"
@@ -280,7 +281,7 @@ export default function HomeWing(): React.ReactElement {
                 letterSpacing: '0.05em',
               }}
             >
-              ⚡ BOOST NOW
+              ⚡ 今すぐ最適化
             </button>
           </div>
         </div>
@@ -306,7 +307,7 @@ export default function HomeWing(): React.ReactElement {
             marginBottom: '8px',
           }}
         >
-          GAME SCORE
+          ゲームスコア
         </div>
         <div
           style={{
@@ -327,7 +328,7 @@ export default function HomeWing(): React.ReactElement {
             marginTop: '4px',
           }}
         >
-          Performance scoring algorithm — COMING SOON
+          パフォーマンス計測 — 近日公開
         </div>
       </div>
     </div>
