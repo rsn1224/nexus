@@ -263,7 +263,7 @@ export default function XxxWing(): React.ReactElement {
 
 ### タスク 3 — HomeWing 実装 + NavStore 導入
 
-**ステータス**: pending
+**ステータス**: done
 **担当**: Cascade
 **前提**: タスク2完了済み（HomeWing プレースホルダーが存在すること）
 **背景**: 起動直後に表示されるダッシュボード画面を実装する。既存ストアのデータを集約し、ゲームスコア・システムゲージ・クイック起動・アラートログを一画面に表示する。BOOST ボタンで BoostWing へ遷移できる。
@@ -344,15 +344,21 @@ export const useNavStore = create<NavStore>(() => ({
 
 #### T3-Cascade 記入欄
 
-- **実装内容**:
-- **テスト実行結果**: `npm run typecheck` [ ] PASS / `npm run check` [ ] PASS / `npm run test` [ ] PASS
-- **特記事項**:
+- **実装内容**: useNavStore.ts 作成。HomeWing を4カードグリッド（OPS/PULSE/LAUNCHER/QUICK ACTIONS）+ GAME SCORE セクションで実装。
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS（126 tests）
+- **特記事項**: App.tsx への useNavStore 接続が未実装。QUICK LAUNCH 表示が2件。BOOST ボタンが BoostWing へのナビゲーションではなく fetchProcesses を呼んでいた。ハードコード色 `#000` あり。
 
 #### T3-Claude Code レビュー結果
 
-- **判定**: [ ] PASS / [ ] REQUIRES_CHANGES
+- **判定**: [x] PASS（Claude Code が直接修正済み）
 - **指摘事項**:
-- **レビュー日**:
+  1. App.tsx に useNavStore 接続なし → `useCallback` + `useEffect` で setNavigate 接続を追加
+  2. `handleWingChange` が useCallback でメモ化されていなかった → useCallback 化
+  3. QUICK LAUNCH が `slice(0, 2)` → `slice(0, 4)` に修正
+  4. BOOST NOW ボタンが `fetchProcesses()` を呼んでいた → `navigate?.('boost')` に修正
+  5. `color: '#000'` ハードコード → `var(--color-base-900)` に修正
+  6. 修正後 typecheck/check/test 全通過を確認
+- **レビュー日**: 2026-03-16
 
 ---
 
