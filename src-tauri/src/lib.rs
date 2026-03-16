@@ -2,7 +2,8 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    archive, beacon, boost, chrono, hardware, launcher, link, pulse, security, signal, storage, vault,
+    archive, beacon, boost, chrono, hardware, launcher, link, pulse, security, signal, storage,
+    vault, winopt_win, winopt_net,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -34,18 +35,20 @@ impl PulseState {
         sys.refresh_memory();
         sys.refresh_cpu_all();
         sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
-        
-        let initial_read: u64 = sys.processes()
+
+        let initial_read: u64 = sys
+            .processes()
             .values()
             .map(|p| p.disk_usage().read_bytes)
             .sum();
-        let initial_write: u64 = sys.processes()
+        let initial_write: u64 = sys
+            .processes()
             .values()
             .map(|p| p.disk_usage().written_bytes)
             .sum();
-        
+
         let networks = Networks::new_with_refreshed_list();
-        
+
         Self {
             sys,
             last_disk_read: initial_read,
@@ -122,6 +125,14 @@ pub fn run() {
             signal::remove_signal_feed,
             signal::toggle_signal_feed,
             signal::check_feed_now,
+            // WINOPT
+            winopt_win::get_win_settings,
+            winopt_win::apply_win_setting,
+            winopt_win::revert_win_setting,
+            winopt_net::get_net_settings,
+            winopt_net::flush_dns_cache,
+            winopt_net::apply_net_setting,
+            winopt_net::revert_net_setting,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

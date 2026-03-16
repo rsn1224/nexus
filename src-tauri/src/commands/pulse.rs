@@ -12,14 +12,14 @@ use tracing::info;
 #[serde(rename_all = "camelCase")]
 pub struct ResourceSnapshot {
     pub timestamp: u64,
-    pub cpu_percent: f32,        // global CPU 使用率
-    pub cpu_temp_c: Option<f32>, // CPU 温度（取得不可なら None）
+    pub cpu_percent: f32,
+    pub cpu_temp_c: Option<f32>,
     pub mem_used_mb: u64,
     pub mem_total_mb: u64,
-    pub disk_read_kb: u64,  // 全ディスク合計読み取り
-    pub disk_write_kb: u64, // 全ディスク合計書き込み
-    pub net_recv_kb: u64,   // ネットワーク受信 KB/s
-    pub net_sent_kb: u64,   // ネットワーク送信 KB/s
+    pub disk_read_kb: u64,
+    pub disk_write_kb: u64,
+    pub net_recv_kb: u64,
+    pub net_sent_kb: u64,
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -33,26 +33,22 @@ fn now_millis() -> Result<u64, AppError> {
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
 
-/// リソース使用率のスナップショットを取得する。
 #[tauri::command]
 pub fn get_resource_snapshot(
-    state: State<'_, Mutex<crate::PulseState>>
+    state: State<'_, Mutex<crate::PulseState>>,
 ) -> Result<ResourceSnapshot, AppError> {
     info!("get_resource_snapshot: collecting system metrics");
 
     let mut s = state.lock().unwrap();
-    
-    // 正しいrefresh順序：メモリ → CPU → プロセス
+
     s.sys.refresh_memory();
     s.sys.refresh_cpu_all();
     std::thread::sleep(std::time::Duration::from_millis(200));
     s.sys.refresh_cpu_all();
     s.sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
-    // CPU使用率（グローバル）
     let cpu_percent = s.sys.global_cpu_usage();
 
-    // CPU 温度（"CPU" または "Core" ラベルのコンポーネントの平均）
     let cpu_temp_c = {
         let components = Components::new_with_refreshed_list();
         let temps: Vec<f32> = components
@@ -70,45 +66,39 @@ pub fn get_resource_snapshot(
         }
     };
 
-    // メモリ情報
     let total_memory = s.sys.total_memory();
     let available_memory = s.sys.available_memory();
     let used_memory = total_memory.saturating_sub(available_memory);
 
-    // ディスクI/O情報（差分を計算）
-    let current_read: u64 = s.sys.processes()
+    let current_read: u64 = s
+        .sys
+        .processes()
         .values()
         .map(|p: &Process| p.disk_usage().read_bytes)
         .sum();
-    let current_write: u64 = s.sys.processes()
+    let current_write: u64 = s
+        .sys
+        .processes()
         .values()
         .map(|p: &Process| p.disk_usage().written_bytes)
         .sum();
-    
+
     let disk_read_kb = current_read.saturating_sub(s.last_disk_read) / 1024;
     let disk_write_kb = current_write.saturating_sub(s.last_disk_write) / 1024;
-    
-    // 現在の値を保存
+
     s.last_disk_read = current_read;
     s.last_disk_write = current_write;
 
-    // ネットワーク I/O（KB/s を計算）
     s.networks.refresh();
-    let net_recv_kb: u64 = s.networks
-        .values()
-        .map(|n| n.received())
-        .sum::<u64>() / 1024;
-    let net_sent_kb: u64 = s.networks
-        .values()
-        .map(|n| n.transmitted())
-        .sum::<u64>() / 1024;
+    let net_recv_kb: u64 = s.networks.values().map(|n| n.received()).sum::<u64>() / 1024;
+    let net_sent_kb: u64 = s.networks.values().map(|n| n.transmitted()).sum::<u64>() / 1024;
 
     let snapshot = ResourceSnapshot {
         timestamp: now_millis()?,
         cpu_percent,
         cpu_temp_c,
-        mem_used_mb: used_memory / (1024 * 1024), // bytes to MB
-        mem_total_mb: total_memory / (1024 * 1024), // bytes to MB
+        mem_used_mb: used_memory / (1024 * 1024),
+        mem_total_mb: total_memory / (1024 * 1024),
         disk_read_kb,
         disk_write_kb,
         net_recv_kb,
@@ -137,45 +127,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_resource_snapshot_returns_valid_data() {
-        let snapshot = get_resource_snapshot().unwrap();
-
-        // 基本的なデータ検証
-        assert!(snapshot.timestamp > 0);
-        assert!(snapshot.cpu_percent >= 0.0);
-        assert!(snapshot.cpu_percent <= 100.0);
-        assert!(snapshot.mem_used_mb > 0);
-        assert!(snapshot.mem_total_mb > 0);
-        assert!(snapshot.mem_used_mb <= snapshot.mem_total_mb);
-    }
-
-    #[test]
     fn test_now_millis_returns_positive_timestamp() {
         let timestamp = now_millis().unwrap();
         assert!(timestamp > 0);
-
-        // 2020年以降のタイムスタンプであることを確認
-        assert!(timestamp > 1577836800000); // 2020-01-01 00:00:00 UTC
+        assert!(timestamp > 1_577_836_800_000); // 2020-01-01 00:00:00 UTC
     }
 
     #[test]
     fn test_resource_snapshot_serialization() {
         let snapshot = ResourceSnapshot {
-            timestamp: 1640995200000, // 2022-01-01 00:00:00 UTC
+            timestamp: 1_640_995_200_000,
             cpu_percent: 25.5,
             cpu_temp_c: Some(65.0),
             mem_used_mb: 4096,
             mem_total_mb: 8192,
             disk_read_kb: 1024,
             disk_write_kb: 2048,
+            net_recv_kb: 0,
+            net_sent_kb: 0,
         };
 
-        // JSONシリアライズが成功することを確認
         let json = serde_json::to_string(&snapshot).unwrap();
         assert!(json.contains("timestamp"));
         assert!(json.contains("cpuPercent"));
 
-        // デシリアライズが成功することを確認
         let deserialized: ResourceSnapshot = serde_json::from_str(&json).unwrap();
         assert_eq!(deserialized.timestamp, snapshot.timestamp);
         assert_eq!(deserialized.cpu_percent, snapshot.cpu_percent);

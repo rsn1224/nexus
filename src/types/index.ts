@@ -151,8 +151,8 @@ export interface ResourceSnapshot {
   memTotalMb: number;
   diskReadKb: number;
   diskWriteKb: number;
-  netRecvKb: number; // ← 追加
-  netSentKb: number; // ← 追加
+  netRecvKb: number;
+  netSentKb: number;
 }
 
 // ─── CHRONO ───────────────────────────────────────────────────────────────────
@@ -199,8 +199,7 @@ export interface TotpResult {
   remaining: number;
 }
 
-// --- Security ---
-
+// ─── SECURITY ────────────────────────────────────────────────────────────────
 export interface NpmVulnerability {
   name: string;
   severity: 'critical' | 'high' | 'moderate' | 'low';
@@ -229,7 +228,7 @@ export interface VulnerabilityReport {
   npm: NpmVulnerability[];
   cargo: CargoVulnerability[];
   summary: VulnerabilitySummary;
-  scannedAt: string; // ISO8601（Date への変換はUI層で行う）
+  scannedAt: string;
 }
 
 export interface DetectedSecret {
@@ -268,4 +267,13 @@ export interface SignalResult {
   description?: string;
   published: number;
   guid?: string;
+}
+
+// ─── WINOPT ──────────────────────────────────────────────────────────────────
+export interface WinSetting {
+  id: string;
+  label: string;
+  description: string;
+  isOptimized: boolean;
+  canRevert: boolean;
 }

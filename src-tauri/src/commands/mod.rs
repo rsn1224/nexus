@@ -10,3 +10,5 @@ pub mod security;
 pub mod signal;
 pub mod storage;
 pub mod vault;
+pub mod winopt_win;
+pub mod winopt_net;
