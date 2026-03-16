@@ -70,21 +70,28 @@ function MiniGraph({
   color,
   label,
   unit,
+  fixedMin,
+  fixedMax,
 }: {
   data: number[];
   color: string;
   label: string;
   unit: string;
+  fixedMin?: number;
+  fixedMax?: number;
 }): React.ReactElement {
   if (data.length === 0) {
     return <div style={{ textAlign: 'center', color: 'var(--color-text-muted)' }}>No data</div>;
   }
 
-  const max = Math.max(...data, 1);
+  const min = fixedMin !== undefined ? fixedMin : Math.min(...data, 0);
+  const max = fixedMax !== undefined ? fixedMax : Math.max(...data, 1);
+  const range = max - min;
+
   const points = data
     .map((value, index) => {
       const x = data.length > 1 ? (index / (data.length - 1)) * GRAPH_WIDTH : GRAPH_WIDTH / 2;
-      const y = GRAPH_HEIGHT - (value / max) * GRAPH_HEIGHT;
+      const y = GRAPH_HEIGHT - ((value - min) / range) * GRAPH_HEIGHT;
       return `${x},${y}`;
     })
     .join(' ');
@@ -135,7 +142,7 @@ export default function PulseWing(): React.ReactElement {
   const graphData = useMemo(() => {
     return {
       cpu: snapshots.map((s) => s.cpuPercent),
-      memory: snapshots.map((s) => (s.memUsedMb / s.memTotalMb) * 100),
+      memory: snapshots.map((s) => s.memUsedMb),
       diskRead: snapshots.map((s) => s.diskReadKb),
       diskWrite: snapshots.map((s) => s.diskWriteKb),
       cpuTemp: snapshots.map((s) => s.cpuTempC ?? 0),
@@ -347,7 +354,9 @@ export default function PulseWing(): React.ReactElement {
                   data={graphData.memory}
                   color="var(--color-accent-500)"
                   label="MEMORY"
-                  unit="%"
+                  unit="MB"
+                  fixedMin={0}
+                  fixedMax={latestSnapshot?.memTotalMb}
                 />
 
                 <MiniGraph
