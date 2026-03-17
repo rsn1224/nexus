@@ -9,7 +9,7 @@ mod state;
 mod types;
 
 use crate::commands::{
-    app_settings, boost, hardware, launcher, log, netopt, ops, profile, pulse, storage,
+    app_settings, boost, hardware, launcher, log, netopt, ops, profile, pulse, storage, timer,
     windows_settings, winopt,
 };
 use tracing::info;
@@ -103,6 +103,10 @@ pub fn run() {
             profile::get_cpu_topology,
             profile::set_process_affinity,
             profile::get_process_affinity,
+            // TIMER RESOLUTION
+            timer::get_timer_resolution,
+            timer::set_timer_resolution,
+            timer::restore_timer_resolution,
         ])
         .setup(|app| {
             let handle = app.handle().clone();

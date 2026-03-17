@@ -8,5 +8,6 @@ pub mod ops;
 pub mod profile;
 pub mod pulse;
 pub mod storage;
+pub mod timer;
 pub mod windows_settings;
 pub mod winopt;

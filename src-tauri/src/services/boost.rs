@@ -65,6 +65,34 @@ pub fn apply_profile_boost(
         }
     }
 
+    // タイマーリゾリューション設定
+    if let Some(resolution) = profile.timer_resolution_100ns {
+        match crate::infra::timer_resolution::set_resolution(resolution) {
+            Ok(timer_state) => {
+                // AppState に要求値を記録
+                if let Ok(mut s) = state.lock() {
+                    s.timer_resolution_requested = Some(resolution);
+                }
+                result.applied.push(format!(
+                    "タイマーリゾリューション設定: {}({} ms), 実際={}({} ms)",
+                    resolution,
+                    resolution as f64 / 10000.0,
+                    timer_state.current_100ns,
+                    timer_state.current_100ns as f64 / 10000.0,
+                ));
+                info!(
+                    "タイマーリゾリューション設定完了: 要求={}, 実際={}",
+                    resolution, timer_state.current_100ns
+                );
+            }
+            Err(e) => {
+                let msg = format!("タイマーリゾリューション設定失敗: {}", e);
+                warn!("{}", msg);
+                result.warnings.push(msg);
+            }
+        }
+    }
+
     // Level 2/3 の場合、アフィニティ変更前の状態を取得
     let prev_affinities = if matches!(profile.boost_level, BoostLevel::Medium | BoostLevel::Hard) {
         let exe_name = profile
@@ -417,6 +445,26 @@ pub fn revert_boost(state: &State<'_, SharedState>) -> Result<(), AppError> {
     if let Some(prev_guid) = &snapshot.prev_power_plan_guid {
         if let Err(e) = power_plan::revert_power_plan(Some(prev_guid.to_string())) {
             warn!("電源プラン復元失敗: {}: {}", prev_guid, e);
+        }
+    }
+
+    // タイマーリゾリューションを復元
+    {
+        let has_timer = state
+            .lock()
+            .map(|s| s.timer_resolution_requested.is_some())
+            .unwrap_or(false);
+
+        if has_timer {
+            if let Err(e) = crate::infra::timer_resolution::restore_resolution() {
+                warn!("タイマーリゾリューション復元失敗: {}", e);
+            } else {
+                info!("タイマーリゾリューション: デフォルトに復元");
+            }
+            // AppState の要求値をクリア
+            if let Ok(mut s) = state.lock() {
+                s.timer_resolution_requested = None;
+            }
         }
     }
 

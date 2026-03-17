@@ -343,3 +343,27 @@ mod tests {
         assert!(json.is_ok(), "CpuTopology のシリアライズに失敗");
     }
 }
+
+// ─── TimerResolutionState ────────────────────────────────────────────────────
+
+/// タイマーリゾリューションの現在状態。
+/// NtQueryTimerResolution / NtSetTimerResolution の結果を表す。
+/// 単位: 100ns（5000 = 0.5ms, 10000 = 1ms, 156250 = 15.625ms）
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimerResolutionState {
+    /// 現在のシステムタイマー分解能（100ns 単位）
+    pub current_100ns: u32,
+
+    /// nexus が要求した値（None = 未設定）
+    pub nexus_requested_100ns: Option<u32>,
+
+    /// Windows デフォルト値（通常 156250 = 15.625ms）
+    pub default_100ns: u32,
+
+    /// 最小分解能（ハードウェア上限、通常 5000 = 0.5ms）
+    pub minimum_100ns: u32,
+
+    /// 最大分解能（最も粗い、通常 156250 = 15.625ms）
+    pub maximum_100ns: u32,
+}

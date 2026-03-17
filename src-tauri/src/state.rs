@@ -13,6 +13,8 @@ pub struct AppState {
     pub revert_snapshot: Option<RevertSnapshot>,
     /// ゲーム監視がアクティブかどうか
     pub game_monitor_active: bool,
+    /// nexus が設定したタイマーリゾリューション値（リバート用）
+    pub timer_resolution_requested: Option<u32>,
 }
 
 impl Default for AppState {
@@ -48,6 +50,7 @@ impl AppState {
             networks,
             revert_snapshot: None,
             game_monitor_active: false,
+            timer_resolution_requested: None,
         }
     }
 }
