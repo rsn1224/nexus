@@ -265,52 +265,9 @@ function recordReviewResults(results) {
   }
 }
 
-// 自動ステージングとコミット
-function autoStageAndCommit(results) {
-  const hasIssues = results.some((r) => r.issues.length > 0);
-
-  if (hasIssues) {
-    logWarning('Issues detected - skipping auto-commit');
-    return false;
-  }
-
-  try {
-    logInfo('Auto-staging changes...');
-
-    // git add -p の代わりに自動ステージング
-    execSync('git add .', { encoding: 'utf8' });
-
-    // ステータス確認
-    const status = execSync('git status --porcelain', { encoding: 'utf8' });
-    if (!status.trim()) {
-      logInfo('No changes to commit');
-      return false;
-    }
-
-    logInfo('Auto-committing changes...');
-
-    // コミットメッセージ生成
-    const changedFiles = getChangedFiles();
-    const hasTSX = changedFiles.some((f) => f.endsWith('.tsx'));
-    const hasTS = changedFiles.some((f) => f.endsWith('.ts'));
-    const hasRust = changedFiles.some((f) => f.endsWith('.rs'));
-
-    let commitType = 'feat';
-    if (hasRust && !hasTSX && !hasTS) commitType = 'feat(rust)';
-    else if (!hasRust && (hasTSX || hasTS)) commitType = 'feat(frontend)';
-    else if (hasRust && (hasTSX || hasTS)) commitType = 'feat';
-
-    const commitMessage = `${commitType}: automated implementation via workflow`;
-
-    execSync(`git commit -m "${commitMessage}"`, { encoding: 'utf8' });
-    logSuccess('Auto-commit completed');
-
-    return true;
-  } catch (error) {
-    logError(`Auto-commit failed: ${error.message}`);
-    return false;
-  }
-}
+// 自動ステージング・コミットは禁止
+// git add -A / git commit の自動実行はユーザーのレビューを迂回するため削除
+// コミットは必ず手動で行うこと（git add -p → git commit）
 
 // メイン実行
 function main() {
@@ -351,13 +308,6 @@ function main() {
 
     // レビュー結果を記録
     recordReviewResults(results);
-
-    // 自動コミット（問題がない場合のみ）
-    const committed = autoStageAndCommit(results);
-
-    if (committed) {
-      logInfo('Consider running: git push to share changes');
-    }
 
     // 終了コード設定
     const hasIssues = results.some((r) => r.issues.length > 0);
