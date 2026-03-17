@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useInitialData } from '../../hooks/useInitialData';
 import { formatBytes, getUsagePercentage, useStorage } from '../../stores/useStorageStore';
 import { Button } from '../ui';
 
@@ -22,10 +23,8 @@ export default function StorageWing(): React.ReactElement {
   // Local states
   const [selectedDrive, setSelectedDrive] = useState<string>('');
 
-  // Initialize data on mount
-  useEffect(() => {
-    void fetchStorageInfo();
-  }, [fetchStorageInfo]);
+  // 初回データフェッチ
+  useInitialData(() => fetchStorageInfo(), [fetchStorageInfo]);
 
   const handleRefresh = async (): Promise<void> => {
     clearError();

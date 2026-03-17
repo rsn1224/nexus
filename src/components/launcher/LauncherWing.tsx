@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useInitialData } from '../../hooks/useInitialData';
 import { launcherPageSuggestions } from '../../lib/localAi';
 import {
   useLauncherActions,
@@ -28,9 +29,8 @@ export default function LauncherWing(): React.ReactElement {
     }
   };
 
-  useEffect(() => {
-    void scanGames();
-  }, [scanGames]);
+  // 初回データフェッチ
+  useInitialData(() => scanGames(), [scanGames]);
 
   // ゲームのソートとフィルタリング
   const filteredAndSortedGames = useMemo(() => {

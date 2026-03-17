@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { ChangeEvent } from 'react';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useInitialData } from '../../hooks/useInitialData';
 import { useLogActions, useLogState } from '../../stores/useLogStore';
 import { Button, Card } from '../ui';
 import LogActions from './LogActions';
@@ -77,10 +78,8 @@ export default function LogWing(): React.ReactElement {
   // 変数を分解
   const { filteredLogs, uniqueSources, logCounts, hasLogs, hasFilteredLogs } = derivedData;
 
-  useEffect(() => {
-    // 初期ロード時にシステムログを取得
-    void getSystemLogs();
-  }, [getSystemLogs]);
+  // 初回データフェッチ
+  useInitialData(() => getSystemLogs(), [getSystemLogs]);
 
   const handleLevelChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedLevel(e.target.value as 'All' | 'Error' | 'Warn' | 'Info' | 'Debug');

@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import { PowerPlan, VisualEffects } from '../../types';
 import { Button } from '../ui';
@@ -23,18 +24,16 @@ export default function WindowsWing(): React.ReactElement {
     VisualEffects.Balanced,
   );
 
-  // Sync pending states with actual settings when they update
-  useEffect(() => {
+  // 設定変更時にローカル状態を同期
+  useStateSync(() => {
     if (settings) {
       setPendingPowerPlan(settings.powerPlan);
       setPendingVisualEffects(settings.visualEffects);
     }
   }, [settings]);
 
-  // 初回読み込み
-  useEffect(() => {
-    void fetchSettings();
-  }, [fetchSettings]);
+  // 初回データフェッチ
+  useInitialData(() => fetchSettings(), [fetchSettings]);
 
   // エラーバナー（インライン展開）
   const errorBanner = error ? (

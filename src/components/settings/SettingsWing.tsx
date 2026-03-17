@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
 import { Button } from '../ui';
@@ -13,13 +14,11 @@ export default function SettingsWing(): React.ReactElement {
   const [isTestingKey, setIsTestingKey] = useState(false);
   const [testResult, setTestResult] = useState<{ valid: boolean; message: string } | null>(null);
 
-  // Initialize settings on mount
-  useEffect(() => {
-    void fetchSettings();
-  }, [fetchSettings]);
+  // 初回データフェッチ
+  useInitialData(() => fetchSettings(), [fetchSettings]);
 
-  // Sync API key input with current settings
-  useEffect(() => {
+  // 設定変更時にローカル状態を同期
+  useStateSync(() => {
     if (settings) {
       setApiKeyInput(settings.perplexityApiKey);
       setTestResult(null); // Clear test result when settings change

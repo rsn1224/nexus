@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useEffect, useState } from 'react';
+import { useEventSubscription } from '../../hooks/useInitialData';
 import { homePageSuggestions } from '../../lib/localAi';
 import { useHardwareData } from '../../stores/useHardwareStore';
 import { useLogStore } from '../../stores/useLogStore';
@@ -49,11 +50,11 @@ const HomeWing = function HomeWing(): React.ReactElement {
   // Optimization history state
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
 
-  useEffect(() => {
+  // イベントリスナー登録と初期データ読み込み
+  useEventSubscription(() => {
     // イベントリスナーを登録（BE からのプッシュを受信）
     subscribePulse();
     subscribeOps();
-    // Hardware は useHardwareData 内で subscribe 済みの場合は不要
 
     // Load optimization history from localStorage
     const saved = localStorage.getItem('nexus:home:history');
@@ -64,6 +65,9 @@ const HomeWing = function HomeWing(): React.ReactElement {
         // Ignore invalid JSON
       }
     }
+
+    // クリーンアップ関数（不要だが型合わせ）
+    return undefined;
   }, [subscribePulse, subscribeOps]);
 
   // Update optimization history when logs change

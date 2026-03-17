@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useInitialData } from '../../hooks/useInitialData';
 import { useNetopt } from '../../stores/useNetoptStore';
 import { Button } from '../ui';
 
@@ -24,10 +25,9 @@ export default function NetoptWing(): React.ReactElement {
   const [customSecondary, setCustomSecondary] = useState('');
   const [pingTarget, setPingTarget] = useState('8.8.8.8');
 
-  // Initialize data on mount
-  useEffect(() => {
-    void fetchAdapters();
-    void fetchCurrentDns();
+  // 初回データフェッチ
+  useInitialData(async () => {
+    await Promise.all([fetchAdapters(), fetchCurrentDns()]);
   }, [fetchAdapters, fetchCurrentDns]);
 
   const handleRefresh = async (): Promise<void> => {

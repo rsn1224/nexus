@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEventSubscription } from '../../hooks/useInitialData';
 import {
   createDiskProgressBar,
   useHardwareData,
@@ -12,9 +12,8 @@ export default function HardwareWing(): React.JSX.Element {
   const { info, isLoading, error, memUsagePercent, formattedUptime, formattedBootTime } =
     useHardwareData();
 
-  useEffect(() => {
-    subscribe(); // イベントリスナーを登録
-  }, [subscribe]);
+  // イベントリスナー登録
+  useEventSubscription(() => subscribe(), [subscribe]);
 
   if (isLoading) {
     return (
