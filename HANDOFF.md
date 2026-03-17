@@ -24,9 +24,10 @@
 | ゲーム強化 Phase 8a | ✅ 完了（8a-A〜D: 型定義・CRUD・コマンド・FE + テスト40件） |
 | ゲーム強化 Phase 8b | ✅ 完了（8b-A〜C: CPU affinity FFI・Level 2/3 boost・UI + テスト30件） |
 | ゲーム強化 Phase 9b-A | ✅ 完了（タイマーリゾリューション FFI + サービス + コマンド + テスト5件） |
+| ゲーム強化 Phase 9b-B | ✅ 完了（タイマーリゾリューション UI: WinoptTab + ProfileTab + テスト7件） |
 
-**最新コミット:** `39fc0b4`
-**テスト:** TS 267 unit + 17 E2E + Rust 126 = 410 green
+**最新コミット:** `9bb53e4`
+**テスト:** TS 274 unit + 17 E2E + Rust 126 = 417 green
 
 ---
 
