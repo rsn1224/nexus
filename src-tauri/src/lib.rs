@@ -6,16 +6,11 @@ use crate::commands::{
     app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, windows_settings,
     winopt,
 };
-use std::collections::HashMap;
 use std::sync::Mutex;
 use sysinfo::{Networks, System};
 use tracing::info;
 
 // ─── Application State ────────────────────────────────────────────────────────
-
-pub struct WatcherState {
-    pub watchers: Mutex<HashMap<String, notify::RecommendedWatcher>>,
-}
 
 pub struct PulseState {
     pub sys: System,
@@ -74,9 +69,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_notification::init())
-        .manage(WatcherState {
-            watchers: Mutex::new(HashMap::new()),
-        })
         .manage(Mutex::new(PulseState::new()))
         .invoke_handler(tauri::generate_handler![
             // PULSE
