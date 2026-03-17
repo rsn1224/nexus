@@ -83,6 +83,20 @@ Cascade 実装完了
 
 ---
 
+## コスト監視
+
+```bash
+bash scripts/check-cost.sh         # 本日のコスト
+bash scripts/check-cost.sh live    # リアルタイムダッシュボード
+bash scripts/check-cost.sh blocks  # 現在の5時間ブロック
+```
+
+- コンテキストが90%を超えたら `/compact` を実行
+- 大規模リファクタはブロック開始直後に行う
+- 1日の目安上限: $5.00
+
+---
+
 ## 参照先
 
 | 内容 | ファイル |
