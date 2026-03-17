@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { boostPageSuggestions, homePageSuggestions, launcherPageSuggestions } from '../lib/localAi';
-import type { DriveInfo, HardwareInfo, ResourceSnapshot, WinSetting } from '../types';
+import type { DiskDrive, HardwareInfo, ResourceSnapshot, WinSetting } from '../types';
 
 // HardwareInfo のベースオブジェクト（全 null）
 const baseHw: HardwareInfo = {
@@ -134,12 +134,18 @@ describe('homePageSuggestions', () => {
 
   // 追加テスト C：ディスク境界値
   describe('ディスク境界値', () => {
-    const makeDrive = (usedPercent: number): DriveInfo[] => [
+    const GB = 1024 * 1024 * 1024;
+    const makeDrive = (usedPercent: number): DiskDrive[] => [
       {
         name: 'C',
-        totalGb: 100,
-        freeGb: 100 - usedPercent,
-        usedPercent,
+        model: 'Test SSD',
+        sizeBytes: 100 * GB,
+        usedBytes: usedPercent * GB,
+        availableBytes: (100 - usedPercent) * GB,
+        fileSystem: 'NTFS',
+        mountPoint: 'C:\\',
+        isRemovable: false,
+        healthStatus: 'Good',
       },
     ];
 
