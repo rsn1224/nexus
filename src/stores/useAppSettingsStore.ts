@@ -4,24 +4,15 @@ import { useShallow } from 'zustand/shallow';
 import log from '../lib/logger';
 import type { AppSettings } from '../types';
 
-const SETTINGS_KEY = 'nexus:settings';
-
-interface PersistedSettings {
-  perplexityApiKey: string;
-}
-
-interface AppSettingsStore extends PersistedSettings {
-  // Tauri 設定
+interface AppSettingsStore {
   settings: AppSettings | null;
   isLoading: boolean;
   error: string | null;
   lastUpdated: number | null;
 
-  // アクション
   fetchSettings: () => Promise<void>;
   saveSettings: (settings: AppSettings) => Promise<void>;
   updateSettings: (updates: Partial<AppSettings>) => Promise<void>;
-  setPerplexityApiKey: (key: string) => void;
   clearError: () => void;
 }
 
@@ -32,25 +23,7 @@ const defaultSettings: AppSettings = {
   minimizeToTray: true,
 };
 
-function loadPersistedSettings(): PersistedSettings {
-  try {
-    const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) return JSON.parse(raw) as PersistedSettings;
-  } catch {
-    // ignore parse errors
-  }
-  return { perplexityApiKey: '' };
-}
-
-function savePersistedSettings(s: PersistedSettings): void {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
-}
-
 export const useAppSettingsStore = create<AppSettingsStore>((set, get) => ({
-  // localStorage からロードした persisted settings
-  ...loadPersistedSettings(),
-
-  // Tauri 設定
   settings: null,
   isLoading: false,
   error: null,
@@ -66,7 +39,7 @@ export const useAppSettingsStore = create<AppSettingsStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch app settings';
+      const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
       log.error({ err }, 'app settings fetch failed: %s', errorMessage);
       set({
         settings: defaultSettings,
@@ -85,7 +58,7 @@ export const useAppSettingsStore = create<AppSettingsStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to save app settings';
+      const errorMessage = err instanceof Error ? err.message : JSON.stringify(err);
       log.error({ err }, 'save app settings failed: %s', errorMessage);
       set({ error: errorMessage });
     }
@@ -95,12 +68,6 @@ export const useAppSettingsStore = create<AppSettingsStore>((set, get) => ({
     const currentSettings = get().settings || defaultSettings;
     const newSettings = { ...currentSettings, ...updates };
     await get().saveSettings(newSettings);
-  },
-
-  setPerplexityApiKey: (key) => {
-    set({ perplexityApiKey: key });
-    savePersistedSettings({ perplexityApiKey: key });
-    log.info('settings: Perplexity API key updated');
   },
 
   clearError: () => {
@@ -118,7 +85,5 @@ export const useAppSettings = () =>
       fetchSettings: s.fetchSettings,
       saveSettings: s.saveSettings,
       updateSettings: s.updateSettings,
-      perplexityApiKey: s.perplexityApiKey,
-      setPerplexityApiKey: s.setPerplexityApiKey,
     })),
   );

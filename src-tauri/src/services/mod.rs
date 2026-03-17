@@ -1,4 +1,5 @@
 pub mod boost;
+pub mod credentials;
 pub mod hardware;
 pub mod log_service;
 pub mod process;

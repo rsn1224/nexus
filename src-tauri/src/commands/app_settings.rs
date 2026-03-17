@@ -5,6 +5,7 @@ use tauri::{AppHandle, Manager};
 use tracing::{info, warn};
 
 use crate::error::AppError;
+use crate::services::credentials;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -40,46 +41,76 @@ fn get_settings_path(app: &AppHandle) -> Result<PathBuf, AppError> {
 
 #[tauri::command]
 pub fn get_app_settings(app: AppHandle) -> Result<AppSettings, AppError> {
-    info!("get_app_settings: loading app settings");
+    info!("get_app_settings: 設定読み込み中");
 
     let settings_path = get_settings_path(&app)?;
 
-    if !settings_path.exists() {
-        info!("Settings file not found, returning default settings");
-        return Ok(AppSettings::default());
+    let mut settings = if settings_path.exists() {
+        let content = fs::read_to_string(&settings_path).map_err(|e| {
+            warn!("設定ファイル読み込みエラー: {}", e);
+            AppError::Io(format!("設定ファイル読み込みエラー: {}", e))
+        })?;
+        serde_json::from_str::<AppSettings>(&content).map_err(|e| {
+            warn!("設定ファイル解析エラー: {}", e);
+            AppError::Serialization(format!("設定ファイル解析エラー: {}", e))
+        })?
+    } else {
+        info!("設定ファイルなし。デフォルト設定を返します");
+        AppSettings::default()
+    };
+
+    // API キーは keyring から読み込む（JSON ファイルには保存しない）
+    match credentials::load_api_key("perplexity-api-key") {
+        Ok(Some(key)) => settings.perplexity_api_key = key,
+        Ok(None) => {} // keyring にエントリなし — デフォルト空文字列のまま
+        Err(e) => {
+            warn!(
+                "keyring からの API キー読み込みに失敗: {}。空文字列で続行します",
+                e
+            );
+            // エラーでも設定自体は返す（API キーだけ空）
+        }
     }
 
-    let content = fs::read_to_string(&settings_path).map_err(|e| {
-        warn!("Failed to read settings file: {}", e);
-        AppError::Io(format!("Failed to read settings file: {}", e))
-    })?;
-
-    let settings: AppSettings = serde_json::from_str(&content).map_err(|e| {
-        warn!("Failed to parse settings file: {}", e);
-        AppError::Serialization(format!("Failed to parse settings file: {}", e))
-    })?;
-
-    info!("get_app_settings: successfully loaded settings");
+    info!("get_app_settings: 設定読み込み完了");
     Ok(settings)
 }
 
 #[tauri::command]
 pub fn save_app_settings(app: AppHandle, settings: AppSettings) -> Result<(), AppError> {
-    info!("save_app_settings: saving app settings");
+    info!("save_app_settings: 設定保存中");
+
+    // API キーは keyring に保存
+    if let Err(e) = credentials::save_api_key("perplexity-api-key", &settings.perplexity_api_key) {
+        warn!(
+            "keyring への API キー保存に失敗: {}。JSON にフォールバック",
+            e
+        );
+        // フォールバック: keyring が使えない場合は JSON に含める
+        let settings_path = get_settings_path(&app)?;
+        let content = serde_json::to_string_pretty(&settings)
+            .map_err(|e| AppError::Serialization(format!("設定シリアライズエラー: {}", e)))?;
+        fs::write(&settings_path, content)
+            .map_err(|e| AppError::Io(format!("設定ファイル書き込みエラー: {}", e)))?;
+        return Ok(());
+    }
+
+    // JSON ファイルには API キー以外を保存
+    let mut file_settings = settings.clone();
+    file_settings.perplexity_api_key = String::new(); // JSON には書かない
 
     let settings_path = get_settings_path(&app)?;
-
-    let content = serde_json::to_string_pretty(&settings).map_err(|e| {
-        warn!("Failed to serialize settings: {}", e);
-        AppError::Serialization(format!("Failed to serialize settings: {}", e))
+    let content = serde_json::to_string_pretty(&file_settings).map_err(|e| {
+        warn!("設定シリアライズエラー: {}", e);
+        AppError::Serialization(format!("設定シリアライズエラー: {}", e))
     })?;
 
     fs::write(&settings_path, content).map_err(|e| {
-        warn!("Failed to write settings file: {}", e);
-        AppError::Io(format!("Failed to write settings file: {}", e))
+        warn!("設定ファイル書き込みエラー: {}", e);
+        AppError::Io(format!("設定ファイル書き込みエラー: {}", e))
     })?;
 
-    info!("save_app_settings: successfully saved settings");
+    info!("save_app_settings: 設定保存完了");
     Ok(())
 }
 

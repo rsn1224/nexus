@@ -35,6 +35,10 @@ pub enum AppError {
     #[allow(dead_code)]
     #[error("プロセス操作エラー: {0}")]
     Process(String),
+
+    #[allow(dead_code)]
+    #[error("資格情報エラー: {0}")]
+    Keyring(String),
 }
 
 impl From<std::io::Error> for AppError {

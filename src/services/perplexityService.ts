@@ -29,7 +29,7 @@ const API_URL = 'https://api.perplexity.ai/chat/completions';
 export async function getOptimizationSuggestions(
   processNames: string[],
 ): Promise<ApiResult<string[]>> {
-  const apiKey = useAppSettingsStore.getState().perplexityApiKey;
+  const apiKey = useAppSettingsStore.getState().settings?.perplexityApiKey;
   if (!apiKey) {
     log.error('Perplexity API key is not set');
     return { ok: false, error: 'Perplexity API キーが未設定です。設定画面で入力してください。' };
