@@ -22,9 +22,10 @@
 | 再構築 Phase 6 | ✅ 完了（6A: useShallow, 6B: React.lazy, 6C: useEffect, 6D: 型安全化） |
 | 再構築 Phase 7 | ✅ 完了（7A: UIテスト, 7B: E2E, 7C: Rustテスト, 7D: ipconfig日本語+keyring） |
 | ゲーム強化 Phase 8a | ✅ 完了（8a-A〜D: 型定義・CRUD・コマンド・FE + テスト40件） |
+| ゲーム強化 Phase 8b-A | ✅ 完了（CPU affinity FFI + トポロジー検出 + テスト18件） |
 
-**最新コミット:** `f2cd33f`
-**テスト:** TS 256 unit + 17 E2E + Rust 103 = 376 green
+**最新コミット:** `2c82be8`
+**テスト:** TS 256 unit + 17 E2E + Rust 121 = 394 green
 
 ---
 
