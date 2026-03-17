@@ -21,10 +21,10 @@
 | 再構築 Phase 3 | ✅ 完了 |
 | 再構築 Phase 6 | ✅ 完了（6A: useShallow, 6B: React.lazy, 6C: useEffect, 6D: 型安全化） |
 | 再構築 Phase 7 | ✅ 完了（7A: UIテスト, 7B: E2E, 7C: Rustテスト, 7D: ipconfig日本語+keyring） |
-| ゲーム強化 Phase 8a | 🔄 着手準備中 |
+| ゲーム強化 Phase 8a | 🔄 進行中（8a-A: 型定義・インフラ層完了） |
 
-**最新コミット:** `add6906`
-**テスト:** TS 216 unit + 17 E2E + Rust 65 = 298 green
+**最新コミット:** `021af74`
+**テスト:** TS 216 unit + 17 E2E + Rust 86 = 302 green
 
 ---
 

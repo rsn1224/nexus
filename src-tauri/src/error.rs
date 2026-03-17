@@ -39,6 +39,18 @@ pub enum AppError {
     #[allow(dead_code)]
     #[error("資格情報エラー: {0}")]
     Keyring(String),
+
+    #[allow(dead_code)]
+    #[error("プロファイルエラー: {0}")]
+    Profile(String),
+
+    #[allow(dead_code)]
+    #[error("ゲーム監視エラー: {0}")]
+    GameMonitor(String),
+
+    #[allow(dead_code)]
+    #[error("Win32 API エラー: {0}")]
+    Win32(String),
 }
 
 impl From<std::io::Error> for AppError {

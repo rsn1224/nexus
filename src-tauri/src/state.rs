@@ -1,12 +1,18 @@
 use std::sync::Mutex;
 use sysinfo::{Networks, ProcessesToUpdate, System};
 
+use crate::types::game::RevertSnapshot;
+
 /// アプリケーション全体で共有するシステム情報ステート
 pub struct AppState {
     pub sys: System,
     pub last_disk_read: u64,
     pub last_disk_write: u64,
     pub networks: Networks,
+    /// ゲームプロファイル適用時のリバート用スナップショット
+    pub revert_snapshot: Option<RevertSnapshot>,
+    /// ゲーム監視がアクティブかどうか
+    pub game_monitor_active: bool,
 }
 
 impl Default for AppState {
@@ -40,6 +46,8 @@ impl AppState {
             last_disk_read: initial_read,
             last_disk_write: initial_write,
             networks,
+            revert_snapshot: None,
+            game_monitor_active: false,
         }
     }
 }

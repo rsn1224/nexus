@@ -6,6 +6,7 @@ mod infra;
 mod parsers;
 mod services;
 mod state;
+mod types;
 
 use crate::commands::{
     app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, windows_settings,
@@ -15,6 +16,9 @@ use tracing::info;
 
 // state.rs から re-export
 pub use state::{AppState, SharedState};
+
+// types::game から再エクスポート
+pub use types::game::*;
 
 // ─── Application State ────────────────────────────────────────────────────────
 
