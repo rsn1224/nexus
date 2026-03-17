@@ -2332,6 +2332,7 @@ dependencies = [
  "tauri-plugin-clipboard-manager",
  "tauri-plugin-notification",
  "tauri-plugin-opener",
+ "tempfile",
  "thiserror 1.0.69",
  "tokio",
  "tracing",
