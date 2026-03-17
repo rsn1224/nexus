@@ -227,9 +227,9 @@ describe('useLauncherStore', () => {
   });
 
   it('setSortMode updates sort mode', () => {
-    useLauncherStore.getState().setSortMode('recent');
+    useLauncherStore.getState().setSortMode('size');
 
-    expect(useLauncherStore.getState().sortMode).toBe('recent');
+    expect(useLauncherStore.getState().sortMode).toBe('size');
   });
 
   it('setSearchQuery updates search query', () => {

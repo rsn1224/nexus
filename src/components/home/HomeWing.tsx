@@ -1,9 +1,7 @@
 import type React from 'react';
-import { memo, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { homePageSuggestions } from '../../lib/localAi';
-import { calcScore, createProgressBar, getScoreRank } from '../../lib/score';
 import { useHardwareData } from '../../stores/useHardwareStore';
-import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useLogStore } from '../../stores/useLogStore';
 import { useNavStore } from '../../stores/useNavStore';
 import { useOpsStore } from '../../stores/useOpsStore';
@@ -11,7 +9,13 @@ import { usePulseStore } from '../../stores/usePulseStore';
 import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
 import AiPanel from '../shared/AiPanel';
-import { Button, Card, StatusBadge } from '../ui';
+import { Button, Card } from '../ui';
+import GameScoreCard from './GameScoreCard';
+import LauncherCard from './LauncherCard';
+import OpsCard from './OpsCard';
+import PulseCard from './PulseCard';
+import QuickActionsCard from './QuickActionsCard';
+import SystemStatusCard from './SystemStatusCard';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -23,17 +27,6 @@ interface OptimizationHistory {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function getTopCpuProcesses(processes: SystemProcess[], limit: number = 3): SystemProcess[] {
-  return [...processes].sort((a, b) => b.cpuPercent - a.cpuPercent).slice(0, limit);
-}
-
-function formatNetSpeed(kb: number): string {
-  if (kb >= 1024) {
-    return `${(kb / 1024).toFixed(1)} MB/s`;
-  }
-  return `${kb.toFixed(0)} KB/s`;
-}
-
 function formatTime(timestamp: number): string {
   const date = new Date(timestamp);
   return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
@@ -41,33 +34,17 @@ function formatTime(timestamp: number): string {
 
 // ─── HomeWing ────────────────────────────────────────────────────────────────
 
-const HomeWing = memo(function HomeWing(): React.ReactElement {
+const HomeWing = function HomeWing(): React.ReactElement {
   // Store data - using existing store methods
-  const processes = useOpsStore((s) => s.processes);
   const subscribeOps = useOpsStore((s) => s.subscribe);
   const subscribePulse = usePulseStore((s) => s.subscribe);
-  const isListening = usePulseStore((s) => s.isListening);
-
-  const latestSnapshot = usePulseStore((s) =>
-    s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
-  );
-
-  const cpuPercent = latestSnapshot?.cpuPercent ?? null;
-  const memUsed = latestSnapshot?.memUsedMb ?? null;
-  const memTotal = latestSnapshot?.memTotalMb ?? null;
-  const diskRead = latestSnapshot?.diskReadKb ?? null;
-  const diskWrite = latestSnapshot?.diskWriteKb ?? null;
-  const netRecv = latestSnapshot?.netRecvKb ?? null;
-  const netSent = latestSnapshot?.netSentKb ?? null;
-
-  const games = useLauncherStore((s) => s.games);
+  const processes = useOpsStore((s) => s.processes);
   const navigate = useNavStore((s) => s.navigate);
   const { logs } = useLogStore();
 
   // Storage and Hardware stores
   const storageInfo = useStorageStore((s) => s.storageInfo);
-  const { info: hwInfo, diskUsagePercent } = useHardwareData();
-  const gpuUsage = hwInfo?.gpuUsagePercent ?? null;
+  const { info: hwInfo } = useHardwareData();
 
   // Optimization history state
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
@@ -109,34 +86,9 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
     }
   }, [logs]);
 
-  const topProcesses = useMemo(() => getTopCpuProcesses(processes, 3), [processes]);
+  const highCpuProcesses = processes.filter((p: SystemProcess) => p.cpuPercent >= 80).slice(0, 3);
 
-  const suggestions = useMemo(
-    () => homePageSuggestions(latestSnapshot ?? null, storageInfo?.drives ?? [], hwInfo),
-    [latestSnapshot, storageInfo, hwInfo],
-  );
-
-  const activeProcessCount = useMemo(
-    () => processes.filter((p: SystemProcess) => p.cpuPercent > 1).length,
-    [processes],
-  );
-
-  const gameScore = useMemo(
-    () =>
-      calcScore({
-        cpuPercent,
-        memUsedGb: memUsed,
-        memTotalGb: memTotal,
-        diskUsagePercent,
-        gpuUsagePercent: gpuUsage,
-      }),
-    [cpuPercent, memUsed, memTotal, diskUsagePercent, gpuUsage],
-  );
-
-  const highCpuProcesses = useMemo(
-    () => processes.filter((p: SystemProcess) => p.cpuPercent >= 80).slice(0, 3),
-    [processes],
-  );
+  const suggestions = homePageSuggestions(null, storageInfo?.drives ?? [], hwInfo);
 
   return (
     <div className="p-4 h-full overflow-y-auto">
@@ -153,112 +105,23 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
       {/* Grid Layout */}
       <div className="grid grid-cols-2 gap-4">
         {/* OPS Card */}
-        <Card title="プロセス管理">
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
-            <div className="mb-1">
-              アクティブ:{' '}
-              <span className="text-[var(--color-accent-500)]">{activeProcessCount}</span>
-            </div>
-            {topProcesses.length > 0 && (
-              <div className="text-[10px] text-[var(--color-text-muted)]">
-                CPU上位:
-                {topProcesses.map((p: SystemProcess) => (
-                  <div key={p.pid} className="ml-2">
-                    {p.name} ({p.cpuPercent.toFixed(1)}%)
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </Card>
+        <OpsCard />
 
         {/* PULSE Card */}
-        <Card title="システム監視">
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
-            <div className="mb-1">
-              CPU: <StatusBadge value={cpuPercent} unit="%" thresholds={{ warn: 50, danger: 80 }} />
-            </div>
-            <div>
-              RAM:{' '}
-              <span className="text-[var(--color-text-primary)]">
-                {memUsed !== null && memTotal !== null
-                  ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB`
-                  : '--'}
-              </span>
-            </div>
-          </div>
-        </Card>
+        <PulseCard />
 
         {/* LAUNCHER Card */}
-        <Card title="ゲーム起動">
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
-            <div className="mb-1">
-              ゲーム数: <span className="text-[var(--color-accent-500)]">{games.length}</span>
-            </div>
-            {games.length > 0 && (
-              <div className="text-[10px] text-[var(--color-text-muted)]">
-                Recent:{' '}
-                {games
-                  .slice(0, 4)
-                  .map((g) => g.name)
-                  .join(', ')}
-              </div>
-            )}
-          </div>
-        </Card>
+        <LauncherCard />
 
         {/* Quick Actions Card */}
-        <Card title="クイックアクション">
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => (isListening ? null : subscribePulse())}
-              disabled={isListening}
-              loading={isListening}
-            >
-              {isListening ? '■ 監視中' : '▶ 監視開始'}
-            </Button>
-            <Button variant="primary" size="sm" onClick={() => navigate?.('boost')}>
-              ⚡ 今すぐ最適化
-            </Button>
-          </div>
-        </Card>
+        <QuickActionsCard />
       </div>
 
       {/* System Status Card */}
-      <Card title="システムステータス" className="mt-4">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
-          <div>
-            CPU{'     '}
-            <span className="text-[var(--color-accent-500)]">
-              {cpuPercent !== null ? `${cpuPercent.toFixed(1)}%` : '--'}
-            </span>
-          </div>
-          <div>
-            MEM{'     '}
-            <span className="text-[var(--color-accent-500)]">
-              {memUsed !== null && memTotal !== null
-                ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB (${(
-                    (memUsed / memTotal) * 100
-                  ).toFixed(0)}%)`
-                : '--'}
-            </span>
-          </div>
-          <div>
-            DISK R{'  '}
-            <span className="text-[var(--color-accent-500)]">
-              {diskRead !== null ? `${diskRead.toFixed(0)} KB/s` : '--'}
-            </span>
-          </div>
-          <div>
-            DISK W{'  '}
-            <span className="text-[var(--color-accent-500)]">
-              {diskWrite !== null ? `${diskWrite.toFixed(0)} KB/s` : '--'}
-            </span>
-          </div>
-        </div>
-      </Card>
+      <SystemStatusCard />
+
+      {/* Game Score Card */}
+      <GameScoreCard />
 
       {/* Storage Card */}
       <Card title="ストレージ" className="mt-4">
@@ -275,9 +138,7 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
               </div>
             ))
           ) : (
-            <div>
-              <span className="text-[var(--color-accent-500)]">読み込み中...</span>
-            </div>
+            <div className="text-[var(--color-text-muted)]">情報がありません</div>
           )}
         </div>
       </Card>
@@ -325,74 +186,9 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
               </div>
             </>
           ) : (
-            <div>
-              <span className="text-[var(--color-accent-500)]">読み込み中...</span>
-            </div>
+            <div className="text-[var(--color-text-muted)]">情報がありません</div>
           )}
         </div>
-      </Card>
-
-      {/* Network Speed Card */}
-      <Card title="ネットワーク" className="mt-4">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
-          <div>
-            DOWN{'    '}
-            <span className="text-[var(--color-accent-500)]">
-              {netRecv !== null ? formatNetSpeed(netRecv) : '--'}
-            </span>
-          </div>
-          <div>
-            UP{'      '}
-            <span className="text-[var(--color-accent-500)]">
-              {netSent !== null ? formatNetSpeed(netSent) : '--'}
-            </span>
-          </div>
-        </div>
-      </Card>
-
-      {/* Game Score */}
-      <Card title="SCORE" className="mt-4">
-        {gameScore !== null ? (
-          (() => {
-            const rank = getScoreRank(gameScore);
-            const rankColorClass =
-              rank.color === 'var(--color-success-500)'
-                ? 'text-[var(--color-success-500)]'
-                : rank.color === 'var(--color-cyan-500)'
-                  ? 'text-[var(--color-cyan-500)]'
-                  : rank.color === 'var(--color-accent-400)'
-                    ? 'text-[var(--color-accent-400)]'
-                    : 'text-[var(--color-danger-500)]';
-
-            return (
-              <>
-                <div className={`font-bold text-2xl tracking-[0.05em] ${rankColorClass}`}>
-                  {gameScore} / 100
-                </div>
-                <div className={`font-mono text-[10px] mt-1 ${rankColorClass}`}>
-                  {createProgressBar(gameScore)} {gameScore}%
-                </div>
-                <div
-                  className={`font-[var(--font-mono)] text-[10px] tracking-[0.15em] mt-1 ${rankColorClass}`}
-                >
-                  {rank.label}
-                </div>
-              </>
-            );
-          })()
-        ) : (
-          <>
-            <div className="font-bold text-2xl text-[var(--color-text-muted)] tracking-[0.05em]">
-              -- / 100
-            </div>
-            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1">
-              --%
-            </div>
-            <div className="font-[var(--font-mono)] text-[10px] tracking-[0.15em] text-[var(--color-text-muted)] mt-1">
-              --
-            </div>
-          </>
-        )}
       </Card>
 
       {/* Optimization History */}
@@ -441,9 +237,11 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
           </div>
         )}
       </Card>
+
+      {/* AI Suggestions */}
       <AiPanel suggestions={suggestions} />
     </div>
   );
-});
+};
 
 export default HomeWing;

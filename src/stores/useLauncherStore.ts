@@ -8,7 +8,7 @@ const AUTO_BOOST_KEY = 'nexus:launcher:autoBoostEnabled';
 const FAVORITES_KEY = 'nexus:launcher:favorites'; // number[] JSON
 const LAST_PLAYED_KEY = 'nexus:launcher:lastPlayed'; // Record<number, number> JSON
 
-type SortMode = 'name' | 'recent' | 'favorites';
+type SortMode = 'name' | 'size' | 'lastPlayed';
 
 interface LauncherStore {
   games: GameInfo[];
