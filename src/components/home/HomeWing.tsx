@@ -1,8 +1,9 @@
 import type React from 'react';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { homePageSuggestions } from '../../lib/localAi';
 import { useHardwareStore } from '../../stores/useHardwareStore';
 import { useLauncherStore } from '../../stores/useLauncherStore';
+import { useLogStore } from '../../stores/useLogStore';
 import { useNavStore } from '../../stores/useNavStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import { usePulseStore } from '../../stores/usePulseStore';
@@ -12,6 +13,12 @@ import AiPanel from '../shared/AiPanel';
 import { Button, Card, StatusBadge } from '../ui';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
+
+interface OptimizationHistory {
+  timestamp: number;
+  action: string;
+  result: string;
+}
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -24,6 +31,21 @@ function formatNetSpeed(kb: number): string {
     return `${(kb / 1024).toFixed(1)} MB/s`;
   }
   return `${kb.toFixed(0)} KB/s`;
+}
+
+function calcScore(
+  cpuPercent: number | null,
+  memUsed: number | null,
+  memTotal: number | null,
+): number | null {
+  if (cpuPercent === null || memUsed === null || memTotal === null) return null;
+  const score = Math.round(100 - cpuPercent * 0.5 - (memUsed / memTotal) * 30);
+  return Math.max(0, Math.min(100, score));
+}
+
+function formatTime(timestamp: number): string {
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
 }
 
 // ─── HomeWing ────────────────────────────────────────────────────────────────
@@ -49,12 +71,16 @@ export default function HomeWing(): React.ReactElement {
 
   const games = useLauncherStore((s) => s.games);
   const navigate = useNavStore((s) => s.navigate);
+  const { logs } = useLogStore();
 
   // Storage and Hardware stores
   const fetchStorageInfo = useStorageStore((s) => s.fetchStorageInfo);
   const storageInfo = useStorageStore((s) => s.storageInfo);
   const fetchHardware = useHardwareStore((s) => s.fetchHardware);
   const hwInfo = useHardwareStore((s) => s.info);
+
+  // Optimization history state
+  const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
 
   useEffect(() => {
     // Auto-fetch data on mount
@@ -65,7 +91,37 @@ export default function HomeWing(): React.ReactElement {
     if (!isPolling) {
       startPolling();
     }
+
+    // Load optimization history from localStorage
+    const saved = localStorage.getItem('nexus:home:history');
+    if (saved) {
+      try {
+        setOptimizationHistory(JSON.parse(saved));
+      } catch {
+        // Ignore invalid JSON
+      }
+    }
   }, [fetchProcesses, fetchStorageInfo, fetchHardware, isPolling, startPolling]);
+
+  // Update optimization history when logs change
+  useEffect(() => {
+    const recentLogs = logs.slice(-5).reverse();
+    const newHistory = recentLogs
+      .filter((log) => log.message.includes('BOOST') || log.message.includes('OPTIMIZATION'))
+      .map((log) => ({
+        timestamp: new Date(log.timestamp).getTime(),
+        action: log.message,
+        result: log.level === 'Error' ? 'FAILED' : 'SUCCESS',
+      }));
+
+    if (newHistory.length > 0) {
+      setOptimizationHistory((prev) => {
+        const updated = [...prev, ...newHistory].slice(-10);
+        localStorage.setItem('nexus:home:history', JSON.stringify(updated));
+        return updated;
+      });
+    }
+  }, [logs]);
 
   const topProcesses = useMemo(() => getTopCpuProcesses(processes, 3), [processes]);
 
@@ -79,15 +135,25 @@ export default function HomeWing(): React.ReactElement {
     [processes],
   );
 
+  const gameScore = useMemo(
+    () => calcScore(cpuPercent, memUsed, memTotal),
+    [cpuPercent, memUsed, memTotal],
+  );
+
+  const highCpuProcesses = useMemo(
+    () => processes.filter((p) => p.cpuPercent >= 80).slice(0, 3),
+    [processes],
+  );
+
   return (
     <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="mb-5">
         <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-accent-500)] tracking-[0.15em] mb-1">
-          ▶ ホーム
+          ▶ HOME / OVERVIEW
         </div>
         <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
-          システム概要とクイックアクション
+          SYSTEM DASHBOARD
         </div>
       </div>
 
@@ -291,14 +357,67 @@ export default function HomeWing(): React.ReactElement {
         </div>
       </Card>
 
-      {/* Game Score Placeholder */}
+      {/* Game Score */}
       <Card title="ゲームスコア" className="mt-4">
         <div className="font-[var(--font-mono)] text-2xl font-bold text-[var(--color-accent-500)] tracking-[0.05em]">
-          -- / 100
+          {gameScore !== null ? `${gameScore} / 100` : '-- / 100'}
         </div>
         <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1">
-          パフォーマンス計測 — 近日公開
+          {gameScore !== null && gameScore >= 80
+            ? 'EXCELLENT'
+            : gameScore !== null && gameScore >= 60
+              ? 'GOOD'
+              : gameScore !== null
+                ? 'POOR'
+                : '--'}
         </div>
+      </Card>
+
+      {/* Optimization History */}
+      <Card title="最適化履歴" className="mt-4">
+        {optimizationHistory.length > 0 ? (
+          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+            {optimizationHistory.map((item) => (
+              <div
+                key={`${item.timestamp}-${item.action}`}
+                className="mb-1 flex justify-between items-center"
+              >
+                <span>● {item.action.split(' ').slice(0, 2).join(' ')}</span>
+                <span
+                  className={`text-[10px] ${item.result === 'SUCCESS' ? 'text-[var(--color-success-500)]' : 'text-[var(--color-danger-500)]'}`}
+                >
+                  {formatTime(item.timestamp)}
+                </span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center py-5">
+            NO HISTORY YET
+          </div>
+        )}
+      </Card>
+
+      {/* Alerts */}
+      <Card title="アラート" className="mt-4">
+        {highCpuProcesses.length > 0 ? (
+          <div className="font-[var(--font-mono)] text-xs text-[var(--color-danger-500)]">
+            {highCpuProcesses.map((process) => (
+              <div key={process.pid} className="mb-1 flex justify-between items-center">
+                <span>
+                  ⚠ CPU HIGH ({process.cpuPercent.toFixed(1)}%) — {process.name}
+                </span>
+                <Button variant="secondary" size="sm" onClick={() => navigate?.('boost')}>
+                  → BOOST
+                </Button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-success-500)] text-center py-5">
+            ● SYSTEM NOMINAL
+          </div>
+        )}
       </Card>
       <AiPanel suggestions={suggestions} />
     </div>
