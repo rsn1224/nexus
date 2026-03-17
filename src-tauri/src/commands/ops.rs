@@ -3,7 +3,7 @@ use serde::Serialize;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SystemProcess {
     pub pid: u32,

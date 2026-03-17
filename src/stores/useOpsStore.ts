@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
@@ -14,14 +15,15 @@ interface OpsStore {
   isSuggestionsLoading: boolean;
   error: string | null;
   lastUpdated: number | null;
-  processPollInterval: number | null;
+  isListening: boolean;
+  unlisten: (() => void) | null;
 
-  fetchProcesses: () => Promise<void>;
+  subscribe: () => void;
+  unsubscribe: () => void;
   fetchSuggestions: () => Promise<void>;
   killProcess: (pid: number) => Promise<void>;
   setProcessPriority: (pid: number, priority: 'high' | 'normal' | 'idle') => Promise<void>;
-  startProcessPolling: () => void;
-  stopProcessPolling: () => void;
+  clearError: () => void;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -33,21 +35,50 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
   isSuggestionsLoading: false,
   error: null,
   lastUpdated: null,
-  processPollInterval: null,
+  isListening: false,
+  unlisten: null,
 
-  fetchProcesses: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const processes = await invoke<SystemProcess[]>('list_processes');
-      log.info({ count: processes.length }, 'ops: processes fetched');
-      set({ processes, lastUpdated: Date.now() });
-    } catch (err) {
-      const message = extractErrorMessage(err);
-      log.error({ err }, 'ops: fetch processes failed');
-      set({ error: message });
-    } finally {
-      set({ isLoading: false });
+  subscribe: () => {
+    if (get().isListening) {
+      log.warn('ops: already listening');
+      return;
     }
+
+    log.info('ops: subscribing to nexus://ops');
+
+    set({ isListening: true, error: null });
+
+    listen<SystemProcess[]>('nexus://ops', (event) => {
+      const processes = event.payload;
+      log.info({ count: processes.length }, 'ops: processes received');
+      set({ processes, lastUpdated: Date.now() });
+    })
+      .then((fn) => {
+        set({ unlisten: fn });
+      })
+      .catch((err) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        log.error({ err }, 'ops: listen failed: %s', errorMessage);
+        set({
+          processes: [],
+          suggestions: [],
+          isLoading: false,
+          isSuggestionsLoading: false,
+          isListening: false,
+          error: errorMessage,
+          lastUpdated: null,
+        });
+      });
+  },
+
+  unsubscribe: () => {
+    const { unlisten } = get();
+    if (unlisten) {
+      unlisten();
+      set({ unlisten: null });
+      log.info('ops: unsubscribed');
+    }
+    set({ isListening: false });
   },
 
   fetchSuggestions: async () => {
@@ -62,9 +93,16 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ count: result.data.length }, 'ops: suggestions fetched');
       set({ suggestions: result.data });
     } catch (err) {
-      const message = extractErrorMessage(err);
-      log.error({ err }, 'ops: fetch suggestions failed');
-      set({ error: message });
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      log.error({ err }, 'ops: fetch suggestions failed: %s', errorMessage);
+      set({
+        processes: [],
+        suggestions: [],
+        isLoading: false,
+        isSuggestionsLoading: false,
+        error: errorMessage,
+        lastUpdated: null,
+      });
     } finally {
       set({ isSuggestionsLoading: false });
     }
@@ -75,11 +113,18 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     try {
       await invoke('kill_process', { pid });
       log.info({ pid }, 'ops: process killed');
-      await get().fetchProcesses();
+      // プロセス一覧は次の nexus://ops イベントで自動更新される
     } catch (err) {
-      const message = extractErrorMessage(err);
-      log.error({ err, pid }, 'ops: kill process failed');
-      set({ error: message });
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      log.error({ err, pid }, 'ops: kill process failed: %s', errorMessage);
+      set({
+        processes: [],
+        suggestions: [],
+        isLoading: false,
+        isSuggestionsLoading: false,
+        error: errorMessage,
+        lastUpdated: null,
+      });
     }
   },
 
@@ -88,7 +133,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     try {
       await invoke('set_process_priority', { pid, priority });
       log.info({ pid, priority }, 'ops: priority updated');
-      await get().fetchProcesses();
+      // プロセス一覧は次の nexus://ops イベントで自動更新される
     } catch (err) {
       const message = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: set priority failed');
@@ -96,37 +141,12 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     }
   },
 
-  startProcessPolling: () => {
-    const { processPollInterval } = get();
-    if (processPollInterval) {
-      log.warn('ops: process polling already started');
-      return;
-    }
-
-    log.info('ops: starting process polling');
-
-    // Initial fetch
-    void get().fetchProcesses();
-
-    // Start polling with 3-second interval
-    const interval = setInterval(() => {
-      void get().fetchProcesses();
-    }, 3000) as unknown as number;
-
-    set({ processPollInterval: interval });
-  },
-
-  stopProcessPolling: () => {
-    const { processPollInterval } = get();
-    if (processPollInterval) {
-      clearInterval(processPollInterval);
-      log.info('ops: stopped process polling');
-      set({ processPollInterval: null });
-    }
+  clearError: () => {
+    set({ error: null });
   },
 }));
 
-// Granular selectors to prevent unnecessary re-renders
+// Granular selectors（互換性維持）
 export const useProcesses = () => useOpsStore((s) => s.processes);
 export const useProcessSuggestions = () => useOpsStore((s) => s.suggestions);
 export const useProcessLoading = () => useOpsStore((s) => s.isLoading);
@@ -135,20 +155,19 @@ export const useProcessError = () => useOpsStore((s) => s.error);
 export const useProcessLastUpdated = () => useOpsStore((s) => s.lastUpdated);
 export const useProcessActions = () =>
   useOpsStore((s) => ({
-    fetch: s.fetchProcesses,
     fetchSuggestions: s.fetchSuggestions,
     kill: s.killProcess,
     setPriority: s.setProcessPriority,
   }));
-export const useProcessPollingControl = () =>
+export const useOpsListeningControl = () =>
   useOpsStore((s) => ({
-    start: s.startProcessPolling,
-    stop: s.stopProcessPolling,
+    subscribe: s.subscribe,
+    unsubscribe: s.unsubscribe,
   }));
 
-// Cleanup on unmount
+// Cleanup on unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    useOpsStore.getState().stopProcessPolling();
+    useOpsStore.getState().unsubscribe();
   });
 }

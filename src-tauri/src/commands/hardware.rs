@@ -6,7 +6,7 @@ use serde_json;
 use sysinfo::{Components, DiskKind, Disks, System};
 use tracing::{info, warn};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct HardwareInfo {
     pub cpu_name: String,
@@ -29,7 +29,7 @@ pub struct HardwareInfo {
     pub gpu_usage_percent: Option<f32>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DiskInfo {
     pub mount: String,

@@ -1,5 +1,6 @@
 mod commands;
 mod constants;
+mod emitters;
 mod error;
 mod infra;
 mod parsers;
@@ -84,6 +85,31 @@ pub fn run() {
             app_settings::get_app_settings,
             app_settings::save_app_settings,
         ])
+        .setup(|app| {
+            let handle = app.handle().clone();
+
+            // Pulse エミッター（リソース監視 — 2秒間隔）
+            let pulse_handle = handle.clone();
+            tauri::async_runtime::spawn(async move {
+                emitters::pulse_emitter::start(pulse_handle).await;
+            });
+
+            // Ops エミッター（プロセス一覧 — 3秒間隔）
+            let ops_handle = handle.clone();
+            tauri::async_runtime::spawn(async move {
+                emitters::ops_emitter::start(ops_handle).await;
+            });
+
+            // Hardware エミッター（ハードウェア情報 — 5秒間隔）
+            let hw_handle = handle.clone();
+            tauri::async_runtime::spawn(async move {
+                emitters::hardware_emitter::start(hw_handle).await;
+            });
+
+            info!("emitters: 全エミッター起動完了（pulse=2s, ops=3s, hardware=5s）");
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

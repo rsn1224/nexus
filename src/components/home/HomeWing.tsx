@@ -44,8 +44,9 @@ function formatTime(timestamp: number): string {
 const HomeWing = memo(function HomeWing(): React.ReactElement {
   // Store data - using existing store methods
   const processes = useOpsStore((s) => s.processes);
-  const fetchProcesses = useOpsStore((s) => s.fetchProcesses);
-  const startProcessPolling = useOpsStore((s) => s.startProcessPolling);
+  const subscribeOps = useOpsStore((s) => s.subscribe);
+  const subscribePulse = usePulseStore((s) => s.subscribe);
+  const isListening = usePulseStore((s) => s.isListening);
 
   const latestSnapshot = usePulseStore((s) =>
     s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
@@ -58,33 +59,24 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
   const diskWrite = latestSnapshot?.diskWriteKb ?? null;
   const netRecv = latestSnapshot?.netRecvKb ?? null;
   const netSent = latestSnapshot?.netSentKb ?? null;
-  const isPolling = usePulseStore((s) => s.isPolling);
-  const startPolling = usePulseStore((s) => s.startPolling);
 
   const games = useLauncherStore((s) => s.games);
   const navigate = useNavStore((s) => s.navigate);
   const { logs } = useLogStore();
 
   // Storage and Hardware stores
-  const fetchStorageInfo = useStorageStore((s) => s.fetchStorageInfo);
   const storageInfo = useStorageStore((s) => s.storageInfo);
-  const { info: hwInfo, diskUsagePercent, fetchHardware } = useHardwareData();
+  const { info: hwInfo, diskUsagePercent } = useHardwareData();
   const gpuUsage = hwInfo?.gpuUsagePercent ?? null;
 
   // Optimization history state
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
 
   useEffect(() => {
-    // Auto-fetch data on mount
-    void fetchProcesses();
-    void fetchStorageInfo();
-    void fetchHardware();
-    // Auto-start pulse polling
-    if (!isPolling) {
-      startPolling();
-    }
-    // Start process polling
-    startProcessPolling();
+    // イベントリスナーを登録（BE からのプッシュを受信）
+    subscribePulse();
+    subscribeOps();
+    // Hardware は useHardwareData 内で subscribe 済みの場合は不要
 
     // Load optimization history from localStorage
     const saved = localStorage.getItem('nexus:home:history');
@@ -95,14 +87,7 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
         // Ignore invalid JSON
       }
     }
-  }, [
-    fetchProcesses,
-    fetchStorageInfo,
-    fetchHardware,
-    isPolling,
-    startPolling,
-    startProcessPolling,
-  ]);
+  }, [subscribePulse, subscribeOps]);
 
   // Update optimization history when logs change
   useEffect(() => {
@@ -228,11 +213,11 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
             <Button
               variant="primary"
               size="sm"
-              onClick={() => (isPolling ? null : startPolling())}
-              disabled={isPolling}
-              loading={isPolling}
+              onClick={() => (isListening ? null : subscribePulse())}
+              disabled={isListening}
+              loading={isListening}
             >
-              {isPolling ? '■ 監視中' : '▶ 監視開始'}
+              {isListening ? '■ 監視中' : '▶ 監視開始'}
             </Button>
             <Button variant="primary" size="sm" onClick={() => navigate?.('boost')}>
               ⚡ 今すぐ最適化

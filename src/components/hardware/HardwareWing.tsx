@@ -8,13 +8,13 @@ import {
 import { Card } from '../ui';
 
 export default function HardwareWing(): React.JSX.Element {
-  const { fetchHardware } = useHardwareStore();
+  const { subscribe } = useHardwareStore();
   const { info, isLoading, error, memUsagePercent, formattedUptime, formattedBootTime } =
     useHardwareData();
 
   useEffect(() => {
-    void fetchHardware();
-  }, [fetchHardware]);
+    subscribe(); // イベントリスナーを登録
+  }, [subscribe]);
 
   if (isLoading) {
     return (

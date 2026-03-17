@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useBoostStore } from '../../stores/useBoostStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import type { SystemProcess } from '../../types';
@@ -41,13 +41,8 @@ interface ProcessTabProps {
 
 export default function ProcessTab({ className = '' }: ProcessTabProps): React.ReactElement {
   const { lastResult, isRunning, error, runBoost } = useBoostStore();
-  const { processes, isLoading, fetchProcesses, lastUpdated } = useOpsStore();
+  const { processes, isLoading, lastUpdated } = useOpsStore();
   const [threshold, setThreshold] = useState(DEFAULT_CPU_THRESHOLD);
-
-  // マウント時に自動でプロセスを取得
-  useEffect(() => {
-    void fetchProcesses();
-  }, [fetchProcesses]);
 
   // ソート済みプロセスリスト
   const sortedProcesses = useMemo(
@@ -69,12 +64,11 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
 
   const handleRunBoost = async () => {
     await runBoost(threshold);
-    // BOOST実行後にプロセスリストを再取得
-    void fetchProcesses();
+    // BOOST実行後は nexus://ops イベントで自動更新される
   };
 
   const handleRefresh = () => {
-    void fetchProcesses();
+    // 手動更新は不要（nexus://ops イベントで自動更新）
   };
 
   const formatDuration = (durationMs: number): string => {

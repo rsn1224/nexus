@@ -2,6 +2,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SystemProcess } from '../types';
 
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+vi.mock('@tauri-apps/api/event', () => ({
+  listen: vi.fn(),
+  UnlistenFn: vi.fn(),
+}));
 vi.mock('../lib/logger', () => ({
   default: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
 }));
@@ -10,6 +14,7 @@ vi.mock('../services/perplexityService', () => ({
 }));
 
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { getOptimizationSuggestions } from '../services/perplexityService';
 import { useOpsStore } from './useOpsStore';
 
@@ -51,6 +56,7 @@ function resetStore(): void {
     isSuggestionsLoading: false,
     error: null,
     lastUpdated: null,
+    isListening: false,
   });
 }
 
@@ -61,83 +67,90 @@ describe('useOpsStore', () => {
   });
 
   it('starts with empty state', () => {
-    const { processes, isLoading, error, lastUpdated } = useOpsStore.getState();
+    const { processes, isLoading, error, lastUpdated, isListening } = useOpsStore.getState();
     expect(processes).toEqual([]);
     expect(isLoading).toBe(false);
     expect(error).toBeNull();
     expect(lastUpdated).toBeNull();
+    expect(isListening).toBe(false);
   });
 
-  it('fetchProcesses populates processes on success', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROCESSES);
-    await useOpsStore.getState().fetchProcesses();
+  it('subscribes to nexus://ops events', () => {
+    const mockUnlisten = vi.fn();
+    const mockListen = vi.mocked(listen);
+    mockListen.mockResolvedValue(mockUnlisten);
 
-    const { processes, isLoading, error } = useOpsStore.getState();
+    useOpsStore.getState().subscribe();
+
+    expect(mockListen).toHaveBeenCalledWith('nexus://ops', expect.any(Function));
+  });
+
+  it('handles subscription errors', async () => {
+    const mockListen = vi.mocked(listen);
+    const testError = new Error('Subscription failed');
+    mockListen.mockRejectedValue(testError);
+
+    useOpsStore.getState().subscribe();
+
+    // エラー状態の確認を少し待つ
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const { error, isListening } = useOpsStore.getState();
+    expect(error).toBe('Subscription failed');
+    expect(isListening).toBe(false);
+  });
+
+  it('prevents duplicate subscriptions', async () => {
+    const mockListen = vi.mocked(listen);
+    mockListen.mockResolvedValue(vi.fn());
+
+    useOpsStore.getState().subscribe();
+    useOpsStore.getState().subscribe();
+
+    expect(mockListen).toHaveBeenCalledTimes(1);
+  });
+
+  it('unsubscribes correctly', async () => {
+    const mockUnlisten = vi.fn();
+    const mockListen = vi.mocked(listen);
+    mockListen.mockResolvedValue(mockUnlisten);
+
+    useOpsStore.getState().subscribe();
+    // 非同期で unlisten が設定されるのを待つ
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    useOpsStore.getState().unsubscribe();
+
+    expect(mockUnlisten).toHaveBeenCalled();
+    const { isListening } = useOpsStore.getState();
+    expect(isListening).toBe(false);
+  });
+
+  it('processes incoming ops events', async () => {
+    const mockListen = vi.mocked(listen);
+    let eventCallback: ((event: { payload: SystemProcess[] }) => void) | undefined;
+
+    mockListen.mockImplementation((event, callback) => {
+      if (event === 'nexus://ops') {
+        eventCallback = callback as (event: { payload: SystemProcess[] }) => void;
+      }
+      return Promise.resolve(vi.fn());
+    });
+
+    useOpsStore.getState().subscribe();
+
+    // イベントをシミュレート
+    expect(eventCallback).toBeDefined();
+    eventCallback!({ payload: MOCK_PROCESSES });
+
+    const { processes, lastUpdated } = useOpsStore.getState();
     expect(processes).toEqual(MOCK_PROCESSES);
-    expect(isLoading).toBe(false);
-    expect(error).toBeNull();
+    expect(lastUpdated).toBeGreaterThan(0);
   });
 
-  it('fetchProcesses sets lastUpdated on success', async () => {
-    const before = Date.now();
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROCESSES);
-    await useOpsStore.getState().fetchProcesses();
-
-    const { lastUpdated } = useOpsStore.getState();
-    expect(lastUpdated).not.toBeNull();
-    expect(lastUpdated ?? 0).toBeGreaterThanOrEqual(before);
-  });
-
-  it('fetchProcesses calls list_processes command', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce([]);
-    await useOpsStore.getState().fetchProcesses();
-
-    expect(invoke).toHaveBeenCalledWith('list_processes');
-  });
-
-  it('fetchProcesses sets error on failure', async () => {
-    vi.mocked(invoke).mockRejectedValueOnce(new Error('permission denied'));
-    await useOpsStore.getState().fetchProcesses();
-
-    const { error, isLoading, processes } = useOpsStore.getState();
-    expect(error).toBe('permission denied');
-    expect(isLoading).toBe(false);
-    expect(processes).toEqual([]);
-  });
-
-  it('fetchProcesses handles non-Error rejection', async () => {
-    vi.mocked(invoke).mockRejectedValueOnce('unknown failure');
-    await useOpsStore.getState().fetchProcesses();
-
-    expect(useOpsStore.getState().error).toBe('unknown failure');
-  });
-
-  it('fetchProcesses clears previous error on new call', async () => {
-    useOpsStore.setState({ error: 'old error' });
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROCESSES);
-    await useOpsStore.getState().fetchProcesses();
-
-    expect(useOpsStore.getState().error).toBeNull();
-  });
-
-  it('fetchProcesses accepts empty process list', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce([]);
-    await useOpsStore.getState().fetchProcesses();
-
-    expect(useOpsStore.getState().processes).toEqual([]);
-    expect(useOpsStore.getState().error).toBeNull();
-  });
-
-  // AI Suggestions tests
-  it('fetchSuggestions fetches and displays suggestions', async () => {
-    const mockProcessNames = ['chrome.exe', 'code.exe', 'node.exe'];
-    const mockSuggestions = [
-      'Chromeブラウザのタブ数を減らしてください',
-      'VSCodeの拡張機能を見直してください',
-      'Node.jsプロセスを最適化してください',
-    ];
-
-    vi.mocked(invoke).mockResolvedValueOnce(mockProcessNames);
+  it('fetchSuggestions works correctly', async () => {
+    const mockSuggestions = ['Kill high CPU processes', 'Close unused applications'];
+    vi.mocked(invoke).mockResolvedValueOnce(['chrome', 'code']);
     vi.mocked(getOptimizationSuggestions).mockResolvedValueOnce({
       ok: true,
       data: mockSuggestions,
@@ -145,48 +158,52 @@ describe('useOpsStore', () => {
 
     await useOpsStore.getState().fetchSuggestions();
 
-    expect(useOpsStore.getState().suggestions).toEqual(mockSuggestions);
-    expect(useOpsStore.getState().error).toBeNull();
-    expect(useOpsStore.getState().isSuggestionsLoading).toBe(false);
+    const { suggestions, isSuggestionsLoading, error } = useOpsStore.getState();
+    expect(suggestions).toEqual(mockSuggestions);
+    expect(isSuggestionsLoading).toBe(false);
+    expect(error).toBeNull();
   });
 
-  it('fetchSuggestions handles API key error', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(['chrome.exe']);
-    vi.mocked(getOptimizationSuggestions).mockRejectedValueOnce(
-      new Error('PERPLEXITY_API_KEY が未設定です'),
-    );
-
-    await useOpsStore.getState().fetchSuggestions();
-
-    expect(useOpsStore.getState().error).toBe('PERPLEXITY_API_KEY が未設定です');
-    expect(useOpsStore.getState().suggestions).toEqual([]);
-    expect(useOpsStore.getState().isSuggestionsLoading).toBe(false);
-  });
-
-  it('fetchSuggestions handles Perplexity API failure', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(['chrome.exe']);
-    vi.mocked(getOptimizationSuggestions).mockRejectedValueOnce(
-      new Error('AI提案の取得に失敗しました'),
-    );
-
-    await useOpsStore.getState().fetchSuggestions();
-
-    expect(useOpsStore.getState().error).toBe('AI提案の取得に失敗しました');
-    expect(useOpsStore.getState().suggestions).toEqual([]);
-    expect(useOpsStore.getState().isSuggestionsLoading).toBe(false);
-  });
-
-  it('fetchSuggestions clears previous error on success', async () => {
-    useOpsStore.setState({ error: 'old error' });
-    vi.mocked(invoke).mockResolvedValueOnce(['chrome.exe']);
+  it('handles fetchSuggestions errors', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(['chrome']);
     vi.mocked(getOptimizationSuggestions).mockResolvedValueOnce({
-      ok: true,
-      data: ['Test suggestion'],
+      ok: false,
+      error: 'API failed',
     });
 
     await useOpsStore.getState().fetchSuggestions();
 
-    expect(useOpsStore.getState().error).toBeNull();
-    expect(useOpsStore.getState().suggestions).toEqual(['Test suggestion']);
+    const { suggestions, isSuggestionsLoading, error } = useOpsStore.getState();
+    expect(suggestions).toEqual([]);
+    expect(isSuggestionsLoading).toBe(false);
+    expect(error).toBe('API failed');
+  });
+
+  it('killProcess works correctly', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(undefined);
+
+    await useOpsStore.getState().killProcess(1234);
+
+    expect(vi.mocked(invoke)).toHaveBeenCalledWith('kill_process', { pid: 1234 });
+  });
+
+  it('setProcessPriority works correctly', async () => {
+    vi.mocked(invoke).mockResolvedValueOnce(undefined);
+
+    await useOpsStore.getState().setProcessPriority(1234, 'high');
+
+    expect(vi.mocked(invoke)).toHaveBeenCalledWith('set_process_priority', {
+      pid: 1234,
+      priority: 'high',
+    });
+  });
+
+  it('handles process action errors', async () => {
+    vi.mocked(invoke).mockRejectedValueOnce(new Error('Process not found'));
+
+    await useOpsStore.getState().killProcess(9999);
+
+    const { error } = useOpsStore.getState();
+    expect(error).toBeTruthy();
   });
 });

@@ -1,79 +1,47 @@
-import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import log from '../lib/logger';
-import { extractErrorMessage } from '../lib/tauri';
 import { checkAndNotify } from '../services/notificationService';
 import type { ResourceSnapshot } from '../types';
-import { useSettingsStore } from './useSettingsStore';
 
 // ─── Store shape ──────────────────────────────────────────────────────────────
 
 interface PulseStore {
-  snapshots: ResourceSnapshot[]; // 直近 60 件のみ保持
-  isPolling: boolean;
+  snapshots: ResourceSnapshot[];
+  isListening: boolean;
   error: string | null;
-  pollInterval: number | null; // setInterval ID
+  unlisten: (() => void) | null;
 
-  startPolling: () => void;
-  stopPolling: () => void;
-  fetchSnapshot: () => Promise<void>;
+  subscribe: () => void;
+  unsubscribe: () => void;
   clearSnapshots: () => void;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const MAX_SNAPSHOTS = 60; // 最大保持数
+const MAX_SNAPSHOTS = 60;
 
 // ─── Store ────────────────────────────────────────────────────────────────────
 
 export const usePulseStore = create<PulseStore>((set, get) => ({
   snapshots: [],
-  isPolling: false,
+  isListening: false,
   error: null,
-  pollInterval: null,
+  unlisten: null,
 
-  startPolling: () => {
-    const { isPolling, pollInterval } = get();
-
-    if (isPolling || pollInterval) {
-      log.warn('pulse: polling already started');
+  subscribe: () => {
+    if (get().isListening) {
+      log.warn('pulse: already listening');
       return;
     }
 
-    log.info('pulse: starting resource polling');
+    log.info('pulse: subscribing to nexus://pulse');
 
-    // 最初のスナップショットを即時取得
-    void get().fetchSnapshot();
+    set({ isListening: true, error: null });
 
-    // ポーリングを開始
-    const interval = setInterval(() => {
-      void get().fetchSnapshot();
-    }, useSettingsStore.getState().pollIntervalMs) as unknown as number;
+    listen<ResourceSnapshot>('nexus://pulse', (event) => {
+      const snapshot = event.payload;
 
-    set({
-      isPolling: true,
-      pollInterval: interval,
-      error: null,
-    });
-  },
-
-  stopPolling: () => {
-    const { pollInterval } = get();
-
-    if (pollInterval) {
-      clearInterval(pollInterval);
-      log.info('pulse: stopped resource polling');
-    }
-
-    set({
-      isPolling: false,
-      pollInterval: null,
-    });
-  },
-
-  fetchSnapshot: async () => {
-    try {
-      const snapshot = await invoke<ResourceSnapshot>('get_resource_snapshot');
       log.info(
         {
           cpu: snapshot.cpuPercent,
@@ -87,22 +55,35 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
       void checkAndNotify(snapshot);
 
       set((state) => {
-        // 新しいスナップショットを追加し、最大数を超えた場合は古いものを削除
         const newSnapshots = [...state.snapshots, snapshot];
         if (newSnapshots.length > MAX_SNAPSHOTS) {
           newSnapshots.splice(0, newSnapshots.length - MAX_SNAPSHOTS);
         }
-
-        return {
-          snapshots: newSnapshots,
-          error: null,
-        };
+        return { snapshots: newSnapshots, error: null };
       });
-    } catch (err) {
-      const message = extractErrorMessage(err);
-      log.error({ err }, 'pulse: fetch snapshot failed');
-      set({ error: message });
+    })
+      .then((fn) => {
+        set({ unlisten: fn });
+      })
+      .catch((err) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        log.error({ err }, 'pulse: listen failed: %s', errorMessage);
+        set({
+          snapshots: [],
+          isListening: false,
+          error: errorMessage,
+        });
+      });
+  },
+
+  unsubscribe: () => {
+    const { unlisten } = get();
+    if (unlisten) {
+      unlisten();
+      set({ unlisten: null });
+      log.info('pulse: unsubscribed');
     }
+    set({ isListening: false });
   },
 
   clearSnapshots: () => {
@@ -111,10 +92,10 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
   },
 }));
 
-// ─── Cleanup on unmount ───────────────────────────────────────────────────────
+// ─── Cleanup on unload ─────────────────────────────────────────────────────--
 
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    usePulseStore.getState().stopPolling();
+    usePulseStore.getState().unsubscribe();
   });
 }

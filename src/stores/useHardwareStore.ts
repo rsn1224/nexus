@@ -1,18 +1,18 @@
-import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import log from '../lib/logger';
 import type { HardwareInfo } from '../types';
 
 interface HardwareStore {
   info: HardwareInfo | null;
-  isLoading: boolean;
+  isListening: boolean;
   error: string | null;
   lastUpdated: number | null;
-  fetchHardware: () => Promise<void>;
+  unlisten: (() => void) | null;
+
+  subscribe: () => void;
+  unsubscribe: () => void;
   clearError: () => void;
-  startHardwarePolling: () => void;
-  stopHardwarePolling: () => void;
-  hardwarePollInterval: number | null;
 }
 
 // Default hardware info for fallback
@@ -37,80 +37,74 @@ const defaultHardwareInfo: HardwareInfo = {
   gpuUsagePercent: null,
 };
 
+// ─── Store ────────────────────────────────────────────────────────────────────
+
 export const useHardwareStore = create<HardwareStore>((set, get) => ({
   info: null,
-  isLoading: false,
+  isListening: false,
   error: null,
   lastUpdated: null,
-  hardwarePollInterval: null,
-  fetchHardware: async () => {
-    const { isLoading } = get();
-    if (isLoading) return; // Prevent concurrent requests
+  unlisten: null,
 
-    set({ isLoading: true, error: null });
-    try {
-      const info = await invoke<HardwareInfo>('get_hardware_info');
-      set({
-        info,
-        isLoading: false,
-        lastUpdated: Date.now(),
-      });
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch hardware info';
-      log.error({ err }, 'hardware fetch failed: %s', errorMessage);
-      set({
-        info: defaultHardwareInfo,
-        error: errorMessage,
-        isLoading: false,
-        lastUpdated: Date.now(),
-      });
-    }
-  },
-  clearError: () => {
-    set({ error: null });
-  },
-  startHardwarePolling: () => {
-    const { hardwarePollInterval } = get();
-    if (hardwarePollInterval) {
-      log.warn('hardware: polling already started');
+  subscribe: () => {
+    if (get().isListening) {
+      log.warn('hardware: already listening');
       return;
     }
 
-    log.info('hardware: starting hardware polling');
+    log.info('hardware: subscribing to nexus://hardware');
 
-    // Initial fetch
-    void get().fetchHardware();
+    set({ isListening: true, error: null });
 
-    // Start polling with 5-second interval (hardware changes slowly)
-    const interval = setInterval(() => {
-      void get().fetchHardware();
-    }, 5000) as unknown as number;
-
-    set({ hardwarePollInterval: interval });
+    listen<HardwareInfo>('nexus://hardware', (event) => {
+      const info = event.payload;
+      set({
+        info,
+        lastUpdated: Date.now(),
+      });
+    })
+      .then((fn) => {
+        set({ unlisten: fn });
+      })
+      .catch((err) => {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        log.error({ err }, 'hardware: listen failed: %s', errorMessage);
+        set({
+          info: defaultHardwareInfo,
+          isListening: false,
+          error: errorMessage,
+        });
+      });
   },
-  stopHardwarePolling: () => {
-    const { hardwarePollInterval } = get();
-    if (hardwarePollInterval) {
-      clearInterval(hardwarePollInterval);
-      log.info('hardware: stopped hardware polling');
-      set({ hardwarePollInterval: null });
+
+  unsubscribe: () => {
+    const { unlisten } = get();
+    if (unlisten) {
+      unlisten();
+      set({ unlisten: null });
+      log.info('hardware: unsubscribed');
     }
+    set({ isListening: false });
+  },
+
+  clearError: () => {
+    set({ error: null });
   },
 }));
 
-// Granular selectors to prevent unnecessary re-renders
+// Granular selectors（互換性維持）
 export const useHardwareInfo = () => useHardwareStore((s) => s.info);
-export const useHardwareLoading = () => useHardwareStore((s) => s.isLoading);
+export const useHardwareLoading = () => useHardwareStore(() => false); // 常に false（BE がプッシュ）
 export const useHardwareError = () => useHardwareStore((s) => s.error);
 export const useHardwareLastUpdated = () => useHardwareStore((s) => s.lastUpdated);
-export const useHardwareFetch = () => useHardwareStore((s) => s.fetchHardware);
-export const useHardwarePollingControl = () =>
+export const useHardwareFetch = () => useHardwareStore((s) => s.subscribe); // 互換: fetchHardware → subscribe
+export const useHardwareListeningControl = () =>
   useHardwareStore((s) => ({
-    start: s.startHardwarePolling,
-    stop: s.stopHardwarePolling,
+    subscribe: s.subscribe,
+    unsubscribe: s.unsubscribe,
   }));
 
-// Computed selectors
+// Computed selectors（変更なし）
 export const useCpuInfo = () => useHardwareStore((s) => s.info?.cpuName ?? null);
 export const useCpuTemp = () => useHardwareStore((s) => s.info?.cpuTempC ?? null);
 export const useGpuInfo = () => useHardwareStore((s) => s.info?.gpuName ?? null);
@@ -123,7 +117,7 @@ export const useGpuVram = () =>
 
 // Selectors for derived data
 export const useHardwareData = () => {
-  const { info, isLoading, error, fetchHardware } = useHardwareStore();
+  const { info, isListening, error, subscribe } = useHardwareStore();
 
   const memUsagePercent =
     info && info.memTotalGb > 0 ? (info.memUsedGb / info.memTotalGb) * 100 : 0;
@@ -140,19 +134,18 @@ export const useHardwareData = () => {
       })
     : '--';
 
-  // ディスク使用率の計算（メインドライブの使用率）
   const diskUsagePercent =
     info && info.disks.length > 0 ? (info.disks[0].usedGb / info.disks[0].totalGb) * 100 : null;
 
   return {
     info,
-    isLoading,
+    isLoading: !isListening && info === null, // 初回のみローディング表示
     error,
     memUsagePercent,
     formattedUptime,
     formattedBootTime,
     diskUsagePercent,
-    fetchHardware,
+    fetchHardware: subscribe, // 互換性維持: fetchHardware → subscribe
   };
 };
 
@@ -173,15 +166,15 @@ function formatUptime(seconds: number): string {
 
 export function createDiskProgressBar(usedGb: number, totalGb: number): string {
   const percentage = totalGb > 0 ? (usedGb / totalGb) * 100 : 0;
-  const filledBlocks = Math.round(percentage / 10); // 10% per block
+  const filledBlocks = Math.round(percentage / 10);
   const emptyBlocks = 10 - filledBlocks;
 
   return '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
 }
 
-// Cleanup on unmount
+// Cleanup on unload
 if (typeof window !== 'undefined') {
   window.addEventListener('beforeunload', () => {
-    useHardwareStore.getState().stopHardwarePolling();
+    useHardwareStore.getState().unsubscribe();
   });
 }
