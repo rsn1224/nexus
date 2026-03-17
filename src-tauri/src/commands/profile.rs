@@ -120,3 +120,21 @@ pub fn stop_game_monitor(state: State<'_, SharedState>) -> Result<(), AppError> 
     info!("ゲーム起動監視を停止しました");
     Ok(())
 }
+
+/// CPU トポロジー取得
+#[tauri::command]
+pub fn get_cpu_topology() -> Result<crate::types::game::CpuTopology, AppError> {
+    crate::services::cpu_topology::detect_topology()
+}
+
+/// プロセスの CPU アフィニティを設定
+#[tauri::command]
+pub fn set_process_affinity(pid: u32, cores: Vec<usize>) -> Result<(), AppError> {
+    crate::infra::cpu_affinity::set_affinity(pid, &cores)
+}
+
+/// プロセスの現在の CPU アフィニティを取得
+#[tauri::command]
+pub fn get_process_affinity(pid: u32) -> Result<Vec<usize>, AppError> {
+    crate::infra::cpu_affinity::get_affinity(pid)
+}

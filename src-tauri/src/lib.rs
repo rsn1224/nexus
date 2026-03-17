@@ -100,6 +100,9 @@ pub fn run() {
             profile::revert_game_profile,
             profile::start_game_monitor,
             profile::stop_game_monitor,
+            profile::get_cpu_topology,
+            profile::set_process_affinity,
+            profile::get_process_affinity,
         ])
         .setup(|app| {
             let handle = app.handle().clone();

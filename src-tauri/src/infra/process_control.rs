@@ -7,7 +7,9 @@ use windows_sys::core::HRESULT;
 use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
 #[cfg(windows)]
 use windows_sys::Win32::System::Threading::{
-    OpenProcess, TerminateProcess, PROCESS_QUERY_INFORMATION, PROCESS_SUSPEND_RESUME,
+    OpenProcess, SetPriorityClass, TerminateProcess, ABOVE_NORMAL_PRIORITY_CLASS,
+    HIGH_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, PROCESS_QUERY_INFORMATION, PROCESS_SET_INFORMATION,
+    PROCESS_SUSPEND_RESUME, REALTIME_PRIORITY_CLASS,
 };
 
 use crate::error::AppError;
@@ -182,6 +184,57 @@ impl Drop for ProcessController {
             }
         }
     }
+}
+
+/// プロセスの優先度を Win32 API で設定する。
+/// PowerShell 経由ではなく直接 SetPriorityClass を呼ぶため高速。
+#[cfg(windows)]
+#[allow(dead_code)]
+pub fn set_process_priority_class(
+    pid: u32,
+    priority: crate::types::game::ProcessPriority,
+) -> Result<(), AppError> {
+    let priority_class = match priority {
+        crate::types::game::ProcessPriority::Normal => NORMAL_PRIORITY_CLASS,
+        crate::types::game::ProcessPriority::High => HIGH_PRIORITY_CLASS,
+        crate::types::game::ProcessPriority::Realtime => REALTIME_PRIORITY_CLASS,
+        crate::types::game::ProcessPriority::AboveNormal => ABOVE_NORMAL_PRIORITY_CLASS,
+    };
+
+    unsafe {
+        let handle = OpenProcess(PROCESS_SET_INFORMATION, 0, pid);
+        if handle.is_null() {
+            return Err(AppError::Win32(format!("OpenProcess 失敗: PID {}", pid)));
+        }
+
+        let result = SetPriorityClass(handle, priority_class);
+        CloseHandle(handle);
+
+        if result == 0 {
+            return Err(AppError::Win32(format!(
+                "SetPriorityClass 失敗: PID {}, priority={:?}",
+                pid, priority
+            )));
+        }
+    }
+
+    tracing::info!(
+        "プロセス優先度設定完了: PID={}, priority={:?}",
+        pid,
+        priority
+    );
+    Ok(())
+}
+
+/// 非 Windows プラットフォーム用スタブ
+#[cfg(not(windows))]
+pub fn set_process_priority_class(
+    _pid: u32,
+    _priority: crate::types::game::ProcessPriority,
+) -> Result<(), AppError> {
+    Err(AppError::Win32(
+        "プロセス優先度設定は Windows のみサポートされています".to_string(),
+    ))
 }
 
 /// Windows 以外のプラットフォーム用スタブ実装
