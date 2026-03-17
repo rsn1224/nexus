@@ -1,5 +1,6 @@
 pub mod boost;
 pub mod credentials;
+pub mod game_monitor;
 pub mod hardware;
 pub mod log_service;
 pub mod process;

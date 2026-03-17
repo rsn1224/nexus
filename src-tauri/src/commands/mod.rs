@@ -5,6 +5,7 @@ pub mod launcher;
 pub mod log;
 pub mod netopt;
 pub mod ops;
+pub mod profile;
 pub mod pulse;
 pub mod storage;
 pub mod windows_settings;

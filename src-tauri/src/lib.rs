@@ -9,10 +9,13 @@ mod state;
 mod types;
 
 use crate::commands::{
-    app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, windows_settings,
-    winopt,
+    app_settings, boost, hardware, launcher, log, netopt, ops, profile, pulse, storage,
+    windows_settings, winopt,
 };
 use tracing::info;
+
+// Manager トレイトをインポート
+use tauri::Manager;
 
 // state.rs から re-export
 pub use state::{AppState, SharedState};
@@ -88,6 +91,15 @@ pub fn run() {
             // APP SETTINGS
             app_settings::get_app_settings,
             app_settings::save_app_settings,
+            // GAME PROFILES
+            profile::list_game_profiles,
+            profile::get_game_profile,
+            profile::save_game_profile,
+            profile::delete_game_profile,
+            profile::apply_game_profile,
+            profile::revert_game_profile,
+            profile::start_game_monitor,
+            profile::stop_game_monitor,
         ])
         .setup(|app| {
             let handle = app.handle().clone();
@@ -111,6 +123,20 @@ pub fn run() {
             });
 
             info!("emitters: 全エミッター起動完了（pulse=2s, ops=3s, hardware=5s）");
+
+            // ゲーム起動監視（sysinfo ポーリング — 3秒間隔）
+            {
+                let game_handle = handle.clone();
+                // game_monitor_active を true に設定
+                let state = handle.state::<SharedState>();
+                if let Ok(mut s) = state.lock() {
+                    s.game_monitor_active = true;
+                }
+                tauri::async_runtime::spawn(async move {
+                    crate::services::game_monitor::start_polling(game_handle).await;
+                });
+                info!("game_monitor: ゲーム監視開始（sysinfo polling=3s）");
+            }
 
             Ok(())
         })
