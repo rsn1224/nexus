@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { ChangeEvent } from 'react';
 import { useEffect, useState } from 'react';
+import logger from '../../lib/logger';
 import type { LogLevelFilter } from '../../stores/useLogStore';
 import { formatTimestamp, truncateMessage, useLogData } from '../../stores/useLogStore';
 import { Button } from '../ui';
@@ -44,7 +45,7 @@ export default function LogWing(): React.ReactElement {
       const filePath = await exportLogs(exportFormat);
       setExportResult(filePath);
     } catch (err) {
-      console.error('Export failed:', err);
+      logger.error('Export failed:', err);
     }
   };
 

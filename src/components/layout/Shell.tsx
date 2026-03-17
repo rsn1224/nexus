@@ -1,4 +1,4 @@
-import { Gamepad2, Home, Settings, Zap } from 'lucide-react';
+import { FileText, Gamepad2, HardDrive, Home, Network, Settings, Zap } from 'lucide-react';
 import type React from 'react';
 import { useMemo, useState } from 'react';
 import { calcScore, getScoreRank } from '../../lib/score';
@@ -24,6 +24,18 @@ const SIDEBAR_ZONES = [
   {
     label: null,
     wings: [{ id: 'hardware', label: 'ハードウェア', icon: Settings }],
+  },
+  {
+    label: null,
+    wings: [{ id: 'log', label: 'ログ', icon: FileText }],
+  },
+  {
+    label: null,
+    wings: [{ id: 'netopt', label: 'ネットワーク', icon: Network }],
+  },
+  {
+    label: null,
+    wings: [{ id: 'storage', label: 'ストレージ', icon: HardDrive }],
   },
   {
     label: null,

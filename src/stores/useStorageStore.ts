@@ -234,7 +234,7 @@ export const getHealthColor = (status: string): string => {
     case 'Good':
       return 'var(--color-success-500)';
     case 'Warning':
-      return 'var(--color-warning-500)';
+      return 'var(--color-accent-500)';
     case 'Critical':
       return 'var(--color-danger-500)';
     default:
