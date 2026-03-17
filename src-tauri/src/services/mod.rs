@@ -1,4 +1,5 @@
 pub mod boost;
+pub mod cpu_topology;
 pub mod credentials;
 pub mod game_monitor;
 pub mod hardware;
