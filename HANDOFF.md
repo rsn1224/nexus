@@ -24,9 +24,10 @@
 | ゲーム強化 Phase 8a | ✅ 完了（8a-A〜D: 型定義・CRUD・コマンド・FE + テスト40件） |
 | ゲーム強化 Phase 8b-A | ✅ 完了（CPU affinity FFI + トポロジー検出 + テスト18件） |
 | ゲーム強化 Phase 8b-B | ✅ 完了（Level 2/3 boost + CPU affinityコマンド3件） |
+| ゲーム強化 Phase 8b-C | ✅ 完了（CPU affinity UI + ProfileTab拡張 + テスト11件） |
 
-**最新コミット:** `b4ea0b1`
-**テスト:** TS 256 unit + 17 E2E + Rust 121 = 394 green
+**最新コミット:** `571ffa1`
+**テスト:** TS 267 unit + 17 E2E + Rust 121 = 405 green
 
 ---
 
