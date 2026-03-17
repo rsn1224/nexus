@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    app_settings, boost, hardware, launcher, ops, pulse, storage, winopt, windows_settings,
+    app_settings, boost, hardware, launcher, netopt, ops, pulse, storage, winopt, windows_settings,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -108,6 +108,11 @@ pub fn run() {
             windows_settings::toggle_fullscreen_optimization,
             windows_settings::toggle_hardware_gpu_scheduling,
             windows_settings::set_visual_effects,
+            // NETOPT
+            netopt::get_network_adapters,
+            netopt::get_current_dns,
+            netopt::set_dns,
+            netopt::ping_host,
             // APP SETTINGS
             app_settings::get_app_settings,
             app_settings::save_app_settings,

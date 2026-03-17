@@ -108,6 +108,26 @@ export interface AppSettings {
   minimizeToTray: boolean;
 }
 
+// ─── NETOPT ────────────────────────────────────────────────────────────────
+export interface NetworkAdapter {
+  name: string;
+  ip: string;
+  mac: string;
+  isConnected: boolean;
+}
+
+export interface DnsPreset {
+  name: string;
+  primary: string;
+  secondary: string;
+}
+
+export interface PingResult {
+  target: string;
+  latencyMs: number | null;
+  success: boolean;
+}
+
 // ─── INTEL FEED ──────────────────────────────────────────────────────────────
 export type FeedLevel = 'info' | 'warn' | 'critical' | 'ok';
 
