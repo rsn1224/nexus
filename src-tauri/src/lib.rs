@@ -1,58 +1,21 @@
 mod commands;
 mod constants;
 mod error;
+mod infra;
+mod parsers;
+mod services;
+mod state;
 
 use crate::commands::{
     app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, windows_settings,
     winopt,
 };
-use std::sync::Mutex;
-use sysinfo::{Networks, System};
 use tracing::info;
 
+// state.rs から re-export
+pub use state::{AppState, SharedState};
+
 // ─── Application State ────────────────────────────────────────────────────────
-
-pub struct PulseState {
-    pub sys: System,
-    pub last_disk_read: u64,
-    pub last_disk_write: u64,
-    pub networks: Networks,
-}
-
-impl Default for PulseState {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl PulseState {
-    pub fn new() -> Self {
-        let mut sys = System::new_all();
-        sys.refresh_memory();
-        sys.refresh_cpu_all();
-        sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
-
-        let initial_read: u64 = sys
-            .processes()
-            .values()
-            .map(|p| p.disk_usage().read_bytes)
-            .sum();
-        let initial_write: u64 = sys
-            .processes()
-            .values()
-            .map(|p| p.disk_usage().written_bytes)
-            .sum();
-
-        let networks = Networks::new_with_refreshed_list();
-
-        Self {
-            sys,
-            last_disk_read: initial_read,
-            last_disk_write: initial_write,
-            networks,
-        }
-    }
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -69,7 +32,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_notification::init())
-        .manage(Mutex::new(PulseState::new()))
+        .manage(<SharedState>::new(AppState::new()))
         .invoke_handler(tauri::generate_handler![
             // PULSE
             pulse::get_resource_snapshot,

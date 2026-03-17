@@ -3,25 +3,38 @@ use thiserror::Error;
 
 #[derive(Debug, Error, Serialize)]
 #[serde(tag = "kind", content = "message")]
-#[allow(dead_code)] // variants reserved for future Wings
 pub enum AppError {
-    #[error("IO error: {0}")]
+    #[error("IOエラー: {0}")]
     Io(String),
 
-    #[error("Serialization error: {0}")]
+    #[error("シリアライズエラー: {0}")]
     Serialization(String),
 
-    #[error("Command error: {0}")]
+    #[error("コマンドエラー: {0}")]
     Command(String),
 
-    #[error("Not found: {0}")]
+    #[allow(dead_code)]
+    #[error("未検出: {0}")]
     NotFound(String),
 
-    #[error("Invalid input: {0}")]
+    #[error("不正な入力: {0}")]
     InvalidInput(String),
 
-    #[error("Unauthorized: {0}")]
+    #[allow(dead_code)]
+    #[error("権限不足: {0}")]
     Unauthorized(String),
+
+    #[allow(dead_code)]
+    #[error("PowerShell実行エラー: {0}")]
+    PowerShell(String),
+
+    #[allow(dead_code)]
+    #[error("レジストリ操作エラー: {0}")]
+    Registry(String),
+
+    #[allow(dead_code)]
+    #[error("プロセス操作エラー: {0}")]
+    Process(String),
 }
 
 impl From<std::io::Error> for AppError {

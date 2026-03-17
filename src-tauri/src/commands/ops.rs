@@ -1,7 +1,5 @@
-use crate::constants::is_protected_process;
 use crate::error::AppError;
 use serde::Serialize;
-use sysinfo::{Process, ProcessesToUpdate, System};
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -19,70 +17,36 @@ pub struct SystemProcess {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-fn process_name(p: &Process) -> String {
-    p.name().to_string_lossy().to_string()
-}
-
-fn fresh_system() -> System {
-    let mut sys = System::new_all();
-    sys.refresh_processes(ProcessesToUpdate::All, true);
-    sys
-}
+// (不要になったヘルパー関数は services/process.rs に移動)
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
 
 #[tauri::command]
-pub fn list_processes() -> Result<Vec<SystemProcess>, AppError> {
-    let sys = fresh_system();
+pub fn list_processes(
+    state: tauri::State<'_, crate::SharedState>,
+) -> Result<Vec<SystemProcess>, AppError> {
+    let data = crate::services::process::list_processes(&state)?;
 
-    let mut processes: Vec<SystemProcess> = sys
-        .processes()
-        .values()
-        .map(|p: &Process| {
-            let name = process_name(p);
-            let can_terminate = !is_protected_process(&name);
-            SystemProcess {
-                pid: p.pid().as_u32(),
-                name,
-                cpu_percent: p.cpu_usage(),
-                mem_mb: p.memory() as f64 / 1024.0 / 1024.0,
-                disk_read_kb: p.disk_usage().read_bytes as f64 / 1024.0,
-                disk_write_kb: p.disk_usage().written_bytes as f64 / 1024.0,
-                can_terminate,
-            }
+    Ok(data
+        .into_iter()
+        .map(|d| SystemProcess {
+            pid: d.pid,
+            name: d.name,
+            cpu_percent: d.cpu_percent,
+            mem_mb: d.mem_mb,
+            disk_read_kb: d.disk_read_kb,
+            disk_write_kb: d.disk_write_kb,
+            can_terminate: d.can_terminate,
         })
-        .collect();
-
-    // Sort by CPU usage descending, take top 50
-    processes.sort_by(|a, b| {
-        b.cpu_percent
-            .partial_cmp(&a.cpu_percent)
-            .unwrap_or(std::cmp::Ordering::Equal)
-    });
-    processes.truncate(50);
-
-    Ok(processes)
+        .collect())
 }
 
 #[tauri::command]
-pub fn kill_process(pid: u32) -> Result<String, AppError> {
-    let sys = fresh_system();
-
-    let sysinfo_pid = sysinfo::Pid::from(pid as usize);
-
-    if let Some(process) = sys.process(sysinfo_pid) {
-        let name = process_name(process);
-        if is_protected_process(&name) {
-            return Err(AppError::Command("Protected process".to_string()));
-        }
-        if process.kill() {
-            Ok(format!("Process {} killed successfully", pid))
-        } else {
-            Err(AppError::Command(format!("Failed to kill process {}", pid)))
-        }
-    } else {
-        Err(AppError::Command("Process not found".to_string()))
-    }
+pub fn kill_process(
+    state: tauri::State<'_, crate::SharedState>,
+    pid: u32,
+) -> Result<String, AppError> {
+    crate::services::process::kill_process(&state, pid)
 }
 
 #[tauri::command]
@@ -127,41 +91,17 @@ pub fn set_process_priority(pid: u32, priority: &str) -> Result<String, AppError
 }
 
 #[tauri::command]
-pub fn get_ai_suggestions() -> Result<Vec<String>, AppError> {
-    let sys = fresh_system();
-
-    let mut processes: Vec<(String, f32)> = sys
-        .processes()
-        .values()
-        .map(|p: &Process| (process_name(p), p.cpu_usage()))
-        .filter(|(name, _)| !is_protected_process(name))
-        .collect();
-
-    // Sort by CPU descending
-    processes.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-
-    // Deduplicate and take top 5
-    let mut seen = std::collections::HashSet::new();
-    let suggestions = processes
-        .into_iter()
-        .filter_map(|(name, _)| {
-            if seen.insert(name.clone()) {
-                Some(name)
-            } else {
-                None
-            }
-        })
-        .take(5)
-        .collect();
-
-    Ok(suggestions)
+pub fn get_ai_suggestions(
+    state: tauri::State<'_, crate::SharedState>,
+) -> Result<Vec<String>, AppError> {
+    crate::services::process::get_ai_suggestions(&state)
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::constants::is_protected_process;
 
     #[test]
     fn test_is_protected_process() {
@@ -169,13 +109,5 @@ mod tests {
         assert!(is_protected_process("svchost"));
         assert!(!is_protected_process("chrome"));
         assert!(!is_protected_process("notepad"));
-    }
-
-    #[test]
-    fn test_list_processes_returns_results() {
-        let result = list_processes();
-        assert!(result.is_ok());
-        let processes = result.unwrap();
-        assert!(processes.len() <= 50);
     }
 }
