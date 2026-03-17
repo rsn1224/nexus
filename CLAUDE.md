@@ -147,3 +147,16 @@ Cascade 実装完了の報告
 - Cascade が実装 → Claude Code がレビュー → Cascade が修正 というフローが標準
 - Claude Code が直接実装する場合も同じ品質基準を適用する
 - `.windsurfrules`（`c:\Users\rsn12\dev\.windsurfrules`）に共通ルールが定義されている
+
+---
+
+## Cascade モデル使い分けガイド
+
+| 作業内容 | 推奨モデル | 理由 |
+|---|---|---|
+| React コンポーネント実装 | SWE-1.5 | 950 tok/s の高速生成。UI 実装は速度優先 |
+| CSS スタイリング・レイアウト | SWE-1.5 | パターンが定型的。速度が正義 |
+| Rust コマンド実装（Tauri） | Claude Sonnet 4.6 | 型推論・ライフタイム・エラーハンドリングの精度 |
+| アーキテクチャ変更・大規模リファクタ | Claude Opus 4.6 | 複雑な推論が必要な場面のみ使用 |
+| テスト追加（Vitest / cargo test） | SWE-1.5 | テストパターンは定型的。速度優先 |
+| バグ修正・デバッグ | Claude Sonnet 4.6 | 原因分析に精度が必要 |
