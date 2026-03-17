@@ -1,9 +1,10 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Shell from './components/layout/Shell';
-import LoadingFallback from './components/ui/LoadingFallback';
+import { LoadingFallback } from './components/ui';
 import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
+// ─── Lazy Wing imports ──────────────────────────────────────────────────────
 const HomeWing = lazy(() => import('./components/home/HomeWing'));
 const BoostWing = lazy(() => import('./components/boost/BoostWing'));
 const LauncherWing = lazy(() => import('./components/launcher/LauncherWing'));
