@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:ui": "vitest --ui",
+    "test:e2e": "playwright test",
     "lint:css": "node scripts/check-css-vars.mjs",
     "lint:wings": "node scripts/check-dead-wings.mjs",
     "lint:handoff": "node scripts/check-handoff.mjs",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.7",
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/vite": "^4.2.1",
     "@tauri-apps/cli": "^2",
     "@testing-library/jest-dom": "^6.9.1",

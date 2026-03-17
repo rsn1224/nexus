@@ -102,7 +102,10 @@ const Shell = memo(function Shell({
       <div className="scan-line fixed top-0 left-0 right-0 z-[1000]" />
 
       {/* Sidebar */}
-      <div className="w-40 flex-shrink-0 bg-[var(--color-base-950)] border-r border-[var(--color-border-subtle)] flex flex-col">
+      <div
+        className="w-40 flex-shrink-0 bg-[var(--color-base-950)] border-r border-[var(--color-border-subtle)] flex flex-col"
+        data-testid="sidebar"
+      >
         {/* Logo area (48px) */}
         <div className="h-12 flex flex-col items-center justify-center px-3 py-2 border-b border-[var(--color-border-subtle)]">
           <div className="text-[var(--color-accent-500)] text-sm font-bold tracking-widest mb-0.5">
@@ -133,6 +136,7 @@ const Shell = memo(function Shell({
                     key={wing.id}
                     type="button"
                     onClick={() => onWingChange(wing.id)}
+                    data-testid={`nav-${wing.id}`}
                     className={`w-full h-7 px-4 pl-4 font-[var(--font-mono)] text-xs tracking-[0.08em] transition-all duration-150 text-left border-l-2 ${
                       isActive
                         ? 'bg-[var(--color-base-800)] text-[var(--color-cyan-500)] border-[var(--color-cyan-500)]'
@@ -202,7 +206,9 @@ const Shell = memo(function Shell({
       </div>
 
       {/* Main content */}
-      <main className="flex-1 overflow-hidden">{children}</main>
+      <main className="flex-1 overflow-hidden" data-testid={`wing-${activeWing}`}>
+        {children}
+      </main>
     </div>
   );
 });

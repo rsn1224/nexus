@@ -1,11 +1,12 @@
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { homePageSuggestions } from '../../lib/localAi';
 import { calcScore, createProgressBar, getScoreRank } from '../../lib/score';
 import { useHardwareData } from '../../stores/useHardwareStore';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useLogStore } from '../../stores/useLogStore';
 import { useNavStore } from '../../stores/useNavStore';
+import { useOpsStore } from '../../stores/useOpsStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
@@ -41,10 +42,10 @@ function formatTime(timestamp: number): string {
 // ─── HomeWing ────────────────────────────────────────────────────────────────
 
 const HomeWing = memo(function HomeWing(): React.ReactElement {
-  // Store data - using granular selectors
-  const processes = useProcesses();
-  const { fetch: fetchProcesses } = useProcessActions();
-  const { start: startProcessPolling } = useProcessPollingControl();
+  // Store data - using existing store methods
+  const processes = useOpsStore((s) => s.processes);
+  const fetchProcesses = useOpsStore((s) => s.fetchProcesses);
+  const startProcessPolling = useOpsStore((s) => s.startProcessPolling);
 
   const latestSnapshot = usePulseStore((s) =>
     s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
@@ -68,7 +69,7 @@ const HomeWing = memo(function HomeWing(): React.ReactElement {
   const fetchStorageInfo = useStorageStore((s) => s.fetchStorageInfo);
   const storageInfo = useStorageStore((s) => s.storageInfo);
   const { info: hwInfo, diskUsagePercent, fetchHardware } = useHardwareData();
-  const gpuUsage = useGpuUsage();
+  const gpuUsage = hwInfo?.gpuUsagePercent ?? null;
 
   // Optimization history state
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
