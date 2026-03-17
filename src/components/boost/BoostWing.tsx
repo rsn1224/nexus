@@ -38,19 +38,15 @@ export default function BoostWing(): React.ReactElement {
     { id: 'network', label: 'ネット最適化' },
   ];
 
-  // Error banner
-  const ErrorBanner = () => {
-    if (!winoptError) return null;
-
-    return (
-      <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
-        {winoptError}
-      </div>
-    );
-  };
-
   return (
     <div className="p-4 h-full flex flex-col">
+      {/* Error Banner */}
+      {winoptError && (
+        <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
+          {winoptError}
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-4 flex justify-between items-center">
         <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-cyan-500)] tracking-[0.15em] shrink-0 pb-2 border-b border-[var(--color-border-subtle)]">
@@ -65,9 +61,6 @@ export default function BoostWing(): React.ReactElement {
         onChange={(id) => setActiveTab(id as typeof activeTab)}
         className="mb-4"
       />
-
-      {/* Error Banner */}
-      <ErrorBanner />
 
       {/* Tab Content */}
       <div className="flex-1 overflow-y-auto">

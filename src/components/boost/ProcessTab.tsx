@@ -60,7 +60,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         loading={isRunning}
         className="mb-4"
       >
-        {isRunning ? 'RUNNING...' : '▶ RUN BOOST'}
+        ▶ RUN BOOST
       </Button>
 
       {/* Results Table */}
