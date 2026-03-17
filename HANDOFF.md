@@ -21,10 +21,10 @@
 | 再構築 Phase 3 | ✅ 完了 |
 | 再構築 Phase 6 | ✅ 完了（6A: useShallow, 6B: React.lazy, 6C: useEffect, 6D: 型安全化） |
 | 再構築 Phase 7 | ✅ 完了（7A: UIテスト, 7B: E2E, 7C: Rustテスト, 7D: ipconfig日本語+keyring） |
-| ゲーム強化 Phase 8a | 🔄 進行中（8a-A: 型定義・インフラ層完了） |
+| ゲーム強化 Phase 8a | ✅ 完了（8a-A〜D: 型定義・CRUD・コマンド・FE） |
 
-**最新コミット:** `021af74`
-**テスト:** TS 216 unit + 17 E2E + Rust 86 = 302 green
+**最新コミット:** `cd0a829`
+**テスト:** TS 216 unit + 17 E2E + Rust 103 = 336 green
 
 ---
 
@@ -1311,7 +1311,8 @@ npx playwright test  # E2E
 
 ## Phase 8a: ゲームプロファイル基盤
 
-**ステータス:** 🔄 着手準備中（Phase 7 完了、Sub-Phase 8a-A から開始）
+**ステータス:** ✅ 完了（2026-03-18）
+**コミット:** `b7d236f`（8a-A）, `bdbdbe7`（8a-B）, `0b80de0`（8a-C）, `cd0a829`（8a-D）
 **工数見積もり:** 2〜3週間
 **担当:** Cascade
 **仕様書:** `docs/specs/game-enhancement-spec.md`
