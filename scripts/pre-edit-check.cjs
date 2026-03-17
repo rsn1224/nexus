@@ -6,8 +6,8 @@
  ファイル編集前の安全性を確認する
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // 色付き出力ユーティリティ
 const colors = {
@@ -35,7 +35,7 @@ function logWarning(message) {
 // Gitリポジトリ状態チェック
 function checkGitStatus() {
   try {
-    const { execSync } = require('child_process');
+    const { execSync } = require('node:child_process');
 
     // 未コミットの変更があるかチェック
     const status = execSync('git status --porcelain', { encoding: 'utf8' });

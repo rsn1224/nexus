@@ -6,9 +6,9 @@
  * 全品質チェックを一括実行する
  */
 
-const { execSync } = require('child_process');
-const fs = require('fs');
-const _path = require('path');
+const { execSync } = require('node:child_process');
+const fs = require('node:fs');
+const _path = require('node:path');
 
 // 色付き出力ユーティリティ
 const colors = {

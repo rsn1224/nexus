@@ -5,9 +5,9 @@
  * 実装完了後に自動でレビューを実行し、結果を記録する
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const { execSync } = require('node:child_process');
 
 // 色付き出力ユーティリティ
 const colors = {

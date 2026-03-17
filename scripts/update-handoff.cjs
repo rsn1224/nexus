@@ -5,9 +5,9 @@
  * 実装完了時にタスク内容とテスト結果を自動で記録する
  */
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const { execSync } = require('node:child_process');
 
 // 色付き出力ユーティリティ
 const colors = {
@@ -98,7 +98,7 @@ function getNextTaskNumber() {
     }
 
     const lastTaskNumber = Math.max(
-      ...taskMatches.map((match) => parseInt(match.match(/### タスク (\d+)/)[1])),
+      ...taskMatches.map((match) => parseInt(match.match(/### タスク (\d+)/)[1], 10)),
     );
 
     return lastTaskNumber + 1;
