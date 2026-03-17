@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import BoostWing from './components/boost/BoostWing';
+import HardwareWing from './components/hardware/HardwareWing';
 import HomeWing from './components/home/HomeWing';
 import LauncherWing from './components/launcher/LauncherWing';
 import Shell from './components/layout/Shell';
@@ -14,6 +15,7 @@ const WING_COMPONENTS: Record<WingId, React.ReactNode> = {
   launcher: <LauncherWing />,
   settings: <SettingsWing />,
   windows: <WindowsWing />,
+  hardware: <HardwareWing />,
 };
 
 export default function App(): React.ReactElement {

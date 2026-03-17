@@ -35,7 +35,7 @@ export interface ExecutionLog {
 }
 
 // ─── WING IDs ────────────────────────────────────────────────────────────────
-export type WingId = 'home' | 'boost' | 'launcher' | 'settings' | 'windows';
+export type WingId = 'home' | 'boost' | 'launcher' | 'settings' | 'windows' | 'hardware';
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
 export interface DriveInfo {

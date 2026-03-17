@@ -21,6 +21,10 @@ const SIDEBAR_ZONES = [
   },
   {
     label: null,
+    wings: [{ id: 'hardware', label: 'ハードウェア', icon: Settings }],
+  },
+  {
+    label: null,
     wings: [{ id: 'settings', label: '設定', icon: Settings }],
   },
 ] as const;
