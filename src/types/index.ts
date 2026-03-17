@@ -456,3 +456,14 @@ export interface GameExitEvent {
   playSecs: number;
   revertSuccess: boolean;
 }
+
+export interface CpuTopology {
+  physicalCores: number;
+  logicalCores: number;
+  pCores: number[];
+  eCores: number[];
+  ccdGroups: number[][];
+  hyperthreadingEnabled: boolean;
+  vendorId: string;
+  brand: string;
+}

@@ -408,3 +408,37 @@ describe('createDefaultProfile', () => {
     expect(profile.steamAppId).toBe(12345);
   });
 });
+
+// getCpuTopology テスト
+describe('getCpuTopology', () => {
+  it('CPU トポロジーを取得して state に保存する', async () => {
+    const mockTopology = {
+      physicalCores: 8,
+      logicalCores: 16,
+      pCores: [0, 1, 2, 3, 4, 5, 6, 7],
+      eCores: [8, 9, 10, 11, 12, 13, 14, 15],
+      ccdGroups: [],
+      hyperthreadingEnabled: true,
+      vendorId: 'GenuineIntel',
+      brand: 'Intel Core i7-12700K',
+    };
+    vi.mocked(invoke).mockResolvedValueOnce(mockTopology);
+
+    await useGameProfileStore.getState().getCpuTopology();
+
+    expect(useGameProfileStore.getState().cpuTopology).toEqual(mockTopology);
+    expect(invoke).toHaveBeenCalledWith('get_cpu_topology');
+  });
+
+  it('取得エラー時は cpuTopology が null のまま', async () => {
+    // 事前に state をクリア
+    useGameProfileStore.setState({ cpuTopology: null });
+    vi.mocked(invoke).mockRejectedValueOnce(new Error('取得失敗'));
+
+    await useGameProfileStore.getState().getCpuTopology();
+
+    expect(useGameProfileStore.getState().cpuTopology).toBeNull();
+    // error は設定されない（致命的ではないため）
+    expect(useGameProfileStore.getState().error).toBeNull();
+  });
+});

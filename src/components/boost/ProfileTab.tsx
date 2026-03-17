@@ -5,8 +5,9 @@ import {
   useGameProfileActions,
   useGameProfileState,
 } from '../../stores/useGameProfileStore';
-import type { BoostLevel, GameProfile } from '../../types';
+import type { BoostLevel, GameProfile, PowerPlanType, ProcessPriorityLevel } from '../../types';
 import { Button } from '../ui';
+import AffinityPanel from './AffinityPanel';
 
 // ─── ブーストレベルラベル ────────────────────────────────────────────────────
 
@@ -15,6 +16,20 @@ const BOOST_LABELS: Record<BoostLevel, string> = {
   soft: 'ソフト（Level 1）',
   medium: 'ミディアム（Level 2）',
   hard: 'ハード（Level 3）',
+};
+
+const PRIORITY_LABELS: Record<ProcessPriorityLevel, string> = {
+  normal: '通常',
+  aboveNormal: '通常以上',
+  high: '高',
+  realtime: 'リアルタイム',
+};
+
+const POWER_PLAN_LABELS: Record<PowerPlanType, string> = {
+  unchanged: '変更なし',
+  highPerformance: '高パフォーマンス',
+  ultimatePerformance: '究極のパフォーマンス',
+  balanced: 'バランス',
 };
 
 // ─── プロファイルフォーム ────────────────────────────────────────────────────
@@ -32,6 +47,17 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
   const [processesToSuspend, setProcessesToSuspend] = useState(
     initial?.processesToSuspend?.join(', ') ?? '',
   );
+  const [processPriority, setProcessPriority] = useState<ProcessPriorityLevel>(
+    initial?.processPriority ?? 'normal',
+  );
+  const [powerPlan, setPowerPlan] = useState<PowerPlanType>(initial?.powerPlan ?? 'unchanged');
+  const [cpuAffinityGame, setCpuAffinityGame] = useState<number[]>(initial?.cpuAffinityGame ?? []);
+  const [cpuAffinityBackground, setCpuAffinityBackground] = useState<number[]>(
+    initial?.cpuAffinityBackground ?? [],
+  );
+  const [processesToKill, setProcessesToKill] = useState(
+    initial?.processesToKill?.join(', ') ?? '',
+  );
 
   const handleSubmit = useCallback(() => {
     if (!displayName.trim() || !exePath.trim()) return;
@@ -41,15 +67,18 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
       displayName: displayName.trim(),
       exePath: exePath.trim(),
       steamAppId: initial?.steamAppId ?? null,
-      cpuAffinityGame: initial?.cpuAffinityGame ?? null,
-      cpuAffinityBackground: initial?.cpuAffinityBackground ?? null,
-      processPriority: initial?.processPriority ?? 'normal',
-      powerPlan: initial?.powerPlan ?? 'unchanged',
+      cpuAffinityGame: cpuAffinityGame.length > 0 ? cpuAffinityGame : null,
+      cpuAffinityBackground: cpuAffinityBackground.length > 0 ? cpuAffinityBackground : null,
+      processPriority,
+      powerPlan,
       processesToSuspend: processesToSuspend
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      processesToKill: initial?.processesToKill ?? [],
+      processesToKill: processesToKill
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean),
       timerResolution100ns: initial?.timerResolution100ns ?? null,
       boostLevel,
       lastPlayed: initial?.lastPlayed ?? null,
@@ -59,7 +88,19 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
     };
 
     onSave(profile);
-  }, [displayName, exePath, boostLevel, processesToSuspend, initial, onSave]);
+  }, [
+    displayName,
+    exePath,
+    boostLevel,
+    processesToSuspend,
+    processPriority,
+    powerPlan,
+    cpuAffinityGame,
+    cpuAffinityBackground,
+    processesToKill,
+    initial,
+    onSave,
+  ]);
 
   return (
     <div className="flex flex-col gap-3 p-3 bg-base-800 border border-border-subtle rounded">
@@ -108,6 +149,78 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
           ))}
         </select>
       </label>
+
+      {/* === Level 2+ 追加フィールド === */}
+      {(boostLevel === 'medium' || boostLevel === 'hard') && (
+        <>
+          {/* プロセス優先度 */}
+          <label className="flex flex-col gap-1">
+            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+              プロセス優先度
+            </span>
+            <select
+              value={processPriority}
+              onChange={(e) => setProcessPriority(e.target.value as ProcessPriorityLevel)}
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+            >
+              <option value="normal">通常</option>
+              <option value="aboveNormal">通常以上</option>
+              <option value="high">高</option>
+              <option value="realtime">リアルタイム（注意）</option>
+            </select>
+          </label>
+
+          {/* 電源プラン */}
+          <label className="flex flex-col gap-1">
+            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+              電源プラン
+            </span>
+            <select
+              value={powerPlan}
+              onChange={(e) => setPowerPlan(e.target.value as PowerPlanType)}
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+            >
+              <option value="unchanged">変更なし</option>
+              <option value="highPerformance">高パフォーマンス</option>
+              <option value="ultimatePerformance">究極のパフォーマンス</option>
+              <option value="balanced">バランス</option>
+            </select>
+          </label>
+
+          {/* ゲーム用 CPU アフィニティ */}
+          <AffinityPanel
+            label="ゲーム用 CPU コア（空欄 = 自動）"
+            selectedCores={cpuAffinityGame}
+            onChange={setCpuAffinityGame}
+          />
+
+          {/* バックグラウンド用 CPU アフィニティ */}
+          <AffinityPanel
+            label="バックグラウンド追い出し先コア（空欄 = 自動）"
+            selectedCores={cpuAffinityBackground}
+            onChange={setCpuAffinityBackground}
+          />
+        </>
+      )}
+
+      {/* === Level 3 追加フィールド === */}
+      {boostLevel === 'hard' && (
+        <label className="flex flex-col gap-1">
+          <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+            強制終了プロセス（カンマ区切り）
+          </span>
+          <input
+            type="text"
+            value={processesToKill}
+            onChange={(e) => setProcessesToKill(e.target.value)}
+            placeholder="例: wallpaper_engine.exe, obs64.exe"
+            className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+          />
+          <span className="font-[var(--font-mono)] text-[8px] text-[var(--color-danger-500)]">
+            ⚠️ 強制終了は不可逆です。保存していないデータが失われる可能性があります。
+          </span>
+        </label>
+      )}
 
       {/* 一時停止プロセス */}
       <label className="flex flex-col gap-1">
@@ -185,6 +298,24 @@ function ProfileCard({
         <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
           ブースト: {BOOST_LABELS[profile.boostLevel]}
         </div>
+        {/* 優先度（Normal 以外の場合のみ表示） */}
+        {profile.processPriority !== 'normal' && (
+          <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
+            優先度: {PRIORITY_LABELS[profile.processPriority]}
+          </div>
+        )}
+        {/* 電源プラン（unchanged 以外の場合のみ表示） */}
+        {profile.powerPlan !== 'unchanged' && (
+          <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
+            電源: {POWER_PLAN_LABELS[profile.powerPlan]}
+          </div>
+        )}
+        {/* 強制終了プロセス（Level 3） */}
+        {profile.processesToKill.length > 0 && (
+          <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-danger-500)]">
+            強制終了: {profile.processesToKill.join(', ')}
+          </div>
+        )}
         {profile.processesToSuspend.length > 0 && (
           <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
             一時停止: {profile.processesToSuspend.join(', ')}

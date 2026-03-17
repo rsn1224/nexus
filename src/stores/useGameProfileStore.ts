@@ -6,6 +6,7 @@ import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type {
   BoostLevel,
+  CpuTopology,
   GameExitEvent,
   GameLaunchEvent,
   GameProfile,
@@ -25,6 +26,7 @@ interface GameProfileState {
   isApplying: boolean;
   error: string | null;
   isMonitoring: boolean;
+  cpuTopology: CpuTopology | null;
 }
 
 interface GameProfileActions {
@@ -36,6 +38,7 @@ interface GameProfileActions {
   startMonitoring: () => Promise<void>;
   stopMonitoring: () => Promise<void>;
   setupListeners: () => Promise<() => void>;
+  getCpuTopology: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -78,6 +81,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   isApplying: false,
   error: null,
   isMonitoring: false,
+  cpuTopology: null,
 
   // CRUD
   loadProfiles: async () => {
@@ -217,6 +221,18 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
     };
   },
 
+  getCpuTopology: async () => {
+    try {
+      const topology = await invoke<CpuTopology>('get_cpu_topology');
+      set({ cpuTopology: topology });
+      log.info({ topology }, 'gameProfile: CPU トポロジー取得完了');
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'gameProfile: CPU トポロジー取得失敗: %s', msg);
+      // エラーでも致命的ではないので error には設定しない
+    }
+  },
+
   clearError: () => set({ error: null }),
 }));
 
@@ -233,6 +249,7 @@ export const useGameProfileState = () =>
       isApplying: s.isApplying,
       error: s.error,
       isMonitoring: s.isMonitoring,
+      cpuTopology: s.cpuTopology,
     })),
   );
 
@@ -247,6 +264,7 @@ export const useGameProfileActions = () =>
       startMonitoring: s.startMonitoring,
       stopMonitoring: s.stopMonitoring,
       setupListeners: s.setupListeners,
+      getCpuTopology: s.getCpuTopology,
       clearError: s.clearError,
     })),
   );
