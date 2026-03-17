@@ -1,7 +1,8 @@
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { homePageSuggestions } from '../../lib/localAi';
-import { useHardwareStore } from '../../stores/useHardwareStore';
+import { calcScore, createProgressBar, getScoreRank } from '../../lib/score';
+import { useHardwareData } from '../../stores/useHardwareStore';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useLogStore } from '../../stores/useLogStore';
 import { useNavStore } from '../../stores/useNavStore';
@@ -31,16 +32,6 @@ function formatNetSpeed(kb: number): string {
     return `${(kb / 1024).toFixed(1)} MB/s`;
   }
   return `${kb.toFixed(0)} KB/s`;
-}
-
-function calcScore(
-  cpuPercent: number | null,
-  memUsed: number | null,
-  memTotal: number | null,
-): number | null {
-  if (cpuPercent === null || memUsed === null || memTotal === null) return null;
-  const score = Math.round(100 - cpuPercent * 0.5 - (memUsed / memTotal) * 30);
-  return Math.max(0, Math.min(100, score));
 }
 
 function formatTime(timestamp: number): string {
@@ -76,8 +67,7 @@ export default function HomeWing(): React.ReactElement {
   // Storage and Hardware stores
   const fetchStorageInfo = useStorageStore((s) => s.fetchStorageInfo);
   const storageInfo = useStorageStore((s) => s.storageInfo);
-  const fetchHardware = useHardwareStore((s) => s.fetchHardware);
-  const hwInfo = useHardwareStore((s) => s.info);
+  const { info: hwInfo, diskUsagePercent, fetchHardware } = useHardwareData();
 
   // Optimization history state
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
@@ -136,8 +126,15 @@ export default function HomeWing(): React.ReactElement {
   );
 
   const gameScore = useMemo(
-    () => calcScore(cpuPercent, memUsed, memTotal),
-    [cpuPercent, memUsed, memTotal],
+    () =>
+      calcScore({
+        cpuPercent,
+        memUsedGb: memUsed,
+        memTotalGb: memTotal,
+        diskUsagePercent,
+        gpuUsagePercent: hwInfo?.gpuUsagePercent ?? null,
+      }),
+    [cpuPercent, memUsed, memTotal, diskUsagePercent, hwInfo?.gpuUsagePercent],
   );
 
   const highCpuProcesses = useMemo(
@@ -358,19 +355,48 @@ export default function HomeWing(): React.ReactElement {
       </Card>
 
       {/* Game Score */}
-      <Card title="ゲームスコア" className="mt-4">
-        <div className="font-[var(--font-mono)] text-2xl font-bold text-[var(--color-accent-500)] tracking-[0.05em]">
-          {gameScore !== null ? `${gameScore} / 100` : '-- / 100'}
-        </div>
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1">
-          {gameScore !== null && gameScore >= 80
-            ? 'EXCELLENT'
-            : gameScore !== null && gameScore >= 60
-              ? 'GOOD'
-              : gameScore !== null
-                ? 'POOR'
-                : '--'}
-        </div>
+      <Card title="SCORE" className="mt-4">
+        {gameScore !== null ? (
+          (() => {
+            const rank = getScoreRank(gameScore);
+            const rankColorClass =
+              rank.color === 'var(--color-success-500)'
+                ? 'text-[var(--color-success-500)]'
+                : rank.color === 'var(--color-cyan-500)'
+                  ? 'text-[var(--color-cyan-500)]'
+                  : rank.color === 'var(--color-accent-400)'
+                    ? 'text-[var(--color-accent-400)]'
+                    : 'text-[var(--color-danger-500)]';
+
+            return (
+              <>
+                <div className={`font-bold text-2xl tracking-[0.05em] ${rankColorClass}`}>
+                  {gameScore} / 100
+                </div>
+                <div className={`font-mono text-[10px] mt-1 ${rankColorClass}`}>
+                  {createProgressBar(gameScore)} {gameScore}%
+                </div>
+                <div
+                  className={`font-[var(--font-mono)] text-[10px] tracking-[0.15em] mt-1 ${rankColorClass}`}
+                >
+                  {rank.label}
+                </div>
+              </>
+            );
+          })()
+        ) : (
+          <>
+            <div className="font-bold text-2xl text-[var(--color-text-muted)] tracking-[0.05em]">
+              -- / 100
+            </div>
+            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1">
+              --%
+            </div>
+            <div className="font-[var(--font-mono)] text-[10px] tracking-[0.15em] text-[var(--color-text-muted)] mt-1">
+              --
+            </div>
+          </>
+        )}
       </Card>
 
       {/* Optimization History */}

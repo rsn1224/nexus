@@ -86,6 +86,10 @@ export const useHardwareData = () => {
       })
     : '--';
 
+  // ディスク使用率の計算（メインドライブの使用率）
+  const diskUsagePercent =
+    info && info.disks.length > 0 ? (info.disks[0].usedGb / info.disks[0].totalGb) * 100 : null;
+
   return {
     info,
     isLoading,
@@ -93,6 +97,7 @@ export const useHardwareData = () => {
     memUsagePercent,
     formattedUptime,
     formattedBootTime,
+    diskUsagePercent,
     fetchHardware,
   };
 };

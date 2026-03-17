@@ -1,6 +1,8 @@
 import { Gamepad2, Home, Settings, Zap } from 'lucide-react';
 import type React from 'react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { calcScore, getScoreRank } from '../../lib/score';
+import { useHardwareData } from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import type { WingId } from '../../types';
 
@@ -49,14 +51,39 @@ export default function Shell({
     (s) =>
       (s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1]?.cpuPercent : null) ?? null,
   );
+  const memPercent = usePulseStore(
+    (s) =>
+      (s.snapshots.length > 0
+        ? ((s.snapshots[s.snapshots.length - 1]?.memUsedMb ?? 0) /
+            (s.snapshots[s.snapshots.length - 1]?.memTotalMb ?? 1)) *
+          100
+        : null) ?? null,
+  );
 
-  const memPercent = usePulseStore((s) => {
-    const latest = s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null;
-    if (latest?.memUsedMb && latest?.memTotalMb) {
-      return (latest.memUsedMb / latest.memTotalMb) * 100;
-    }
-    return null;
-  });
+  // Hardware data for score calculation
+  const { diskUsagePercent, info: hwInfo } = useHardwareData();
+  const latestSnapshot = usePulseStore((s) =>
+    s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
+  );
+
+  // Calculate game score
+  const gameScore = useMemo(
+    () =>
+      calcScore({
+        cpuPercent,
+        memUsedGb: latestSnapshot?.memUsedMb ?? null,
+        memTotalGb: latestSnapshot?.memTotalMb ?? null,
+        diskUsagePercent,
+        gpuUsagePercent: hwInfo?.gpuUsagePercent ?? null,
+      }),
+    [
+      cpuPercent,
+      latestSnapshot?.memUsedMb,
+      latestSnapshot?.memTotalMb,
+      diskUsagePercent,
+      hwInfo?.gpuUsagePercent,
+    ],
+  );
 
   return (
     <div className="flex h-screen bg-[var(--color-base-900)] overflow-hidden">
@@ -140,8 +167,25 @@ export default function Shell({
           >
             MEM {memPercent !== null ? `${memPercent.toFixed(0)}%` : '--'}
           </div>
-          <div className="text-[10px] text-[var(--color-text-muted)] font-[var(--font-mono)]">
-            SCORE -- / 100
+          <div
+            className={`text-[10px] font-[var(--font-mono)] ${
+              gameScore !== null
+                ? (
+                    () => {
+                      const rank = getScoreRank(gameScore);
+                      return rank.color === 'var(--color-success-500)'
+                        ? 'text-[var(--color-success-500)]'
+                        : rank.color === 'var(--color-cyan-500)'
+                          ? 'text-[var(--color-cyan-500)]'
+                          : rank.color === 'var(--color-accent-400)'
+                            ? 'text-[var(--color-accent-400)]'
+                            : 'text-[var(--color-danger-500)]';
+                    }
+                  )()
+                : 'text-[var(--color-text-muted)]'
+            }`}
+          >
+            SCORE {gameScore !== null ? `${gameScore} / 100` : '-- / 100'}
           </div>
         </div>
       </div>
