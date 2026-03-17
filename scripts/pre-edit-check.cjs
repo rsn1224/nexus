@@ -81,6 +81,40 @@ function checkProtectedFiles(filePath) {
   return true;
 }
 
+// 危険パターン検知（Write/Edit の内容チェック）
+function checkDangerousPatterns(filePath, content) {
+  if (!content) return true;
+
+  const DANGEROUS_PATTERNS = [
+    { pattern: /rm\s+-rf\s+[/~]/, label: 'rm -rf on root/home path' },
+    { pattern: /DROP\s+TABLE/i, label: 'SQL DROP TABLE' },
+    { pattern: /DELETE\s+FROM\s+\w+\s*;/i, label: 'SQL DELETE without WHERE' },
+    { pattern: /process\.env\s*=/, label: 'process.env override' },
+  ];
+
+  const SECRET_FILE_PATTERNS = [/\.env$/, /\.pem$/, /\.key$/, /id_rsa/, /id_ed25519/];
+
+  if (filePath) {
+    const base = path.basename(filePath);
+    for (const re of SECRET_FILE_PATTERNS) {
+      if (re.test(base)) {
+        logWarning(`Writing to sensitive file: ${base}`);
+        logInfo('Secrets/keys should not be modified via automated tooling');
+        return true;
+      }
+    }
+  }
+
+  for (const { pattern, label } of DANGEROUS_PATTERNS) {
+    if (pattern.test(content)) {
+      logWarning(`Dangerous pattern detected: ${label}`);
+      logInfo('Verify this is intentional before proceeding');
+    }
+  }
+
+  return true;
+}
+
 // ディスク容量チェック
 function checkDiskSpace() {
   try {
@@ -105,10 +139,14 @@ function main() {
     logInfo(`Target file: ${targetFile}`);
   }
 
+  // Write/Edit の書き込み内容を環境変数から取得（利用可能な場合）
+  const writeContent = process.env.TOOL_INPUT_CONTENT || null;
+
   // 各種チェック実行
   const checks = [
     { name: 'Git Status', check: checkGitStatus },
     { name: 'Protected Files', check: () => checkProtectedFiles(targetFile) },
+    { name: 'Dangerous Patterns', check: () => checkDangerousPatterns(targetFile, writeContent) },
     { name: 'Disk Space', check: checkDiskSpace },
   ];
 

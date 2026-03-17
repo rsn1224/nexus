@@ -45,7 +45,7 @@ export default function LogWing(): React.ReactElement {
       const filePath = await exportLogs(exportFormat);
       setExportResult(filePath);
     } catch (err) {
-      logger.error('Export failed:', err);
+      logger.error({ msg: 'Export failed', err });
     }
   };
 

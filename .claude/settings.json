@@ -1,4 +1,19 @@
 {
+  "permissions": {
+    "deny": [
+      "Bash(git push --force*)",
+      "Bash(git push -f*)",
+      "Bash(rm -rf*)",
+      "Bash(curl * | bash*)",
+      "Bash(wget * | bash*)",
+      "Read(**/.env*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Write(**/.env*)",
+      "Write(**/*.pem)",
+      "Write(**/*.key)"
+    ]
+  },
   "hooks": {
     "PreToolUse": [
       {
