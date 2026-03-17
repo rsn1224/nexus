@@ -58,6 +58,10 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
   const [processesToKill, setProcessesToKill] = useState(
     initial?.processesToKill?.join(', ') ?? '',
   );
+  const [timerResolutionMs, setTimerResolutionMs] = useState(() => {
+    const val = initial?.timerResolution100ns;
+    return val != null ? (val / 10000).toFixed(3) : '';
+  });
 
   const handleSubmit = useCallback(() => {
     if (!displayName.trim() || !exePath.trim()) return;
@@ -79,7 +83,9 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
         .split(',')
         .map((s) => s.trim())
         .filter(Boolean),
-      timerResolution100ns: initial?.timerResolution100ns ?? null,
+      timerResolution100ns: timerResolutionMs
+        ? Math.round(parseFloat(timerResolutionMs) * 10000)
+        : null,
       boostLevel,
       lastPlayed: initial?.lastPlayed ?? null,
       totalPlaySecs: initial?.totalPlaySecs ?? 0,
@@ -98,6 +104,7 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
     cpuAffinityGame,
     cpuAffinityBackground,
     processesToKill,
+    timerResolutionMs,
     initial,
     onSave,
   ]);
@@ -200,6 +207,48 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
             selectedCores={cpuAffinityBackground}
             onChange={setCpuAffinityBackground}
           />
+        </>
+      )}
+
+      {/* === Level 2/3 追加フィールド === */}
+      {(boostLevel === 'medium' || boostLevel === 'hard') && (
+        <>
+          {/* 電源プラン */}
+          <label className="flex flex-col gap-1">
+            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+              電源プラン
+            </span>
+            <select
+              value={powerPlan}
+              onChange={(e) => setPowerPlan(e.target.value as PowerPlanType)}
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+            >
+              <option value="unchanged">変更なし</option>
+              <option value="high_performance">高パフォーマンス</option>
+              <option value="balanced">バランス</option>
+              <option value="power_saver">省電力</option>
+            </select>
+          </label>
+
+          {/* タイマーリゾリューション */}
+          <label className="flex flex-col gap-1">
+            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+              タイマーリゾリューション（ms）
+            </span>
+            <input
+              type="number"
+              value={timerResolutionMs}
+              onChange={(e) => setTimerResolutionMs(e.target.value)}
+              placeholder="例: 1.0（0.5〜15.625）"
+              min={0.5}
+              max={15.625}
+              step={0.1}
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+            />
+            <span className="font-[var(--font-mono)] text-[8px] text-text-secondary">
+              低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
+            </span>
+          </label>
         </>
       )}
 
@@ -308,6 +357,12 @@ function ProfileCard({
         {profile.powerPlan !== 'unchanged' && (
           <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
             電源: {POWER_PLAN_LABELS[profile.powerPlan]}
+          </div>
+        )}
+        {/* タイマーリゾリューション */}
+        {profile.timerResolution100ns != null && (
+          <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
+            タイマー: {(profile.timerResolution100ns / 10000).toFixed(3)} ms
           </div>
         )}
         {/* 強制終了プロセス（Level 3） */}

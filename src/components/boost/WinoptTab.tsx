@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWinoptStore } from '../../stores/useWinoptStore';
 import { Button } from '../ui';
+import TimerSection from './TimerSection';
 
 interface WinoptTabProps {
   className?: string;
@@ -77,6 +78,7 @@ export default function WinoptTab({ className = '' }: WinoptTabProps): React.Rea
           ))}
         </div>
       )}
+      <TimerSection />
     </div>
   );
 }
