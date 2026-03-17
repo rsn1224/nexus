@@ -11,6 +11,7 @@ export interface BoostResult {
   actions: BoostAction[];
   durationMs: number;
   scoreDelta: number;
+  isSimulation: boolean;
 }
 
 // ─── SCRIPT ────────────────────────────────────────────────────────────────

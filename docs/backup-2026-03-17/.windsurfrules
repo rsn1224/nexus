@@ -1,0 +1,185 @@
+<project>
+  <name>NEXUS — Personal Base of Operations</name>
+  <description>
+    Tauri v2 + React 19 desktop app combining network recon, dev environment management,
+    encrypted credential storage, and AI-powered knowledge base.
+    UI/UX: THE DIVISION 2 tactical HUD aesthetic.
+  </description>
+  <stack>
+    <frontend>React 19 + TypeScript 5 + Vite 7 + Tailwind CSS 4 + Zustand 5</frontend>
+    <backend>Rust + Tauri v2</backend>
+    <testing>Vitest 4 (TS) + cargo test (Rust)</testing>
+    <linting>Biome (TS/JS/JSON) + cargo clippy (Rust)</linting>
+  </stack>
+  <current_phase>Phase 1 — Foundation (完了) → Phase 2: RECON ウィング実装中</current_phase>
+</project>
+
+<design_system>
+  <aesthetic>THE DIVISION 2 — タクティカルHUD、ミリタリーグリッド、機械的データパネル</aesthetic>
+  <color_palette>
+    CSS変数（src/index.css に定義済み）を必ず使うこと:
+    - Background:  var(--color-base-950/900/800/700)
+    - Accent:      var(--color-accent-500) = #f97316 (orange)
+    - Highlight:   var(--color-cyan-500)   = #06b6d4 (cyan)
+    - Danger:      var(--color-danger-500) = #ef4444
+    - Success:     var(--color-success-500) = #22c55e
+    - Text:        var(--color-text-primary/secondary/muted)
+    - Border:      var(--color-border-subtle/active)
+  </color_palette>
+  <typography>
+    - データ・コード・ラベル: var(--font-mono)
+    - 一般テキスト: var(--font-sans)
+  </typography>
+  <components>
+    - パネルには bracket-tl / bracket-br クラスでタクティカルコーナー装飾
+    - 数値更新時は data-flash クラスを一時付与してフラッシュエフェクト
+    - ステータスランプ: ● 文字 + success/danger/muted カラー
+    - ローディング: animate-pulse スケルトン（Tailwind）
+    - エラー: ページ上部バナー（danger 背景 rgba）
+  </components>
+</design_system>
+
+<wing_architecture>
+  <wing id="recon" phase="2">
+    LAN network scanning, device monitoring, traffic visualization
+    Commands: recon::scan_network, recon::get_traffic_snapshot
+    Store: src/stores/useReconStore.ts
+    UI: src/components/recon/ReconWing.tsx
+  </wing>
+  <wing id="ops" phase="3">
+    Process management, Docker control, AI performance suggestions
+    Commands: ops::list_processes, ops::get_ai_suggestions
+    Store: src/stores/useOpsStore.ts
+    UI: src/components/ops/OpsWing.tsx
+  </wing>
+  <wing id="vault" phase="4">
+    AES-256 local credential storage, password/API key management
+    Commands: vault::list_vault_entries, vault::unlock_vault
+    Store: src/stores/useVaultStore.ts
+    UI: src/components/vault/VaultWing.tsx
+  </wing>
+  <wing id="archive" phase="5">
+    Markdown notes, graph visualization, Ollama semantic search
+    Commands: archive::list_notes, archive::save_note
+    Store: src/stores/useArchiveStore.ts
+    UI: src/components/archive/ArchiveWing.tsx
+  </wing>
+</wing_architecture>
+
+<file_structure>
+  nexus/
+  ├── src/
+  │   ├── App.tsx                        # Wing ルーティング
+  │   ├── index.css                      # デザインシステム（CSS変数・アニメーション）
+  │   ├── types/index.ts                 # 全共有型定義（追加はここに）
+  │   ├── lib/logger.ts                  # pino logger（console.log 代替）
+  │   ├── test/setup.ts                  # Vitest セットアップ
+  │   ├── components/
+  │   │   ├── layout/Shell.tsx           # 共通ヘッダー・ナビ・フッター
+  │   │   ├── shared/                    # 再利用コンポーネント
+  │   │   ├── recon/ReconWing.tsx        # Phase 2
+  │   │   ├── ops/OpsWing.tsx            # Phase 3
+  │   │   ├── vault/VaultWing.tsx        # Phase 4
+  │   │   └── archive/ArchiveWing.tsx    # Phase 5
+  │   └── stores/                        # Zustand stores（Phase毎に追加）
+  └── src-tauri/src/
+      ├── lib.rs                         # invoke_handler（追加時ここも更新）
+      ├── error.rs                       # AppError（触らない）
+      └── commands/
+          ├── mod.rs                     # モジュール宣言
+          ├── recon.rs                   # Phase 2
+          ├── ops.rs                     # Phase 3
+          ├── vault.rs                   # Phase 4
+          └── archive.rs                 # Phase 5
+</file_structure>
+
+<coding_rules>
+  <rule id="1" name="complete_code_output" priority="CRITICAL">
+    プレースホルダー（// TODO: 実装、...、/* implementation */）絶対禁止。
+    完全に動作するコードのみ出力すること。
+  </rule>
+  <rule id="2" name="plan_and_execute" priority="HIGH">
+    複数ファイル変更・アーキテクチャ変更の前に:
+    1. 影響範囲と変更ファイル一覧を提示
+    2. ユーザー承認を得てから実装開始
+  </rule>
+  <rule id="3" name="error_handling" priority="HIGH">
+    - Rust: Result&lt;T, AppError&gt; 必須。unwrap() 本番禁止
+    - TypeScript: 型付きエラーハンドリング。サイレントキャッチ禁止
+  </rule>
+  <rule id="4" name="no_debug_output" priority="HIGH">
+    console.log / println! / dbg! 禁止。
+    TypeScript: src/lib/logger.ts の log を使う
+    Rust: tracing マクロ（info! / warn! / error!）を使う
+  </rule>
+  <rule id="5" name="naming" priority="MEDIUM">
+    TypeScript: camelCase変数 / PascalCaseコンポーネント / UPPER_SNAKE_CASE定数
+    Rust: snake_case / SCREAMING_SNAKE_CASE定数
+    Store hooks: use{Name}Store
+  </rule>
+  <rule id="6" name="file_limit" priority="MEDIUM">
+    ファイルは300行以下。超える場合は分割計画を明記。
+  </rule>
+  <rule id="7" name="css_variables" priority="MEDIUM">
+    色・フォントはすべてCSS変数（var(--color-...)）を使うこと。
+    ハードコードした色値（#hex、rgb()）を直接書かない。
+  </rule>
+</coding_rules>
+
+<zustand_pattern>
+```typescript
+// 全Storeはこのパターンで実装
+export const useFooStore = create&lt;FooStore&gt;((set) =&gt; ({
+  items: [],
+  isLoading: false,
+  error: null as string | null,
+
+  fetchItems: async () =&gt; {
+    set({ isLoading: true, error: null });
+    try {
+      const items = await invoke&lt;FooItem[]&gt;('list_foo');
+      set({ items, isLoading: false });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      log.error({ err }, 'fetchItems failed');
+      set({ error: message, isLoading: false });
+    }
+  },
+}));
+```
+</zustand_pattern>
+
+<rust_command_pattern>
+```rust
+#[tauri::command]
+pub fn do_something(param: String) -&gt; Result&lt;ReturnType, AppError&gt; {
+    info!(param = %param, "do_something: called");
+    // implementation
+    Ok(result)
+}
+```
+</rust_command_pattern>
+
+<commands>
+  - npm run check       — Biome lint + format
+  - npm run typecheck   — tsc --noEmit
+  - npm test            — Vitest
+  - cargo test          (src-tauri/ で実行)
+  - cargo clippy -- -D warnings
+  - npm run tauri dev   — 開発起動
+  - npm run tauri build — MSIビルド
+</commands>
+
+<workflow>
+  [実装] → [npm run check] → [npm run typecheck] → [npm test]
+         → [cargo clippy -- -D warnings] → [cargo test]
+         → [全パスしたら progress.md を更新]
+
+  2回連続失敗時は [BLOCKED] 形式でユーザーに報告し、指示を待つ。
+</workflow>
+
+<collaboration>
+  Cascade担当: UIコンポーネント実装・デザイン調整・複数ファイル一括編集（Flows）
+  Claude Code担当: Rust backend・テスト実行・git操作・CI/CD・ビルド
+  引き継ぎ: cascade-prompt.md を常に最新状態に保つこと
+</collaboration>

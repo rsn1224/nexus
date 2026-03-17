@@ -215,6 +215,12 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
       {/* Boost Results Panel */}
       {lastResult && (
         <div>
+          {/* Simulation Mode Warning */}
+          {lastResult.isSimulation && (
+            <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded px-2 py-1 mb-2">
+              ⚠ シミュレーションモード — 実際のプロセス最適化は未実装です
+            </div>
+          )}
           <div className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-secondary)] mb-2">
             BOOST COMPLETE · {lastResult.actions.length} ACTIONS ·{' '}
             {formatDuration(lastResult.durationMs)}

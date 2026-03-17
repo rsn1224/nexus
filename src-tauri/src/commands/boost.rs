@@ -39,6 +39,7 @@ pub struct BoostResult {
     pub actions: Vec<BoostAction>,
     pub duration_ms: u64,
     pub score_delta: i32,
+    pub is_simulation: bool,
 }
 
 // ─── Commands ───────────────────────────────────────────────────────────────
@@ -87,6 +88,7 @@ pub fn run_boost(_threshold_percent: Option<f32>) -> Result<BoostResult, AppErro
         actions,
         duration_ms,
         score_delta,
+        is_simulation: true,
     })
 }
 
@@ -103,6 +105,7 @@ mod tests {
         let r = result.unwrap(); // OK in tests: verifying success path
                                  // シミュレーション entries は 4件
         assert_eq!(r.actions.len(), 4);
+        assert!(r.is_simulation);
         // explorer.exe と svchost.exe は skipped_protected
         let protected: Vec<_> = r.actions.iter().filter(|a| a.is_protected).collect();
         assert_eq!(protected.len(), 2);

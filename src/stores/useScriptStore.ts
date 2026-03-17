@@ -90,7 +90,7 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
     } catch (error) {
       set({
         error: extractErrorMessage(error),
-        isLoading: false,
+        isRunning: false,
       });
     }
   },

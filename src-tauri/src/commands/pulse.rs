@@ -39,13 +39,23 @@ pub fn get_resource_snapshot(
 ) -> Result<ResourceSnapshot, AppError> {
     info!("get_resource_snapshot: collecting system metrics");
 
+    // ── 1st lock: CPU refresh 1回目 + メモリ ──
+    {
+        let mut s = state
+            .lock()
+            .map_err(|e| AppError::Command(format!("State lock poisoned: {}", e)))?;
+        s.sys.refresh_cpu_all();
+        s.sys.refresh_memory();
+    } // ← ここで Mutex 解放
+
+    // ── sleep: Mutex の外で待機（他コマンドをブロックしない）──
+    std::thread::sleep(std::time::Duration::from_millis(200));
+
+    // ── 2nd lock: CPU refresh 2回目 + 残りのメトリクス収集 ──
     let mut s = state
         .lock()
         .map_err(|e| AppError::Command(format!("State lock poisoned: {}", e)))?;
 
-    s.sys.refresh_memory();
-    s.sys.refresh_cpu_all();
-    std::thread::sleep(std::time::Duration::from_millis(200));
     s.sys.refresh_cpu_all();
     s.sys
         .refresh_processes(sysinfo::ProcessesToUpdate::All, true);
