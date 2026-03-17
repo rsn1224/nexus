@@ -36,6 +36,67 @@ function formatLastPlayed(timestamp: number | undefined): string {
   return `${Math.floor(days / DAYS_PLAYED)}ヶ月前`;
 }
 
+// ─── Styles ───────────────────────────────────────────────────────────────
+
+const styles = {
+  container: {
+    padding: '16px',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column' as const,
+  },
+  header: {
+    fontFamily: 'var(--font-mono)',
+    fontSize: '11px',
+    fontWeight: 700,
+    color: 'var(--color-cyan-500)',
+    letterSpacing: '0.15em',
+    marginBottom: '12px',
+  },
+  controlBar: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '10px',
+    flexWrap: 'wrap' as const,
+  },
+  autoBoostToggle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '14px',
+  },
+  errorBanner: {
+    borderBottom: '1px solid var(--color-danger-600)',
+    background: 'var(--color-base-800)',
+    padding: '8px 12px',
+    marginBottom: '12px',
+  },
+  errorText: {
+    fontFamily: 'var(--font-mono)',
+    fontSize: '11px',
+    color: 'var(--color-danger-500)',
+  },
+  cardGrid: {
+    flex: 1,
+    overflowY: 'auto' as const,
+  },
+  loadingState: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '200px',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '11px',
+    color: 'var(--color-text-muted)',
+  },
+  gridContainer: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+    gap: '12px',
+  },
+} as const;
+
 const sortBtnStyle = (active: boolean): React.CSSProperties => ({
   fontFamily: 'var(--font-mono)',
   fontSize: '9px',
@@ -265,31 +326,12 @@ export default function LauncherWing(): React.ReactElement {
   );
 
   return (
-    <div style={{ padding: '16px', height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <div style={styles.container}>
       {/* ── ヘッダー ── */}
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          fontWeight: 700,
-          color: 'var(--color-cyan-500)',
-          letterSpacing: '0.15em',
-          marginBottom: '12px',
-        }}
-      >
-        ▶ ゲーム起動
-      </div>
+      <div style={styles.header}>▶ ゲーム起動</div>
 
       {/* ── コントロールバー ── */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          marginBottom: '10px',
-          flexWrap: 'wrap',
-        }}
-      >
+      <div style={styles.controlBar}>
         {/* SCAN */}
         <button
           type="button"
@@ -354,7 +396,7 @@ export default function LauncherWing(): React.ReactElement {
       </div>
 
       {/* ── AutoBoost トグル ── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+      <div style={styles.autoBoostToggle}>
         <button
           type="button"
           onClick={toggleAutoBoost}
@@ -384,78 +426,21 @@ export default function LauncherWing(): React.ReactElement {
 
       {/* ── エラーバナー ── */}
       {error && (
-        <div
-          style={{
-            borderBottom: '1px solid var(--color-danger-600)',
-            background: 'var(--color-base-800)',
-            padding: '8px 12px',
-            marginBottom: '12px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--color-danger-500)',
-            }}
-          >
-            ERROR: {error}
-          </div>
+        <div style={styles.errorBanner}>
+          <div style={styles.errorText}>ERROR: {error}</div>
         </div>
       )}
 
       {/* ── カードグリッド ── */}
-      <div style={{ flex: 1, overflowY: 'auto' }}>
+      <div style={styles.cardGrid}>
         {isScanning ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '200px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            SCANNING STEAM LIBRARY...
-          </div>
+          <div style={styles.loadingState}>SCANNING STEAM LIBRARY...</div>
         ) : sortedGames.length === 0 && searchQuery !== '' ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '200px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            「{searchQuery}」に一致するゲームが見つかりません
-          </div>
+          <div style={styles.loadingState}>「{searchQuery}」に一致するゲームが見つかりません</div>
         ) : games.length === 0 ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '200px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--color-text-muted)',
-            }}
-          >
-            NO GAMES — PRESS SCAN TO DETECT STEAM LIBRARY
-          </div>
+          <div style={styles.loadingState}>NO GAMES — PRESS SCAN TO DETECT STEAM LIBRARY</div>
         ) : (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-              gap: '12px',
-            }}
-          >
+          <div style={styles.gridContainer}>
             {sortedGames.map((game) => (
               <GameCard
                 key={game.app_id}

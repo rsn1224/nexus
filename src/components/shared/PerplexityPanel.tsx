@@ -12,6 +12,86 @@ type PanelState =
   | { status: 'ok'; data: string[] }
   | { status: 'error'; error: string };
 
+// ─── Styles ───────────────────────────────────────────────────────────────
+
+const styles = {
+  container: {
+    marginTop: '12px',
+    background: 'var(--color-base-800)',
+    border: '1px solid var(--color-border-subtle)',
+    borderRadius: '4px',
+    overflow: 'hidden',
+  },
+  button: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: '10px 12px',
+    background: 'transparent',
+    border: 'none',
+    cursor: 'pointer' as const,
+  },
+  buttonDisabled: {
+    cursor: 'default' as const,
+    opacity: 0.5,
+  },
+  buttonContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+  },
+  title: {
+    fontFamily: 'var(--font-mono)',
+    fontSize: '10px',
+    fontWeight: 700,
+    color: 'var(--color-cyan-500)',
+    letterSpacing: '0.1em',
+  },
+  subtitle: {
+    fontFamily: 'var(--font-mono)',
+    fontSize: '9px',
+    color: 'var(--color-text-muted)',
+  },
+  loadingState: {
+    padding: '8px 12px',
+    background: 'var(--color-base-900)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '10px',
+    color: 'var(--color-text-muted)',
+    marginTop: '8px',
+  },
+  errorState: {
+    padding: '8px 12px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    borderBottom: '1px solid var(--color-danger-600)',
+    color: 'var(--color-danger-500)',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '10px',
+  },
+  successState: {
+    padding: '8px 12px',
+    background: 'var(--color-base-900)',
+  },
+  suggestionItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+    padding: '4px 0',
+    fontFamily: 'var(--font-mono)',
+    fontSize: '10px',
+    lineHeight: '1.5',
+  },
+  suggestionNumber: {
+    color: 'var(--color-cyan-500)',
+    flexShrink: 0,
+    fontWeight: 600,
+  },
+  suggestionText: {
+    color: 'var(--color-text-secondary)',
+  },
+} as const;
+
 export default function PerplexityPanel({
   processNames,
 }: PerplexityPanelProps): React.ReactElement {
@@ -41,111 +121,40 @@ export default function PerplexityPanel({
   };
 
   return (
-    <div
-      style={{
-        marginTop: '12px',
-        background: 'var(--color-base-800)',
-        border: '1px solid var(--color-border-subtle)',
-        borderRadius: '4px',
-        overflow: 'hidden',
-      }}
-    >
+    <div style={styles.container}>
       <button
         type="button"
         onClick={handleAsk}
         disabled={panelState.status === 'loading'}
         style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '10px 12px',
-          background: 'transparent',
-          border: 'none',
+          ...styles.button,
+          ...(panelState.status === 'loading' || processNames.length === 0
+            ? styles.buttonDisabled
+            : {}),
           cursor: panelState.status === 'loading' ? 'default' : 'pointer',
-          opacity: panelState.status === 'loading' || processNames.length === 0 ? 0.5 : 1,
         }}
         title={processNames.length === 0 ? '先に RUN BOOST を実行してください' : undefined}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              fontWeight: 700,
-              color: 'var(--color-cyan-500)',
-              letterSpacing: '0.1em',
-            }}
-          >
-            AI に聞く
-          </span>
+        <div style={styles.buttonContent}>
+          <span style={styles.title}>AI に聞く</span>
         </div>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <span style={styles.subtitle}>
           {panelState.status === 'loading' ? 'ASKING...' : '▶ ASK AI'}
         </span>
       </button>
 
       {panelState.status === 'loading' && (
-        <div
-          style={{
-            padding: '8px 12px',
-            background: 'var(--color-base-900)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--color-text-muted)',
-            marginTop: '8px',
-          }}
-        >
-          Perplexity に問い合わせ中...
-        </div>
+        <div style={styles.loadingState}>Perplexity に問い合わせ中...</div>
       )}
 
-      {panelState.status === 'error' && (
-        <div
-          style={{
-            padding: '8px 12px',
-            background: 'rgba(239, 68, 68, 0.1)',
-            borderBottom: '1px solid var(--color-danger-600)',
-            color: 'var(--color-danger-500)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-          }}
-        >
-          ⚠ {panelState.error}
-        </div>
-      )}
+      {panelState.status === 'error' && <div style={styles.errorState}>⚠ {panelState.error}</div>}
 
       {panelState.status === 'ok' && (
-        <div style={{ padding: '8px 12px', background: 'var(--color-base-900)' }}>
+        <div style={styles.successState}>
           {panelState.data.map((suggestion, i) => (
-            <div
-              key={suggestion}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '8px',
-                padding: '4px 0',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                lineHeight: '1.5',
-              }}
-            >
-              <span
-                style={{
-                  color: 'var(--color-cyan-500)',
-                  flexShrink: 0,
-                  fontWeight: 600,
-                }}
-              >
-                {i + 1}.
-              </span>
-              <span style={{ color: 'var(--color-text-secondary)' }}>{suggestion}</span>
+            <div style={styles.suggestionItem} key={suggestion}>
+              <span style={styles.suggestionNumber}>{i + 1}.</span>
+              <span style={styles.suggestionText}>{suggestion}</span>
             </div>
           ))}
         </div>
