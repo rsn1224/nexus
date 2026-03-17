@@ -10,6 +10,9 @@ interface HardwareStore {
   lastUpdated: number | null;
   fetchHardware: () => Promise<void>;
   clearError: () => void;
+  startHardwarePolling: () => void;
+  stopHardwarePolling: () => void;
+  hardwarePollInterval: number | null;
 }
 
 // Default hardware info for fallback
@@ -39,6 +42,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   isLoading: false,
   error: null,
   lastUpdated: null,
+  hardwarePollInterval: null,
   fetchHardware: async () => {
     const { isLoading } = get();
     if (isLoading) return; // Prevent concurrent requests
@@ -65,7 +69,57 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   clearError: () => {
     set({ error: null });
   },
+  startHardwarePolling: () => {
+    const { hardwarePollInterval } = get();
+    if (hardwarePollInterval) {
+      log.warn('hardware: polling already started');
+      return;
+    }
+
+    log.info('hardware: starting hardware polling');
+
+    // Initial fetch
+    void get().fetchHardware();
+
+    // Start polling with 5-second interval (hardware changes slowly)
+    const interval = setInterval(() => {
+      void get().fetchHardware();
+    }, 5000) as unknown as number;
+
+    set({ hardwarePollInterval: interval });
+  },
+  stopHardwarePolling: () => {
+    const { hardwarePollInterval } = get();
+    if (hardwarePollInterval) {
+      clearInterval(hardwarePollInterval);
+      log.info('hardware: stopped hardware polling');
+      set({ hardwarePollInterval: null });
+    }
+  },
 }));
+
+// Granular selectors to prevent unnecessary re-renders
+export const useHardwareInfo = () => useHardwareStore((s) => s.info);
+export const useHardwareLoading = () => useHardwareStore((s) => s.isLoading);
+export const useHardwareError = () => useHardwareStore((s) => s.error);
+export const useHardwareLastUpdated = () => useHardwareStore((s) => s.lastUpdated);
+export const useHardwareFetch = () => useHardwareStore((s) => s.fetchHardware);
+export const useHardwarePollingControl = () =>
+  useHardwareStore((s) => ({
+    start: s.startHardwarePolling,
+    stop: s.stopHardwarePolling,
+  }));
+
+// Computed selectors
+export const useCpuInfo = () => useHardwareStore((s) => s.info?.cpuName ?? null);
+export const useCpuTemp = () => useHardwareStore((s) => s.info?.cpuTempC ?? null);
+export const useGpuInfo = () => useHardwareStore((s) => s.info?.gpuName ?? null);
+export const useGpuUsage = () => useHardwareStore((s) => s.info?.gpuUsagePercent ?? null);
+export const useGpuVram = () =>
+  useHardwareStore((s) => ({
+    total: s.info?.gpuVramTotalMb ?? null,
+    used: s.info?.gpuVramUsedMb ?? null,
+  }));
 
 // Selectors for derived data
 export const useHardwareData = () => {
@@ -123,4 +177,11 @@ export function createDiskProgressBar(usedGb: number, totalGb: number): string {
   const emptyBlocks = 10 - filledBlocks;
 
   return '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
+}
+
+// Cleanup on unmount
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    useHardwareStore.getState().stopHardwarePolling();
+  });
 }

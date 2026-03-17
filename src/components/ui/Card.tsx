@@ -1,4 +1,5 @@
 import type React from 'react';
+import { memo } from 'react';
 
 interface CardProps {
   title?: string;
@@ -7,7 +8,7 @@ interface CardProps {
   action?: React.ReactNode;
 }
 
-export default function Card({
+const Card = memo(function Card({
   title,
   children,
   className = '',
@@ -28,4 +29,6 @@ export default function Card({
       <div className="p-3">{children}</div>
     </div>
   );
-}
+});
+
+export default Card;

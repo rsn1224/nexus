@@ -14,11 +14,14 @@ interface OpsStore {
   isSuggestionsLoading: boolean;
   error: string | null;
   lastUpdated: number | null;
+  processPollInterval: number | null;
 
   fetchProcesses: () => Promise<void>;
   fetchSuggestions: () => Promise<void>;
   killProcess: (pid: number) => Promise<void>;
   setProcessPriority: (pid: number, priority: 'high' | 'normal' | 'idle') => Promise<void>;
+  startProcessPolling: () => void;
+  stopProcessPolling: () => void;
 }
 
 // ─── Store ────────────────────────────────────────────────────────────────────
@@ -30,6 +33,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
   isSuggestionsLoading: false,
   error: null,
   lastUpdated: null,
+  processPollInterval: null,
 
   fetchProcesses: async () => {
     set({ isLoading: true, error: null });
@@ -91,4 +95,60 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       set({ error: message });
     }
   },
+
+  startProcessPolling: () => {
+    const { processPollInterval } = get();
+    if (processPollInterval) {
+      log.warn('ops: process polling already started');
+      return;
+    }
+
+    log.info('ops: starting process polling');
+
+    // Initial fetch
+    void get().fetchProcesses();
+
+    // Start polling with 3-second interval
+    const interval = setInterval(() => {
+      void get().fetchProcesses();
+    }, 3000) as unknown as number;
+
+    set({ processPollInterval: interval });
+  },
+
+  stopProcessPolling: () => {
+    const { processPollInterval } = get();
+    if (processPollInterval) {
+      clearInterval(processPollInterval);
+      log.info('ops: stopped process polling');
+      set({ processPollInterval: null });
+    }
+  },
 }));
+
+// Granular selectors to prevent unnecessary re-renders
+export const useProcesses = () => useOpsStore((s) => s.processes);
+export const useProcessSuggestions = () => useOpsStore((s) => s.suggestions);
+export const useProcessLoading = () => useOpsStore((s) => s.isLoading);
+export const useSuggestionsLoading = () => useOpsStore((s) => s.isSuggestionsLoading);
+export const useProcessError = () => useOpsStore((s) => s.error);
+export const useProcessLastUpdated = () => useOpsStore((s) => s.lastUpdated);
+export const useProcessActions = () =>
+  useOpsStore((s) => ({
+    fetch: s.fetchProcesses,
+    fetchSuggestions: s.fetchSuggestions,
+    kill: s.killProcess,
+    setPriority: s.setProcessPriority,
+  }));
+export const useProcessPollingControl = () =>
+  useOpsStore((s) => ({
+    start: s.startProcessPolling,
+    stop: s.stopProcessPolling,
+  }));
+
+// Cleanup on unmount
+if (typeof window !== 'undefined') {
+  window.addEventListener('beforeunload', () => {
+    useOpsStore.getState().stopProcessPolling();
+  });
+}

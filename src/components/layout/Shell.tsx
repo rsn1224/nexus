@@ -1,6 +1,6 @@
 import { FileText, Gamepad2, HardDrive, Home, Monitor, Network, Settings, Zap } from 'lucide-react';
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { calcScore, getScoreRank } from '../../lib/score';
 import { useHardwareData } from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
@@ -55,14 +55,14 @@ interface ShellProps {
   children: React.ReactNode;
 }
 
-export default function Shell({
+const Shell = memo(function Shell({
   activeWing,
   onWingChange,
   children,
 }: ShellProps): React.ReactElement {
   const [hoveredWing, setHoveredWing] = useState<WingId | null>(null);
 
-  // Live CPU and Memory data for status
+  // Live CPU and Memory data for status - using granular selectors
   const cpuPercent = usePulseStore(
     (s) =>
       (s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1]?.cpuPercent : null) ?? null,
@@ -76,8 +76,9 @@ export default function Shell({
         : null) ?? null,
   );
 
-  // Hardware data for score calculation
+  // Hardware data for score calculation - using granular selectors
   const { diskUsagePercent, info: hwInfo } = useHardwareData();
+  const gpuUsage = hwInfo?.gpuUsagePercent ?? null;
   const latestSnapshot = usePulseStore((s) =>
     s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
   );
@@ -90,15 +91,9 @@ export default function Shell({
         memUsedGb: latestSnapshot?.memUsedMb ?? null,
         memTotalGb: latestSnapshot?.memTotalMb ?? null,
         diskUsagePercent,
-        gpuUsagePercent: hwInfo?.gpuUsagePercent ?? null,
+        gpuUsagePercent: gpuUsage,
       }),
-    [
-      cpuPercent,
-      latestSnapshot?.memUsedMb,
-      latestSnapshot?.memTotalMb,
-      diskUsagePercent,
-      hwInfo?.gpuUsagePercent,
-    ],
+    [cpuPercent, latestSnapshot?.memUsedMb, latestSnapshot?.memTotalMb, diskUsagePercent, gpuUsage],
   );
 
   return (
@@ -210,4 +205,6 @@ export default function Shell({
       <main className="flex-1 overflow-hidden">{children}</main>
     </div>
   );
-}
+});
+
+export default Shell;

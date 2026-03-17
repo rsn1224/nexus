@@ -6,7 +6,6 @@ import { useHardwareData } from '../../stores/useHardwareStore';
 import { useLauncherStore } from '../../stores/useLauncherStore';
 import { useLogStore } from '../../stores/useLogStore';
 import { useNavStore } from '../../stores/useNavStore';
-import { useOpsStore } from '../../stores/useOpsStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
@@ -41,10 +40,11 @@ function formatTime(timestamp: number): string {
 
 // ─── HomeWing ────────────────────────────────────────────────────────────────
 
-export default function HomeWing(): React.ReactElement {
-  // Store data
-  const processes = useOpsStore((s) => s.processes);
-  const fetchProcesses = useOpsStore((s) => s.fetchProcesses);
+const HomeWing = memo(function HomeWing(): React.ReactElement {
+  // Store data - using granular selectors
+  const processes = useProcesses();
+  const { fetch: fetchProcesses } = useProcessActions();
+  const { start: startProcessPolling } = useProcessPollingControl();
 
   const latestSnapshot = usePulseStore((s) =>
     s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
@@ -68,6 +68,7 @@ export default function HomeWing(): React.ReactElement {
   const fetchStorageInfo = useStorageStore((s) => s.fetchStorageInfo);
   const storageInfo = useStorageStore((s) => s.storageInfo);
   const { info: hwInfo, diskUsagePercent, fetchHardware } = useHardwareData();
+  const gpuUsage = useGpuUsage();
 
   // Optimization history state
   const [optimizationHistory, setOptimizationHistory] = useState<OptimizationHistory[]>([]);
@@ -81,6 +82,8 @@ export default function HomeWing(): React.ReactElement {
     if (!isPolling) {
       startPolling();
     }
+    // Start process polling
+    startProcessPolling();
 
     // Load optimization history from localStorage
     const saved = localStorage.getItem('nexus:home:history');
@@ -91,7 +94,14 @@ export default function HomeWing(): React.ReactElement {
         // Ignore invalid JSON
       }
     }
-  }, [fetchProcesses, fetchStorageInfo, fetchHardware, isPolling, startPolling]);
+  }, [
+    fetchProcesses,
+    fetchStorageInfo,
+    fetchHardware,
+    isPolling,
+    startPolling,
+    startProcessPolling,
+  ]);
 
   // Update optimization history when logs change
   useEffect(() => {
@@ -132,13 +142,13 @@ export default function HomeWing(): React.ReactElement {
         memUsedGb: memUsed,
         memTotalGb: memTotal,
         diskUsagePercent,
-        gpuUsagePercent: hwInfo?.gpuUsagePercent ?? null,
+        gpuUsagePercent: gpuUsage,
       }),
-    [cpuPercent, memUsed, memTotal, diskUsagePercent, hwInfo?.gpuUsagePercent],
+    [cpuPercent, memUsed, memTotal, diskUsagePercent, gpuUsage],
   );
 
   const highCpuProcesses = useMemo(
-    () => processes.filter((p) => p.cpuPercent >= 80).slice(0, 3),
+    () => processes.filter((p: SystemProcess) => p.cpuPercent >= 80).slice(0, 3),
     [processes],
   );
 
@@ -428,7 +438,7 @@ export default function HomeWing(): React.ReactElement {
       <Card title="アラート" className="mt-4">
         {highCpuProcesses.length > 0 ? (
           <div className="font-[var(--font-mono)] text-xs text-[var(--color-danger-500)]">
-            {highCpuProcesses.map((process) => (
+            {highCpuProcesses.map((process: SystemProcess) => (
               <div key={process.pid} className="mb-1 flex justify-between items-center">
                 <span>
                   ⚠ CPU HIGH ({process.cpuPercent.toFixed(1)}%) — {process.name}
@@ -448,4 +458,6 @@ export default function HomeWing(): React.ReactElement {
       <AiPanel suggestions={suggestions} />
     </div>
   );
-}
+});
+
+export default HomeWing;
