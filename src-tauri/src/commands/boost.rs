@@ -108,11 +108,7 @@ mod tests {
     fn test_critical_system_processes_protected() {
         let must_protect = ["lsass.exe", "csrss.exe", "winlogon.exe", "explorer.exe"];
         for p in must_protect {
-            assert!(
-                is_protected_process(p),
-                "{} should be protected",
-                p
-            );
+            assert!(is_protected_process(p), "{} should be protected", p);
         }
     }
 }

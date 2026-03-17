@@ -40,7 +40,9 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
     // System インスタンスから CPU/メモリ情報を取得
     let (cpu_name, cpu_cores, cpu_threads, cpu_base_ghz, mem_total_gb, mem_used_gb, uptime_secs) = {
         let state = app.state::<Mutex<crate::state::AppState>>();
-        let mut s = state.lock().map_err(|e| format!("Stateロックエラー: {}", e))?;
+        let mut s = state
+            .lock()
+            .map_err(|e| format!("Stateロックエラー: {}", e))?;
         s.sys.refresh_memory();
         s.sys.refresh_cpu_all();
 

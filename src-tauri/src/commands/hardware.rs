@@ -1,9 +1,11 @@
 // Hardware Wing — ハードウェア情報取得機能
 
 use crate::error::AppError;
+use crate::state::SharedState;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use sysinfo::{Components, DiskKind, Disks, System};
+use tauri::State;
 use tracing::{info, warn};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -39,22 +41,26 @@ pub struct DiskInfo {
 }
 
 #[tauri::command]
-pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
+pub fn get_hardware_info(state: State<'_, SharedState>) -> Result<HardwareInfo, AppError> {
     info!("get_hardware_info: collecting hardware information");
 
-    let mut sys = System::new_all();
-    sys.refresh_all();
+    let mut s = state
+        .lock()
+        .map_err(|e| AppError::Command(format!("Stateロックエラー: {}", e)))?;
+    s.sys.refresh_all();
 
     // CPU情報
-    let cpu_name = sys
+    let cpu_name = s
+        .sys
         .cpus()
         .first()
         .map(|cpu| cpu.brand().to_string())
         .unwrap_or_else(|| "Unknown CPU".to_string());
 
-    let cpu_cores = sys.cpus().len() as u32;
+    let cpu_cores = s.sys.cpus().len() as u32;
     let cpu_threads = cpu_cores; // 物理コア数とスレッド数を同じに（簡略化）
-    let cpu_base_ghz = sys
+    let cpu_base_ghz = s
+        .sys
         .cpus()
         .first()
         .map(|cpu| cpu.frequency() as f32 / 1000.0)
@@ -80,8 +86,8 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
     };
 
     // メモリ情報
-    let total_memory = sys.total_memory();
-    let used_memory = sys.used_memory();
+    let total_memory = s.sys.total_memory();
+    let used_memory = s.sys.used_memory();
     let mem_total_gb = total_memory as f32 / (1024.0 * 1024.0 * 1024.0);
     let mem_used_gb = used_memory as f32 / (1024.0 * 1024.0 * 1024.0);
 

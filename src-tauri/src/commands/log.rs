@@ -173,11 +173,15 @@ pub fn analyze_logs(logs: Vec<LogEntry>) -> Result<LogAnalysis, AppError> {
         // タイムスタンプ解析
         if let Ok(parsed_time) = DateTime::parse_from_rfc3339(&entry.timestamp) {
             let utc_time = parsed_time.with_timezone(&Utc);
-            if earliest_time.is_none() || utc_time < earliest_time.unwrap() {
-                earliest_time = Some(utc_time);
+            match earliest_time {
+                None => earliest_time = Some(utc_time),
+                Some(t) if utc_time < t => earliest_time = Some(utc_time),
+                _ => {}
             }
-            if latest_time.is_none() || utc_time > latest_time.unwrap() {
-                latest_time = Some(utc_time);
+            match latest_time {
+                None => latest_time = Some(utc_time),
+                Some(t) if utc_time > t => latest_time = Some(utc_time),
+                _ => {}
             }
         }
     }

@@ -44,7 +44,8 @@ pub async fn start(app: AppHandle) {
             };
 
             s.sys.refresh_cpu_all();
-            s.sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+            s.sys
+                .refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
             let cpu_percent = s.sys.global_cpu_usage();
             let cpu_temp_c = crate::services::hardware::get_cpu_temperature();
@@ -73,9 +74,18 @@ pub async fn start(app: AppHandle) {
             s.last_disk_write = current_write;
 
             s.networks.refresh();
-            let net_recv_kb: u64 = s.networks.values().map(|n: &sysinfo::NetworkData| n.received()).sum::<u64>() / 1024;
-            let net_sent_kb: u64 =
-                s.networks.values().map(|n: &sysinfo::NetworkData| n.transmitted()).sum::<u64>() / 1024;
+            let net_recv_kb: u64 = s
+                .networks
+                .values()
+                .map(|n: &sysinfo::NetworkData| n.received())
+                .sum::<u64>()
+                / 1024;
+            let net_sent_kb: u64 = s
+                .networks
+                .values()
+                .map(|n: &sysinfo::NetworkData| n.transmitted())
+                .sum::<u64>()
+                / 1024;
 
             let timestamp = std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)

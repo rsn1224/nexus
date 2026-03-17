@@ -14,13 +14,17 @@ fn validate_drive_name(name: &str) -> Result<(), AppError> {
     // "C:", "C:\", "D:", "D:\" のいずれか
     let trimmed = name.trim_end_matches('\\');
     if trimmed.len() == 2
-        && trimmed.chars().next().is_some_and(|c| c.is_ascii_alphabetic())
+        && trimmed
+            .chars()
+            .next()
+            .is_some_and(|c| c.is_ascii_alphabetic())
         && trimmed.chars().nth(1) == Some(':')
     {
         return Ok(());
     }
     Err(AppError::InvalidInput(format!(
-        "Invalid drive name: '{}'. Expected format: 'C:' or 'C:\\'", name
+        "Invalid drive name: '{}'. Expected format: 'C:' or 'C:\\'",
+        name
     )))
 }
 
@@ -256,7 +260,7 @@ pub fn run_full_cleanup() -> Result<CleanupResult, AppError> {
 
 #[tauri::command]
 pub fn analyze_disk_usage(drive_name: String) -> Result<Vec<String>, AppError> {
-    validate_drive_name(&drive_name)?;  // ← 追加
+    validate_drive_name(&drive_name)?; // ← 追加
     info!(
         "analyze_disk_usage: analyzing usage for drive {}",
         drive_name

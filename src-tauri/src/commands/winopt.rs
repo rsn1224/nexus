@@ -108,13 +108,17 @@ fn validate_guid(s: &str) -> Result<&str, AppError> {
     {
         Ok(trimmed)
     } else {
-        Err(AppError::InvalidInput(format!("Invalid GUID format: {}", s)))
+        Err(AppError::InvalidInput(format!(
+            "Invalid GUID format: {}",
+            s
+        )))
     }
 }
 
 /// u32数値のバリデーション（PowerShell の -Value に渡す整数値）
 fn validate_u32_value(s: &str) -> Result<u32, AppError> {
-    s.trim().parse::<u32>()
+    s.trim()
+        .parse::<u32>()
         .map_err(|_| AppError::InvalidInput(format!("Invalid numeric value: {}", s)))
 }
 
@@ -124,7 +128,8 @@ fn validate_mouse_speed(s: &str) -> Result<&str, AppError> {
     match trimmed {
         "0" | "1" | "2" => Ok(trimmed),
         _ => Err(AppError::InvalidInput(format!(
-            "Invalid mouse speed value: {}. Expected 0, 1, or 2", s
+            "Invalid mouse speed value: {}. Expected 0, 1, or 2",
+            s
         ))),
     }
 }
@@ -281,12 +286,12 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
                     .split_whitespace()
                     .find(|s| s.len() == 36 && s.chars().filter(|&c| c == '-').count() == 4)
                     .unwrap_or("SCHEME_BALANCED");
-                let validated_guid = validate_guid(guid)?;  // ← 追加
+                let validated_guid = validate_guid(guid)?; // ← 追加
                 run_powershell(&format!("powercfg /setactive {}", validated_guid))?;
             }
             "game_mode" => {
                 // Restore original game mode setting
-                let value = validate_u32_value(&original_value)?;  // ← 追加
+                let value = validate_u32_value(&original_value)?; // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -Value {} -Type DWord -Force",
                     value
@@ -294,7 +299,7 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
             }
             "game_dvr" => {
                 // Restore original game DVR setting
-                let value = validate_u32_value(&original_value)?;  // ← 追加
+                let value = validate_u32_value(&original_value)?; // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -Value {} -Type DWord -Force",
                     value
@@ -302,7 +307,7 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
             }
             "mouse_acceleration" => {
                 // Restore original mouse settings
-                let value = validate_mouse_speed(&original_value)?;  // ← 追加
+                let value = validate_mouse_speed(&original_value)?; // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -Value '{}' -Type String -Force",
                     value
@@ -310,7 +315,7 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
             }
             "visual_effects" => {
                 // Restore original visual effects setting
-                let value = validate_u32_value(&original_value)?;  // ← 追加
+                let value = validate_u32_value(&original_value)?; // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -Value {} -Type DWord -Force",
                     value

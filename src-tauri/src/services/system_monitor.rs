@@ -37,7 +37,8 @@ pub fn collect_snapshot(state: &State<'_, SharedState>) -> Result<SnapshotData, 
         .map_err(|e| AppError::Command(format!("Stateロックエラー: {}", e)))?;
 
     s.sys.refresh_cpu_all();
-    s.sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+    s.sys
+        .refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
     let cpu_percent = s.sys.global_cpu_usage();
     let cpu_temp_c = get_cpu_temperature();
@@ -46,8 +47,18 @@ pub fn collect_snapshot(state: &State<'_, SharedState>) -> Result<SnapshotData, 
     let available_memory = s.sys.available_memory();
     let used_memory = total_memory.saturating_sub(available_memory);
 
-    let current_read: u64 = s.sys.processes().values().map(|p: &Process| p.disk_usage().read_bytes).sum();
-    let current_write: u64 = s.sys.processes().values().map(|p: &Process| p.disk_usage().written_bytes).sum();
+    let current_read: u64 = s
+        .sys
+        .processes()
+        .values()
+        .map(|p: &Process| p.disk_usage().read_bytes)
+        .sum();
+    let current_write: u64 = s
+        .sys
+        .processes()
+        .values()
+        .map(|p: &Process| p.disk_usage().written_bytes)
+        .sum();
 
     let disk_read_kb = current_read.saturating_sub(s.last_disk_read) / 1024;
     let disk_write_kb = current_write.saturating_sub(s.last_disk_write) / 1024;

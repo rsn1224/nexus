@@ -67,3 +67,92 @@ pub fn parse_ipconfig_output(stdout: &str) -> Vec<NetworkAdapter> {
         .filter(|a| a.is_connected && !a.ip.is_empty())
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_english_single_adapter() {
+        let output = "\
+Ethernet adapter Local Area Connection:
+
+   Connection-specific DNS Suffix  . :
+   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF
+   IPv4 Address. . . . . . . . . . . : 192.168.1.100
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+   Default Gateway . . . . . . . . . : 192.168.1.1
+";
+        let adapters = parse_ipconfig_output(output);
+        assert_eq!(adapters.len(), 1);
+        assert_eq!(adapters[0].name, "Local Area Connection");
+        assert_eq!(adapters[0].ip, "192.168.1.100");
+        assert_eq!(adapters[0].mac, "AA-BB-CC-DD-EE-FF");
+        assert!(adapters[0].is_connected);
+    }
+
+    #[test]
+    fn test_parse_multiple_adapters() {
+        let output = "\
+Ethernet adapter Ethernet:
+
+   Physical Address. . . . . . . . . : 11-22-33-44-55-66
+   IPv4 Address. . . . . . . . . . . : 10.0.0.5
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+
+Wireless LAN adapter Wi-Fi:
+
+   Physical Address. . . . . . . . . : AA-BB-CC-DD-EE-FF
+   IPv4 Address. . . . . . . . . . . : 192.168.1.50
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+";
+        let adapters = parse_ipconfig_output(output);
+        assert_eq!(adapters.len(), 2);
+        assert_eq!(adapters[0].ip, "10.0.0.5");
+        assert_eq!(adapters[1].ip, "192.168.1.50");
+    }
+
+    #[test]
+    fn test_parse_preferred_suffix_stripped() {
+        let output = "\
+Ethernet adapter Ethernet:
+
+   Physical Address. . . . . . . . . : 11-22-33-44-55-66
+   IPv4 Address. . . . . . . . . . . : 10.0.0.5(Preferred)
+";
+        let adapters = parse_ipconfig_output(output);
+        assert_eq!(adapters.len(), 1);
+        assert_eq!(adapters[0].ip, "10.0.0.5");
+    }
+
+    #[test]
+    fn test_disconnected_adapter_filtered() {
+        let output = "\
+Ethernet adapter Ethernet:
+
+   Media State . . . . . . . . . . . : Media disconnected
+   Physical Address. . . . . . . . . : 11-22-33-44-55-66
+";
+        let adapters = parse_ipconfig_output(output);
+        assert!(adapters.is_empty(), "切断済みアダプターは除外されるべき");
+    }
+
+    #[test]
+    fn test_empty_output() {
+        let adapters = parse_ipconfig_output("");
+        assert!(adapters.is_empty());
+    }
+
+    #[test]
+    fn test_no_ip_adapter_filtered() {
+        let output = "\
+Ethernet adapter Ethernet:
+
+   Physical Address. . . . . . . . . : 11-22-33-44-55-66
+   Subnet Mask . . . . . . . . . . . : 255.255.255.0
+";
+        // IP アドレスがないアダプターは除外される
+        let adapters = parse_ipconfig_output(output);
+        assert!(adapters.is_empty());
+    }
+}

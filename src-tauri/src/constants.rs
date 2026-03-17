@@ -3,30 +3,18 @@
 /// 保護プロセスリスト — kill / 優先度変更の対象外
 /// 拡張子なしの正規化名で管理（比較時に .exe を除去して小文字化）
 pub const PROTECTED_PROCESSES: &[&str] = &[
-    "system",
-    "registry",
-    "smss",
-    "csrss",
-    "wininit",
-    "winlogon",
-    "lsass",
-    "services",
-    "svchost",
-    "dwm",
-    "explorer",
-    "msmpeng",    // Windows Defender
-    "msseces",    // Microsoft Security Essentials
-    "avp",        // Kaspersky
-    "nexus",      // 自アプリ
+    "system", "registry", "smss", "csrss", "wininit", "winlogon", "lsass", "services", "svchost",
+    "dwm", "explorer", "msmpeng", // Windows Defender
+    "msseces", // Microsoft Security Essentials
+    "avp",     // Kaspersky
+    "nexus",   // 自アプリ
 ];
 
 /// プロセス名が保護リストに含まれるか判定
 /// `.exe` を除去（大文字小文字を区別せず）、小文字化してから比較
 pub fn is_protected_process(name: &str) -> bool {
     let name_lower = name.to_lowercase();
-    let normalized = name_lower
-        .strip_suffix(".exe")
-        .unwrap_or(&name_lower);
+    let normalized = name_lower.strip_suffix(".exe").unwrap_or(&name_lower);
     PROTECTED_PROCESSES.contains(&normalized)
 }
 

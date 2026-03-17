@@ -76,7 +76,10 @@ pub fn kill_process(state: &State<'_, SharedState>, pid: u32) -> Result<String, 
             )))
         }
     } else {
-        Err(AppError::NotFound(format!("プロセス {} が見つかりません", pid)))
+        Err(AppError::NotFound(format!(
+            "プロセス {} が見つかりません",
+            pid
+        )))
     }
 }
 

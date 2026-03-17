@@ -4,9 +4,7 @@ use crate::commands::log::{LogEntry, LogLevel};
 use chrono::Utc;
 
 /// Windows イベントログ JSON エントリをパースする
-pub fn parse_windows_log_value(
-    json: &serde_json::Value,
-) -> Option<LogEntry> {
+pub fn parse_windows_log_value(json: &serde_json::Value) -> Option<LogEntry> {
     let timestamp = json["TimeCreated"].as_str().unwrap_or("").to_string();
     let level_str = json["LevelDisplayName"].as_str().unwrap_or("Info");
     let message = json["Message"].as_str().unwrap_or("").to_string();
@@ -19,7 +17,7 @@ pub fn parse_windows_log_value(
         "Error" => LogLevel::Error,
         "Warning" => LogLevel::Warn,
         "Information" => LogLevel::Info,
-        _ => LogLevel::Debug,
+        _ => LogLevel::Info, // デフォルトを Info に変更
     };
 
     Some(LogEntry {
@@ -46,7 +44,7 @@ pub fn parse_log_line(line: &str, app_name: &str) -> Option<LogEntry> {
             "ERROR" => LogLevel::Error,
             "WARN" | "WARNING" => LogLevel::Warn,
             "INFO" => LogLevel::Info,
-            _ => LogLevel::Debug,
+            _ => LogLevel::Info, // デフォルトを Info に変更
         };
 
         Some(LogEntry {
@@ -67,5 +65,59 @@ pub fn parse_log_line(line: &str, app_name: &str) -> Option<LogEntry> {
             process_id: None,
             thread_id: None,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_windows_log_value() {
+        let json = serde_json::json!({
+            "TimeCreated": "2026-03-18T12:00:00Z",
+            "LevelDisplayName": "Error",
+            "Message": "テストエラーメッセージ",
+            "ProviderName": "TestProvider"
+        });
+        let entry = parse_windows_log_value(&json).unwrap();
+        assert_eq!(entry.timestamp, "2026-03-18T12:00:00Z");
+        assert!(matches!(entry.level, LogLevel::Error));
+        assert_eq!(entry.message, "テストエラーメッセージ");
+        assert_eq!(entry.source, "TestProvider");
+    }
+
+    #[test]
+    fn test_parse_windows_log_value_defaults() {
+        let json = serde_json::json!({});
+        let entry = parse_windows_log_value(&json).unwrap();
+        assert_eq!(entry.timestamp, "");
+        assert!(matches!(entry.level, LogLevel::Info)); // デフォルト
+        assert_eq!(entry.message, "");
+        assert_eq!(entry.source, "Unknown");
+    }
+
+    #[test]
+    fn test_parse_log_line_standard_format() {
+        let line = "2026-03-18 12:00:00 ERROR something went wrong";
+        let entry = parse_log_line(line, "test-app").unwrap();
+        assert!(matches!(entry.level, LogLevel::Error));
+        assert_eq!(entry.message, "something went wrong");
+        assert_eq!(entry.source, "test-app");
+    }
+
+    #[test]
+    fn test_parse_log_line_warn_level() {
+        let line = "2026-03-18 12:00:00 WARN disk space low";
+        let entry = parse_log_line(line, "test-app").unwrap();
+        assert!(matches!(entry.level, LogLevel::Warn));
+    }
+
+    #[test]
+    fn test_parse_log_line_unknown_format() {
+        let line = "unknown format log line";
+        let entry = parse_log_line(line, "fallback").unwrap();
+        assert!(matches!(entry.level, LogLevel::Info));
+        assert_eq!(entry.source, "fallback");
     }
 }
