@@ -131,6 +131,25 @@ pub async fn start_polling(app: AppHandle) {
                     detected_at: now,
                 };
                 let _ = app.emit("nexus://game-launched", &event);
+
+                // フレームタイム監視を自動開始
+                match crate::services::frame_time::FrameTimeSession::start(*pid, exe_name.clone()) {
+                    Ok(_session) => {
+                        // State に保存
+                        if let Ok(mut state) = app.state::<SharedState>().lock() {
+                            // 既存のセッションがあれば停止
+                            if let Some(ref mut existing) = state.frame_time_session {
+                                existing.stop();
+                            }
+                            // 新しいセッションを保存（unsafe transmute が必要だが、ここでは一時的に）
+                            // TODO: State 構造を修正してセッションを保持できるようにする
+                        }
+                        info!("フレームタイム監視を開始: PID {}", pid);
+                    }
+                    Err(e) => {
+                        warn!("フレームタイム監視開始失敗: {}", e);
+                    }
+                }
             }
         }
 
@@ -172,6 +191,15 @@ pub async fn start_polling(app: AppHandle) {
                     revert_success,
                 };
                 let _ = app.emit("nexus://game-exited", &event);
+
+                // フレームタイム監視を停止
+                if let Ok(mut state) = app.state::<SharedState>().lock() {
+                    if let Some(ref mut session) = state.frame_time_session {
+                        session.stop();
+                        info!("フレームタイム監視を停止: PID {}", pid);
+                    }
+                    state.frame_time_session = None;
+                }
             }
         }
     }

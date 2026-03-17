@@ -49,6 +49,10 @@ pub enum AppError {
     GameMonitor(String),
 
     #[allow(dead_code)]
+    #[error("フレームタイムエラー: {0}")]
+    FrameTime(String),
+
+    #[allow(dead_code)]
     #[error("Win32 API エラー: {0}")]
     Win32(String),
 }

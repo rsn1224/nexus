@@ -1,6 +1,7 @@
 pub mod boost;
 pub mod cpu_topology;
 pub mod credentials;
+pub mod frame_time;
 pub mod game_monitor;
 pub mod hardware;
 pub mod log_service;

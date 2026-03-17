@@ -15,6 +15,8 @@ pub struct AppState {
     pub game_monitor_active: bool,
     /// nexus が設定したタイマーリゾリューション値（リバート用）
     pub timer_resolution_requested: Option<u32>,
+    /// フレームタイム監視セッション
+    pub frame_time_session: Option<crate::services::frame_time::FrameTimeSession>,
 }
 
 impl Default for AppState {
@@ -51,6 +53,7 @@ impl AppState {
             revert_snapshot: None,
             game_monitor_active: false,
             timer_resolution_requested: None,
+            frame_time_session: None,
         }
     }
 }

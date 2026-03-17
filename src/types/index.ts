@@ -481,3 +481,22 @@ export interface TimerResolutionState {
   /** 最大分解能 = 最も粗い（通常 156250 = 15.625ms） */
   maximum100ns: number;
 }
+
+// ─── FRAME TIME ──────────────────────────────────────────────────────────────
+
+export interface FrameTimeSnapshot {
+  pid: number;
+  processName: string;
+  avgFps: number;
+  pct1Low: number;
+  pct01Low: number;
+  stutterCount: number;
+  lastFrameTimeMs: number;
+  frameTimes: number[]; // ms, グラフ描画用
+  timestamp: number;
+}
+
+export type FrameTimeMonitorState =
+  | { type: 'stopped' }
+  | { type: 'monitoring'; pid: number; processName: string }
+  | { type: 'error'; message: string };

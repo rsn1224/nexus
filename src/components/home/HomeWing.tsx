@@ -11,6 +11,7 @@ import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
 import AiPanel from '../shared/AiPanel';
 import { Button, Card } from '../ui';
+import FrameTimeCard from './FrameTimeCard';
 import GameScoreCard from './GameScoreCard';
 import LauncherCard from './LauncherCard';
 import OpsCard from './OpsCard';
@@ -116,6 +117,9 @@ const HomeWing = function HomeWing(): React.ReactElement {
 
         {/* LAUNCHER Card */}
         <LauncherCard />
+
+        {/* FRAME TIME Card */}
+        <FrameTimeCard />
 
         {/* Quick Actions Card */}
         <QuickActionsCard />
