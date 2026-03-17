@@ -1,192 +1,177 @@
-# ROADMAP.md — nexus オーバーホール実行計画
+# ROADMAP.md — nexus 開発ロードマップ
 
-> **目的:** OVERHAUL.md に基づき、GPU監視・プロセス保護・自動ブースト等を段階的に実装
-> **最終更新:** 2026-03-17
-
----
-
-## Step OH1: PowerShell フラグ修正
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:** `src-tauri/src/commands/winopt.rs`
-
-**完了条件チェックリスト:**
-
-- [x] `-NoProfile -NonInteractive -ExecutionPolicy Bypass` フラグが追加されている
-- [x] cargo test 37件通過
+> **最終更新:** 2026-03-18
+> **現在のフェーズ:** オーバーホール完了 → 再構築計画 Phase 0 開始
 
 ---
 
-## Step OH2: GPU 型定義・取得実装
+## 完了済みマイルストーン
 
-**状態:** ✅ 完了済み
+### オーバーホールタスク（OH1〜OH8 + OH-B3）
 
-**変更ファイル:**
+| ID | 内容 | 状態 |
+|----|------|------|
+| OH1 | PowerShell フラグ修正（-NoProfile -NonInteractive -ExecutionPolicy Bypass） | ✅ 完了 |
+| OH2 | GPU 型定義・取得実装（sysinfo + PowerShell Get-CimInstance） | ✅ 完了 |
+| OH3 | プロセス保護リスト（PROTECTED_PROCESSES 定数 + PROT バッジ） | ✅ 完了 |
+| OH4 | GPU UI + AI ルール追加（HomeWing + localAi.ts） | ✅ 完了 |
+| OH5 | styles.ts 新規作成（S.xxx 共通定数） | ✅ 完了（→ Phase 2 で削除予定） |
+| OH6 | 自動ブースト設定（useLauncherStore + SettingsWing トグル） | ✅ 完了 |
+| OH7 | テスト追加（localAi, stores, 81件） | ✅ 完了 |
+| OH8 | エラーハンドリング統一（extractErrorMessage + ApiResult） | ✅ 完了 |
+| OH-B3 | ゲームスコア実装（CPU/MEM/DISK/GPU 加重平均） | ✅ 完了 |
+| OH-B5 | ウィンドウ最小幅設定（minWidth: 900） | ✅ 完了 |
 
-- `src-tauri/src/commands/hardware.rs`
-- `src/types/index.ts`
+### ベースライン整備タスク（T1〜T10）
 
-**完了条件チェックリスト:**
+T1〜T10: Shell サイドバー化・Wing 構成・Tailwind 化・テスト整備等（完了済み）
 
-- [x] HardwareInfo に `gpu_vram_total_mb / gpu_vram_used_mb / gpu_temp_c / gpu_usage_percent` が追加されている（全 Option）
-- [x] Get-CimInstance Win32_VideoController で GPU 名・VRAM 合計が取得できる
-- [x] AdapterRAM が bytes → MB 変換されている
-- [x] GPU 情報が取得できない場合は全フィールド None で返りエラーにならない
-- [x] `src/types/index.ts` の HardwareInfo 型が Rust 側と一致している
-- [x] `cargo test` 通過
-- [x] `npm run typecheck` 通過
+### 環境整備（OH）
 
----
+| ID | 内容 | 状態 |
+|----|------|------|
+| OH-E1 | セキュリティ設定強化（settings.json denyList + pre-edit-check） | ✅ 完了 |
+| OH-E2 | Tailwind CSS リファクタ（LauncherWing, PerplexityPanel） | ✅ 完了 |
+| OH-E3 | E2E テスト基盤（Playwright 3 smoke tests） | ✅ 完了 |
+| OH-E4 | 環境オーバーホール（rules/, agents/, skills/, CLAUDE.md slim） | ✅ 完了 |
 
-## Step OH3: プロセス保護リスト実装
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:**
-
-- `src-tauri/src/commands/boost.rs`
-- `src/components/boost/BoostWing.tsx`
-
-**完了条件チェックリスト:**
-
-- [x] `PROTECTED_PROCESSES` 定数が boost.rs に定義されている
-- [x] `BoostAction` に `is_protected: bool` フィールドが追加されている
-- [x] PROTECTED プロセスは `action: "skipped_protected"` で返りKILLされない
-- [x] 結果テーブルの `skipped_protected` 行に `[PROT]` バッジが表示される
-- [x] `cargo test` 通過
-- [x] `npm run check` 通過
+**現在のテスト:** 149 unit + 3 E2E green
+**最新コミット:** `922041c`
 
 ---
 
-## Step OH4: GPU UI + AI ルール追加
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:**
-
-- `src/components/home/HomeWing.tsx`
-- `src/lib/localAi.ts`
-
-**完了条件チェックリスト:**
-
-- [x] HomeWing の HW カードに GPU セクションが表示される
-- [x] GPU データが全 null のときエラーにならず正常表示される
-- [x] localAi.ts に GPU 温度ルールが追加されている（85°C → warn, 95°C → critical）
-- [x] `npm run check` 通過
-- [x] `npm run typecheck` 通過
-
----
-
-## Step OH5: styles.ts 新規作成
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:**
-
-- `src/lib/styles.ts`（新規）
-
-**完了条件チェックリスト:**
-
-- [x] `S.monoLabel / S.monoValue / S.sectionTitle / S.microBadge` 等の共通定数が定義されている
-- [x] `as const satisfies Record<string, React.CSSProperties>` で型安全になっている
-- [x] `npm run check` 通過
-
----
-
-## Step OH6: 自動ブースト設定
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:**
-
-- `src/stores/useLauncherStore.ts`
-- `src/components/launcher/LauncherWing.tsx`
-- `src/components/settings/SettingsWing.tsx`
-
-**完了条件チェックリスト:**
-
-- [x] `autoBoostEnabled` が useLauncherStore に追加されている
-- [x] ゲーム起動時に `autoBoostEnabled === true` なら `runBoost()` が先行実行される
-- [x] SettingsWing にトグルが追加されている
-- [x] `npm run check` 通過
-- [x] `npm run typecheck` 通過
-
----
-
-## Step OH7: テスト追加
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:**
-
-- `src/test/localAi.test.ts`
-- `src/test/stores.test.ts`
-
-**完了条件チェックリスト:**
-
-- [x] `homePageSuggestions`: CPU/MEM/ディスク/GPU 温度の境界値テスト
-- [x] `boostPageSuggestions`: 全最適化済み / 未最適化 / 部分最適化
-- [x] `launcherPageSuggestions`: ゲーム 0件 / お気に入り 0件 / 正常
-- [x] `sortAndSlice`: critical が必ず先頭、max=3 で切り捨て
-- [x] `useSettingsStore`: pollIntervalMs の初期値・変更
-- [x] `npm run test` 全通過（81件）
-- [x] `cargo test` 通過
-
----
-
-## Step OH8: エラーハンドリング統一
-
-**状態:** ✅ 完了済み
-
-**変更ファイル:**
-
-- `src/lib/tauri.ts`（新規）
-- `src/services/perplexityService.ts`
-- 全ストア（6ファイル）
-
-**完了条件チェックリスト:**
-
-- [x] `extractErrorMessage(err)` ヘルパーが `src/lib/tauri.ts` に定義されている
-- [x] 全ストアの catch ブロックで `extractErrorMessage` を使用
-- [x] `ApiResult<T>` 型パターンが perplexityService に適用されている
-- [x] `npm run typecheck` 通過
-
----
-
-## 全体最適化（OH 完了後）
-
-**状態:** ✅ 完了済み（2026-03-17）
-
-**変更ファイル:** LauncherWing / BoostWing / SettingsWing / perplexityService / pulse.rs / winopt.rs / hardware.rs
-
-**完了条件チェックリスト:**
-
-- [x] マジックナンバーを定数化（TypeScript 4ファイル）
-- [x] `pulse.rs` の Mutex unwrap を `map_err` に修正
-- [x] `winopt.rs` に `NETWORK_THROTTLE_DISABLED` 定数を追加
-- [x] `hardware.rs` の GPU 未取得時に `warn!` ログ追加
-- [x] 死骸ファイル `winopt_net.rs` / `winopt_win.rs` を削除
-- [x] typecheck / Biome / clippy / tests 81件 すべて通過
-
----
-
-## 並行実行可能グループ（参考）
-
-| グループ | Steps | 状態 |
-| -------- | ----- | ---- |
-| A | OH2, OH3, OH5, OH6, OH8 | ✅ 完了 |
-| B | OH4 | ✅ 完了 |
-| C | OH7 | ✅ 完了 |
-
----
-
-## 将来のロードマップ
+## 将来ロードマップ（OH-B 系）
 
 | ID | 内容 | 前提 | 状態 |
-| -- | ---- | ---- | ---- |
-| OH-B1 | BoostWing リアルタイムプロセスリスト | OH3 完了後 | 未着手 |
+|----|------|------|------|
+| OH-B1 | BoostWing リアルタイムプロセスリスト | Phase 4 完了後 | 未着手 |
 | OH-B2 | NVIDIA GPU 使用率取得（nvml-wrapper） | OH2 完了後 | 未着手 |
-| OH-B3 | ゲームスコア実装（CPU/MEM/DISK/GPU 加重平均） | OH4 完了後 | 未着手 |
-| OH-B4 | 全設定リバート + アンインストールフロー | OH6 完了後 | 未着手 |
-| OH-B5 | ウィンドウ最小幅設定（minWidth: 900） | いつでも | ✅ 完了 |
+| OH-B4 | 全設定リバート + アンインストールフロー | Phase 3 完了後 | 未着手 |
+
+---
+
+## 再構築計画（Phase 0〜7）
+
+> 詳細な実装指示は `HANDOFF.md` を参照
+> レビュー根拠は `docs/reviews/` を参照
+
+**推奨実行順序（パターンB: BE先行）:**
+```
+Phase 0 → 1 → 2 → 4 → 5 → 3 → 6 → 7
+```
+
+### Phase 0: クリティカルバグ修正 — 工数: 1〜2日
+
+**状態:** 未着手
+
+| バグ | 対象ファイル |
+|------|-------------|
+| useLauncherStore 型エラー（FE-P0-1） | `src/stores/useLauncherStore.ts` |
+| useScriptStore isRunning バグ（FE-P0-2） | `src/stores/useScriptStore.ts` |
+| pulse.rs Mutex 保持中 sleep（BE-P0-2） | `src-tauri/src/commands/pulse.rs` |
+| get_storage_info 二重登録（BE-P0-3） | `src-tauri/src/lib.rs` |
+| run_boost 動作不明確（BE-P0-4） | `src-tauri/src/commands/boost.rs` |
+
+---
+
+### Phase 1: セキュリティ基盤 — 工数: 2〜3日
+
+**状態:** 未着手
+
+- PowerShell インジェクション対策（BE-P0-1）
+- CSP ポリシー厳格化
+- capabilities/default.json コマンド別 permission
+- 入力バリデーション（set_dns / ping_host / analyze_disk_usage）
+- 保護プロセスリスト統合（constants.rs）
+
+---
+
+### Phase 2: ドキュメント・設定整合 — 工数: 1日
+
+**状態:** 未着手
+
+- 未使用クレート削除（regex, walkdir, pathdiff, reqwest, sha2, uuid, feed-rs, totp-rs, log）
+- WatcherState + notify クレート削除
+- tokio features 最小化
+- styles.ts 削除（dead code）
+
+---
+
+### Phase 3: フロントエンド基盤強化 — 工数: 4〜5日
+
+**状態:** 未着手（Phase 4-5 完了後に着手推奨）
+
+- useSettingsStore + useAppSettingsStore 統合
+- useShallow セレクタ導入
+- 共通コンポーネント実装（ErrorBanner, LoadingState, EmptyState, SectionHeader, KeyValueRow, Toggle, ProgressBar）
+- コンポーネント分割（HomeWing, LogWing, LauncherWing）
+- パフォーマンス改善（useEffect 依存配列修正、React.memo / useCallback）
+
+---
+
+### Phase 4: バックエンド再設計 — 工数: 4〜5日
+
+**状態:** 未着手
+
+- 4層アーキテクチャ（commands/services/infra/parsers）
+- System インスタンス共有（PulseState 経由）
+- 重い同期コマンドの async 化
+- AppError 拡張（PowerShell / Registry / Process バリアント）
+- winreg クレート導入（Registry 操作の PowerShell 依存削減）
+
+---
+
+### Phase 5: Tauri v2 フル活用 — 工数: 2〜3日
+
+**状態:** 未着手
+
+- ポーリング → Tauri イベントシステム移行
+  - `pulse:snapshot`（2秒）/ `ops:processes`（3秒）/ `hw:info`（5秒）
+- tauri-plugin-shell 導入
+- capabilities 拡充
+
+---
+
+### Phase 6: React 19 / Zustand v5 活用 — 工数: 3〜4日
+
+**状態:** 未着手（Phase 3 完了後に着手）
+
+- use() + Suspense パターン導入
+- useActionState 導入
+- useOptimistic 導入
+- React.lazy + code splitting
+- Rust edition 2024 移行（任意）
+- thiserror v2 移行（任意）
+
+---
+
+### Phase 7: 品質仕上げ — 工数: 2〜3日
+
+**状態:** 未着手
+
+- 共通 UI コンポーネントテスト
+- E2E テスト拡充
+- services/ レイヤー Rust ユニットテスト
+- doc comment 整備
+- ipconfig パーサー日本語ロケール対応
+- API キー暗号化保存（keyring クレート）
+- CSV エクスポート RFC 4180 準拠
+
+---
+
+## 依存関係と工数サマリー
+
+```
+Phase 0 (1-2日) ──→ Phase 1 (2-3日) ──→ Phase 2 (1日)
+                                              │
+                                              ↓
+                                        Phase 4 (4-5日) ──→ Phase 5 (2-3日)
+                                                                   │
+                                                                   ↓
+                                                            Phase 3 (4-5日)
+                                                                   │
+                                                                   ↓
+                                                            Phase 6 (3-4日) ──→ Phase 7 (2-3日)
+```
+
+**総工数見積もり: 18〜23日**
