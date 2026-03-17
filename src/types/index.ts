@@ -408,3 +408,51 @@ export interface SignalResult {
   published: number;
   guid?: string;
 }
+
+// ─── GAME PROFILE ────────────────────────────────────────────────────────────
+
+export type ProcessPriorityLevel = 'normal' | 'high' | 'realtime' | 'aboveNormal';
+export type PowerPlanType = 'unchanged' | 'highPerformance' | 'ultimatePerformance' | 'balanced';
+export type BoostLevel = 'none' | 'soft' | 'medium' | 'hard';
+
+export interface GameProfile {
+  id: string;
+  displayName: string;
+  exePath: string;
+  steamAppId: number | null;
+  cpuAffinityGame: number[] | null;
+  cpuAffinityBackground: number[] | null;
+  processPriority: ProcessPriorityLevel;
+  powerPlan: PowerPlanType;
+  processesToSuspend: string[];
+  processesToKill: string[];
+  timerResolution100ns: number | null;
+  boostLevel: BoostLevel;
+  lastPlayed: number | null;
+  totalPlaySecs: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface ProfileApplyResult {
+  profileId: string;
+  applied: string[];
+  warnings: string[];
+  appliedAt: number;
+  prevPowerPlan: string | null;
+  suspendedPids: number[];
+}
+
+export interface GameLaunchEvent {
+  exePath: string;
+  profileId: string | null;
+  pid: number;
+  detectedAt: number;
+}
+
+export interface GameExitEvent {
+  exePath: string;
+  profileId: string | null;
+  playSecs: number;
+  revertSuccess: boolean;
+}

@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import type { GameInfo } from '../../types';
+import ProfileBadge from './ProfileBadge';
 
 interface GameCardProps {
   game: GameInfo;
@@ -10,6 +11,8 @@ interface GameCardProps {
   onToggleFavorite: (appId: number) => void;
   isBoosting: boolean;
   autoBoostEnabled: boolean;
+  profileName?: string;
+  isProfileActive?: boolean;
 }
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
@@ -35,6 +38,8 @@ export default function GameCard({
   onToggleFavorite,
   isBoosting,
   autoBoostEnabled,
+  profileName,
+  isProfileActive,
 }: GameCardProps): React.ReactElement {
   const [imgError, setImgError] = useState(false);
   const isBusy = autoBoostEnabled && isBoosting;
@@ -87,6 +92,11 @@ export default function GameCard({
         <div className="font-(--font-mono) text-[9px] text-text-muted">
           {formatLastPlayed(lastPlayedAt)}
         </div>
+
+        {/* プロファイルバッジ */}
+        {profileName && (
+          <ProfileBadge profileName={profileName} isActive={isProfileActive ?? false} />
+        )}
 
         {/* LAUNCH ボタン */}
         <button

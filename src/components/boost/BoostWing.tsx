@@ -7,10 +7,13 @@ import AiPanel from '../shared/AiPanel';
 import { TabBar } from '../ui';
 import NetworkTab from './NetworkTab';
 import ProcessTab from './ProcessTab';
+import ProfileTab from './ProfileTab';
 import WinoptTab from './WinoptTab';
 
 export default function BoostWing(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<'process' | 'windows' | 'network'>('process');
+  const [activeTab, setActiveTab] = useState<'process' | 'windows' | 'network' | 'profiles'>(
+    'process',
+  );
 
   // Winopt store for error handling
   const { error: winoptError } = useWinoptStore();
@@ -36,6 +39,7 @@ export default function BoostWing(): React.ReactElement {
     { id: 'process', label: 'プロセス最適化' },
     { id: 'windows', label: 'Windows設定' },
     { id: 'network', label: 'ネット最適化' },
+    { id: 'profiles', label: 'プロファイル' },
   ];
 
   return (
@@ -67,6 +71,7 @@ export default function BoostWing(): React.ReactElement {
         {activeTab === 'process' && <ProcessTab />}
         {activeTab === 'windows' && <WinoptTab />}
         {activeTab === 'network' && <NetworkTab />}
+        {activeTab === 'profiles' && <ProfileTab />}
       </div>
 
       <AiPanel suggestions={boostSuggestions} />
