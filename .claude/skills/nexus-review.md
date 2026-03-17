@@ -10,11 +10,11 @@ Cascade が実装した Wing ・コンポーネントをレビューする際に
 - ハードコードカラー（`#xxx` / `rgb()`）を使っていない → `var(--color-*)` のみ
 - 存在しない CSS 変数を参照していない（`--color-background` 等は存在しない）
 - `border-radius` は最大 `3px`（プログレスバーは `4px`）
-- Tailwind クラスを使っていない → `style={{ }}` インラインスタイルのみ
+- `style={{ }}` インラインスタイルを使っていない → Tailwind CSS 変数クラス（`text-[var(--color-*)]` 等）を使う
 
 ## 状態表示
 - loading 状態がある（`LOADING...` / `SCANNING...`）
-- error 状態がある（バナー: `rgba(239,68,68,0.1)` 背景 + `--color-danger-600` ボーダー）
+- error 状態がある（バナー: `bg-[var(--color-base-800)] border-[var(--color-danger-600)] text-[var(--color-danger-500)]`）
 - empty 状態がある（次のアクションを添える）
 
 ## ボタン
@@ -25,10 +25,10 @@ Cascade が実装した Wing ・コンポーネントをレビューする際に
 - CSS `:hover` 不使用 → `useState` で hover 状態管理
 
 ## テーブル
-- `borderCollapse: 'collapse'`
-- `<thead>` に `position: sticky; top: 0; background: var(--color-base-800)`
-- 行に `borderBottom: 1px solid var(--color-border-subtle)`
-- オルタネート行: `rgba(255,255,255,0.02)`
+
+- `border-collapse` は `className="border-collapse"` で指定
+- `<thead>` に `sticky top-0 bg-[var(--color-base-800)]`
+- 行に `border-b border-[var(--color-border-subtle)]`
 - `key={index}` 不使用 → ユニーク ID を使う
 
 ## UX
