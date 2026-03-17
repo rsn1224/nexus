@@ -141,55 +141,29 @@ export const useLogStore = create<LogState>((set, get) => ({
 }));
 
 // Selectors
-export const useLogData = () => {
-  const store = useLogStore();
+export const useLogState = () =>
+  useLogStore((s) => ({
+    logs: s.logs,
+    analysis: s.analysis,
+    isLoading: s.isLoading,
+    error: s.error,
+    selectedLevel: s.selectedLevel,
+    selectedSource: s.selectedSource,
+    searchQuery: s.searchQuery,
+  }));
 
-  // Filtered logs based on current filters
-  const filteredLogs = store.logs.filter((log) => {
-    // Level filter
-    if (store.selectedLevel !== 'All' && log.level !== store.selectedLevel) {
-      return false;
-    }
-
-    // Source filter
-    if (store.selectedSource && log.source !== store.selectedSource) {
-      return false;
-    }
-
-    // Search query filter
-    if (store.searchQuery) {
-      const query = store.searchQuery.toLowerCase();
-      return (
-        log.message.toLowerCase().includes(query) ||
-        log.source.toLowerCase().includes(query) ||
-        log.timestamp.toLowerCase().includes(query)
-      );
-    }
-
-    return true;
-  });
-
-  // Get unique sources for dropdown
-  const uniqueSources = Array.from(new Set(store.logs.map((log) => log.source))).sort();
-
-  // Get log counts by level
-  const logCounts = store.logs.reduce(
-    (acc, log) => {
-      acc[log.level] = (acc[log.level] || 0) + 1;
-      return acc;
-    },
-    {} as Record<LogLevel, number>,
-  );
-
-  return {
-    ...store,
-    filteredLogs,
-    uniqueSources,
-    logCounts,
-    hasLogs: store.logs.length > 0,
-    hasFilteredLogs: filteredLogs.length > 0,
-  };
-};
+export const useLogActions = () =>
+  useLogStore((s) => ({
+    getSystemLogs: s.getSystemLogs,
+    getApplicationLogs: s.getApplicationLogs,
+    analyzeLogs: s.analyzeLogs,
+    exportLogs: s.exportLogs,
+    setSelectedLevel: s.setSelectedLevel,
+    setSelectedSource: s.setSelectedSource,
+    setSearchQuery: s.setSearchQuery,
+    clearLogs: s.clearLogs,
+    clearError: s.clearError,
+  }));
 
 // Utility functions
 export const getLogLevelColor = (level: LogLevel): string => {

@@ -141,7 +141,7 @@ describe('useOpsStore', () => {
 
     // イベントをシミュレート
     expect(eventCallback).toBeDefined();
-    eventCallback!({ payload: MOCK_PROCESSES });
+    eventCallback?.({ payload: MOCK_PROCESSES });
 
     const { processes, lastUpdated } = useOpsStore.getState();
     expect(processes).toEqual(MOCK_PROCESSES);

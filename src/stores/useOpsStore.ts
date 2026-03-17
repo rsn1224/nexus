@@ -57,7 +57,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
         set({ unlisten: fn });
       })
       .catch((err) => {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorMessage = extractErrorMessage(err);
         log.error({ err }, 'ops: listen failed: %s', errorMessage);
         set({
           processes: [],
@@ -93,7 +93,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ count: result.data.length }, 'ops: suggestions fetched');
       set({ suggestions: result.data });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'ops: fetch suggestions failed: %s', errorMessage);
       set({
         processes: [],
@@ -115,7 +115,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ pid }, 'ops: process killed');
       // プロセス一覧は次の nexus://ops イベントで自動更新される
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: kill process failed: %s', errorMessage);
       set({
         processes: [],

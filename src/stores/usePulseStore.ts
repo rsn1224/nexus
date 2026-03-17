@@ -1,6 +1,7 @@
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import { checkAndNotify } from '../services/notificationService';
 import type { ResourceSnapshot } from '../types';
 
@@ -66,7 +67,7 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
         set({ unlisten: fn });
       })
       .catch((err) => {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorMessage = extractErrorMessage(err);
         log.error({ err }, 'pulse: listen failed: %s', errorMessage);
         set({
           snapshots: [],

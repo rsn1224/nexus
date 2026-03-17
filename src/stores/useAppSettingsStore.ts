@@ -1,16 +1,27 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import log from '../lib/logger';
 import type { AppSettings } from '../types';
 
-interface AppSettingsStore {
+const SETTINGS_KEY = 'nexus:settings';
+
+interface PersistedSettings {
+  perplexityApiKey: string;
+}
+
+interface AppSettingsStore extends PersistedSettings {
+  // Tauri 設定
   settings: AppSettings | null;
   isLoading: boolean;
   error: string | null;
   lastUpdated: number | null;
+
+  // アクション
   fetchSettings: () => Promise<void>;
   saveSettings: (settings: AppSettings) => Promise<void>;
   updateSettings: (updates: Partial<AppSettings>) => Promise<void>;
+  setPerplexityApiKey: (key: string) => void;
   clearError: () => void;
 }
 
@@ -21,7 +32,25 @@ const defaultSettings: AppSettings = {
   minimizeToTray: true,
 };
 
+function loadPersistedSettings(): PersistedSettings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) return JSON.parse(raw) as PersistedSettings;
+  } catch {
+    // ignore parse errors
+  }
+  return { perplexityApiKey: '' };
+}
+
+function savePersistedSettings(s: PersistedSettings): void {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
+}
+
 export const useAppSettingsStore = create<AppSettingsStore>((set, get) => ({
+  // localStorage からロードした persisted settings
+  ...loadPersistedSettings(),
+
+  // Tauri 設定
   settings: null,
   isLoading: false,
   error: null,
@@ -68,22 +97,28 @@ export const useAppSettingsStore = create<AppSettingsStore>((set, get) => ({
     await get().saveSettings(newSettings);
   },
 
+  setPerplexityApiKey: (key) => {
+    set({ perplexityApiKey: key });
+    savePersistedSettings({ perplexityApiKey: key });
+    log.info('settings: Perplexity API key updated');
+  },
+
   clearError: () => {
     set({ error: null });
   },
 }));
 
 // セレクター関数
-export const useAppSettings = () => {
-  const { settings, isLoading, error, fetchSettings, saveSettings, updateSettings } =
-    useAppSettingsStore();
-
-  return {
-    settings,
-    isLoading,
-    error,
-    fetchSettings,
-    saveSettings,
-    updateSettings,
-  };
-};
+export const useAppSettings = () =>
+  useAppSettingsStore(
+    useShallow((s: AppSettingsStore) => ({
+      settings: s.settings,
+      isLoading: s.isLoading,
+      error: s.error,
+      fetchSettings: s.fetchSettings,
+      saveSettings: s.saveSettings,
+      updateSettings: s.updateSettings,
+      perplexityApiKey: s.perplexityApiKey,
+      setPerplexityApiKey: s.setPerplexityApiKey,
+    })),
+  );

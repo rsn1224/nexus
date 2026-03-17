@@ -1,6 +1,7 @@
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { HardwareInfo } from '../types';
 
 interface HardwareStore {
@@ -67,7 +68,7 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
         set({ unlisten: fn });
       })
       .catch((err) => {
-        const errorMessage = err instanceof Error ? err.message : String(err);
+        const errorMessage = extractErrorMessage(err);
         log.error({ err }, 'hardware: listen failed: %s', errorMessage);
         set({
           info: defaultHardwareInfo,

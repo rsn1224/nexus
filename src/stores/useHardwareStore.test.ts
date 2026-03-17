@@ -154,7 +154,7 @@ describe('useHardwareStore', () => {
 
     // イベントをシミュレート
     expect(eventCallback).toBeDefined();
-    eventCallback!({ payload: MOCK_HARDWARE_INFO });
+    eventCallback?.({ payload: MOCK_HARDWARE_INFO });
 
     const { info, lastUpdated } = useHardwareStore.getState();
     expect(info).toEqual(MOCK_HARDWARE_INFO);

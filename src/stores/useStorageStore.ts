@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { CleanupResult, StorageInfo } from '../types';
 
 interface StorageStore {
@@ -40,8 +41,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to fetch storage information';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'fetch storage info failed: %s', errorMessage);
       set({
         storageInfo: null,
@@ -66,11 +66,13 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to cleanup temp files';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'cleanup temp files failed: %s', errorMessage);
       set({
         error: errorMessage,
         isLoading: false,
+        cleanupResult: null,
+        lastUpdated: Date.now(),
       });
     }
   },
@@ -89,11 +91,13 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to cleanup recycle bin';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'cleanup recycle bin failed: %s', errorMessage);
       set({
         error: errorMessage,
         isLoading: false,
+        cleanupResult: null,
+        lastUpdated: Date.now(),
       });
     }
   },
@@ -112,11 +116,13 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to cleanup system cache';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'cleanup system cache failed: %s', errorMessage);
       set({
         error: errorMessage,
         isLoading: false,
+        cleanupResult: null,
+        lastUpdated: Date.now(),
       });
     }
   },
@@ -136,11 +142,13 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to run full cleanup';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'full cleanup failed: %s', errorMessage);
       set({
         error: errorMessage,
         isLoading: false,
+        cleanupResult: null,
+        lastUpdated: Date.now(),
       });
     }
   },
@@ -157,12 +165,13 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to analyze disk usage';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'analyze disk usage failed: %s', errorMessage);
       set({
         analysisResults: [],
         error: errorMessage,
         isLoading: false,
+        lastUpdated: Date.now(),
       });
     }
   },

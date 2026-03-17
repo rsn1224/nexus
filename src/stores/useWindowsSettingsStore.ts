@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { WindowsSettings } from '../types';
 import { PowerPlan, VisualEffects } from '../types';
 
@@ -43,7 +44,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch Windows settings';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'windows settings fetch failed: %s', errorMessage);
       set({
         settings: defaultSettings,
@@ -60,7 +61,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
       // 設定を再取得
       await get().fetchSettings();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to set power plan';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'set power plan failed: %s', errorMessage);
       set({ error: errorMessage });
     }
@@ -82,7 +83,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
         await get().fetchSettings();
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to toggle game mode';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'toggle game mode failed: %s', errorMessage);
       set({ error: errorMessage });
     }
@@ -104,8 +105,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
         await get().fetchSettings();
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to toggle fullscreen optimization';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'toggle fullscreen optimization failed: %s', errorMessage);
       set({ error: errorMessage });
     }
@@ -127,8 +127,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
         await get().fetchSettings();
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to toggle hardware GPU scheduling';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'toggle hardware GPU scheduling failed: %s', errorMessage);
       set({ error: errorMessage });
     }
@@ -140,7 +139,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
       // 設定を再取得
       await get().fetchSettings();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to set visual effects';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'set visual effects failed: %s', errorMessage);
       set({ error: errorMessage });
     }

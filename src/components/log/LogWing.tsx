@@ -1,25 +1,23 @@
 import type React from 'react';
 import type { ChangeEvent } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import logger from '../../lib/logger';
 import type { LogLevelFilter } from '../../stores/useLogStore';
-import { formatTimestamp, truncateMessage, useLogData } from '../../stores/useLogStore';
+import {
+  formatTimestamp,
+  truncateMessage,
+  useLogActions,
+  useLogState,
+} from '../../stores/useLogStore';
 import { Button } from '../ui';
 
 export default function LogWing(): React.ReactElement {
+  const logState = useLogState();
+  const logActions = useLogActions();
+
+  const { logs, analysis, isLoading, error, selectedLevel, selectedSource, searchQuery } = logState;
+
   const {
-    logs,
-    filteredLogs,
-    analysis,
-    isLoading,
-    error,
-    selectedLevel,
-    selectedSource,
-    searchQuery,
-    uniqueSources,
-    logCounts,
-    hasLogs,
-    hasFilteredLogs,
     getSystemLogs,
     getApplicationLogs,
     analyzeLogs,
@@ -29,7 +27,58 @@ export default function LogWing(): React.ReactElement {
     setSearchQuery,
     clearLogs,
     clearError,
-  } = useLogData();
+  } = logActions;
+
+  // 導出データを useMemo で計算
+  const derivedData = useMemo(() => {
+    // Filtered logs based on current filters
+    const filteredLogs = logs.filter((log) => {
+      // Level filter
+      if (selectedLevel !== 'All' && log.level !== selectedLevel) {
+        return false;
+      }
+
+      // Source filter
+      if (selectedSource && log.source !== selectedSource) {
+        return false;
+      }
+
+      // Search query filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          log.message.toLowerCase().includes(query) ||
+          log.source.toLowerCase().includes(query) ||
+          log.timestamp.toLowerCase().includes(query)
+        );
+      }
+
+      return true;
+    });
+
+    // Get unique sources for dropdown
+    const uniqueSources = Array.from(new Set(logs.map((log) => log.source))).sort();
+
+    // Get log counts by level
+    const logCounts = logs.reduce(
+      (acc, log) => {
+        acc[log.level] = (acc[log.level] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    return {
+      filteredLogs,
+      uniqueSources,
+      logCounts,
+      hasLogs: logs.length > 0,
+      hasFilteredLogs: filteredLogs.length > 0,
+    };
+  }, [logs, selectedLevel, selectedSource, searchQuery]);
+
+  // 変数を分解
+  const { filteredLogs, uniqueSources, logCounts, hasLogs, hasFilteredLogs } = derivedData;
 
   const [appName, setAppName] = useState('');
   const [exportFormat, setExportFormat] = useState<'json' | 'csv'>('json');

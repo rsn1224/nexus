@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { NetworkDevice, TrafficSnapshot } from '../types';
 
 // ─── Store shape ──────────────────────────────────────────────────────────────
@@ -35,7 +36,7 @@ export const useReconStore = create<ReconStore>((set, get) => ({
       // バックグラウンドでホスト名を解決する（エラーは無視）
       void get().resolveHostnames();
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       log.error({ err }, 'recon: scan failed');
       set({ error: message, isScanning: false });
     }

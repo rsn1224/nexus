@@ -112,7 +112,7 @@ describe('usePulseStore', () => {
 
     // イベントをシミュレート
     expect(eventCallback).toBeDefined();
-    eventCallback!({ payload: MOCK_SNAPSHOT });
+    eventCallback?.({ payload: MOCK_SNAPSHOT });
 
     const { snapshots } = usePulseStore.getState();
     expect(snapshots).toHaveLength(1);

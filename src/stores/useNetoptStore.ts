@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { DnsPreset, NetworkAdapter, PingResult } from '../types';
 
 interface NetoptStore {
@@ -62,7 +63,7 @@ export const useNetoptStore = create<NetoptStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch network adapters';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'fetch adapters failed: %s', errorMessage);
       set({
         adapters: [],
@@ -83,7 +84,7 @@ export const useNetoptStore = create<NetoptStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch current DNS';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'fetch DNS failed: %s', errorMessage);
       set({
         currentDns: [],
@@ -107,7 +108,7 @@ export const useNetoptStore = create<NetoptStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to set DNS';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'set DNS failed: %s', errorMessage);
       set({
         error: errorMessage,
@@ -126,7 +127,7 @@ export const useNetoptStore = create<NetoptStore>((set, get) => ({
         lastUpdated: Date.now(),
       });
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to ping host';
+      const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'ping failed: %s', errorMessage);
       set({
         pingResult: {
