@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { extractErrorMessage } from '../lib/tauri';
 import type { BoostResult } from '../types';
 
 interface BoostStore {
@@ -25,7 +26,7 @@ export const useBoostStore = create<BoostStore>((set) => ({
       set({ lastResult: result, isRunning: false });
     } catch (err) {
       set({
-        error: err instanceof Error ? err.message : 'Unknown error',
+        error: extractErrorMessage(err),
         isRunning: false,
       });
     }

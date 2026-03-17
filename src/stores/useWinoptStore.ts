@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { WinSetting } from '../types';
 
 interface WinoptStore {
@@ -34,8 +35,8 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       const winSettings = await invoke<WinSetting[]>('get_win_settings');
       set({ winSettings, isLoading: false });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      log.error({ err }, 'winopt: fetchWinSettings failed');
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'winopt: fetch win settings failed');
       set({ error: msg, isLoading: false });
     }
   },
@@ -46,7 +47,14 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       const netSettings = await invoke<WinSetting[]>('get_net_settings');
       set({ netSettings, isLoading: false });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : (err as Record<string, unknown>).message != null
+              ? String((err as Record<string, unknown>).message)
+              : JSON.stringify(err);
       log.error({ err }, 'winopt: fetchNetSettings failed');
       set({ error: msg, isLoading: false });
     }
@@ -58,7 +66,14 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       await invoke('apply_win_setting', { id });
       await get().fetchWinSettings();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : (err as Record<string, unknown>).message != null
+              ? String((err as Record<string, unknown>).message)
+              : JSON.stringify(err);
       log.error({ err, id }, 'winopt: applyWin failed');
       set({ error: msg });
     } finally {
@@ -72,7 +87,14 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       await invoke('revert_win_setting', { id });
       await get().fetchWinSettings();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : (err as Record<string, unknown>).message != null
+              ? String((err as Record<string, unknown>).message)
+              : JSON.stringify(err);
       log.error({ err, id }, 'winopt: revertWin failed');
       set({ error: msg });
     } finally {
@@ -86,7 +108,14 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       await invoke('apply_net_setting', { id });
       await get().fetchNetSettings();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : (err as Record<string, unknown>).message != null
+              ? String((err as Record<string, unknown>).message)
+              : JSON.stringify(err);
       log.error({ err, id }, 'winopt: applyNet failed');
       set({ error: msg });
     } finally {
@@ -100,7 +129,14 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       await invoke('revert_net_setting', { id });
       await get().fetchNetSettings();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : (err as Record<string, unknown>).message != null
+              ? String((err as Record<string, unknown>).message)
+              : JSON.stringify(err);
       log.error({ err, id }, 'winopt: revertNet failed');
       set({ error: msg });
     } finally {
@@ -115,7 +151,14 @@ export const useWinoptStore = create<WinoptStore>((set, get) => ({
       set({ flushDnsResult: result });
       log.info('winopt: DNS flushed');
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+            ? err
+            : (err as Record<string, unknown>).message != null
+              ? String((err as Record<string, unknown>).message)
+              : JSON.stringify(err);
       log.error({ err }, 'winopt: flushDns failed');
       set({ error: msg });
     } finally {

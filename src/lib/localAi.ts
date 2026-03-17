@@ -29,16 +29,21 @@ export function homePageSuggestions(
 ): LocalSuggestion[] {
   const suggestions: LocalSuggestion[] = [];
 
+  // hwInfo が null の場合は早期リターン
+  if (!hwInfo) {
+    return [];
+  }
+
   if (snapshot) {
     if (snapshot.cpuPercent >= 90) {
       suggestions.push({
-        id: 'cpu_critical',
+        id: 'cpu_usage_critical',
         level: 'critical',
         message: `CPU 使用率が ${snapshot.cpuPercent.toFixed(0)}% です。最適化タブでプロセスを整理してください。`,
       });
     } else if (snapshot.cpuPercent >= 70) {
       suggestions.push({
-        id: 'cpu_warn',
+        id: 'cpu_usage_warn',
         level: 'warn',
         message: `CPU 使用率が ${snapshot.cpuPercent.toFixed(0)}% です。重いプロセスを確認してください。`,
       });
@@ -90,6 +95,23 @@ export function homePageSuggestions(
         id: 'temp_warn',
         level: 'warn',
         message: `CPU 温度が ${hwInfo.cpuTempC.toFixed(0)}\u00b0C です。`,
+      });
+    }
+  }
+
+  // ── GPU 温度チェック ──────────────────────────────────────────────────────
+  if (hwInfo?.gpuTempC != null) {
+    if (hwInfo.gpuTempC >= 95) {
+      suggestions.push({
+        id: 'gpu_temp_critical',
+        level: 'critical',
+        message: `GPU 温度が ${hwInfo.gpuTempC.toFixed(0)}°C です。冷却環境を確認してください。`,
+      });
+    } else if (hwInfo.gpuTempC >= 85) {
+      suggestions.push({
+        id: 'gpu_temp_warn',
+        level: 'warn',
+        message: `GPU 温度が ${hwInfo.gpuTempC.toFixed(0)}°C です。`,
       });
     }
   }

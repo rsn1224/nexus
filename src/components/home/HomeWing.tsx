@@ -9,6 +9,7 @@ import { usePulseStore } from '../../stores/usePulseStore';
 import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
 import AiPanel from '../shared/AiPanel';
+import { Button, Card, StatusBadge } from '../ui';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -79,172 +80,64 @@ export default function HomeWing(): React.ReactElement {
   );
 
   return (
-    <div style={{ padding: '16px', height: '100%', overflowY: 'auto' }}>
+    <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
-      <div style={{ marginBottom: '20px' }}>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
-            fontWeight: 700,
-            color: 'var(--color-accent-500)',
-            letterSpacing: '0.15em',
-            marginBottom: '4px',
-          }}
-        >
+      <div className="mb-5">
+        <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-accent-500)] tracking-[0.15em] mb-1">
           ▶ ホーム
         </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
           システム概要とクイックアクション
         </div>
       </div>
 
       {/* Grid Layout */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '16px',
-        }}
-      >
+      <div className="grid grid-cols-2 gap-4">
         {/* OPS Card */}
-        <div
-          style={{
-            background: 'var(--color-base-800)',
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: '4px',
-            padding: '12px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              fontWeight: 600,
-              color: 'var(--color-cyan-500)',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}
-          >
-            プロセス管理
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
-            <div style={{ marginBottom: '4px' }}>
+        <Card title="プロセス管理">
+          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+            <div className="mb-1">
               アクティブ:{' '}
-              <span style={{ color: 'var(--color-accent-500)' }}>{activeProcessCount}</span>
+              <span className="text-[var(--color-accent-500)]">{activeProcessCount}</span>
             </div>
             {topProcesses.length > 0 && (
-              <div style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>
+              <div className="text-[10px] text-[var(--color-text-muted)]">
                 CPU上位:
                 {topProcesses.map((p: SystemProcess) => (
-                  <div key={p.pid} style={{ marginLeft: '8px' }}>
+                  <div key={p.pid} className="ml-2">
                     {p.name} ({p.cpuPercent.toFixed(1)}%)
                   </div>
                 ))}
               </div>
             )}
           </div>
-        </div>
+        </Card>
 
         {/* PULSE Card */}
-        <div
-          style={{
-            background: 'var(--color-base-800)',
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: '4px',
-            padding: '12px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              fontWeight: 600,
-              color: 'var(--color-cyan-500)',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}
-          >
-            システム監視
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
-            <div style={{ marginBottom: '4px' }}>
-              CPU:{' '}
-              <span
-                style={{
-                  color:
-                    cpuPercent !== null && cpuPercent >= 80
-                      ? 'var(--color-danger-500)'
-                      : cpuPercent !== null && cpuPercent >= 50
-                        ? 'var(--color-accent-500)'
-                        : 'var(--color-text-primary)',
-                }}
-              >
-                {cpuPercent !== null ? `${cpuPercent.toFixed(1)}%` : '--'}
-              </span>
+        <Card title="システム監視">
+          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+            <div className="mb-1">
+              CPU: <StatusBadge value={cpuPercent} unit="%" thresholds={{ warn: 50, danger: 80 }} />
             </div>
             <div>
               RAM:{' '}
-              <span style={{ color: 'var(--color-text-primary)' }}>
+              <span className="text-[var(--color-text-primary)]">
                 {memUsed !== null && memTotal !== null
                   ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB`
                   : '--'}
               </span>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* LAUNCHER Card */}
-        <div
-          style={{
-            background: 'var(--color-base-800)',
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: '4px',
-            padding: '12px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              fontWeight: 600,
-              color: 'var(--color-cyan-500)',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}
-          >
-            ゲーム起動
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '12px',
-              color: 'var(--color-text-secondary)',
-            }}
-          >
-            <div style={{ marginBottom: '4px' }}>
-              ゲーム数: <span style={{ color: 'var(--color-accent-500)' }}>{games.length}</span>
+        <Card title="ゲーム起動">
+          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+            <div className="mb-1">
+              ゲーム数: <span className="text-[var(--color-accent-500)]">{games.length}</span>
             </div>
             {games.length > 0 && (
-              <div style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>
+              <div className="text-[10px] text-[var(--color-text-muted)]">
                 Recent:{' '}
                 {games
                   .slice(0, 4)
@@ -253,110 +146,39 @@ export default function HomeWing(): React.ReactElement {
               </div>
             )}
           </div>
-        </div>
+        </Card>
 
         {/* Quick Actions Card */}
-        <div
-          style={{
-            background: 'var(--color-base-800)',
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: '4px',
-            padding: '12px',
-          }}
-        >
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              fontWeight: 600,
-              color: 'var(--color-cyan-500)',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}
-          >
-            クイックアクション
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <button
-              type="button"
+        <Card title="クイックアクション">
+          <div className="flex flex-col gap-2">
+            <Button
+              variant="primary"
+              size="sm"
               onClick={() => (isPolling ? null : startPolling())}
               disabled={isPolling}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                padding: '4px 8px',
-                background: isPolling ? 'var(--color-base-600)' : 'var(--color-accent-500)',
-                color: isPolling ? 'var(--color-text-muted)' : 'var(--color-base-900)',
-                border: `1px solid ${isPolling ? 'var(--color-border-subtle)' : 'var(--color-accent-500)'}`,
-                borderRadius: '3px',
-                cursor: isPolling ? 'default' : 'pointer',
-                letterSpacing: '0.05em',
-              }}
+              loading={isPolling}
             >
               {isPolling ? '■ 監視中' : '▶ 監視開始'}
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate?.('boost')}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                padding: '4px 8px',
-                background: 'var(--color-accent-500)',
-                color: 'var(--color-base-900)',
-                border: '1px solid var(--color-accent-500)',
-                borderRadius: '3px',
-                cursor: 'pointer',
-                letterSpacing: '0.05em',
-              }}
-            >
+            </Button>
+            <Button variant="primary" size="sm" onClick={() => navigate?.('boost')}>
               ⚡ 今すぐ最適化
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* System Status Card */}
-      <div
-        style={{
-          marginTop: '16px',
-          background: 'var(--color-base-800)',
-          border: '1px solid var(--color-border-subtle)',
-          borderRadius: '4px',
-          padding: '12px',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            fontWeight: 600,
-            color: 'var(--color-cyan-500)',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-          }}
-        >
-          システムステータス
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: 'var(--color-text-secondary)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
+      <Card title="システムステータス" className="mt-4">
+        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
           <div>
             CPU{'     '}
-            <span style={{ color: 'var(--color-accent-500)' }}>
+            <span className="text-[var(--color-accent-500)]">
               {cpuPercent !== null ? `${cpuPercent.toFixed(1)}%` : '--'}
             </span>
           </div>
           <div>
             MEM{'     '}
-            <span style={{ color: 'var(--color-accent-500)' }}>
+            <span className="text-[var(--color-accent-500)]">
               {memUsed !== null && memTotal !== null
                 ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB (${(
                     (memUsed / memTotal) * 100
@@ -366,111 +188,53 @@ export default function HomeWing(): React.ReactElement {
           </div>
           <div>
             DISK R{'  '}
-            <span style={{ color: 'var(--color-accent-500)' }}>
+            <span className="text-[var(--color-accent-500)]">
               {diskRead !== null ? `${diskRead.toFixed(0)} KB/s` : '--'}
             </span>
           </div>
           <div>
             DISK W{'  '}
-            <span style={{ color: 'var(--color-accent-500)' }}>
+            <span className="text-[var(--color-accent-500)]">
               {diskWrite !== null ? `${diskWrite.toFixed(0)} KB/s` : '--'}
             </span>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Storage Card */}
-      <div
-        style={{
-          marginTop: '16px',
-          background: 'var(--color-base-800)',
-          border: '1px solid var(--color-border-subtle)',
-          borderRadius: '4px',
-          padding: '12px',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            fontWeight: 600,
-            color: 'var(--color-cyan-500)',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-          }}
-        >
-          ストレージ
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: 'var(--color-text-secondary)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
+      <Card title="ストレージ" className="mt-4">
+        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
           {drives.length > 0 ? (
             drives.map((drive) => (
               <div key={drive.name}>
                 {drive.name}
                 {'  '}
-                <span style={{ color: 'var(--color-accent-500)' }}>
+                <span className="text-[var(--color-accent-500)]">
                   {drive.usedPercent.toFixed(0)}% ({drive.freeGb.toFixed(0)} GB 空き)
                 </span>
               </div>
             ))
           ) : (
             <div>
-              <span style={{ color: 'var(--color-accent-500)' }}>読み込み中...</span>
+              <span className="text-[var(--color-accent-500)]">読み込み中...</span>
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Hardware Card */}
-      <div
-        style={{
-          marginTop: '16px',
-          background: 'var(--color-base-800)',
-          border: '1px solid var(--color-border-subtle)',
-          borderRadius: '4px',
-          padding: '12px',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            fontWeight: 600,
-            color: 'var(--color-cyan-500)',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-          }}
-        >
-          ハードウェア
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: 'var(--color-text-secondary)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
+      <Card title="ハードウェア" className="mt-4">
+        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
           {hwInfo ? (
             <>
               <div>
                 CPU{'     '}
-                <span style={{ color: 'var(--color-accent-500)' }}>{hwInfo.cpuName}</span>
+                <span className="text-[var(--color-accent-500)]">{hwInfo.cpuName}</span>
               </div>
               {hwInfo.cpuTempC !== null && (
                 <div>
                   TEMP{'    '}
-                  <span style={{ color: 'var(--color-accent-500)' }}>
+                  <span className="text-[var(--color-accent-500)]">
                     {hwInfo.cpuTempC.toFixed(1)}°C
                   </span>
                 </div>
@@ -478,9 +242,11 @@ export default function HomeWing(): React.ReactElement {
               <div>
                 GPU{'     '}
                 <span
-                  style={{
-                    color: hwInfo.gpuName ? 'var(--color-accent-500)' : 'var(--color-text-muted)',
-                  }}
+                  className={
+                    hwInfo.gpuName
+                      ? 'text-[var(--color-accent-500)]'
+                      : 'text-[var(--color-text-muted)]'
+                  }
                 >
                   {hwInfo.gpuName ?? 'N/A'}
                 </span>
@@ -488,12 +254,11 @@ export default function HomeWing(): React.ReactElement {
               <div>
                 VRAM{'    '}
                 <span
-                  style={{
-                    color:
-                      hwInfo.gpuVramTotalMb != null
-                        ? 'var(--color-accent-500)'
-                        : 'var(--color-text-muted)',
-                  }}
+                  className={
+                    hwInfo.gpuVramTotalMb != null
+                      ? 'text-[var(--color-accent-500)]'
+                      : 'text-[var(--color-text-muted)]'
+                  }
                 >
                   {hwInfo.gpuVramTotalMb != null ? `${hwInfo.gpuVramTotalMb} MB` : 'N/A'}
                 </span>
@@ -501,103 +266,39 @@ export default function HomeWing(): React.ReactElement {
             </>
           ) : (
             <div>
-              <span style={{ color: 'var(--color-accent-500)' }}>読み込み中...</span>
+              <span className="text-[var(--color-accent-500)]">読み込み中...</span>
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Network Speed Card */}
-      <div
-        style={{
-          marginTop: '16px',
-          background: 'var(--color-base-800)',
-          border: '1px solid var(--color-border-subtle)',
-          borderRadius: '4px',
-          padding: '12px',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            fontWeight: 600,
-            color: 'var(--color-cyan-500)',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-          }}
-        >
-          ネットワーク
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: 'var(--color-text-secondary)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
+      <Card title="ネットワーク" className="mt-4">
+        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
           <div>
             DOWN{'    '}
-            <span style={{ color: 'var(--color-accent-500)' }}>
+            <span className="text-[var(--color-accent-500)]">
               {netRecv !== null ? formatNetSpeed(netRecv) : '--'}
             </span>
           </div>
           <div>
             UP{'      '}
-            <span style={{ color: 'var(--color-accent-500)' }}>
+            <span className="text-[var(--color-accent-500)]">
               {netSent !== null ? formatNetSpeed(netSent) : '--'}
             </span>
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* Game Score Placeholder */}
-      <div
-        style={{
-          marginTop: '16px',
-          background: 'var(--color-base-800)',
-          border: '1px solid var(--color-border-subtle)',
-          borderRadius: '4px',
-          padding: '12px',
-        }}
-      >
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            fontWeight: 600,
-            color: 'var(--color-cyan-500)',
-            letterSpacing: '0.1em',
-            marginBottom: '8px',
-          }}
-        >
-          ゲームスコア
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '24px',
-            fontWeight: 700,
-            color: 'var(--color-accent-500)',
-            letterSpacing: '0.05em',
-          }}
-        >
+      <Card title="ゲームスコア" className="mt-4">
+        <div className="font-[var(--font-mono)] text-2xl font-bold text-[var(--color-accent-500)] tracking-[0.05em]">
           -- / 100
         </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            color: 'var(--color-text-muted)',
-            marginTop: '4px',
-          }}
-        >
+        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mt-1">
           パフォーマンス計測 — 近日公開
         </div>
-      </div>
+      </Card>
       <AiPanel suggestions={suggestions} />
     </div>
   );

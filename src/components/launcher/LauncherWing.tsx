@@ -5,6 +5,12 @@ import { useLauncherStore } from '../../stores/useLauncherStore';
 import type { GameInfo } from '../../types';
 import AiPanel from '../shared/AiPanel';
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const DAYS_RECENT = 7;
+const DAYS_PLAYED = 30;
+
 // ─── GameCard Props Interface ───────────────────────────────────────────────────────
 
 interface GameCardProps {
@@ -22,12 +28,12 @@ interface GameCardProps {
 function formatLastPlayed(timestamp: number | undefined): string {
   if (!timestamp) return '未プレイ';
   const diff = Date.now() - timestamp;
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const days = Math.floor(diff / MS_PER_DAY);
   if (days === 0) return '今日';
   if (days === 1) return '昨日';
-  if (days < 7) return `${days}日前`;
-  if (days < 30) return `${Math.floor(days / 7)}週間前`;
-  return `${Math.floor(days / 30)}ヶ月前`;
+  if (days < DAYS_RECENT) return `${days}日前`;
+  if (days < DAYS_PLAYED) return `${Math.floor(days / 7)}週間前`;
+  return `${Math.floor(days / DAYS_PLAYED)}ヶ月前`;
 }
 
 const sortBtnStyle = (active: boolean): React.CSSProperties => ({
@@ -324,7 +330,7 @@ export default function LauncherWing(): React.ReactElement {
           onClick={() => setSortMode('favorites')}
           style={sortBtnStyle(sortMode === 'favorites')}
         >
-          \u2605優先
+          {'\u2605'}優先
         </button>
 
         {/* 検索 */}

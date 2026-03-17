@@ -282,12 +282,3 @@ export interface SignalResult {
   published: number;
   guid?: string;
 }
-
-// ─── WINOPT ──────────────────────────────────────────────────────────────────
-export interface WinSetting {
-  id: string;
-  label: string;
-  description: string;
-  isOptimized: boolean;
-  canRevert: boolean;
-}

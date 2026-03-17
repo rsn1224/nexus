@@ -4,7 +4,7 @@ use crate::error::AppError;
 use serde::{Deserialize, Serialize};
 use serde_json;
 use sysinfo::{Components, System};
-use tracing::info;
+use tracing::{info, warn};
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -104,6 +104,11 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
         "get_hardware_info: completed"
     );
 
+    // GPU情報が取得できなかった場合に警告ログを出力
+    if gpu_name.is_none() || gpu_name.as_ref().is_none_or(|s| s.is_empty()) {
+        warn!("hardware: GPU info unavailable");
+    }
+
     Ok(HardwareInfo {
         cpu_name,
         cpu_temp_c,
@@ -113,4 +118,27 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
         gpu_temp_c: None,             // Win32では取得不可
         gpu_usage_percent: None,       // Win32では取得不可
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hardware_info_gpu_fields_default_none() {
+        let info = HardwareInfo {
+            cpu_name: "Test CPU".to_string(),
+            cpu_temp_c: None,
+            gpu_name: None,
+            gpu_vram_total_mb: None,
+            gpu_vram_used_mb: None,
+            gpu_temp_c: None,
+            gpu_usage_percent: None,
+        };
+        assert!(info.gpu_name.is_none());
+        assert!(info.gpu_vram_total_mb.is_none());
+        assert!(info.gpu_vram_used_mb.is_none());
+        assert!(info.gpu_temp_c.is_none());
+        assert!(info.gpu_usage_percent.is_none());
+    }
 }

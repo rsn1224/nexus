@@ -39,7 +39,9 @@ pub fn get_resource_snapshot(
 ) -> Result<ResourceSnapshot, AppError> {
     info!("get_resource_snapshot: collecting system metrics");
 
-    let mut s = state.lock().unwrap();
+    let mut s = state
+        .lock()
+        .map_err(|e| AppError::Command(format!("State lock poisoned: {}", e)))?;
 
     s.sys.refresh_memory();
     s.sys.refresh_cpu_all();
@@ -128,7 +130,7 @@ mod tests {
 
     #[test]
     fn test_now_millis_returns_positive_timestamp() {
-        let timestamp = now_millis().unwrap();
+        let timestamp = now_millis().expect("now_millis should return valid timestamp");
         assert!(timestamp > 0);
         assert!(timestamp > 1_577_836_800_000); // 2020-01-01 00:00:00 UTC
     }
@@ -147,11 +149,11 @@ mod tests {
             net_sent_kb: 0,
         };
 
-        let json = serde_json::to_string(&snapshot).unwrap();
+        let json = serde_json::to_string(&snapshot).expect("snapshot should be serializable");
         assert!(json.contains("timestamp"));
         assert!(json.contains("cpuPercent"));
 
-        let deserialized: ResourceSnapshot = serde_json::from_str(&json).unwrap();
+        let deserialized: ResourceSnapshot = serde_json::from_str(&json).expect("json should be deserializable");
         assert_eq!(deserialized.timestamp, snapshot.timestamp);
         assert_eq!(deserialized.cpu_percent, snapshot.cpu_percent);
     }

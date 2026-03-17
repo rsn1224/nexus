@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { extractErrorMessage } from '../lib/tauri';
 import type { ExecutionLog, ScriptEntry } from '../types';
 
 interface ScriptStore {
@@ -53,7 +54,7 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
       }));
     } catch (error) {
       set({
-        error: typeof error === 'string' ? error : 'Failed to add script',
+        error: extractErrorMessage(error),
         isLoading: false,
       });
     }
@@ -69,7 +70,7 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
       }));
     } catch (error) {
       set({
-        error: typeof error === 'string' ? error : 'Failed to delete script',
+        error: extractErrorMessage(error),
         isLoading: false,
       });
     }
@@ -88,8 +89,8 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
       }));
     } catch (error) {
       set({
-        error: typeof error === 'string' ? error : 'Failed to run script',
-        isRunning: false,
+        error: extractErrorMessage(error),
+        isLoading: false,
       });
     }
   },
@@ -101,7 +102,7 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
       set({ logs, isLoading: false });
     } catch (error) {
       set({
-        error: typeof error === 'string' ? error : 'Failed to fetch logs',
+        error: extractErrorMessage(error),
         isLoading: false,
       });
     }
@@ -114,7 +115,7 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
       set({ logs: [], isLoading: false });
     } catch (error) {
       set({
-        error: typeof error === 'string' ? error : 'Failed to clear logs',
+        error: extractErrorMessage(error),
         isLoading: false,
       });
     }

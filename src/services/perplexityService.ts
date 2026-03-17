@@ -1,6 +1,10 @@
 import log from '../lib/logger';
 import { useSettingsStore } from '../stores/useSettingsStore';
 
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const PERPLEXITY_MAX_TOKENS = 500;
+
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
 interface PerplexityResponse {
@@ -44,7 +48,7 @@ ${processNames.join(', ')}
         content: prompt,
       },
     ],
-    max_tokens: 500,
+    max_tokens: PERPLEXITY_MAX_TOKENS,
   };
 
   try {

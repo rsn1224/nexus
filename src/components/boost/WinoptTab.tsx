@@ -1,0 +1,82 @@
+import React from 'react';
+import { useWinoptStore } from '../../stores/useWinoptStore';
+import { Button } from '../ui';
+
+interface WinoptTabProps {
+  className?: string;
+}
+
+export default function WinoptTab({ className = '' }: WinoptTabProps): React.ReactElement {
+  const { winSettings, isLoading, activeId, fetchWinSettings, applyWin, revertWin } =
+    useWinoptStore();
+
+  React.useEffect(() => {
+    void fetchWinSettings();
+  }, [fetchWinSettings]);
+
+  return (
+    <div className={className}>
+      {isLoading ? (
+        <div className="font-[var(--font-mono)] text-[12px] text-[var(--color-text-muted)] text-center py-8">
+          読み込み中...
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {winSettings.map((setting) => (
+            <div
+              key={setting.id}
+              className="p-3 bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded flex justify-between items-start"
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span
+                    className={
+                      setting.isOptimized
+                        ? 'text-[var(--color-cyan-500)]'
+                        : 'text-[var(--color-text-muted)]'
+                    }
+                  >
+                    {setting.isOptimized ? '●' : '○'}
+                  </span>
+                  <div className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-primary)]">
+                    {setting.label}
+                  </div>
+                </div>
+                <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)] leading-[1.4]">
+                  {setting.description}
+                </div>
+              </div>
+              <div className="ml-3">
+                {setting.isOptimized && setting.canRevert ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => void revertWin(setting.id)}
+                    disabled={activeId === setting.id}
+                    loading={activeId === setting.id}
+                  >
+                    {activeId === setting.id ? 'RUNNING...' : '↩ 元に戻す'}
+                  </Button>
+                ) : setting.isOptimized ? (
+                  <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] px-2 py-1">
+                    -
+                  </span>
+                ) : (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => void applyWin(setting.id)}
+                    disabled={activeId === setting.id}
+                    loading={activeId === setting.id}
+                  >
+                    {activeId === setting.id ? 'RUNNING...' : '▶ 適用'}
+                  </Button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

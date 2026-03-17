@@ -101,4 +101,26 @@ mod tests {
         assert_eq!(protected.len(), 2);
         assert!(protected.iter().all(|a| a.action_type == "skipped_protected"));
     }
+
+    #[test]
+    fn test_protected_processes_list_not_empty() {
+        assert!(!PROTECTED_PROCESSES.is_empty());
+    }
+
+    #[test]
+    fn test_nexus_exe_is_protected() {
+        assert!(PROTECTED_PROCESSES.contains(&"nexus.exe"));
+    }
+
+    #[test]
+    fn test_critical_system_processes_protected() {
+        let must_protect = ["lsass.exe", "csrss.exe", "winlogon.exe", "explorer.exe"];
+        for p in must_protect {
+            assert!(
+                PROTECTED_PROCESSES.contains(&p),
+                "{} should be in PROTECTED_PROCESSES",
+                p
+            );
+        }
+    }
 }

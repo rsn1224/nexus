@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    archive, beacon, boost, chrono, hardware, launcher, link, pulse, security, signal, storage, vault, winopt,
+    boost, hardware, launcher, ops, pulse, storage, winopt,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -77,17 +77,6 @@ pub fn run() {
         })
         .manage(Mutex::new(PulseState::new()))
         .invoke_handler(tauri::generate_handler![
-            // VAULT
-            vault::list_vault_entries,
-            vault::unlock_vault,
-            vault::save_vault_entry,
-            vault::delete_vault_entry,
-            vault::change_master_password,
-            vault::generate_totp,
-            // ARCHIVE
-            archive::list_notes,
-            archive::save_note,
-            archive::delete_note,
             // PULSE
             pulse::get_resource_snapshot,
             // STORAGE
@@ -99,31 +88,11 @@ pub fn run() {
             // LAUNCHER
             launcher::scan_steam_games,
             launcher::launch_game,
-            // CHRONO
-            chrono::list_tasks,
-            chrono::save_task,
-            chrono::delete_task,
-            // LINK
-            link::list_snippets,
-            link::save_snippet,
-            link::delete_snippet,
-            // BEACON
-            beacon::list_watched_paths,
-            beacon::start_watching,
-            beacon::stop_watching,
-            beacon::remove_watched_path,
-            beacon::get_events,
-            beacon::clear_events,
-            beacon::validate_path,
-            // SECURITY
-            security::run_vulnerability_scan,
-            security::run_secret_scan,
-            // SIGNAL
-            signal::list_signal_feeds,
-            signal::add_signal_feed,
-            signal::remove_signal_feed,
-            signal::toggle_signal_feed,
-            signal::check_feed_now,
+            // OPS
+            ops::list_processes,
+            ops::kill_process,
+            ops::set_process_priority,
+            ops::get_ai_suggestions,
             // WINOPT
             winopt::get_win_settings,
             winopt::apply_win_setting,

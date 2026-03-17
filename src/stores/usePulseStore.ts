@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import { checkAndNotify } from '../services/notificationService';
 import type { ResourceSnapshot } from '../types';
 import { useSettingsStore } from './useSettingsStore';
@@ -98,7 +99,7 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
         };
       });
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       log.error({ err }, 'pulse: fetch snapshot failed');
       set({ error: message });
     }

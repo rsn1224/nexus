@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import { getOptimizationSuggestions } from '../services/perplexityService';
 import type { SystemProcess } from '../types';
 
@@ -37,7 +38,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ count: processes.length }, 'ops: processes fetched');
       set({ processes, lastUpdated: Date.now() });
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       log.error({ err }, 'ops: fetch processes failed');
       set({ error: message });
     } finally {
@@ -57,7 +58,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ count: result.data.length }, 'ops: suggestions fetched');
       set({ suggestions: result.data });
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       log.error({ err }, 'ops: fetch suggestions failed');
       set({ error: message });
     } finally {
@@ -72,7 +73,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ pid }, 'ops: process killed');
       await get().fetchProcesses();
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: kill process failed');
       set({ error: message });
     }
@@ -85,7 +86,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.info({ pid, priority }, 'ops: priority updated');
       await get().fetchProcesses();
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: set priority failed');
       set({ error: message });
     }

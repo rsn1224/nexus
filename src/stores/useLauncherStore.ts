@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { GameInfo } from '../types';
 
 const AUTO_BOOST_KEY = 'nexus:launcher:autoBoostEnabled';
@@ -46,7 +47,7 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
       set({ games, isScanning: false });
     } catch (err) {
       log.error({ err }, 'launcher: scan Steam games failed');
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = extractErrorMessage(err);
       set({ error: errorMessage, isScanning: false });
     }
   },
@@ -74,7 +75,7 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
       set({ lastPlayed: nextLastPlayed });
     } catch (err) {
       log.error({ err, appId }, 'launcher: launch game failed');
-      const errorMessage = err instanceof Error ? err.message : String(err);
+      const errorMessage = extractErrorMessage(err);
       set({ error: errorMessage });
     }
   },

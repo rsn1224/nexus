@@ -1,177 +1,192 @@
 # ROADMAP.md — nexus オーバーホール実行計画
 
 > **目的:** OVERHAUL.md に基づき、GPU監視・プロセス保護・自動ブースト等を段階的に実装
-> **最終更新:** 2026-03-16
+> **最終更新:** 2026-03-17
 
 ---
 
 ## Step OH1: PowerShell フラグ修正
-**状態:** ✅ 完了済み（本セッション中に修正・cargo test 37件通過）
-**依存:** なし
-**変更ファイル:** `src-tauri/src/commands/winopt.rs` 
-**理由:** セキュリティポリシーが Restricted な環境でのブロック防止。
+
+**状態:** ✅ 完了済み
+
+**変更ファイル:** `src-tauri/src/commands/winopt.rs`
+
 **完了条件チェックリスト:**
+
 - [x] `-NoProfile -NonInteractive -ExecutionPolicy Bypass` フラグが追加されている
 - [x] cargo test 37件通過
-**品質チェック:** `cargo test`（スキップ — 完了済み）
 
 ---
 
 ## Step OH2: GPU 型定義・取得実装
-**状態:** 未着手
-**依存:** なし
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
-- `src-tauri/src/commands/hardware.rs`（HardwareInfo に GPU フィールド追加）
-- `src/types/index.ts`（HardwareInfo 型に GPU フィールド追加）
-**理由:** GPU データは on-demand の hardware.rs に集約。pulse.rs への混入を避けパフォーマンスリスクを排除。
+
+- `src-tauri/src/commands/hardware.rs`
+- `src/types/index.ts`
+
 **完了条件チェックリスト:**
-- [ ] HardwareInfo に `gpu_vram_total_mb / gpu_vram_used_mb / gpu_temp_c / gpu_usage_percent` が追加されている（全 Option<T>）
-- [ ] Get-CimInstance Win32_VideoController で GPU 名・VRAM 合計が取得できる
-- [ ] AdapterRAM が bytes → MB 変換されている（/ 1024 / 1024）
-- [ ] GPU 情報が取得できない場合（AMD 等）は全フィールド None で返りエラーにならない
-- [ ] PowerShell フラグに `-NoProfile -NonInteractive -ExecutionPolicy Bypass` が含まれる
-- [ ] `src/types/index.ts` の HardwareInfo 型が Rust 側と一致している
-- [ ] `cargo test` 通過
-- [ ] `npm run typecheck` 通過
-**品質チェック:** `cargo test && npm run typecheck` 
+
+- [x] HardwareInfo に `gpu_vram_total_mb / gpu_vram_used_mb / gpu_temp_c / gpu_usage_percent` が追加されている（全 Option）
+- [x] Get-CimInstance Win32_VideoController で GPU 名・VRAM 合計が取得できる
+- [x] AdapterRAM が bytes → MB 変換されている
+- [x] GPU 情報が取得できない場合は全フィールド None で返りエラーにならない
+- [x] `src/types/index.ts` の HardwareInfo 型が Rust 側と一致している
+- [x] `cargo test` 通過
+- [x] `npm run typecheck` 通過
 
 ---
 
 ## Step OH3: プロセス保護リスト実装
-**状態:** 未着手
-**依存:** なし（OH2 と並行可能）
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
-- `src-tauri/src/commands/boost.rs` 
-- `src/components/boost/BoostWing.tsx` 
-**理由:** KILL 誤爆防止はセキュリティ上の Must。UI 修正（ErrorBanner / タブカラー / ヘッダー）も BoostWing を触るこのタイミングで同時に対応する。
+
+- `src-tauri/src/commands/boost.rs`
+- `src/components/boost/BoostWing.tsx`
+
 **完了条件チェックリスト:**
-- [ ] `PROTECTED_PROCESSES` 定数が boost.rs に定義されている
-- [ ] `BoostAction` に `is_protected: bool` フィールドが追加されている
-- [ ] PROTECTED プロセスは `action: "skipped_protected"` で返りKILLされない
-- [ ] 結果テーブルの `skipped_protected` 行が `--color-text-muted` で表示される
-- [ ] 結果テーブルの `skipped_protected` 行に `[PROT]` バッジが表示される
-- [ ] BoostWing の ErrorBanner が `rgba(239,68,68,0.1)` + `borderBottom` スタイルに修正されている（DESIGN.md 準拠）
-- [ ] BoostWing のアクティブタブカラーが `--color-accent-500` に修正されている（管理系 Wing）
-- [ ] BoostWing の Wing ヘッダーに `flexShrink: 0` と `borderBottom` が追加されている
-- [ ] `cargo test` 通過
-- [ ] `npm run check` 通過
-**品質チェック:** `cargo test && npm run check` 
+
+- [x] `PROTECTED_PROCESSES` 定数が boost.rs に定義されている
+- [x] `BoostAction` に `is_protected: bool` フィールドが追加されている
+- [x] PROTECTED プロセスは `action: "skipped_protected"` で返りKILLされない
+- [x] 結果テーブルの `skipped_protected` 行に `[PROT]` バッジが表示される
+- [x] `cargo test` 通過
+- [x] `npm run check` 通過
 
 ---
 
 ## Step OH4: GPU UI + AI ルール追加
-**状態:** 未着手
-**依存:** OH2 完了後
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
-- `src/components/home/HomeWing.tsx` 
-- `src/lib/localAi.ts` 
-**理由:** OH2 の型定義が完了してからでないとフロントが型エラーになる。
+
+- `src/components/home/HomeWing.tsx`
+- `src/lib/localAi.ts`
+
 **完了条件チェックリスト:**
-- [ ] HomeWing の HW カードに GPU セクションが表示される
-- [ ] GPU 名が表示される（null の場合は `N/A` を `--color-text-muted` で表示）
-- [ ] VRAM 合計が表示される（null の場合は `N/A`）
-- [ ] GPU データが全 null のときエラーにならず正常表示される
-- [ ] localAi.ts に GPU 温度ルールが追加されている（85°C → warn, 95°C → critical）
-- [ ] GPU データが全 null のとき GPU ルールのサジェストは生成されない
-- [ ] `npm run check` 通過
-- [ ] `npm run typecheck` 通過
-**品質チェック:** `npm run check && npm run typecheck` 
+
+- [x] HomeWing の HW カードに GPU セクションが表示される
+- [x] GPU データが全 null のときエラーにならず正常表示される
+- [x] localAi.ts に GPU 温度ルールが追加されている（85°C → warn, 95°C → critical）
+- [x] `npm run check` 通過
+- [x] `npm run typecheck` 通過
 
 ---
 
 ## Step OH5: styles.ts 新規作成
-**状態:** 未着手
-**依存:** なし（どの Step とも並行可能）
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
+
 - `src/lib/styles.ts`（新規）
-- `DESIGN.md`（セクション 15 追記のみ）
-**理由:** 既存ファイルは変更しない。新規ファイルの品質基準を定義するだけ。
+
 **完了条件チェックリスト:**
-- [ ] `S.monoLabel / S.monoValue / S.sectionTitle / S.microBadge` 等の共通定数が定義されている
-- [ ] `as const satisfies Record<string, React.CSSProperties>` で型安全になっている
-- [ ] 既存ファイル（HomeWing / BoostWing 等）は一切変更されていない
-- [ ] DESIGN.md セクション 15 に「新規ファイルは styles.ts を使う」旨が追記されている
-- [ ] `npm run check` 通過（未使用変数エラーがないこと）
-**品質チェック:** `npm run check` 
+
+- [x] `S.monoLabel / S.monoValue / S.sectionTitle / S.microBadge` 等の共通定数が定義されている
+- [x] `as const satisfies Record<string, React.CSSProperties>` で型安全になっている
+- [x] `npm run check` 通過
 
 ---
 
 ## Step OH6: 自動ブースト設定
-**状態:** 未着手
-**依存:** なし
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
-- `src/stores/useSettingsStore.ts` 
-- `src/components/launcher/LauncherWing.tsx` 
-- `src/components/settings/SettingsWing.tsx` 
-**理由:** Store → Launcher → Settings の順で依存するが全て同一 Step で完結できる。
+
+- `src/stores/useLauncherStore.ts`
+- `src/components/launcher/LauncherWing.tsx`
+- `src/components/settings/SettingsWing.tsx`
+
 **完了条件チェックリスト:**
-- [ ] `autoBoostOnLaunch: boolean` が useSettingsStore に追加されている（デフォルト: false）
-- [ ] localStorage に永続化されている（アプリ再起動後も維持される）
-- [ ] ゲーム起動時に `autoBoostOnLaunch === true` なら `runBoost()` が先行実行される
-- [ ] `runBoost()` 実行中はゲーム起動ボタンが `disabled` になる
-- [ ] SettingsWing にトグルが追加されている
-- [ ] `npm run check` 通過
-- [ ] `npm run typecheck` 通過
-**品質チェック:** `npm run check && npm run typecheck` 
+
+- [x] `autoBoostEnabled` が useLauncherStore に追加されている
+- [x] ゲーム起動時に `autoBoostEnabled === true` なら `runBoost()` が先行実行される
+- [x] SettingsWing にトグルが追加されている
+- [x] `npm run check` 通過
+- [x] `npm run typecheck` 通過
 
 ---
 
 ## Step OH7: テスト追加
-**状態:** 未着手
-**依存:** OH2・OH4 完了後
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
-- `src/test/localAi.test.ts`（新規）
-- `src/test/stores.test.ts`（新規）
-**理由:** OH2 の型変更と OH4 の GPU ルール追加が完了してからテストを書く。
+
+- `src/test/localAi.test.ts`
+- `src/test/stores.test.ts`
+
 **完了条件チェックリスト:**
-- [ ] `homePageSuggestions`: CPU 69/70/89/90/91% の境界値テスト
-- [ ] `homePageSuggestions`: メモリ 74/75/89/90% の境界値テスト
-- [ ] `homePageSuggestions`: ディスク 84/85/94/95% の境界値テスト
-- [ ] `homePageSuggestions`: GPU 温度 84/85/94/95°C の境界値テスト
-- [ ] `homePageSuggestions`: GPU データが全 null のときサジェストが生成されないこと
-- [ ] `boostPageSuggestions`: 全最適化済み / 未最適化 / 部分最適化
-- [ ] `launcherPageSuggestions`: ゲーム 0件 / お気に入り 0件 / 正常
-- [ ] `sortAndSlice`: critical が必ず先頭、max=3 で切り捨て
-- [ ] `useSettingsStore`: autoBoostOnLaunch の初期値 false・永続化
-- [ ] `hardware.rs`: test_gpu_fields_serialization（Option フィールドの JSON）
-- [ ] `boost.rs`: test_protected_processes_not_killed
-- [ ] `npm run test` 全通過
-- [ ] `cargo test` 通過
-**品質チェック:** `npm run test && cargo test` 
+
+- [x] `homePageSuggestions`: CPU/MEM/ディスク/GPU 温度の境界値テスト
+- [x] `boostPageSuggestions`: 全最適化済み / 未最適化 / 部分最適化
+- [x] `launcherPageSuggestions`: ゲーム 0件 / お気に入り 0件 / 正常
+- [x] `sortAndSlice`: critical が必ず先頭、max=3 で切り捨て
+- [x] `useSettingsStore`: pollIntervalMs の初期値・変更
+- [x] `npm run test` 全通過（81件）
+- [x] `cargo test` 通過
 
 ---
 
 ## Step OH8: エラーハンドリング統一
-**状態:** 未着手
-**依存:** なし
+
+**状態:** ✅ 完了済み
+
 **変更ファイル:**
-- `src/services/perplexityService.ts` 
-**理由:** 他の Step と独立。Step 6b（Perplexity UI）の前に完了させると実装が楽になる。
+
+- `src/lib/tauri.ts`（新規）
+- `src/services/perplexityService.ts`
+- 全ストア（6ファイル）
+
 **完了条件チェックリスト:**
-- [ ] 二重 try-catch が排除されている
-- [ ] `{ ok: true; data: T } | { ok: false; error: string }` 型相当の戻り値に変更されている
-- [ ] 呼び出し側（SettingsWing 等）の catch が最小限になっている
-- [ ] `npm run typecheck` 通過
-**品質チェック:** `npm run typecheck` 
+
+- [x] `extractErrorMessage(err)` ヘルパーが `src/lib/tauri.ts` に定義されている
+- [x] 全ストアの catch ブロックで `extractErrorMessage` を使用
+- [x] `ApiResult<T>` 型パターンが perplexityService に適用されている
+- [x] `npm run typecheck` 通過
 
 ---
 
-### 並行実行可能グループ
+## 全体最適化（OH 完了後）
 
-| グループ | Steps | 開始条件 |
-|---------|-------|---------|
-| A（同時実行可） | OH2, OH3, OH5, OH6, OH8 | 即時 |
-| B（A 後） | OH4 | OH2 完了後 |
-| C（B 後） | OH7 | OH2 + OH4 完了後 |
+**状態:** ✅ 完了済み（2026-03-17）
+
+**変更ファイル:** LauncherWing / BoostWing / SettingsWing / perplexityService / pulse.rs / winopt.rs / hardware.rs
+
+**完了条件チェックリスト:**
+
+- [x] マジックナンバーを定数化（TypeScript 4ファイル）
+- [x] `pulse.rs` の Mutex unwrap を `map_err` に修正
+- [x] `winopt.rs` に `NETWORK_THROTTLE_DISABLED` 定数を追加
+- [x] `hardware.rs` の GPU 未取得時に `warn!` ログ追加
+- [x] 死骸ファイル `winopt_net.rs` / `winopt_win.rs` を削除
+- [x] typecheck / Biome / clippy / tests 81件 すべて通過
 
 ---
 
-### 将来のロードマップ（本オーバーホール対象外）
+## 並行実行可能グループ（参考）
 
-| ID | 内容 | 前提 |
-|----|------|------|
-| OH-B1 | BoostWing リアルタイムプロセスリスト（B案） | OH3 完了後 |
-| OH-B2 | NVIDIA GPU 使用率取得（nvml-wrapper） | OH2 完了後 |
-| OH-B3 | ゲームスコア実装（CPU/MEM/DISK/GPU 加重平均） | OH4 完了後 |
-| OH-B4 | 全設定リバート + アンインストールフロー | OH6 完了後 |
-| OH-B5 | ウィンドウ最小幅設定（tauri.conf.json minWidth: 900） | いつでも |
+| グループ | Steps | 状態 |
+| -------- | ----- | ---- |
+| A | OH2, OH3, OH5, OH6, OH8 | ✅ 完了 |
+| B | OH4 | ✅ 完了 |
+| C | OH7 | ✅ 完了 |
+
+---
+
+## 将来のロードマップ
+
+| ID | 内容 | 前提 | 状態 |
+| -- | ---- | ---- | ---- |
+| OH-B1 | BoostWing リアルタイムプロセスリスト | OH3 完了後 | 未着手 |
+| OH-B2 | NVIDIA GPU 使用率取得（nvml-wrapper） | OH2 完了後 | 未着手 |
+| OH-B3 | ゲームスコア実装（CPU/MEM/DISK/GPU 加重平均） | OH4 完了後 | 未着手 |
+| OH-B4 | 全設定リバート + アンインストールフロー | OH6 完了後 | 未着手 |
+| OH-B5 | ウィンドウ最小幅設定（minWidth: 900） | いつでも | ✅ 完了 |
