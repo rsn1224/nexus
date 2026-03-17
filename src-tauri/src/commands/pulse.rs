@@ -47,7 +47,8 @@ pub fn get_resource_snapshot(
     s.sys.refresh_cpu_all();
     std::thread::sleep(std::time::Duration::from_millis(200));
     s.sys.refresh_cpu_all();
-    s.sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+    s.sys
+        .refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
     let cpu_percent = s.sys.global_cpu_usage();
 
@@ -153,7 +154,8 @@ mod tests {
         assert!(json.contains("timestamp"));
         assert!(json.contains("cpuPercent"));
 
-        let deserialized: ResourceSnapshot = serde_json::from_str(&json).expect("json should be deserializable");
+        let deserialized: ResourceSnapshot =
+            serde_json::from_str(&json).expect("json should be deserializable");
         assert_eq!(deserialized.timestamp, snapshot.timestamp);
         assert_eq!(deserialized.cpu_percent, snapshot.cpu_percent);
     }

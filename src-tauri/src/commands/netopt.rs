@@ -24,14 +24,11 @@ pub struct PingResult {
 #[tauri::command]
 pub fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
     info!("get_network_adapters: fetching network adapters");
-    
-    let output = Command::new("ipconfig")
-        .arg("/all")
-        .output()
-        .map_err(|e| {
-            warn!("Failed to execute ipconfig: {}", e);
-            AppError::Command(format!("Failed to execute ipconfig: {}", e))
-        })?;
+
+    let output = Command::new("ipconfig").arg("/all").output().map_err(|e| {
+        warn!("Failed to execute ipconfig: {}", e);
+        AppError::Command(format!("Failed to execute ipconfig: {}", e))
+    })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -49,14 +46,14 @@ pub fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
 
     for line in stdout.lines() {
         let trimmed = line.trim();
-        
+
         // アダプター名の検出
         if trimmed.contains(" adapter ") && trimmed.ends_with(':') {
             // 前のアダプターを保存（名前があれば）
             if !current_adapter.name.is_empty() {
                 adapters.push(current_adapter.clone());
             }
-            
+
             // アダプター名を取得: 末尾の ':' を除去
             let name = trimmed.trim_end_matches(':');
             // "Ethernet adapter " などのプレフィックスを除去して名前だけ取得
@@ -104,14 +101,17 @@ pub fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
         .filter(|adapter| adapter.is_connected && !adapter.ip.is_empty())
         .collect();
 
-    info!("get_network_adapters: found {} connected adapters", connected_adapters.len());
+    info!(
+        "get_network_adapters: found {} connected adapters",
+        connected_adapters.len()
+    );
     Ok(connected_adapters)
 }
 
 #[tauri::command]
 pub fn get_current_dns() -> Result<Vec<String>, AppError> {
     info!("get_current_dns: fetching current DNS servers");
-    
+
     let output = Command::new("netsh")
         .args(["interface", "ip", "show", "dns"])
         .output()
@@ -130,7 +130,7 @@ pub fn get_current_dns() -> Result<Vec<String>, AppError> {
 
     for line in stdout.lines() {
         let trimmed = line.trim();
-        
+
         // DNSサーバーの検出
         if trimmed.contains("DNS servers") || trimmed.contains("DNS サーバー") {
             if let Some(servers_part) = trimmed.split(':').nth(1) {
@@ -154,8 +154,11 @@ pub fn get_current_dns() -> Result<Vec<String>, AppError> {
 
 #[tauri::command]
 pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<(), AppError> {
-    info!("set_dns: setting DNS for adapter {}: {}, {}", adapter, primary, secondary);
-    
+    info!(
+        "set_dns: setting DNS for adapter {}: {}, {}",
+        adapter, primary, secondary
+    );
+
     // プライマリDNSを設定
     let output = Command::new("netsh")
         .args([
@@ -176,7 +179,10 @@ pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<()
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Failed to set primary DNS: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "Failed to set primary DNS: {}",
+            stderr
+        )));
     }
 
     // セカンダリDNSが空でない場合のみ設定
@@ -199,7 +205,10 @@ pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<()
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Command(format!("Failed to set secondary DNS: {}", stderr)));
+            return Err(AppError::Command(format!(
+                "Failed to set secondary DNS: {}",
+                stderr
+            )));
         }
     }
 
@@ -210,7 +219,7 @@ pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<()
 #[tauri::command]
 pub fn ping_host(target: String) -> Result<PingResult, AppError> {
     info!("ping_host: pinging {}", target);
-    
+
     let output = Command::new("ping")
         .args(["-n", "1", &target])
         .output()
@@ -259,10 +268,10 @@ mod tests {
             latency_ms: Some(12),
             success: true,
         };
-        
+
         let serialized = serde_json::to_string(&result).unwrap();
         let deserialized: PingResult = serde_json::from_str(&serialized).unwrap();
-        
+
         assert_eq!(result.target, deserialized.target);
         assert_eq!(result.latency_ms, deserialized.latency_ms);
         assert_eq!(result.success, deserialized.success);

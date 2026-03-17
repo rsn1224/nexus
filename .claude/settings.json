@@ -1,9 +1,32 @@
 {
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /d %CD% && node scripts/pre-edit-check.cjs 2>nul || true"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit|MultiEdit",
         "hooks": [
+          {
+            "type": "command",
+            "command": "cd /d %CD% && node scripts/quality-gate.cjs 2>nul || true"
+          },
+          {
+            "type": "command",
+            "command": "cd /d %CD% && node scripts/update-handoff.cjs 2>nul || true"
+          },
+          {
+            "type": "command",
+            "command": "cd /d %CD% && node scripts/auto-review.cjs 2>nul || true"
+          },
           {
             "type": "command",
             "command": "cd /d %CD% && npx @biomejs/biome check --write $(git diff --name-only --diff-filter=M HEAD | grep -E '\\.(ts|tsx)$' | tr '\n' ' ') 2>nul || true"

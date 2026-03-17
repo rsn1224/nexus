@@ -14,15 +14,16 @@ pub struct WinSetting {
     pub id: String,
     pub label: String,
     pub description: String,
-    pub is_optimized: bool,  // 現在最適化済みかどうか
-    pub can_revert: bool,    // バックアップが存在するかどうか
+    pub is_optimized: bool, // 現在最適化済みかどうか
+    pub can_revert: bool,   // バックアップが存在するかどうか
 }
 
 // ─── Backup Management ────────────────────────────────────────────────────────────
 
 fn backup_path() -> Result<PathBuf, AppError> {
-    let mut path = std::env::var("LOCALAPPDATA")
-        .map_err(|_| AppError::Command("Cannot get LOCALAPPDATA environment variable".to_string()))?;
+    let mut path = std::env::var("LOCALAPPDATA").map_err(|_| {
+        AppError::Command("Cannot get LOCALAPPDATA environment variable".to_string())
+    })?;
     path.push_str("\\nexus\\winopt_backup.json");
     Ok(PathBuf::from(path))
 }
@@ -32,34 +33,29 @@ fn load_backup() -> Result<HashMap<String, String>, AppError> {
     if !path.exists() {
         return Ok(HashMap::new());
     }
-    
-    let content = std::fs::read_to_string(path).map_err(|e| {
-        AppError::Io(format!("Failed to read backup file: {}", e))
-    })?;
-    
-    serde_json::from_str(&content).map_err(|e| {
-        AppError::Serialization(format!("Failed to parse backup file: {}", e))
-    })
+
+    let content = std::fs::read_to_string(path)
+        .map_err(|e| AppError::Io(format!("Failed to read backup file: {}", e)))?;
+
+    serde_json::from_str(&content)
+        .map_err(|e| AppError::Serialization(format!("Failed to parse backup file: {}", e)))
 }
 
 fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppError> {
     let path = backup_path()?;
-    
+
     // Create directory if it doesn't exist
     if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent).map_err(|e| {
-            AppError::Io(format!("Failed to create backup directory: {}", e))
-        })?;
+        std::fs::create_dir_all(parent)
+            .map_err(|e| AppError::Io(format!("Failed to create backup directory: {}", e)))?;
     }
-    
-    let content = serde_json::to_string_pretty(backup).map_err(|e| {
-        AppError::Serialization(format!("Failed to serialize backup: {}", e))
-    })?;
-    
-    std::fs::write(path, content).map_err(|e| {
-        AppError::Io(format!("Failed to write backup file: {}", e))
-    })?;
-    
+
+    let content = serde_json::to_string_pretty(backup)
+        .map_err(|e| AppError::Serialization(format!("Failed to serialize backup: {}", e)))?;
+
+    std::fs::write(path, content)
+        .map_err(|e| AppError::Io(format!("Failed to write backup file: {}", e)))?;
+
     Ok(())
 }
 
@@ -67,8 +63,11 @@ fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppError> {
 
 fn run_powershell(command: &str) -> Result<String, AppError> {
     info!("Executing PowerShell: {}", command);
-    
-    let utf8_command = format!("[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; {}", command);
+
+    let utf8_command = format!(
+        "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; {}",
+        command
+    );
     let output = std::process::Command::new("powershell")
         .args([
             "-NoProfile",
@@ -79,10 +78,8 @@ fn run_powershell(command: &str) -> Result<String, AppError> {
             utf8_command.as_str(),
         ])
         .output()
-        .map_err(|e| {
-            AppError::Command(format!("Failed to execute PowerShell: {}", e))
-        })?;
-    
+        .map_err(|e| AppError::Command(format!("Failed to execute PowerShell: {}", e)))?;
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -95,7 +92,7 @@ fn run_powershell(command: &str) -> Result<String, AppError> {
         };
         return Err(AppError::Command(format!("PowerShell failed: {}", detail)));
     }
-    
+
     let stdout = String::from_utf8_lossy(&output.stdout);
     Ok(stdout.trim().to_string())
 }
@@ -105,7 +102,7 @@ fn run_powershell(command: &str) -> Result<String, AppError> {
 #[tauri::command]
 pub fn get_win_settings() -> Result<Vec<WinSetting>, AppError> {
     let backup = load_backup()?;
-    
+
     let mut settings = vec![
         WinSetting {
             id: "power_plan".to_string(),
@@ -143,23 +140,25 @@ pub fn get_win_settings() -> Result<Vec<WinSetting>, AppError> {
             can_revert: backup.contains_key("visual_effects"),
         },
     ];
-    
+
     // Check current system state for non-backup settings
     // findstr returns exit code 1 when no match found — use unwrap_or_default to avoid propagating
-    let power_plan_check = run_powershell("powercfg /getactivescheme | findstr /C:\"High performance\"").unwrap_or_default();
+    let power_plan_check =
+        run_powershell("powercfg /getactivescheme | findstr /C:\"High performance\"")
+            .unwrap_or_default();
     if power_plan_check.contains("High performance") {
         if let Some(setting) = settings.iter_mut().find(|s| s.id == "power_plan") {
             setting.is_optimized = true;
         }
     }
-    
+
     Ok(settings)
 }
 
 #[tauri::command]
 pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
     let mut backup = load_backup()?;
-    
+
     match id {
         "power_plan" => {
             // Backup current power plan — store GUID only
@@ -180,7 +179,7 @@ pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
                 "Get-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AllowAutoGameMode"
             )?;
             backup.insert("game_mode".to_string(), current_value);
-            
+
             // Enable game mode
             run_powershell(
                 "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -Value 1 -Type DWord -Force"
@@ -192,7 +191,7 @@ pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
                 "Get-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty GameDVR_Enabled"
             )?;
             backup.insert("game_dvr".to_string(), current_value);
-            
+
             // Disable game DVR
             run_powershell(
                 "Set-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -Value 0 -Type DWord -Force"
@@ -208,7 +207,7 @@ pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
                 "Get-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty MouseSpeed"
             )?;
             backup.insert("mouse_acceleration".to_string(), current_value);
-            
+
             // Disable mouse acceleration
             run_powershell(
                 "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -Value 0 -Type String -Force; Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseThreshold1' -Value 0 -Type String -Force; Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseThreshold2' -Value 0 -Type String -Force"
@@ -220,15 +219,20 @@ pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
                 "Get-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VisualFXSetting"
             )?;
             backup.insert("visual_effects".to_string(), current_value);
-            
+
             // Set performance mode
             run_powershell(
                 "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -Value 2 -Type DWord -Force"
             )?;
         }
-        _ => return Err(AppError::Command(format!("Unknown Windows setting: {}", id))),
+        _ => {
+            return Err(AppError::Command(format!(
+                "Unknown Windows setting: {}",
+                id
+            )))
+        }
     }
-    
+
     save_backup(&backup)?;
     Ok(())
 }
@@ -236,7 +240,7 @@ pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
 #[tauri::command]
 pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
     let mut backup = load_backup()?;
-    
+
     if let Some(original_value) = backup.remove(id) {
         match id {
             "power_plan" => {
@@ -278,12 +282,17 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
                     value
                 ))?;
             }
-            _ => return Err(AppError::Command(format!("Unknown Windows setting: {}", id))),
+            _ => {
+                return Err(AppError::Command(format!(
+                    "Unknown Windows setting: {}",
+                    id
+                )))
+            }
         }
-        
+
         save_backup(&backup)?;
     }
-    
+
     Ok(())
 }
 
@@ -292,7 +301,7 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
 #[tauri::command]
 pub fn get_net_settings() -> Result<Vec<WinSetting>, AppError> {
     let backup = load_backup()?;
-    
+
     let settings = vec![
         WinSetting {
             id: "dns_google".to_string(),
@@ -316,7 +325,7 @@ pub fn get_net_settings() -> Result<Vec<WinSetting>, AppError> {
             can_revert: backup.contains_key("nagle_algorithm"),
         },
     ];
-    
+
     Ok(settings)
 }
 
@@ -329,7 +338,7 @@ pub fn flush_dns_cache() -> Result<String, AppError> {
 #[tauri::command]
 pub fn apply_net_setting(id: &str) -> Result<(), AppError> {
     let mut backup = load_backup()?;
-    
+
     match id {
         "dns_google" => {
             // Backup current DNS settings (requires admin)
@@ -348,7 +357,7 @@ pub fn apply_net_setting(id: &str) -> Result<(), AppError> {
                 "Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile' -Name 'NetworkThrottlingIndex' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty NetworkThrottlingIndex"
             ).unwrap_or_default();
             backup.insert("network_throttle".to_string(), current_throttle);
-            
+
             // Disable network throttling (requires admin)
             run_powershell(&format!(
                 "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile' -Name 'NetworkThrottlingIndex' -Value {} -Type DWord -Force",
@@ -361,15 +370,20 @@ pub fn apply_net_setting(id: &str) -> Result<(), AppError> {
                 "Get-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters' -Name 'TcpAckFrequency' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty TcpAckFrequency"
             ).unwrap_or_default();
             backup.insert("nagle_algorithm".to_string(), current_nagle);
-            
+
             // Disable Nagle algorithm (requires admin)
             run_powershell(
                 "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters' -Name 'TcpAckFrequency' -Value 1 -Type DWord -Force; Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters' -Name 'TCPNoDelay' -Value 1 -Type DWord -Force"
             ).map_err(|_| AppError::Command("管理者権限が必要です。nexus を管理者として実行してください。".to_string()))?;
         }
-        _ => return Err(AppError::Command(format!("Unknown network setting: {}", id))),
+        _ => {
+            return Err(AppError::Command(format!(
+                "Unknown network setting: {}",
+                id
+            )))
+        }
     }
-    
+
     save_backup(&backup)?;
     Ok(())
 }
@@ -377,13 +391,19 @@ pub fn apply_net_setting(id: &str) -> Result<(), AppError> {
 #[tauri::command]
 pub fn revert_net_setting(id: &str) -> Result<(), AppError> {
     let mut backup = load_backup()?;
-    
+
     if let Some(original_value) = backup.remove(id) {
         match id {
             "dns_google" => {
                 // Restore original DNS settings (requires admin)
-                run_powershell("Set-DnsClientServerAddress -InterfaceAlias '*' -ResetServerAddresses")
-                .map_err(|_| AppError::Command("管理者権限が必要です。nexus を管理者として実行してください。".to_string()))?;
+                run_powershell(
+                    "Set-DnsClientServerAddress -InterfaceAlias '*' -ResetServerAddresses",
+                )
+                .map_err(|_| {
+                    AppError::Command(
+                        "管理者権限が必要です。nexus を管理者として実行してください。".to_string(),
+                    )
+                })?;
             }
             "network_throttle" => {
                 // Restore original throttle setting (requires admin)
@@ -401,12 +421,17 @@ pub fn revert_net_setting(id: &str) -> Result<(), AppError> {
                     value
                 )).map_err(|_| AppError::Command("管理者権限が必要です。nexus を管理者として実行してください。".to_string()))?;
             }
-            _ => return Err(AppError::Command(format!("Unknown network setting: {}", id))),
+            _ => {
+                return Err(AppError::Command(format!(
+                    "Unknown network setting: {}",
+                    id
+                )))
+            }
         }
-        
+
         save_backup(&backup)?;
     }
-    
+
     Ok(())
 }
 

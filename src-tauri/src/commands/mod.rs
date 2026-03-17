@@ -7,5 +7,5 @@ pub mod netopt;
 pub mod ops;
 pub mod pulse;
 pub mod storage;
-pub mod winopt;
 pub mod windows_settings;
+pub mod winopt;

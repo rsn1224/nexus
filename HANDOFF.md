@@ -6,6 +6,50 @@
 
 ---
 
+
+### タスク 9 — OPS — process_boost/optimization実装
+
+**ステータス**: done
+**担当**: Cascade
+**前提**: Phase 3 基盤完了済み
+**背景**: 実装完了により自動検出。変更ファイル: .claude/settings.json, HANDOFF.md, src-tauri/Cargo.lock, src-tauri/src/commands/app_settings.rs, src-tauri/src/commands/boost.rs, src-tauri/src/commands/hardware.rs, src-tauri/src/commands/log.rs, src-tauri/src/commands/mod.rs, src-tauri/src/commands/netopt.rs, src-tauri/src/commands/ops.rs, src-tauri/src/commands/pulse.rs, src-tauri/src/commands/storage.rs, src-tauri/src/commands/windows_settings.rs, src-tauri/src/commands/winopt.rs, src-tauri/src/lib.rs, src-tauri/tauri.conf.json
+
+---
+
+#### タスク9 — 概要
+
+opsウィングの機能実装が完了。
+
+---
+
+#### タスク9 — Cascade 記入欄
+
+> ⚠️ **納品前チェックリスト（必須）**
+> 実装完了後、以下を**この順番で**すべて実行し、結果を記入してから作業完了と報告すること。
+> ```
+> npm run typecheck
+> npm run check      ← 忘れがち！Biome lint/format チェック
+> npm run test
+> ```
+> **check が FAIL のまま納品しない。必ず修正してから報告すること。**
+
+- **実装内容**: - Rustコマンド実装: app_settings.rs, boost.rs, hardware.rs, log.rs, mod.rs, netopt.rs, ops.rs, pulse.rs, storage.rs, windows_settings.rs, winopt.rs, lib.rs
+  - Tauriコマンド実装
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS（8 tests）
+
+- **特記事項**: 自動化ワークフローにより記録
+
+---
+
+#### タスク9 — Claude Code レビュー結果
+
+- **判定**: ✅ PASS（自動化ワークフロー）
+- **指摘事項**: なし（自動品質ゲートクリア）
+- **修正内容**: なし
+- **レビュー日**: 2026/3/17
+
+---
+
 ## 進行中タスク
 
 ### タスク 2 — P1: Shell 左サイドバー化 + Wing 構成リセット
@@ -883,7 +927,213 @@ describe('getScoreRank', () => {
 
 ---
 
-#### 4. BoostWing レイアウト
+### タスク 8 — OH-B1: BoostWing リアルタイムプロセスリスト
+
+**ステータス**: done
+**担当**: Cascade
+**前提**: タスク6（BoostWing実装）・OH3（プロセス保護リスト）完了済み
+**背景**: 現在の ProcessTab は「RUN BOOSTボタン → 結果テーブル」のみで、
+実行前にどのプロセスが対象になるか見えない。
+`useOpsStore.fetchProcesses` は既存コマンド `list_processes` を使っており、
+`SystemProcess` 型も定義済み。新規Rustコードは不要。
+ProcessTab に「現在のプロセス一覧（リアルタイム表示）」パネルを追加し、
+BOOST対象・保護・通常プロセスを色分けして可視化する。
+
+---
+
+#### ワイヤーフレーム（ProcessTab 全体）
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  CPU閾値:  %      [▶ RUN BOOST]    [↺ REFRESH]  LAST: HH:MM │
+├──────────────────────────────────────────────────────────────────┤
+│  LIVE PROCESSES  (N件 / BOOST対象: M件)                           │
+│  ──────────────────────────────────────────────────────────────  │
+│  NAME              CPU%    MEM     STATUS                        │
+│  chrome.exe        34.2%   412MB   [TARGET]                      │
+│  discord.exe       18.1%   201MB   [TARGET]                      │
+│  System            0.2%    88MB    [PROTECTED]                   │
+│  explorer.exe      1.1%    110MB   ─                             │
+│  ...                                                              │
+│                                                                   │
+│  (プロセス0件)                                                    │
+│  NO DATA — PRESS REFRESH TO LOAD                                 │
+│  (ロード中)                                                       │
+│  LOADING PROCESSES...                                             │
+├──────────────────────────────────────────────────────────────────┤
+│  BOOST RESULT  (実行後のみ表示)                                   │
+│  BOOST COMPLETE · N ACTIONS · Xms                                │
+│  ──────────────────────────────────────────────────────────────  │
+│  chrome.exe (34%)   SET IDLE   ✓ OK                              │
+│  System             SKIPPED    [PROT]                             │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+#### 仕様
+
+**目的**: ProcessTab にリアルタイムプロセスリストを追加し、BOOST前に対象を可視化する
+
+**変更ファイル一覧**:
+
+| ファイル | 変更種別 | 内容 |
+|---|---|---|
+| `src/components/boost/ProcessTab.tsx` | 修正 | リアルタイムプロセスパネル追加 |
+
+**変更対象は ProcessTab.tsx の1ファイルのみ。**
+他ファイル（useBoostStore / useOpsStore / BoostWing / types）は変更不要。
+`useOpsStore` から `processes / isLoading / fetchProcesses` をそのまま使うこと。
+
+---
+
+#### 詳細仕様
+
+**① ヘッダーエリア（既存のThreshold入力・RUN BOOSTボタンを移植）**
+
+```
+CPU閾値:  %   [▶ RUN BOOST]   [↺ REFRESH]   LAST: HH:MM
+```
+
+- 既存の Threshold 入力・RUN BOOSTボタンはそのまま維持
+- `[↺ REFRESH]` ボタンを追加 → `fetchProcesses()` を呼ぶ（secondary スタイル）
+- `LAST: HH:MM` — `lastUpdated`（`useOpsStore`）を `new Date(lastUpdated).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' })` でフォーマット。null なら非表示
+- RUN BOOST実行時に自動で `fetchProcesses()` も呼ぶ（`runBoost()` の完了後）
+
+**② LIVE PROCESSES パネル**
+
+ヘッダー行:
+```
+LIVE PROCESSES  (N件 / BOOST対象: M件)
+```
+- `N` = `processes.length` 
+- `M` = `processes.filter(p => p.cpuPercent >= threshold && p.canTerminate && !PROTECTED_PROCESS_NAMES.has(p.name.toLowerCase())).length` 
+- フォント: 10px muted、letterSpacing: 0.12em
+
+テーブル列: `NAME`（flex:1）/ `CPU%`（56px）/ `MEM`（72px）/ `STATUS`（80px）
+
+**STATUS バッジのロジック**:
+
+```typescript
+// src/components/boost/ProcessTab.tsx 内に定義
+const PROTECTED_PROCESS_NAMES = new Set([
+  'system', 'smss.exe', 'csrss.exe', 'wininit.exe',
+  'winlogon.exe', 'lsass.exe', 'services.exe', 'svchost.exe',
+]);
+
+function getProcessStatus(
+  p: SystemProcess,
+  threshold: number
+): 'target' | 'protected' | 'normal' {
+  if (PROTECTED_PROCESS_NAMES.has(p.name.toLowerCase())) return 'protected';
+  if (p.cpuPercent >= threshold && p.canTerminate) return 'target';
+  return 'normal';
+}
+```
+
+**STATUS カラム表示**:
+
+| status | 表示 | スタイル |
+|---|---|---|
+| `'target'` | `[TARGET]` | border: `--color-accent-500`, color: `--color-accent-500`, 9px |
+| `'protected'` | `[PROT]` | border: `--color-text-muted`, color: `--color-text-muted`, 9px |
+| `'normal'` | `─` | color: `--color-text-muted` |
+
+**CPU% カラムの色分け**:
+- `< 20%` → `--color-text-secondary` 
+- `20〜49%` → `--color-accent-400` 
+- `>= 50%` → `--color-danger-500` 
+
+**MEM カラムのフォーマット**:
+```typescript
+// memMb が 1024以上なら GB表示
+const fmt = (mb: number) => mb >= 1024 ? `${(mb / 1024).toFixed(1)}GB` : `${mb}MB`;
+```
+
+**行のソート**: `cpuPercent` 降順（`useMemo` でキャッシュ）
+
+**ローディング状態**: `isLoading === true` のとき `LOADING PROCESSES...`（中央配置、muted、11px）
+
+**空状態**: `processes.length === 0 && !isLoading` のとき `NO DATA — PRESS REFRESH TO LOAD` 
+
+**マウント時の自動フェッチ**: `useEffect(() => { void fetchProcesses(); }, [fetchProcesses])` 
+
+**③ BOOST RESULT パネル（既存実装を下部に移動）**
+
+- 既存の結果テーブル（`lastResult`表示）を LIVE PROCESSES パネルの下に配置
+- `lastResult` が null の場合は非表示（変更なし）
+- 現状の日本語テキスト（「結果」「ラベル」「アクション」）を英語に統一:
+  - `結果 (Xms)` → `BOOST COMPLETE · N ACTIONS · Xms` 
+  - `ラベル` → `PROCESS` 
+  - `アクション` → `ACTION` 
+  - `保護` バッジ → `PROT` バッジ（既存スタイル流用）
+- `isProtected === true` の行: `actionType` 列に `SKIPPED` + `[PROT]` バッジ
+- `success === true`: `✓ OK`（success-500）/ `false`: `✗ {detail}`（danger-500）
+
+---
+
+#### DESIGN.md 準拠チェックポイント
+
+- [ ] CSS変数のみ使用（`src/lib/styles.ts` の `S.xxx` を積極活用）
+- [ ] CSS `:hover` 不使用 → `useState` のみ
+- [ ] バッジは `border` のみ（塗りつぶしなし）、9px
+- [ ] `useMemo` でプロセスソート結果をキャッシュ
+- [ ] `useEffect` の deps に `fetchProcesses` を含める
+- [ ] フォント `var(--font-mono)`、サイズ規約通り
+- [ ] loading / empty 状態の表示あり
+
+---
+
+#### 受け入れ条件
+
+- [ ] マウント時に自動でプロセスが取得・表示される
+- [ ] `[↺ REFRESH]` でプロセスリストが更新される
+- [ ] CPU閾値に応じて `[TARGET]` バッジがリアルタイムに変わる
+- [ ] `[TARGET]` 件数がヘッダーに表示される
+- [ ] CPU% が閾値に応じて色分けされる
+- [ ] `[PROT]` バッジで保護プロセスが識別できる
+- [ ] RUN BOOST後に自動でプロセスリストが再取得される
+- [ ] BOOST結果テーブルのテキストが英語になっている
+- [ ] ローディング中は `LOADING PROCESSES...` が表示される
+- [ ] `npm run typecheck` PASS
+- [ ] `npm run check` PASS  ← **必ず実行してから納品すること**
+- [ ] `npm run test` PASS
+
+---
+
+#### T8-Cascade 記入欄
+
+> ⚠️ **納品前チェックリスト（必須）**
+> 実装完了後、以下を**この順番で**すべて実行し、結果を記入してから作業完了と報告すること。
+> ```
+> npm run typecheck
+> npm run check      ← 忘れがち！Biome lint/format チェック
+> npm run test
+> ```
+> **check が FAIL のまま納品しない。必ず修正してから報告すること。**
+
+- **実装内容**: ProcessTab.tsxにリアルタイムプロセスリストを追加
+  - ヘッダーにThreshold入力・RUN BOOST・REFRESHボタン・LAST: HH:MMを配置
+  - LIVE PROCESSESパネルでプロセス一覧をリアルタイム表示
+  - CPU%に応じた色分け（<20%: secondary, 20-49%: accent-400, >=50%: danger-500）
+  - STATUSバッジで[TARGET]/[PROT]/─を表示
+  - MEMフォーマット（1024MB以上でGB表示）
+  - CPU使用率降順でソート（useMemoキャッシュ）
+  - マウント時自動フェッチ・BOOST後自動再取得
+  - BOOST RESULTパネルを英語化（PROCESS/ACTION/STATUS）
+  - 保護プロセスはSKIPPED + [PROT]バッジ表示
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS（100 tests）
+- **特記事項**: Biomeにより1ファイル自動修正済み
+
+#### T8-Claude Code レビュー結果
+
+- **判定**: ✅ PASS（指摘事項修正済み）
+- **指摘事項**:
+  1. **ハードコード Tailwind カラー使用**: ProcessTab.tsx L89 で `bg-red-500/10 border-b border-red-600 text-red-500` を使用していたため、CSS変数に修正
+     - `bg-[var(--color-base-800)] border-b border-[var(--color-danger-600)] text-[var(--color-danger-500)]` に置き換え
+     - nexusデザインシステムのCSS変数ルールに準拠
+- **修正内容**: エラーバナーのスタイルをCSS変数に置き換え
+- **レビュー日**: 2026-03-17
 
 ```
 ┌──────────────────────────────────────────────────────────┐

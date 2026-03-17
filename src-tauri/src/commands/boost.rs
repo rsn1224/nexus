@@ -5,10 +5,19 @@ use std::time::Instant;
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const PROTECTED_PROCESSES: &[&str] = &[
-    "system", "smss.exe", "csrss.exe", "wininit.exe",
-    "winlogon.exe", "lsass.exe", "services.exe",
-    "svchost.exe", "dwm.exe", "explorer.exe",
-    "msmpeng.exe", "msseces.exe", "avp.exe",
+    "system",
+    "smss.exe",
+    "csrss.exe",
+    "wininit.exe",
+    "winlogon.exe",
+    "lsass.exe",
+    "services.exe",
+    "svchost.exe",
+    "dwm.exe",
+    "explorer.exe",
+    "msmpeng.exe",
+    "msseces.exe",
+    "avp.exe",
     "nexus.exe",
 ];
 
@@ -92,14 +101,14 @@ mod tests {
         let result = run_boost(Some(f32::INFINITY));
         assert!(result.is_ok());
         let r = result.unwrap(); // OK in tests: verifying success path
-        // シミュレーション entries は 4件
+                                 // シミュレーション entries は 4件
         assert_eq!(r.actions.len(), 4);
         // explorer.exe と svchost.exe は skipped_protected
-        let protected: Vec<_> = r.actions.iter()
-            .filter(|a| a.is_protected)
-            .collect();
+        let protected: Vec<_> = r.actions.iter().filter(|a| a.is_protected).collect();
         assert_eq!(protected.len(), 2);
-        assert!(protected.iter().all(|a| a.action_type == "skipped_protected"));
+        assert!(protected
+            .iter()
+            .all(|a| a.action_type == "skipped_protected"));
     }
 
     #[test]

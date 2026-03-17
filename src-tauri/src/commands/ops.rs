@@ -19,15 +19,7 @@ pub struct SystemProcess {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const PROTECTED_NAMES: &[&str] = &[
-    "System",
-    "Registry",
-    "smss",
-    "csrss",
-    "wininit",
-    "winlogon",
-    "lsass",
-    "services",
-    "svchost",
+    "System", "Registry", "smss", "csrss", "wininit", "winlogon", "lsass", "services", "svchost",
 ];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -71,7 +63,11 @@ pub fn list_processes() -> Result<Vec<SystemProcess>, AppError> {
         .collect();
 
     // Sort by CPU usage descending, take top 50
-    processes.sort_by(|a, b| b.cpu_percent.partial_cmp(&a.cpu_percent).unwrap_or(std::cmp::Ordering::Equal));
+    processes.sort_by(|a, b| {
+        b.cpu_percent
+            .partial_cmp(&a.cpu_percent)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
     processes.truncate(50);
 
     Ok(processes)

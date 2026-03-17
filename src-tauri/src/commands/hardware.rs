@@ -3,7 +3,7 @@
 use crate::error::AppError;
 use serde::{Deserialize, Serialize};
 use serde_json;
-use sysinfo::{Components, System, Disks, DiskKind};
+use sysinfo::{Components, DiskKind, Disks, System};
 use tracing::{info, warn};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -44,16 +44,18 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
 
     let mut sys = System::new_all();
     sys.refresh_all();
-    
+
     // CPU情報
-    let cpu_name = sys.cpus()
+    let cpu_name = sys
+        .cpus()
         .first()
         .map(|cpu| cpu.brand().to_string())
         .unwrap_or_else(|| "Unknown CPU".to_string());
-    
+
     let cpu_cores = sys.cpus().len() as u32;
     let cpu_threads = cpu_cores; // 物理コア数とスレッド数を同じに（簡略化）
-    let cpu_base_ghz = sys.cpus()
+    let cpu_base_ghz = sys
+        .cpus()
         .first()
         .map(|cpu| cpu.frequency() as f32 / 1000.0)
         .unwrap_or(0.0);
@@ -69,7 +71,7 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
             })
             .map(|c| c.temperature())
             .collect();
-        
+
         if temps.is_empty() {
             None
         } else {
@@ -91,7 +93,8 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
     let boot_time_unix = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
-        .as_secs() - uptime_secs;
+        .as_secs()
+        - uptime_secs;
 
     // ディスク情報
     let mut disks = Vec::new();
@@ -100,13 +103,16 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
         let total = disk.total_space();
         let available = disk.available_space();
         let used = total.saturating_sub(available);
-        if total == 0 { continue; }
+        if total == 0 {
+            continue;
+        }
 
         let kind = match disk.kind() {
             DiskKind::SSD => "SSD",
             DiskKind::HDD => "HDD",
             _ => "Unknown",
-        }.to_string();
+        }
+        .to_string();
 
         disks.push(DiskInfo {
             mount: disk.mount_point().to_string_lossy().to_string(),
@@ -137,20 +143,22 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
     let (gpu_name, gpu_vram_total_mb) = if let Some(gpu_json) = gpu_info {
         match serde_json::from_str::<serde_json::Value>(&gpu_json) {
             Ok(value) => {
-                let name = value.get("Name")
+                let name = value
+                    .get("Name")
                     .and_then(|v| v.as_str())
                     .map(|s| s.to_string());
-                
-                let vram_bytes = value.get("AdapterRAM")
+
+                let vram_bytes = value
+                    .get("AdapterRAM")
                     .and_then(|v| v.as_u64())
                     .unwrap_or(0);
-                
+
                 let vram_mb = if vram_bytes > 0 {
                     Some(vram_bytes / 1024 / 1024)
                 } else {
                     None
                 };
-                
+
                 (name, vram_mb)
             }
             Err(_) => {
@@ -192,9 +200,9 @@ pub fn get_hardware_info() -> Result<HardwareInfo, AppError> {
         disks,
         gpu_name,
         gpu_vram_total_mb,
-        gpu_vram_used_mb: None,    // Win32では取得不可
-        gpu_temp_c: None,             // Win32では取得不可
-        gpu_usage_percent: None,       // Win32では取得不可
+        gpu_vram_used_mb: None,  // Win32では取得不可
+        gpu_temp_c: None,        // Win32では取得不可
+        gpu_usage_percent: None, // Win32では取得不可
     })
 }
 

@@ -2,7 +2,8 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, winopt, windows_settings,
+    app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, windows_settings,
+    winopt,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;

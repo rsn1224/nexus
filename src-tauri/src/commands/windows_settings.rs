@@ -93,7 +93,7 @@ pub fn get_windows_settings() -> Result<WindowsSettings, AppError> {
 #[tauri::command]
 pub fn set_power_plan(plan: PowerPlan) -> Result<(), AppError> {
     info!("set_power_plan: setting power plan to {}", plan);
-    
+
     let plan_guid = match plan {
         PowerPlan::Balanced => "381b4222-f694-41f0-9685-ff5bb260df2e",
         PowerPlan::HighPerformance => "8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c",
@@ -120,12 +120,12 @@ pub fn set_power_plan(plan: PowerPlan) -> Result<(), AppError> {
 #[tauri::command]
 pub fn toggle_game_mode() -> Result<bool, AppError> {
     info!("toggle_game_mode: toggling game mode");
-    
+
     let current_status = get_game_mode_status()?;
     let new_status = !current_status;
-    
+
     let reg_value = if new_status { "1" } else { "0" };
-    
+
     let output = Command::new("reg")
         .args([
             "add",
@@ -146,22 +146,28 @@ pub fn toggle_game_mode() -> Result<bool, AppError> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Game mode toggle failed: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "Game mode toggle failed: {}",
+            stderr
+        )));
     }
 
-    info!("toggle_game_mode: successfully set game mode to {}", new_status);
+    info!(
+        "toggle_game_mode: successfully set game mode to {}",
+        new_status
+    );
     Ok(new_status)
 }
 
 #[tauri::command]
 pub fn toggle_fullscreen_optimization() -> Result<bool, AppError> {
     info!("toggle_fullscreen_optimization: toggling fullscreen optimization");
-    
+
     let current_status = get_fullscreen_optimization_status()?;
     let new_status = !current_status;
-    
+
     let reg_value = if new_status { "1" } else { "0" };
-    
+
     let output = Command::new("reg")
         .args([
             "add",
@@ -182,22 +188,28 @@ pub fn toggle_fullscreen_optimization() -> Result<bool, AppError> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Fullscreen optimization toggle failed: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "Fullscreen optimization toggle failed: {}",
+            stderr
+        )));
     }
 
-    info!("toggle_fullscreen_optimization: successfully set fullscreen optimization to {}", new_status);
+    info!(
+        "toggle_fullscreen_optimization: successfully set fullscreen optimization to {}",
+        new_status
+    );
     Ok(new_status)
 }
 
 #[tauri::command]
 pub fn toggle_hardware_gpu_scheduling() -> Result<bool, AppError> {
     info!("toggle_hardware_gpu_scheduling: toggling hardware GPU scheduling");
-    
+
     let current_status = get_hardware_gpu_scheduling_status()?;
     let new_status = !current_status;
-    
+
     let reg_value = if new_status { "1" } else { "0" };
-    
+
     let output = Command::new("reg")
         .args([
             "add",
@@ -218,23 +230,29 @@ pub fn toggle_hardware_gpu_scheduling() -> Result<bool, AppError> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Hardware GPU scheduling toggle failed: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "Hardware GPU scheduling toggle failed: {}",
+            stderr
+        )));
     }
 
-    info!("toggle_hardware_gpu_scheduling: successfully set hardware GPU scheduling to {}", new_status);
+    info!(
+        "toggle_hardware_gpu_scheduling: successfully set hardware GPU scheduling to {}",
+        new_status
+    );
     Ok(new_status)
 }
 
 #[tauri::command]
 pub fn set_visual_effects(effect: VisualEffects) -> Result<(), AppError> {
     info!("set_visual_effects: setting visual effects to {}", effect);
-    
+
     let reg_value = match effect {
         VisualEffects::BestPerformance => "2",
         VisualEffects::Balanced => "1",
         VisualEffects::BestAppearance => "0",
     };
-    
+
     let output = Command::new("reg")
         .args([
             "add",
@@ -255,10 +273,16 @@ pub fn set_visual_effects(effect: VisualEffects) -> Result<(), AppError> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Visual effects setting failed: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "Visual effects setting failed: {}",
+            stderr
+        )));
     }
 
-    info!("set_visual_effects: successfully set visual effects to {}", effect);
+    info!(
+        "set_visual_effects: successfully set visual effects to {}",
+        effect
+    );
     Ok(())
 }
 
@@ -275,7 +299,7 @@ fn get_current_power_plan() -> Result<PowerPlan, AppError> {
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    
+
     // 出力から電源プラン名を抽出
     if stdout.contains("High Performance") || stdout.contains("高性能") {
         Ok(PowerPlan::HighPerformance)
@@ -316,7 +340,9 @@ fn get_fullscreen_optimization_status() -> Result<bool, AppError> {
             "DwmFlushEnabled",
         ])
         .output()
-        .map_err(|e| AppError::Command(format!("Failed to query fullscreen optimization: {}", e)))?;
+        .map_err(|e| {
+            AppError::Command(format!("Failed to query fullscreen optimization: {}", e))
+        })?;
 
     if !output.status.success() {
         // レジストリキーが存在しない場合、デフォルトで有効とみなす
@@ -337,7 +363,9 @@ fn get_hardware_gpu_scheduling_status() -> Result<bool, AppError> {
             "HwSchMode",
         ])
         .output()
-        .map_err(|e| AppError::Command(format!("Failed to query hardware GPU scheduling: {}", e)))?;
+        .map_err(|e| {
+            AppError::Command(format!("Failed to query hardware GPU scheduling: {}", e))
+        })?;
 
     if !output.status.success() {
         // レジストリキーが存在しない場合、デフォルトで無効とみなす
@@ -367,7 +395,7 @@ fn get_visual_effects_setting() -> Result<VisualEffects, AppError> {
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    
+
     // 出力に "0x2" を含む → BestPerformance
     // 出力に "0x0" を含む → BestAppearance
     // それ以外 → Balanced
@@ -393,7 +421,10 @@ mod tests {
 
     #[test]
     fn test_visual_effects_display() {
-        assert_eq!(VisualEffects::BestPerformance.to_string(), "Best Performance");
+        assert_eq!(
+            VisualEffects::BestPerformance.to_string(),
+            "Best Performance"
+        );
         assert_eq!(VisualEffects::Balanced.to_string(), "Balanced");
         assert_eq!(VisualEffects::BestAppearance.to_string(), "Best Appearance");
     }
@@ -407,15 +438,21 @@ mod tests {
             hardware_gpu_scheduling: true,
             visual_effects: VisualEffects::Balanced,
         };
-        
+
         // シリアライズ・デシリアライズテスト
         let json = serde_json::to_string(&settings).unwrap();
         let deserialized: WindowsSettings = serde_json::from_str(&json).unwrap();
-        
+
         assert_eq!(settings.power_plan, deserialized.power_plan);
         assert_eq!(settings.game_mode, deserialized.game_mode);
-        assert_eq!(settings.fullscreen_optimization, deserialized.fullscreen_optimization);
-        assert_eq!(settings.hardware_gpu_scheduling, deserialized.hardware_gpu_scheduling);
+        assert_eq!(
+            settings.fullscreen_optimization,
+            deserialized.fullscreen_optimization
+        );
+        assert_eq!(
+            settings.hardware_gpu_scheduling,
+            deserialized.hardware_gpu_scheduling
+        );
         assert_eq!(settings.visual_effects, deserialized.visual_effects);
     }
 }
