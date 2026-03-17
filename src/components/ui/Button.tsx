@@ -12,6 +12,9 @@ interface ButtonProps {
   icon?: React.ReactNode;
   iconPosition?: 'left' | 'right';
   fullWidth?: boolean;
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
+  tooltip?: string;
 }
 
 export default function Button({
@@ -26,6 +29,9 @@ export default function Button({
   icon,
   iconPosition = 'left',
   fullWidth = false,
+  ariaLabel,
+  ariaDescribedBy,
+  tooltip,
 }: ButtonProps): React.ReactElement {
   const baseClasses =
     'font-[var(--font-mono)] transition-all duration-150 cursor-pointer border inline-flex items-center justify-center gap-1';
@@ -84,7 +90,16 @@ export default function Button({
   };
 
   return (
-    <button type={type} className={classes} onClick={onClick} disabled={disabled || loading}>
+    <button
+      type={type}
+      className={classes}
+      onClick={onClick}
+      disabled={disabled || loading}
+      aria-label={ariaLabel}
+      aria-describedby={ariaDescribedBy}
+      aria-busy={loading || undefined}
+      title={tooltip}
+    >
       {renderContent()}
     </button>
   );

@@ -26,6 +26,10 @@ interface TableProps<T> {
   striped?: boolean;
   hoverable?: boolean;
   rowKey?: (row: T, index: number) => string;
+  ariaLabel?: string;
+  caption?: string;
+  stickyHeader?: boolean;
+  maxHeight?: string;
 }
 
 export default function Table<T>({
@@ -45,6 +49,10 @@ export default function Table<T>({
   striped = true,
   hoverable = true,
   rowKey,
+  ariaLabel,
+  caption,
+  stickyHeader: _stickyHeader = false,
+  maxHeight,
 }: TableProps<T>): React.ReactElement {
   const sizeClasses = {
     sm: 'text-[10px]',
@@ -127,8 +135,13 @@ export default function Table<T>({
   }
 
   return (
-    <div className={`overflow-x-auto ${className}`}>
-      <table className={`w-full border-collapse ${sizeClasses[size]}`}>
+    <div className={`overflow-x-auto ${maxHeight ? 'overflow-y-auto' : ''}`} style={{ maxHeight }}>
+      <table
+        className={`w-full border-collapse font-[var(--font-mono)] ${sizeClasses[size]} ${className}`}
+        aria-label={ariaLabel}
+        aria-busy={loading ? 'true' : undefined}
+      >
+        {caption && <caption className="sr-only">{caption}</caption>}
         <thead>
           <tr className="border-b border-[var(--color-border-subtle)]">
             {selectable && (

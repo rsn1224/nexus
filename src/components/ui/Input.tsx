@@ -26,6 +26,9 @@ interface InputProps {
   fullWidth?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  ariaLabel?: string;
+  ariaDescribedBy?: string;
+  autoComplete?: string;
 }
 
 export default function Input({
@@ -54,6 +57,9 @@ export default function Input({
   fullWidth = false,
   leftIcon,
   rightIcon,
+  ariaLabel,
+  ariaDescribedBy,
+  autoComplete,
 }: InputProps): React.ReactElement {
   const baseClasses =
     'font-[var(--font-mono)] border transition-all duration-150 focus:outline-none focus:ring-2';
@@ -122,6 +128,10 @@ export default function Input({
         min={min}
         max={max}
         step={step}
+        aria-label={ariaLabel}
+        aria-describedby={ariaDescribedBy}
+        aria-invalid={error ? 'true' : undefined}
+        autoComplete={autoComplete}
       />
 
       {rightIcon && (
