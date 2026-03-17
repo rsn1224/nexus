@@ -15,7 +15,10 @@ export default function StatusBadge({
 }: StatusBadgeProps): React.ReactElement {
   if (value === null) {
     return (
-      <span className={`text-[var(--color-text-muted)] font-[var(--font-mono)] ${className}`}>
+      <span
+        data-testid="ui-status-badge"
+        className={`text-[var(--color-text-muted)] font-[var(--font-mono)] ${className}`}
+      >
         --{unit}
       </span>
     );
@@ -29,7 +32,10 @@ export default function StatusBadge({
   }
 
   return (
-    <span className={`${colorClass} font-[var(--font-mono)] ${className}`}>
+    <span
+      data-testid="ui-status-badge"
+      className={`${colorClass} font-[var(--font-mono)] ${className}`}
+    >
       {value.toFixed(1)}
       {unit}
     </span>

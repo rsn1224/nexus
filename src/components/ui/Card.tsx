@@ -83,6 +83,7 @@ const Card = memo(function Card({
   if (clickable) {
     return (
       <button
+        data-testid="ui-card"
         type="button"
         className={`${classes} text-left w-full`}
         onClick={onClick}
@@ -95,7 +96,7 @@ const Card = memo(function Card({
   }
 
   return (
-    <div className={classes} tabIndex={tabIndex}>
+    <div data-testid="ui-card" className={classes} tabIndex={tabIndex}>
       {inner}
     </div>
   );

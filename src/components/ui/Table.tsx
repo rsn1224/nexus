@@ -137,6 +137,7 @@ export default function Table<T>({
   return (
     <div className={`overflow-x-auto ${maxHeight ? 'overflow-y-auto' : ''}`} style={{ maxHeight }}>
       <table
+        data-testid="ui-table"
         className={`w-full border-collapse font-[var(--font-mono)] ${sizeClasses[size]} ${className}`}
         aria-label={ariaLabel}
         aria-busy={loading ? 'true' : undefined}

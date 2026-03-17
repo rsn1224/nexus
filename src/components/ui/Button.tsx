@@ -91,6 +91,7 @@ export default function Button({
 
   return (
     <button
+      data-testid="ui-button"
       type={type}
       className={classes}
       onClick={onClick}

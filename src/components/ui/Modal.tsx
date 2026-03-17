@@ -62,7 +62,11 @@ export default function Modal({
   };
 
   return (
-    <div role="none" className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      data-testid="ui-modal-overlay"
+      role="none"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       {closeOnBackdropClick && (
         <button
           type="button"
@@ -76,6 +80,7 @@ export default function Modal({
         <div role="none" className="absolute inset-0 bg-black bg-opacity-50" />
       )}
       <div
+        data-testid="ui-modal"
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}

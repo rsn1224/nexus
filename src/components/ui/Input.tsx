@@ -108,6 +108,7 @@ export default function Input({
       )}
 
       <input
+        data-testid="ui-input"
         type={type}
         value={value}
         defaultValue={defaultValue}

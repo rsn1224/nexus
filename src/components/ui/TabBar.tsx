@@ -14,10 +14,14 @@ export default function TabBar({
   className = '',
 }: TabBarProps): React.ReactElement {
   return (
-    <div className={`flex border-b border-[var(--color-border-subtle)] ${className}`}>
+    <div
+      data-testid="ui-tab-bar"
+      className={`flex border-b border-[var(--color-border-subtle)] ${className}`}
+    >
       {tabs.map((tab) => (
         <button
           key={tab.id}
+          data-testid={`ui-tab-${tab.id}`}
           type="button"
           className={`font-[var(--font-mono)] text-[10px] font-semibold px-4 py-2 transition-all duration-150 ${
             active === tab.id
