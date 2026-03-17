@@ -19,11 +19,12 @@
 | 再構築 Phase 4 | ✅ 完了 |
 | 再構築 Phase 5 | ✅ 完了 |
 | 再構築 Phase 3 | ✅ 完了 |
-| 再構築 Phase 6・7 | ⬜ 未着手 |
-| ゲーム強化 Phase 8a | ⬜ 未着手（Phase 7 完了後） |
+| 再構築 Phase 6 | ✅ 完了（6A: useShallow, 6B: React.lazy, 6C: useEffect, 6D: 型安全化） |
+| 再構築 Phase 7 | ✅ 完了（7A: UIテスト, 7B: E2E, 7C: Rustテスト, 7D: ipconfig日本語+keyring） |
+| ゲーム強化 Phase 8a | 🔄 着手準備中 |
 
-**最新コミット:** `ca12635`
-**テスト:** 129 unit + 3 E2E green
+**最新コミット:** `add6906`
+**テスト:** TS 216 unit + 17 E2E + Rust 65 = 298 green
 
 ---
 
@@ -1034,9 +1035,17 @@ cd src-tauri && cargo test && cargo clippy -- -D warnings
 
 ## Phase 6: React 19 / Zustand v5 活用
 
-**ステータス:** ⬜ 未着手（Phase 3 完了後に着手）
+**ステータス:** ✅ 完了（2026-03-18）
+**コミット:** `a537058`（6A）, `e8c4d07`（6C）, 他
 **工数見積もり:** 3〜4日
 **担当:** Cascade
+
+**実施内容:**
+- 6A: 全6ストアに `useShallow` 導入
+- 6B: 全 Wing を `React.lazy` + `Suspense` で遅延ロード化
+- 6C: `useEffect` をカスタムフックに抽出
+- 6D: 型安全化（`any` 型除去）
+- 6-1（`use()` + Suspense）/ 6-2（`useActionState`）: 現コードベースに適用対象なし（スキップ）
 
 ---
 
@@ -1150,9 +1159,16 @@ npm run typecheck && npm run check && npm run test
 
 ## Phase 7: 品質仕上げ
 
-**ステータス:** ⬜ 未着手（Phase 6 完了後に着手）
+**ステータス:** ✅ 完了（2026-03-18）
+**コミット:** `4f5b86d`（7A）, `4ea7c7d`（7B）, `6dd0396`（7C）, `add6906`（7D）
 **工数見積もり:** 2〜3日
 **担当:** Cascade
+
+**実施内容:**
+- 7A: 共通UIコンポーネントテスト87件 + `data-testid` 整備
+- 7B: E2Eテスト 3件→20件（navigation + wings）
+- 7C: Rustユニットテスト追加・`unwrap()` 除去
+- 7D: ipconfig日本語ロケール対応 + keyring APIキー暗号化保存
 
 ---
 
@@ -1295,7 +1311,7 @@ npx playwright test  # E2E
 
 ## Phase 8a: ゲームプロファイル基盤
 
-**ステータス:** ⬜ 未着手（Phase 7 完了後）
+**ステータス:** 🔄 着手準備中（Phase 7 完了、Sub-Phase 8a-A から開始）
 **工数見積もり:** 2〜3週間
 **担当:** Cascade
 **仕様書:** `docs/specs/game-enhancement-spec.md`
