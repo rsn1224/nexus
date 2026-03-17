@@ -11,7 +11,7 @@ const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const DAYS_RECENT = 7;
 const DAYS_PLAYED = 30;
 
-// ─── GameCard Props Interface ───────────────────────────────────────────────────────
+// ─── GameCard Props Interface ─────────────────────────────────────────────────
 
 interface GameCardProps {
   game: GameInfo;
@@ -23,7 +23,7 @@ interface GameCardProps {
   autoBoostEnabled: boolean;
 }
 
-// ─── Helper Functions ───────────────────────────────────────────────────────────────
+// ─── Helper Functions ─────────────────────────────────────────────────────────
 
 function formatLastPlayed(timestamp: number | undefined): string {
   if (!timestamp) return '未プレイ';
@@ -36,80 +36,7 @@ function formatLastPlayed(timestamp: number | undefined): string {
   return `${Math.floor(days / DAYS_PLAYED)}ヶ月前`;
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────
-
-const styles = {
-  container: {
-    padding: '16px',
-    height: '100%',
-    display: 'flex',
-    flexDirection: 'column' as const,
-  },
-  header: {
-    fontFamily: 'var(--font-mono)',
-    fontSize: '11px',
-    fontWeight: 700,
-    color: 'var(--color-cyan-500)',
-    letterSpacing: '0.15em',
-    marginBottom: '12px',
-  },
-  controlBar: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '10px',
-    flexWrap: 'wrap' as const,
-  },
-  autoBoostToggle: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    marginBottom: '14px',
-  },
-  errorBanner: {
-    borderBottom: '1px solid var(--color-danger-600)',
-    background: 'var(--color-base-800)',
-    padding: '8px 12px',
-    marginBottom: '12px',
-  },
-  errorText: {
-    fontFamily: 'var(--font-mono)',
-    fontSize: '11px',
-    color: 'var(--color-danger-500)',
-  },
-  cardGrid: {
-    flex: 1,
-    overflowY: 'auto' as const,
-  },
-  loadingState: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '200px',
-    fontFamily: 'var(--font-mono)',
-    fontSize: '11px',
-    color: 'var(--color-text-muted)',
-  },
-  gridContainer: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-    gap: '12px',
-  },
-} as const;
-
-const sortBtnStyle = (active: boolean): React.CSSProperties => ({
-  fontFamily: 'var(--font-mono)',
-  fontSize: '9px',
-  padding: '3px 8px',
-  background: active ? 'var(--color-cyan-500)' : 'transparent',
-  color: active ? 'var(--color-base-900)' : 'var(--color-text-muted)',
-  border: `1px solid ${active ? 'var(--color-cyan-500)' : 'var(--color-border-subtle)'}`,
-  borderRadius: '3px',
-  cursor: 'pointer',
-  letterSpacing: '0.05em',
-});
-
-// ─── GameCard Component ─────────────────────────────────────────────────────────────
+// ─── GameCard Component ───────────────────────────────────────────────────────
 
 function GameCard({
   game,
@@ -121,88 +48,41 @@ function GameCard({
   autoBoostEnabled,
 }: GameCardProps): React.ReactElement {
   const [imgError, setImgError] = useState(false);
+  const isBusy = autoBoostEnabled && isBoosting;
 
   return (
-    <div
-      style={{
-        background: 'var(--color-base-800)',
-        border: '1px solid var(--color-border-subtle)',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <div className="bg-base-800 border border-border-subtle rounded overflow-hidden flex flex-col">
       {/* サムネイル */}
       {!imgError && (
         <img
           src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.app_id}/header.jpg`}
           alt={game.name}
           onError={() => setImgError(true)}
-          style={{
-            width: '100%',
-            height: '94px',
-            objectFit: 'cover',
-            borderRadius: '3px 3px 0 0',
-            display: 'block',
-            background: 'var(--color-base-700)',
-          }}
+          className="w-full h-[94px] object-cover rounded-tl-[3px] rounded-tr-[3px] block bg-base-700"
         />
       )}
       {imgError && (
-        <div
-          style={{
-            width: '100%',
-            height: '94px',
-            background: 'var(--color-base-700)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <div className="w-full h-[94px] bg-base-700 flex items-center justify-center font-(--font-mono) text-[9px] text-text-muted">
           NO IMAGE
         </div>
       )}
 
       {/* カード本体 */}
-      <div
-        style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}
-      >
+      <div className="p-2 flex flex-col gap-1 flex-1">
         {/* ゲーム名行 + お気に入りボタン */}
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
+        <div className="flex items-start gap-1">
           <button
             type="button"
             onClick={(e) => {
               e.stopPropagation();
               onToggleFavorite(game.app_id);
             }}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color: isFavorite ? 'var(--color-accent-500)' : 'var(--color-text-muted)',
-              fontSize: '13px',
-              padding: '0',
-              lineHeight: 1,
-              flexShrink: 0,
-            }}
+            className={`bg-transparent border-none cursor-pointer text-[13px] p-0 leading-none shrink-0 ${isFavorite ? 'text-(--color-accent-500)' : 'text-text-muted'}`}
           >
             {isFavorite ? '\u2605' : '\u2606'}
           </button>
           <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              color: 'var(--color-text-primary)',
-              letterSpacing: '0.02em',
-              flex: 1,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
+            className="font-(--font-mono) text-[10px] text-text-primary tracking-[0.02em] flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
             title={game.name}
           >
             {game.name}
@@ -210,24 +90,12 @@ function GameCard({
         </div>
 
         {/* サイズ */}
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <div className="font-(--font-mono) text-[9px] text-text-muted">
           {game.size_gb === 0 ? '-- GB' : `${game.size_gb.toFixed(1)} GB`}
         </div>
 
         {/* 最終プレイ */}
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <div className="font-(--font-mono) text-[9px] text-text-muted">
           {formatLastPlayed(lastPlayedAt)}
         </div>
 
@@ -235,32 +103,21 @@ function GameCard({
         <button
           type="button"
           onClick={() => handleLaunchGame(game.app_id)}
-          disabled={autoBoostEnabled && isBoosting}
-          style={{
-            marginTop: 'auto',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            padding: '4px 0',
-            background:
-              autoBoostEnabled && isBoosting ? 'var(--color-base-600)' : 'var(--color-accent-500)',
-            color:
-              autoBoostEnabled && isBoosting ? 'var(--color-text-muted)' : 'var(--color-base-900)',
-            border: 'none',
-            borderRadius: '2px',
-            cursor: autoBoostEnabled && isBoosting ? 'default' : 'pointer',
-            letterSpacing: '0.05em',
-            width: '100%',
-            opacity: autoBoostEnabled && isBoosting ? 0.5 : 1,
-          }}
+          disabled={isBusy}
+          className={`mt-auto font-(--font-mono) text-[9px] py-1 border-none rounded-[2px] tracking-[0.05em] w-full ${
+            isBusy
+              ? 'bg-base-600 text-text-muted cursor-default opacity-50'
+              : 'bg-(--color-accent-500) text-base-900 cursor-pointer'
+          }`}
         >
-          {autoBoostEnabled && isBoosting ? '\u25b6 BOOSTING...' : '\u25b6 LAUNCH'}
+          {isBusy ? '\u25b6 BOOSTING...' : '\u25b6 LAUNCH'}
         </button>
       </div>
     </div>
   );
 }
 
-// ─── LauncherWing Component ───────────────────────────────────────────────────────
+// ─── LauncherWing Component ───────────────────────────────────────────────────
 
 export default function LauncherWing(): React.ReactElement {
   const games = useLauncherStore((s) => s.games);
@@ -325,29 +182,32 @@ export default function LauncherWing(): React.ReactElement {
     [games.length, favorites.length],
   );
 
+  const sortBtnClass = (active: boolean) =>
+    `font-(--font-mono) text-[9px] px-2 py-[3px] border rounded-[3px] cursor-pointer tracking-[0.05em] ${
+      active
+        ? 'bg-cyan-500 text-base-900 border-cyan-500'
+        : 'bg-transparent text-text-muted border-border-subtle'
+    }`;
+
   return (
-    <div style={styles.container}>
+    <div className="p-4 h-full flex flex-col">
       {/* ── ヘッダー ── */}
-      <div style={styles.header}>▶ ゲーム起動</div>
+      <div className="font-[var(--font-mono)] text-[11px] font-bold text-cyan-500 tracking-[0.15em] mb-3">
+        ▶ ゲーム起動
+      </div>
 
       {/* ── コントロールバー ── */}
-      <div style={styles.controlBar}>
+      <div className="flex items-center gap-2 mb-[10px] flex-wrap">
         {/* SCAN */}
         <button
           type="button"
           onClick={() => void scanGames()}
           disabled={isScanning}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            padding: '4px 12px',
-            background: 'transparent',
-            color: isScanning ? 'var(--color-text-muted)' : 'var(--color-cyan-500)',
-            border: `1px solid ${isScanning ? 'var(--color-border-subtle)' : 'var(--color-cyan-500)'}`,
-            borderRadius: '3px',
-            cursor: isScanning ? 'default' : 'pointer',
-            letterSpacing: '0.05em',
-          }}
+          className={`font-(--font-mono) text-[10px] px-3 py-1 bg-transparent border rounded-[3px] tracking-[0.05em] ${
+            isScanning
+              ? 'text-text-muted border-border-subtle cursor-default'
+              : 'text-cyan-500 border-cyan-500 cursor-pointer'
+          }`}
         >
           {isScanning ? 'SCANNING...' : 'SCAN'}
         </button>
@@ -356,21 +216,21 @@ export default function LauncherWing(): React.ReactElement {
         <button
           type="button"
           onClick={() => setSortMode('name')}
-          style={sortBtnStyle(sortMode === 'name')}
+          className={sortBtnClass(sortMode === 'name')}
         >
           NAME
         </button>
         <button
           type="button"
           onClick={() => setSortMode('recent')}
-          style={sortBtnStyle(sortMode === 'recent')}
+          className={sortBtnClass(sortMode === 'recent')}
         >
           最近
         </button>
         <button
           type="button"
           onClick={() => setSortMode('favorites')}
-          style={sortBtnStyle(sortMode === 'favorites')}
+          className={sortBtnClass(sortMode === 'favorites')}
         >
           {'\u2605'}優先
         </button>
@@ -381,66 +241,51 @@ export default function LauncherWing(): React.ReactElement {
           placeholder="検索..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            marginLeft: 'auto',
-            padding: '3px 8px',
-            background: 'var(--color-base-800)',
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: '3px',
-            color: 'var(--color-text-primary)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            width: '140px',
-          }}
+          className="ml-auto py-[3px] px-2 bg-base-800 border border-border-subtle rounded-[3px] text-text-primary font-(--font-mono) text-[10px] w-[140px]"
         />
       </div>
 
       {/* ── AutoBoost トグル ── */}
-      <div style={styles.autoBoostToggle}>
+      <div className="flex items-center gap-2 mb-[14px]">
         <button
           type="button"
           onClick={toggleAutoBoost}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            padding: '3px 8px',
-            background: autoBoostEnabled ? 'var(--color-accent-500)' : 'transparent',
-            color: autoBoostEnabled ? 'var(--color-base-900)' : 'var(--color-text-muted)',
-            border: `1px solid ${autoBoostEnabled ? 'var(--color-accent-500)' : 'var(--color-border-subtle)'}`,
-            borderRadius: '3px',
-            cursor: 'pointer',
-          }}
+          className={`font-(--font-mono) text-[9px] px-2 py-[3px] border rounded-[3px] cursor-pointer ${
+            autoBoostEnabled
+              ? 'bg-(--color-accent-500) text-base-900 border-(--color-accent-500)'
+              : 'bg-transparent text-text-muted border-border-subtle'
+          }`}
         >
           {autoBoostEnabled ? '\u26a1 AUTO BOOST: ON' : '\u26a1 AUTO BOOST: OFF'}
         </button>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <span className="font-(--font-mono) text-[9px] text-text-muted">
           起動時にプロセス最適化を自動実行
         </span>
       </div>
 
       {/* ── エラーバナー ── */}
       {error && (
-        <div style={styles.errorBanner}>
-          <div style={styles.errorText}>ERROR: {error}</div>
+        <div className="border-b border-danger-600 bg-base-800 px-3 py-2 mb-3">
+          <div className="font-(--font-mono) text-[11px] text-danger-500">ERROR: {error}</div>
         </div>
       )}
 
       {/* ── カードグリッド ── */}
-      <div style={styles.cardGrid}>
+      <div className="flex-1 overflow-y-auto">
         {isScanning ? (
-          <div style={styles.loadingState}>SCANNING STEAM LIBRARY...</div>
+          <div className="flex items-center justify-center h-[200px] font-(--font-mono) text-[11px] text-text-muted">
+            SCANNING STEAM LIBRARY...
+          </div>
         ) : sortedGames.length === 0 && searchQuery !== '' ? (
-          <div style={styles.loadingState}>「{searchQuery}」に一致するゲームが見つかりません</div>
+          <div className="flex items-center justify-center h-[200px] font-(--font-mono) text-[11px] text-text-muted">
+            「{searchQuery}」に一致するゲームが見つかりません
+          </div>
         ) : games.length === 0 ? (
-          <div style={styles.loadingState}>NO GAMES — PRESS SCAN TO DETECT STEAM LIBRARY</div>
+          <div className="flex items-center justify-center h-[200px] font-(--font-mono) text-[11px] text-text-muted">
+            NO GAMES — PRESS SCAN TO DETECT STEAM LIBRARY
+          </div>
         ) : (
-          <div style={styles.gridContainer}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-3">
             {sortedGames.map((game) => (
               <GameCard
                 key={game.app_id}

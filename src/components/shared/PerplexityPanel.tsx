@@ -12,86 +12,6 @@ type PanelState =
   | { status: 'ok'; data: string[] }
   | { status: 'error'; error: string };
 
-// ─── Styles ───────────────────────────────────────────────────────────────
-
-const styles = {
-  container: {
-    marginTop: '12px',
-    background: 'var(--color-base-800)',
-    border: '1px solid var(--color-border-subtle)',
-    borderRadius: '4px',
-    overflow: 'hidden',
-  },
-  button: {
-    width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: '10px 12px',
-    background: 'transparent',
-    border: 'none',
-    cursor: 'pointer' as const,
-  },
-  buttonDisabled: {
-    cursor: 'default' as const,
-    opacity: 0.5,
-  },
-  buttonContent: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-  },
-  title: {
-    fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
-    fontWeight: 700,
-    color: 'var(--color-cyan-500)',
-    letterSpacing: '0.1em',
-  },
-  subtitle: {
-    fontFamily: 'var(--font-mono)',
-    fontSize: '9px',
-    color: 'var(--color-text-muted)',
-  },
-  loadingState: {
-    padding: '8px 12px',
-    background: 'var(--color-base-900)',
-    fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
-    color: 'var(--color-text-muted)',
-    marginTop: '8px',
-  },
-  errorState: {
-    padding: '8px 12px',
-    background: 'rgba(239, 68, 68, 0.1)',
-    borderBottom: '1px solid var(--color-danger-600)',
-    color: 'var(--color-danger-500)',
-    fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
-  },
-  successState: {
-    padding: '8px 12px',
-    background: 'var(--color-base-900)',
-  },
-  suggestionItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '8px',
-    padding: '4px 0',
-    fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
-    lineHeight: '1.5',
-  },
-  suggestionNumber: {
-    color: 'var(--color-cyan-500)',
-    flexShrink: 0,
-    fontWeight: 600,
-  },
-  suggestionText: {
-    color: 'var(--color-text-secondary)',
-  },
-} as const;
-
 export default function PerplexityPanel({
   processNames,
 }: PerplexityPanelProps): React.ReactElement {
@@ -120,41 +40,48 @@ export default function PerplexityPanel({
     }
   };
 
+  const isDisabled = panelState.status === 'loading' || processNames.length === 0;
+
   return (
-    <div style={styles.container}>
+    <div className="mt-3 bg-base-800 border border-border-subtle rounded overflow-hidden">
       <button
         type="button"
         onClick={handleAsk}
         disabled={panelState.status === 'loading'}
-        style={{
-          ...styles.button,
-          ...(panelState.status === 'loading' || processNames.length === 0
-            ? styles.buttonDisabled
-            : {}),
-          cursor: panelState.status === 'loading' ? 'default' : 'pointer',
-        }}
+        className={`w-full flex items-center justify-between px-3 py-[10px] bg-transparent border-none ${isDisabled ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
         title={processNames.length === 0 ? '先に RUN BOOST を実行してください' : undefined}
       >
-        <div style={styles.buttonContent}>
-          <span style={styles.title}>AI に聞く</span>
+        <div className="flex items-center gap-[6px]">
+          <span className="font-[var(--font-mono)] text-[10px] font-bold text-cyan-500 tracking-widest">
+            AI に聞く
+          </span>
         </div>
-        <span style={styles.subtitle}>
+        <span className="font-[var(--font-mono)] text-[9px] text-text-muted">
           {panelState.status === 'loading' ? 'ASKING...' : '▶ ASK AI'}
         </span>
       </button>
 
       {panelState.status === 'loading' && (
-        <div style={styles.loadingState}>Perplexity に問い合わせ中...</div>
+        <div className="px-3 py-2 bg-base-900 font-[var(--font-mono)] text-[10px] text-text-muted mt-2">
+          Perplexity に問い合わせ中...
+        </div>
       )}
 
-      {panelState.status === 'error' && <div style={styles.errorState}>⚠ {panelState.error}</div>}
+      {panelState.status === 'error' && (
+        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 text-danger-500 font-[var(--font-mono)] text-[10px]">
+          ⚠ {panelState.error}
+        </div>
+      )}
 
       {panelState.status === 'ok' && (
-        <div style={styles.successState}>
+        <div className="px-3 py-2 bg-base-900">
           {panelState.data.map((suggestion, i) => (
-            <div style={styles.suggestionItem} key={suggestion}>
-              <span style={styles.suggestionNumber}>{i + 1}.</span>
-              <span style={styles.suggestionText}>{suggestion}</span>
+            <div
+              className="flex items-start gap-2 py-1 font-[var(--font-mono)] text-[10px] leading-normal"
+              key={suggestion}
+            >
+              <span className="text-cyan-500 shrink-0 font-semibold">{i + 1}.</span>
+              <span className="text-text-secondary">{suggestion}</span>
             </div>
           ))}
         </div>
