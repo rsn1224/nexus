@@ -159,7 +159,7 @@ Phase 0 → 1 → 2 → 4 → 5 → 3 → 6 → 7
 
 ---
 
-## 依存関係と工数サマリー
+## 依存関係と工数サマリー（Phase 0〜7）
 
 ```
 Phase 0 (1-2日) ──→ Phase 1 (2-3日) ──→ Phase 2 (1日)
@@ -174,4 +174,116 @@ Phase 0 (1-2日) ──→ Phase 1 (2-3日) ──→ Phase 2 (1日)
                                                             Phase 6 (3-4日) ──→ Phase 7 (2-3日)
 ```
 
-**総工数見積もり: 18〜23日**
+**Phase 0〜7 総工数見積もり: 18〜23日**
+
+---
+
+## ゲーム特化強化計画（Phase 8〜10）
+
+> 詳細仕様: `docs/specs/game-enhancement-spec.md`
+> Phase 7 完了後に着手する
+
+### Phase 8a: ゲームプロファイル基盤 — 工数: 2〜3週間
+
+**状態:** 未着手（Phase 7 完了後）
+
+| 実装内容 | 概要 |
+|---------|------|
+| ゲームプロファイル CRUD | JSON保存（`get_app_data_dir()` 使用）・一覧・編集・削除 |
+| ゲーム起動検出 | WMI Win32_ProcessStartTrace（フォールバック: sysinfo ポーリング） |
+| Level 1 ブースト実装 | バックグラウンドプロセス一時停止（NtSuspendProcess FFI） |
+| 自動リバート | ゲーム終了時に NtResumeProcess + 電源プラン復元 |
+| Tauri イベント | `nexus://game-launched`, `nexus://game-exited`, `nexus://profile-applied` |
+| ProfileTab UI | BoostWing に「PROFILES」タブ追加 |
+
+**新規依存クレート:**
+- `windows-sys = "0.59"` — Win32 API FFI（WMI・NtSuspendProcess）
+
+---
+
+### Phase 8b: CPUアフィニティ・段階的ブースト再設計 — 工数: 2〜3週間
+
+**状態:** 未着手（Phase 8a 完了後）
+
+| 実装内容 | 概要 |
+|---------|------|
+| CPU トポロジー検出 | `GetLogicalProcessorInformationEx` で P/E-Core・CCD を自動判別 |
+| CPU アフィニティ設定 | `SetProcessAffinityMask` FFI・ゲーム専有コア / バックグラウンド追い出し |
+| Level 2 ブースト | 電源プラン切替 + CPU アフィニティ再配置 |
+| Level 3 ブースト | 不要プロセス終了（保護リスト遵守・確認ダイアログ必須） |
+| `run_boost` 修正 | `is_simulation: true` を削除し実装に置き換え |
+
+---
+
+### Phase 9a: フレームタイム監視 — 工数: 2〜3週間
+
+**状態:** 未着手（Phase 8b 完了後）
+
+| 実装内容 | 概要 |
+|---------|------|
+| ETW フレームタイム取得 | `Microsoft-Windows-DXGI` プロバイダー（`ferrisetw` crate 検討） |
+| 統計計算 | avg FPS・1% low・0.1% low・スタッター検出 |
+| リアルタイム emit | `nexus://frame-time`（1秒間隔） |
+| FrameTimeGraph UI | HomeWing にリアルタイムグラフ追加 |
+
+> **注意:** ETW の実装詳細は Phase 8b 完了後に改めて設計する（本仕様書 §9 参照）
+
+---
+
+### Phase 9b: タイマーリゾリューション・ネットワーク強化 — 工数: 1〜2週間
+
+**状態:** 未着手（Phase 9a 完了後）
+
+| 実装内容 | 概要 |
+|---------|------|
+| タイマーリゾリューション | `ntdll.dll` `NtSetTimerResolution` FFI（0.5ms 設定） |
+| 自動リバート | ゲーム終了時にデフォルト値（15.625ms）に戻す |
+| TCP Nagle 無効化 | レジストリ経由（`infra/registry.rs` 活用） |
+| ジッター監視 | 既存 Ping 機能の拡張 |
+
+---
+
+### Phase 10: 高度な可視化・スコア再設計 — 工数: 1〜2週間
+
+**状態:** 未着手（Phase 9b 完了後）
+
+| 実装内容 | 概要 |
+|---------|------|
+| GameReadinessScore 再設計 | frame_stability(40%) + input_latency(25%) + resource_headroom(20%) + thermal_margin(15%) |
+| ブースト前後比較レポート | freed_ram_mb / freed_cpu_percent / killed_processes 表示 |
+| プロファイルエクスポート | JSON インポート/エクスポート（コミュニティ共有） |
+| ゲームスコア履歴グラフ | セッションごとのスコア推移表示 |
+
+---
+
+## 依存関係図（全フェーズ）
+
+```
+Phase 0 (1-2日) ──→ Phase 1 (2-3日) ──→ Phase 2 (1日)
+                                              │
+                                              ↓
+                                        Phase 4 (4-5日) ──→ Phase 5 (2-3日)
+                                                                   │
+                                                                   ↓
+                                                            Phase 3 (4-5日)
+                                                                   │
+                                                                   ↓
+                                                            Phase 6 (3-4日) ──→ Phase 7 (2-3日)
+                                                                                       │
+                                                                                       ↓
+                                                                               Phase 8a (2-3週)
+                                                                                       │
+                                                                                       ↓
+                                                                               Phase 8b (2-3週)
+                                                                                 │       │
+                                                                                 ↓       ↓
+                                                                           Phase 9a   Phase 9b
+                                                                           (2-3週)    (1-2週)
+                                                                                 │       │
+                                                                                 └───┬───┘
+                                                                                     ↓
+                                                                               Phase 10 (1-2週)
+```
+
+**Phase 0〜7 総工数: 18〜23日**
+**Phase 8〜10 総工数: 11〜16週間**

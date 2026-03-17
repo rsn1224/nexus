@@ -20,6 +20,7 @@
 | 再構築 Phase 5 | ✅ 完了 |
 | 再構築 Phase 3 | ✅ 完了 |
 | 再構築 Phase 6・7 | ⬜ 未着手 |
+| ゲーム強化 Phase 8a | ⬜ 未着手（Phase 7 完了後） |
 
 **最新コミット:** `ca12635`
 **テスト:** 129 unit + 3 E2E green
@@ -1289,6 +1290,437 @@ npx playwright test  # E2E
 - [ ] インラインスタイルなし
 - [ ] unwrap() なし（本番コード）
 - [ ] System::new_all() 直接呼び出しなし
+
+---
+
+## Phase 8a: ゲームプロファイル基盤
+
+**ステータス:** ⬜ 未着手（Phase 7 完了後）
+**工数見積もり:** 2〜3週間
+**担当:** Cascade
+**仕様書:** `docs/specs/game-enhancement-spec.md`
+
+---
+
+### ① 前提条件
+
+- Phase 7 完了（全テスト green）
+- `docs/specs/game-enhancement-spec.md` を通読すること（§2〜§6, §10, §11, §12 が Phase 8a の対象）
+- `DESIGN.md` を参照してスタイリング方針を確認すること
+- 管理者権限が必要な FFI 呼び出し（`NtSuspendProcess`）はアプリが適切な権限で起動していることを前提とする
+
+---
+
+### ② 対象ファイル
+
+**新規作成（Rust）:**
+- `src-tauri/src/commands/profiles.rs` — プロファイル CRUD コマンドハンドラ
+- `src-tauri/src/commands/game_launch.rs` — ゲーム起動検出コマンドハンドラ
+- `src-tauri/src/services/profiles.rs` — プロファイル CRUD ビジネスロジック
+- `src-tauri/src/services/game_launch.rs` — 起動検出ロジック（WMI + sysinfo フォールバック）
+- `src-tauri/src/services/boost_level1.rs` — Level 1 ブースト（NtSuspendProcess）
+- `src-tauri/src/infra/win32.rs` — `NtSuspendProcess` / `NtResumeProcess` FFI 定義
+
+**新規作成（TypeScript）:**
+- `src/stores/useGameProfileStore.ts` — プロファイル状態管理
+- `src/components/boost/ProfileTab.tsx` — BoostWing 内「PROFILES」タブ
+- `src/components/boost/ProfileCard.tsx` — 単一プロファイル表示カード
+- `src/components/boost/ProfileForm.tsx` — プロファイル作成・編集フォーム
+
+**変更（Rust）:**
+- `src-tauri/src/lib.rs` — 新コマンド登録 + ゲーム起動検出ループ追加
+- `src-tauri/src/state.rs` — `GameState` 追加
+- `src-tauri/Cargo.toml` — `windows-sys = "0.59"` 追加
+
+**変更（TypeScript）:**
+- `src/components/boost/BoostWing.tsx` — PROFILES タブ追加
+- `src/types/index.ts` — `GameProfile` / `BoostLevel` / `ProcessPriority` 型追加
+
+---
+
+### ③ 実装内容
+
+#### Step A: 型定義・Cargo.toml 更新
+
+**Cargo.toml に追加:**
+
+```toml
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_System_Diagnostics_ToolHelp",
+] }
+```
+
+**`src/types/index.ts` に追加:**
+
+```typescript
+export type BoostLevel = 'none' | 'level1' | 'level2' | 'level3';
+export type ProcessPriority = 'idle' | 'below_normal' | 'normal' | 'above_normal' | 'high' | 'realtime';
+
+export interface GameProfile {
+  id: string;               // UUID v4
+  name: string;
+  exe_name: string;         // "RocketLeague.exe"
+  exe_path: string | null;  // フルパス（任意）
+  boost_level: BoostLevel;
+  process_priority: ProcessPriority;
+  created_at: string;       // ISO 8601
+  updated_at: string;
+}
+
+export interface ProfileApplyResult {
+  profile_id: string;
+  suspended_count: number;
+  freed_ram_mb: number;
+  errors: string[];
+}
+```
+
+**`src-tauri/src/error.rs` に追加（既存 AppError に）:**
+
+```rust
+#[error("Game profile error: {0}")]
+GameProfile(String),
+
+#[error("Win32 API error: {code}")]
+Win32 { code: u32 },
+```
+
+#### Step B: Rust バックエンド実装
+
+**`src-tauri/src/infra/win32.rs`:**
+
+```rust
+//! Win32 FFI — NtSuspendProcess / NtResumeProcess
+//! SAFETY: Windows システムコール。管理者権限が必要。
+use windows_sys::Win32::Foundation::{HANDLE, BOOL};
+use crate::error::AppError;
+
+// SAFETY: ntdll.dll の公開エクスポート。ドキュメント化された API ではないが
+//         広く利用されている安定したインタフェース。
+#[link(name = "ntdll")]
+extern "system" {
+    fn NtSuspendProcess(process_handle: HANDLE) -> i32;
+    fn NtResumeProcess(process_handle: HANDLE) -> i32;
+}
+
+/// プロセスを一時停止する。NTSTATUS 0 = 成功。
+pub fn suspend_process(handle: HANDLE) -> Result<(), AppError> {
+    let status = unsafe { NtSuspendProcess(handle) };
+    if status == 0 {
+        Ok(())
+    } else {
+        Err(AppError::Win32 { code: status as u32 })
+    }
+}
+
+/// プロセスを再開する。
+pub fn resume_process(handle: HANDLE) -> Result<(), AppError> {
+    let status = unsafe { NtResumeProcess(handle) };
+    if status == 0 {
+        Ok(())
+    } else {
+        Err(AppError::Win32 { code: status as u32 })
+    }
+}
+```
+
+**`src-tauri/src/services/profiles.rs`（主要ロジック）:**
+
+```rust
+use crate::error::AppError;
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
+use uuid::Uuid;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GameProfile {
+    pub id: String,
+    pub name: String,
+    pub exe_name: String,
+    pub exe_path: Option<String>,
+    pub boost_level: String,
+    pub process_priority: String,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+fn profiles_path(app_data_dir: PathBuf) -> PathBuf {
+    app_data_dir.join("profiles.json")
+}
+
+pub fn load_profiles(app_data_dir: PathBuf) -> Result<Vec<GameProfile>, AppError> {
+    let path = profiles_path(app_data_dir);
+    if !path.exists() {
+        return Ok(vec![]);
+    }
+    let json = std::fs::read_to_string(&path)?;
+    serde_json::from_str(&json).map_err(|e| AppError::GameProfile(e.to_string()))
+}
+
+pub fn save_profile(app_data_dir: PathBuf, mut profile: GameProfile) -> Result<GameProfile, AppError> {
+    let mut profiles = load_profiles(app_data_dir.clone())?;
+    let now = chrono::Utc::now().to_rfc3339();
+
+    if profile.id.is_empty() {
+        profile.id = Uuid::new_v4().to_string();
+        profile.created_at = now.clone();
+    }
+    profile.updated_at = now;
+
+    let pos = profiles.iter().position(|p| p.id == profile.id);
+    match pos {
+        Some(i) => profiles[i] = profile.clone(),
+        None => profiles.push(profile.clone()),
+    }
+
+    let json = serde_json::to_string_pretty(&profiles)
+        .map_err(|e| AppError::GameProfile(e.to_string()))?;
+    std::fs::write(profiles_path(app_data_dir), json)?;
+    Ok(profile)
+}
+
+pub fn delete_profile(app_data_dir: PathBuf, id: &str) -> Result<(), AppError> {
+    let mut profiles = load_profiles(app_data_dir.clone())?;
+    profiles.retain(|p| p.id != id);
+    let json = serde_json::to_string_pretty(&profiles)
+        .map_err(|e| AppError::GameProfile(e.to_string()))?;
+    std::fs::write(profiles_path(app_data_dir), json)?;
+    Ok(())
+}
+```
+
+**`src-tauri/src/commands/profiles.rs`:**
+
+```rust
+use tauri::AppHandle;
+use crate::{error::AppError, services};
+
+#[tauri::command]
+pub async fn get_profiles(app: AppHandle) -> Result<Vec<services::profiles::GameProfile>, AppError> {
+    let dir = app.path().app_data_dir()
+        .map_err(|e| AppError::GameProfile(e.to_string()))?;
+    services::profiles::load_profiles(dir)
+}
+
+#[tauri::command]
+pub async fn save_profile(
+    app: AppHandle,
+    profile: services::profiles::GameProfile,
+) -> Result<services::profiles::GameProfile, AppError> {
+    let dir = app.path().app_data_dir()
+        .map_err(|e| AppError::GameProfile(e.to_string()))?;
+    services::profiles::save_profile(dir, profile)
+}
+
+#[tauri::command]
+pub async fn delete_profile(app: AppHandle, id: String) -> Result<(), AppError> {
+    let dir = app.path().app_data_dir()
+        .map_err(|e| AppError::GameProfile(e.to_string()))?;
+    services::profiles::delete_profile(dir, &id)
+}
+
+#[tauri::command]
+pub async fn apply_profile(
+    app: AppHandle,
+    profile_id: String,
+) -> Result<crate::services::boost_level1::ApplyResult, AppError> {
+    let dir = app.path().app_data_dir()
+        .map_err(|e| AppError::GameProfile(e.to_string()))?;
+    let profiles = services::profiles::load_profiles(dir)?;
+    let profile = profiles.iter().find(|p| p.id == profile_id)
+        .ok_or_else(|| AppError::GameProfile(format!("Profile not found: {profile_id}")))?;
+    let result = services::boost_level1::apply(profile)?;
+    app.emit("nexus://profile-applied", &result).ok();
+    Ok(result)
+}
+```
+
+**ゲーム起動検出ループ（`lib.rs` の setup に追加）:**
+
+WMI `Win32_ProcessStartTrace` をプライマリとし、失敗時は 3 秒間隔の sysinfo ポーリングにフォールバックする。詳細は `docs/specs/game-enhancement-spec.md` §3 を参照。
+
+```rust
+// ゲーム起動検出（WMI → sysinfo フォールバック）
+let handle_launch = handle.clone();
+tauri::async_runtime::spawn(async move {
+    // WMI 試行 → 失敗したら sysinfo ポーリングに切り替え
+    // 仕様詳細: docs/specs/game-enhancement-spec.md §3
+    if let Err(e) = services::game_launch::start_wmi_watcher(&handle_launch).await {
+        tracing::warn!("WMI watcher failed ({e}), falling back to sysinfo polling");
+        services::game_launch::start_sysinfo_watcher(handle_launch).await;
+    }
+});
+```
+
+#### Step C: フロントエンド実装
+
+**`src/stores/useGameProfileStore.ts`:**
+
+```typescript
+import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
+import { extractErrorMessage } from '../lib/utils';
+import type { GameProfile, ProfileApplyResult } from '../types';
+
+interface GameProfileState {
+  profiles: GameProfile[];
+  activeProfileId: string | null;
+  isLoading: boolean;
+  isApplying: boolean;
+  error: string | null;
+}
+
+interface GameProfileActions {
+  loadProfiles: () => Promise<void>;
+  saveProfile: (profile: Partial<GameProfile>) => Promise<void>;
+  deleteProfile: (id: string) => Promise<void>;
+  applyProfile: (id: string) => Promise<ProfileApplyResult | null>;
+  setupListeners: () => Promise<() => void>;
+}
+
+export const useGameProfileStore = create<GameProfileState & GameProfileActions>((set, get) => ({
+  profiles: [],
+  activeProfileId: null,
+  isLoading: false,
+  isApplying: false,
+  error: null,
+
+  loadProfiles: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const profiles = await invoke<GameProfile[]>('get_profiles');
+      set({ profiles, isLoading: false });
+    } catch (err) {
+      set({ isLoading: false, error: extractErrorMessage(err) });
+    }
+  },
+
+  saveProfile: async (profile) => {
+    try {
+      const saved = await invoke<GameProfile>('save_profile', { profile });
+      const profiles = get().profiles;
+      const idx = profiles.findIndex(p => p.id === saved.id);
+      if (idx >= 0) {
+        set({ profiles: profiles.map((p, i) => i === idx ? saved : p) });
+      } else {
+        set({ profiles: [...profiles, saved] });
+      }
+    } catch (err) {
+      set({ error: extractErrorMessage(err) });
+    }
+  },
+
+  deleteProfile: async (id) => {
+    try {
+      await invoke('delete_profile', { id });
+      set({ profiles: get().profiles.filter(p => p.id !== id) });
+    } catch (err) {
+      set({ error: extractErrorMessage(err) });
+    }
+  },
+
+  applyProfile: async (id) => {
+    set({ isApplying: true, error: null });
+    try {
+      const result = await invoke<ProfileApplyResult>('apply_profile', { profileId: id });
+      set({ activeProfileId: id, isApplying: false });
+      return result;
+    } catch (err) {
+      set({ isApplying: false, error: extractErrorMessage(err) });
+      return null;
+    }
+  },
+
+  setupListeners: async () => {
+    const unlistenLaunched = await listen<{ exe_name: string }>('nexus://game-launched', (e) => {
+      const profile = get().profiles.find(p => p.exe_name === e.payload.exe_name);
+      if (profile) {
+        get().applyProfile(profile.id);
+      }
+    });
+    const unlistenExited = await listen('nexus://game-exited', () => {
+      set({ activeProfileId: null });
+    });
+    return () => {
+      unlistenLaunched();
+      unlistenExited();
+    };
+  },
+}));
+
+export const useGameProfiles = () =>
+  useGameProfileStore(useShallow(s => ({
+    profiles: s.profiles,
+    activeProfileId: s.activeProfileId,
+    isLoading: s.isLoading,
+    isApplying: s.isApplying,
+    error: s.error,
+  })));
+```
+
+**BoostWing への PROFILES タブ追加:**
+
+`src/components/boost/BoostWing.tsx` の既存タブ配列（`['BOOST', 'PROCESSES']` 等）に `'PROFILES'` を追加し、`ProfileTab` コンポーネントをレンダリングする。
+
+#### Step D: テスト
+
+**Rust ユニットテスト（`services/profiles.rs` の `#[cfg(test)]` ブロック）:**
+- `save_profile` → `load_profiles` でラウンドトリップ確認
+- `delete_profile` で対象プロファイルが消えることを確認
+- `app_data_dir` は `tempdir()` を使ってモック
+
+**TypeScript ユニットテスト（`src/test/useGameProfileStore.test.ts`）:**
+- `loadProfiles` / `saveProfile` / `deleteProfile` の正常系・エラー系
+- `setupListeners` イベントハンドラのモック
+
+---
+
+### ④ 注意事項
+
+- **JSON 保存パス:** `std::fs::write` にハードコードしない。必ず `app.path().app_data_dir()` を使うこと（仕様書 §2 参照）
+- **WMI フォールバック:** WMI が利用不可（権限不足・Windows バージョン）の場合に sysinfo ポーリングへ自動切り替えすること。エラーを握りつぶさず `tracing::warn!` でログに残す
+- **NtSuspendProcess の安全性:** `constants.rs` の `PROTECTED_PROCESSES` リストに含まれるプロセスは絶対にサスペンドしない。nexus.exe 自身も除外する
+- **自動リバート:** ゲーム終了イベント（`nexus://game-exited`）受信時に `NtResumeProcess` を全サスペンド済みプロセスに適用すること。アプリ終了時にも必ずリバートする
+- **`uuid` クレート:** Cargo.toml に `uuid = { version = "1", features = ["v4"] }` を追加する
+- **`chrono` クレート:** タイムスタンプに使用。既存の依存にある場合は再利用する
+- **windows-sys は Windows 限定:** `#[cfg(target_os = "windows")]` アトリビュートを適切に付与し、他 OS でのビルドを壊さないこと
+
+---
+
+### ⑤ 完了条件
+
+- [ ] `get_profiles` / `save_profile` / `delete_profile` / `apply_profile` コマンドが実装されている
+- [ ] プロファイルが `get_app_data_dir()` 配下の `profiles.json` に保存・読込できる
+- [ ] WMI ゲーム起動検出が動作し、失敗時に sysinfo ポーリングにフォールバックする
+- [ ] ゲーム起動時に対応プロファイルが自動適用される（`nexus://game-launched` イベント）
+- [ ] Level 1 ブーストで保護リスト外プロセスが `NtSuspendProcess` で一時停止される
+- [ ] ゲーム終了時に全サスペンドプロセスが `NtResumeProcess` で復元される
+- [ ] BoostWing に「PROFILES」タブが追加されプロファイル CRUD ができる
+- [ ] `useGameProfileStore` のユニットテストが存在する
+- [ ] `services/profiles.rs` の Rust ユニットテストが存在する
+
+---
+
+### ⑥ 品質チェック
+
+```bash
+npm run typecheck && npm run check && npm run test
+cd src-tauri && cargo test && cargo clippy -- -D warnings && cargo fmt
+```
+
+- [ ] lint エラー 0
+- [ ] 型エラー 0
+- [ ] 全テスト green（既存 129 unit + 新規テスト）
+- [ ] console.log なし
+- [ ] any 型なし
+- [ ] インラインスタイルなし
+- [ ] unwrap() なし（本番コード）
+- [ ] PROTECTED_PROCESSES チェックが `apply_profile` に存在する
 
 ---
 
