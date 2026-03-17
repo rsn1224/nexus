@@ -23,9 +23,10 @@
 | 再構築 Phase 7 | ✅ 完了（7A: UIテスト, 7B: E2E, 7C: Rustテスト, 7D: ipconfig日本語+keyring） |
 | ゲーム強化 Phase 8a | ✅ 完了（8a-A〜D: 型定義・CRUD・コマンド・FE + テスト40件） |
 | ゲーム強化 Phase 8b | ✅ 完了（8b-A〜C: CPU affinity FFI・Level 2/3 boost・UI + テスト30件） |
+| ゲーム強化 Phase 9b-A | ✅ 完了（タイマーリゾリューション FFI + サービス + コマンド + テスト5件） |
 
-**最新コミット:** `bbcee54`
-**テスト:** TS 267 unit + 17 E2E + Rust 121 = 405 green
+**最新コミット:** `39fc0b4`
+**テスト:** TS 267 unit + 17 E2E + Rust 126 = 410 green
 
 ---
 
