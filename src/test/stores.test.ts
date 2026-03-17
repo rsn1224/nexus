@@ -1,4 +1,10 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+vi.mock('../lib/logger', () => ({
+  default: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
+}));
+vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
+
 import { useLauncherStore } from '../stores/useLauncherStore';
 import { usePulseStore } from '../stores/usePulseStore';
 
