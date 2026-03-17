@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import { extractErrorMessage } from '../lib/tauri';
 import type { BoostResult } from '../types';
 
@@ -32,3 +33,21 @@ export const useBoostStore = create<BoostStore>((set) => ({
     }
   },
 }));
+
+// useShallow セレクタ
+export const useBoostState = () =>
+  useBoostStore(
+    useShallow((s) => ({
+      lastResult: s.lastResult,
+      isRunning: s.isRunning,
+      error: s.error,
+      runBoost: s.runBoost,
+    })),
+  );
+
+export const useBoostActions = () =>
+  useBoostStore(
+    useShallow((s) => ({
+      runBoost: s.runBoost,
+    })),
+  );

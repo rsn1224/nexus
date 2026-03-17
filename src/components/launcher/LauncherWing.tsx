@@ -1,27 +1,22 @@
 import type React from 'react';
 import { useEffect, useMemo, useState } from 'react';
 import { launcherPageSuggestions } from '../../lib/localAi';
-import { useLauncherStore } from '../../stores/useLauncherStore';
+import {
+  useLauncherActions,
+  useLauncherState,
+  useLauncherStore,
+} from '../../stores/useLauncherStore';
 import AiPanel from '../shared/AiPanel';
 import { Card } from '../ui';
 import GameCard from './GameCard';
 import LauncherControls from './LauncherControls';
 
 export default function LauncherWing(): React.ReactElement {
-  const games = useLauncherStore((s) => s.games);
-  const isScanning = useLauncherStore((s) => s.isScanning);
-  const error = useLauncherStore((s) => s.error);
-  const favorites = useLauncherStore((s) => s.favorites);
-  const lastPlayed = useLauncherStore((s) => s.lastPlayed);
-  const sortMode = useLauncherStore((s) => s.sortMode);
-  const searchQuery = useLauncherStore((s) => s.searchQuery);
+  const { games, isScanning, error, favorites, lastPlayed, sortMode, searchQuery } =
+    useLauncherState();
+  const { toggleAutoBoost, launchGame, scanGames, toggleFavorite, setSortMode, setSearchQuery } =
+    useLauncherActions();
   const autoBoostEnabled = useLauncherStore((s) => s.autoBoostEnabled);
-  const toggleAutoBoost = useLauncherStore((s) => s.toggleAutoBoost);
-  const launchGame = useLauncherStore((s) => s.launchGame);
-  const scanGames = useLauncherStore((s) => s.scanGames);
-  const toggleFavorite = useLauncherStore((s) => s.toggleFavorite);
-  const setSortMode = useLauncherStore((s) => s.setSortMode);
-  const setSearchQuery = useLauncherStore((s) => s.setSearchQuery);
   const [isBoosting, setIsBoosting] = useState(false);
 
   const handleLaunchGame = async (appId: number) => {
@@ -58,7 +53,6 @@ export default function LauncherWing(): React.ReactElement {
           const bTime = lastPlayed[b.app_id] ?? 0;
           return bTime - aTime;
         }
-        case 'name':
         default:
           return a.name.localeCompare(b.name);
       }

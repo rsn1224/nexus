@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import type { LogAnalysis, LogEntry, LogLevel } from '../types';
 
 export type LogLevelFilter = 'All' | 'Error' | 'Warn' | 'Info' | 'Debug';
@@ -140,30 +141,48 @@ export const useLogStore = create<LogState>((set, get) => ({
   },
 }));
 
-// Selectors
-export const useLogState = () =>
-  useLogStore((s) => ({
-    logs: s.logs,
-    analysis: s.analysis,
-    isLoading: s.isLoading,
-    error: s.error,
-    selectedLevel: s.selectedLevel,
-    selectedSource: s.selectedSource,
-    searchQuery: s.searchQuery,
-  }));
-
+// Granular selectors（互換性維持）
+export const useLogs = () => useLogStore((s) => s.logs);
+export const useLogAnalysis = () => useLogStore((s) => s.analysis);
+export const useLogLoading = () => useLogStore((s) => s.isLoading);
+export const useLogError = () => useLogStore((s) => s.error);
+export const useLogFilters = () =>
+  useLogStore(
+    useShallow((s) => ({
+      selectedLevel: s.selectedLevel,
+      selectedSource: s.selectedSource,
+      searchQuery: s.searchQuery,
+    })),
+  );
 export const useLogActions = () =>
-  useLogStore((s) => ({
-    getSystemLogs: s.getSystemLogs,
-    getApplicationLogs: s.getApplicationLogs,
-    analyzeLogs: s.analyzeLogs,
-    exportLogs: s.exportLogs,
-    setSelectedLevel: s.setSelectedLevel,
-    setSelectedSource: s.setSelectedSource,
-    setSearchQuery: s.setSearchQuery,
-    clearLogs: s.clearLogs,
-    clearError: s.clearError,
-  }));
+  useLogStore(
+    useShallow((s) => ({
+      getSystemLogs: s.getSystemLogs,
+      getApplicationLogs: s.getApplicationLogs,
+      analyzeLogs: s.analyzeLogs,
+      exportLogs: s.exportLogs,
+      setSelectedLevel: s.setSelectedLevel,
+      setSelectedSource: s.setSelectedSource,
+      setSearchQuery: s.setSearchQuery,
+      clearLogs: s.clearLogs,
+      clearError: s.clearError,
+      reset: s.reset,
+    })),
+  );
+
+// useShallow セレクタ
+export const useLogState = () =>
+  useLogStore(
+    useShallow((s) => ({
+      logs: s.logs,
+      analysis: s.analysis,
+      isLoading: s.isLoading,
+      error: s.error,
+      selectedLevel: s.selectedLevel,
+      selectedSource: s.selectedSource,
+      searchQuery: s.searchQuery,
+    })),
+  );
 
 // Utility functions
 export const getLogLevelColor = (level: LogLevel): string => {

@@ -1,5 +1,6 @@
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { HardwareInfo } from '../types';
@@ -100,10 +101,12 @@ export const useHardwareError = () => useHardwareStore((s) => s.error);
 export const useHardwareLastUpdated = () => useHardwareStore((s) => s.lastUpdated);
 export const useHardwareFetch = () => useHardwareStore((s) => s.subscribe); // 互換: fetchHardware → subscribe
 export const useHardwareListeningControl = () =>
-  useHardwareStore((s) => ({
-    subscribe: s.subscribe,
-    unsubscribe: s.unsubscribe,
-  }));
+  useHardwareStore(
+    useShallow((s) => ({
+      subscribe: s.subscribe,
+      unsubscribe: s.unsubscribe,
+    })),
+  );
 
 // Computed selectors（変更なし）
 export const useCpuInfo = () => useHardwareStore((s) => s.info?.cpuName ?? null);
@@ -111,14 +114,23 @@ export const useCpuTemp = () => useHardwareStore((s) => s.info?.cpuTempC ?? null
 export const useGpuInfo = () => useHardwareStore((s) => s.info?.gpuName ?? null);
 export const useGpuUsage = () => useHardwareStore((s) => s.info?.gpuUsagePercent ?? null);
 export const useGpuVram = () =>
-  useHardwareStore((s) => ({
-    total: s.info?.gpuVramTotalMb ?? null,
-    used: s.info?.gpuVramUsedMb ?? null,
-  }));
+  useHardwareStore(
+    useShallow((s) => ({
+      total: s.info?.gpuVramTotalMb ?? null,
+      used: s.info?.gpuVramUsedMb ?? null,
+    })),
+  );
 
 // Selectors for derived data
 export const useHardwareData = () => {
-  const { info, isListening, error, subscribe } = useHardwareStore();
+  const { info, isListening, error, subscribe } = useHardwareStore(
+    useShallow((s) => ({
+      info: s.info,
+      isListening: s.isListening,
+      error: s.error,
+      subscribe: s.subscribe,
+    })),
+  );
 
   const memUsagePercent =
     info && info.memTotalGb > 0 ? (info.memUsedGb / info.memTotalGb) * 100 : 0;
@@ -172,6 +184,26 @@ export function createDiskProgressBar(usedGb: number, totalGb: number): string {
 
   return '█'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
 }
+
+// useShallow セレクタ
+export const useHardwareState = () =>
+  useHardwareStore(
+    useShallow((s) => ({
+      info: s.info,
+      isListening: s.isListening,
+      error: s.error,
+      lastUpdated: s.lastUpdated,
+    })),
+  );
+
+export const useHardwareActions = () =>
+  useHardwareStore(
+    useShallow((s) => ({
+      subscribe: s.subscribe,
+      unsubscribe: s.unsubscribe,
+      clearError: s.clearError,
+    })),
+  );
 
 // Cleanup on unload
 if (typeof window !== 'undefined') {

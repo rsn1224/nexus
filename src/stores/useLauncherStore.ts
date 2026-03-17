@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { GameInfo } from '../types';
@@ -99,3 +100,29 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
 
   setSearchQuery: (query) => set({ searchQuery: query }),
 }));
+
+// useShallow セレクタ
+export const useLauncherState = () =>
+  useLauncherStore(
+    useShallow((s) => ({
+      games: s.games,
+      isScanning: s.isScanning,
+      error: s.error,
+      favorites: s.favorites,
+      lastPlayed: s.lastPlayed,
+      sortMode: s.sortMode,
+      searchQuery: s.searchQuery,
+    })),
+  );
+
+export const useLauncherActions = () =>
+  useLauncherStore(
+    useShallow((s) => ({
+      scanGames: s.scanGames,
+      launchGame: s.launchGame,
+      toggleAutoBoost: s.toggleAutoBoost,
+      toggleFavorite: s.toggleFavorite,
+      setSortMode: s.setSortMode,
+      setSearchQuery: s.setSearchQuery,
+    })),
+  );

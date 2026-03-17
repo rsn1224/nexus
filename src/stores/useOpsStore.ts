@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import { getOptimizationSuggestions } from '../services/perplexityService';
@@ -154,16 +155,46 @@ export const useSuggestionsLoading = () => useOpsStore((s) => s.isSuggestionsLoa
 export const useProcessError = () => useOpsStore((s) => s.error);
 export const useProcessLastUpdated = () => useOpsStore((s) => s.lastUpdated);
 export const useProcessActions = () =>
-  useOpsStore((s) => ({
-    fetchSuggestions: s.fetchSuggestions,
-    kill: s.killProcess,
-    setPriority: s.setProcessPriority,
-  }));
+  useOpsStore(
+    useShallow((s) => ({
+      fetchSuggestions: s.fetchSuggestions,
+      kill: s.killProcess,
+      setPriority: s.setProcessPriority,
+    })),
+  );
 export const useOpsListeningControl = () =>
-  useOpsStore((s) => ({
-    subscribe: s.subscribe,
-    unsubscribe: s.unsubscribe,
-  }));
+  useOpsStore(
+    useShallow((s) => ({
+      subscribe: s.subscribe,
+      unsubscribe: s.unsubscribe,
+    })),
+  );
+
+// 新しい統合セレクタ
+export const useOpsState = () =>
+  useOpsStore(
+    useShallow((s) => ({
+      processes: s.processes,
+      suggestions: s.suggestions,
+      isLoading: s.isLoading,
+      isSuggestionsLoading: s.isSuggestionsLoading,
+      error: s.error,
+      lastUpdated: s.lastUpdated,
+      isListening: s.isListening,
+    })),
+  );
+
+export const useOpsActions = () =>
+  useOpsStore(
+    useShallow((s) => ({
+      subscribe: s.subscribe,
+      unsubscribe: s.unsubscribe,
+      fetchSuggestions: s.fetchSuggestions,
+      killProcess: s.killProcess,
+      setProcessPriority: s.setProcessPriority,
+      clearError: s.clearError,
+    })),
+  );
 
 // Cleanup on unload
 if (typeof window !== 'undefined') {

@@ -1,5 +1,6 @@
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import { checkAndNotify } from '../services/notificationService';
@@ -92,6 +93,25 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
     set({ snapshots: [] });
   },
 }));
+
+// useShallow セレクタ
+export const usePulseState = () =>
+  usePulseStore(
+    useShallow((s) => ({
+      snapshots: s.snapshots,
+      isListening: s.isListening,
+      error: s.error,
+    })),
+  );
+
+export const usePulseActions = () =>
+  usePulseStore(
+    useShallow((s) => ({
+      subscribe: s.subscribe,
+      unsubscribe: s.unsubscribe,
+      clearSnapshots: s.clearSnapshots,
+    })),
+  );
 
 // ─── Cleanup on unload ─────────────────────────────────────────────────────--
 
