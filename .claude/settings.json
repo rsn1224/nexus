@@ -15,6 +15,17 @@
     ]
   },
   "hooks": {
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo [SUBAGENT DONE] >> C:/Users/rsn12/dev/nexus/.claude/subagent.log 2>nul || true"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Write|Edit|MultiEdit",

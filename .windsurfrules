@@ -1,111 +1,143 @@
 <project>
-  <name>NEXUS — Personal Base of Operations</name>
+  <name>NEXUS — Personal Gaming Dashboard</name>
   <description>
-    Tauri v2 + React 19 desktop app combining network recon, dev environment management,
-    encrypted credential storage, and AI-powered knowledge base.
+    Tauri v2 + React 19 desktop app for gaming optimization.
+    Features: hardware monitoring, game launcher, CPU boost, Windows process management,
+    network optimization, storage monitoring, script execution log.
     UI/UX: THE DIVISION 2 tactical HUD aesthetic.
   </description>
   <stack>
     <frontend>React 19 + TypeScript 5 + Vite 7 + Tailwind CSS 4 + Zustand 5</frontend>
     <backend>Rust + Tauri v2</backend>
-    <testing>Vitest 4 (TS) + cargo test (Rust)</testing>
+    <testing>Vitest 4 (TS) + cargo test (Rust) + Playwright (E2E)</testing>
     <linting>Biome (TS/JS/JSON) + cargo clippy (Rust)</linting>
   </stack>
-  <current_phase>Phase 1 — Foundation (完了) → Phase 2: RECON ウィング実装中</current_phase>
 </project>
 
 <design_system>
   <aesthetic>THE DIVISION 2 — タクティカルHUD、ミリタリーグリッド、機械的データパネル</aesthetic>
+  <rule>Tailwind CSS変数クラス（className）のみ使う。style={{ }} インラインスタイル禁止</rule>
   <color_palette>
-    CSS変数（src/index.css に定義済み）を必ず使うこと:
-    - Background:  var(--color-base-950/900/800/700)
-    - Accent:      var(--color-accent-500) = #f97316 (orange)
-    - Highlight:   var(--color-cyan-500)   = #06b6d4 (cyan)
-    - Danger:      var(--color-danger-500) = #ef4444
-    - Success:     var(--color-success-500) = #22c55e
-    - Text:        var(--color-text-primary/secondary/muted)
-    - Border:      var(--color-border-subtle/active)
+    Tailwindクラスのみ使うこと（src/index.css に CSS変数定義済み）:
+    - 背景:    bg-base-900 / bg-base-800 / bg-base-700 / bg-base-600
+    - アクセント: text-(--color-accent-500) / border-(--color-accent-500)
+    - シアン:   text-cyan-500 / border-cyan-500
+    - 危険:    text-danger-500 / border-danger-600
+    - 成功:    text-[var(--color-success-500)]
+    - テキスト: text-text-primary / text-text-secondary / text-text-muted
+    - ボーダー: border-border-subtle / border-border-active
+    - フォント: font-[var(--font-mono)]
+
+    存在しない変数（使用禁止）:
+    --color-background / --color-primary-* / --color-surface /
+    --color-border（末尾なし） / --color-warning-500
   </color_palette>
-  <typography>
-    - データ・コード・ラベル: var(--font-mono)
-    - 一般テキスト: var(--font-sans)
-  </typography>
   <components>
-    - パネルには bracket-tl / bracket-br クラスでタクティカルコーナー装飾
-    - 数値更新時は data-flash クラスを一時付与してフラッシュエフェクト
-    - ステータスランプ: ● 文字 + success/danger/muted カラー
-    - ローディング: animate-pulse スケルトン（Tailwind）
-    - エラー: ページ上部バナー（danger 背景 rgba）
+    詳細デザイン規約 → .windsurf/skills/nexus-design.md 参照
+    - Wing ヘッダー: accent-500 (管理系) または cyan-500 (監視系)
+    - エラーバナー: bg-base-800 border-b border-danger-600 text-danger-500
+    - ローディング/空状態: text-text-muted tracking-[0.1em]
   </components>
 </design_system>
 
 <wing_architecture>
-  <wing id="recon" phase="2">
-    LAN network scanning, device monitoring, traffic visualization
-    Commands: recon::scan_network, recon::get_traffic_snapshot
-    Store: src/stores/useReconStore.ts
-    UI: src/components/recon/ReconWing.tsx
+  <wing id="home">
+    Dashboard overview, system status summary
+    Store: src/stores/useHomeStore.ts
+    UI: src/components/home/HomeWing.tsx
   </wing>
-  <wing id="ops" phase="3">
-    Process management, Docker control, AI performance suggestions
-    Commands: ops::list_processes, ops::get_ai_suggestions
-    Store: src/stores/useOpsStore.ts
-    UI: src/components/ops/OpsWing.tsx
+  <wing id="boost">
+    CPU priority optimization for gaming performance
+    Commands: boost::run_boost, boost::get_boost_status
+    Store: src/stores/useBoostStore.ts
+    UI: src/components/boost/BoostWing.tsx
   </wing>
-  <wing id="vault" phase="4">
-    AES-256 local credential storage, password/API key management
-    Commands: vault::list_vault_entries, vault::unlock_vault
-    Store: src/stores/useVaultStore.ts
-    UI: src/components/vault/VaultWing.tsx
+  <wing id="launcher">
+    Game launcher with auto-boost integration
+    Store: src/stores/useLauncherStore.ts
+    UI: src/components/launcher/LauncherWing.tsx
   </wing>
-  <wing id="archive" phase="5">
-    Markdown notes, graph visualization, Ollama semantic search
-    Commands: archive::list_notes, archive::save_note
-    Store: src/stores/useArchiveStore.ts
-    UI: src/components/archive/ArchiveWing.tsx
+  <wing id="settings">
+    Application configuration
+    Store: src/stores/useSettingsStore.ts
+    UI: src/components/settings/SettingsWing.tsx
+  </wing>
+  <wing id="windows">
+    Windows process and task management
+    Commands: windows::list_processes, windows::kill_process
+    Store: src/stores/useWindowsStore.ts
+    UI: src/components/windows/WindowsWing.tsx
+  </wing>
+  <wing id="hardware">
+    CPU/GPU/RAM real-time monitoring
+    Commands: hardware::get_hardware_snapshot
+    Store: src/stores/useHardwareStore.ts
+    UI: src/components/hardware/HardwareWing.tsx
+  </wing>
+  <wing id="log">
+    Script execution history and logs
+    Store: src/stores/useLogStore.ts
+    UI: src/components/log/LogWing.tsx
+  </wing>
+  <wing id="netopt">
+    Network optimization settings
+    Commands: netopt::get_network_status, netopt::apply_optimizations
+    Store: src/stores/useNetoptStore.ts
+    UI: src/components/netopt/NetOptWing.tsx
+  </wing>
+  <wing id="storage">
+    Storage drive monitoring
+    Commands: storage::get_drives
+    Store: src/stores/useStorageStore.ts
+    UI: src/components/storage/StorageWing.tsx
   </wing>
 </wing_architecture>
 
 <file_structure>
   nexus/
   ├── src/
-  │   ├── App.tsx                        # Wing ルーティング
+  │   ├── App.tsx                        # Wing ルーティング（WING_COMPONENTS）
   │   ├── index.css                      # デザインシステム（CSS変数・アニメーション）
   │   ├── types/index.ts                 # 全共有型定義（追加はここに）
   │   ├── lib/logger.ts                  # pino logger（console.log 代替）
   │   ├── test/setup.ts                  # Vitest セットアップ
   │   ├── components/
-  │   │   ├── layout/Shell.tsx           # 共通ヘッダー・ナビ・フッター
+  │   │   ├── layout/Shell.tsx           # 共通レイアウト・ナビ
   │   │   ├── shared/                    # 再利用コンポーネント
-  │   │   ├── recon/ReconWing.tsx        # Phase 2
-  │   │   ├── ops/OpsWing.tsx            # Phase 3
-  │   │   ├── vault/VaultWing.tsx        # Phase 4
-  │   │   └── archive/ArchiveWing.tsx    # Phase 5
-  │   └── stores/                        # Zustand stores（Phase毎に追加）
+  │   │   ├── home/HomeWing.tsx
+  │   │   ├── boost/BoostWing.tsx
+  │   │   ├── launcher/LauncherWing.tsx
+  │   │   ├── settings/SettingsWing.tsx
+  │   │   ├── windows/WindowsWing.tsx
+  │   │   ├── hardware/HardwareWing.tsx
+  │   │   ├── log/LogWing.tsx
+  │   │   ├── netopt/NetOptWing.tsx
+  │   │   └── storage/StorageWing.tsx
+  │   └── stores/                        # Zustand stores
   └── src-tauri/src/
       ├── lib.rs                         # invoke_handler（追加時ここも更新）
       ├── error.rs                       # AppError（触らない）
       └── commands/
           ├── mod.rs                     # モジュール宣言
-          ├── recon.rs                   # Phase 2
-          ├── ops.rs                     # Phase 3
-          ├── vault.rs                   # Phase 4
-          └── archive.rs                 # Phase 5
+          ├── boost.rs
+          ├── hardware.rs
+          ├── windows.rs
+          ├── netopt.rs
+          └── storage.rs
 </file_structure>
 
 <coding_rules>
   <rule id="1" name="complete_code_output" priority="CRITICAL">
-    プレースホルダー（// TODO: 実装、...、/* implementation */）絶対禁止。
+    プレースホルダー（// TODO:、...、/* implementation */）絶対禁止。
     完全に動作するコードのみ出力すること。
   </rule>
   <rule id="2" name="plan_and_execute" priority="HIGH">
-    複数ファイル変更・アーキテクチャ変更の前に:
-    1. 影響範囲と変更ファイル一覧を提示
-    2. ユーザー承認を得てから実装開始
+    複数ファイル変更・アーキテクチャ変更の前に影響範囲とファイル一覧を提示し、承認を得てから実装開始。
   </rule>
   <rule id="3" name="error_handling" priority="HIGH">
     - Rust: Result&lt;T, AppError&gt; 必須。unwrap() 本番禁止
     - TypeScript: 型付きエラーハンドリング。サイレントキャッチ禁止
+    - Tauri invoke エラーは plain object → JSON.stringify でメッセージ抽出
   </rule>
   <rule id="4" name="no_debug_output" priority="HIGH">
     console.log / println! / dbg! 禁止。
@@ -120,15 +152,25 @@
   <rule id="6" name="file_limit" priority="MEDIUM">
     ファイルは300行以下。超える場合は分割計画を明記。
   </rule>
-  <rule id="7" name="css_variables" priority="MEDIUM">
-    色・フォントはすべてCSS変数（var(--color-...)）を使うこと。
-    ハードコードした色値（#hex、rgb()）を直接書かない。
+  <rule id="7" name="tailwind_classes" priority="HIGH">
+    Tailwind CSS変数クラスのみ。style={{ }} 禁止。ハードコードカラー禁止。
+    詳細 → .windsurf/skills/nexus-design.md
   </rule>
 </coding_rules>
 
+<default_requirements>
+  納品前に以下を全て満たすこと。1つでも未達なら納品しない:
+  1. npm run check → エラーゼロ
+  2. npm run typecheck → エラーゼロ
+  3. npm test → 全 PASS
+  4. インラインスタイル（style={{}}）不使用
+  5. console.log / println! 本番コード混入なし
+  6. any 型不使用
+  7. HANDOFF.md のステータスを更新
+</default_requirements>
+
 <zustand_pattern>
 ```typescript
-// 全Storeはこのパターンで実装
 export const useFooStore = create&lt;FooStore&gt;((set) =&gt; ({
   items: [],
   isLoading: false,
@@ -140,7 +182,7 @@ export const useFooStore = create&lt;FooStore&gt;((set) =&gt; ({
       const items = await invoke&lt;FooItem[]&gt;('list_foo');
       set({ items, isLoading: false });
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
+      const message = err instanceof Error ? err.message : JSON.stringify(err);
       log.error({ err }, 'fetchItems failed');
       set({ error: message, isLoading: false });
     }
@@ -154,32 +196,21 @@ export const useFooStore = create&lt;FooStore&gt;((set) =&gt; ({
 #[tauri::command]
 pub fn do_something(param: String) -&gt; Result&lt;ReturnType, AppError&gt; {
     info!(param = %param, "do_something: called");
-    // implementation
     Ok(result)
 }
 ```
 </rust_command_pattern>
 
-<commands>
-  - npm run check       — Biome lint + format
-  - npm run typecheck   — tsc --noEmit
-  - npm test            — Vitest
-  - cargo test          (src-tauri/ で実行)
-  - cargo clippy -- -D warnings
-  - npm run tauri dev   — 開発起動
-  - npm run tauri build — MSIビルド
-</commands>
-
 <workflow>
   [実装] → [npm run check] → [npm run typecheck] → [npm test]
          → [cargo clippy -- -D warnings] → [cargo test]
-         → [全パスしたら progress.md を更新]
+         → [HANDOFF.md 更新] → [review ステータスに変更]
 
   2回連続失敗時は [BLOCKED] 形式でユーザーに報告し、指示を待つ。
 </workflow>
 
 <collaboration>
-  Cascade担当: UIコンポーネント実装・デザイン調整・複数ファイル一括編集（Flows）
-  Claude Code担当: Rust backend・テスト実行・git操作・CI/CD・ビルド
-  引き継ぎ: cascade-prompt.md を常に最新状態に保つこと
+  Cascade担当: 実装・リファクタ・スタイリング
+  Claude Code担当: 仕様設計・コードレビュー・テスト実行・git操作
+  詳細ワークフロー → .windsurf/skills/cascade-workflow/SKILL.md
 </collaboration>
