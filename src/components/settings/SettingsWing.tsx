@@ -1,379 +1,229 @@
 import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { useLauncherStore } from '../../stores/useLauncherStore';
-import type { LogLevel } from '../../stores/useLogStore';
-import { useLogStore } from '../../stores/useLogStore';
-import { usePulseStore } from '../../stores/usePulseStore';
-import { POLL_INTERVAL_OPTIONS, useSettingsStore } from '../../stores/useSettingsStore';
+import { useEffect, useState } from 'react';
+import { testApiKey } from '../../services/perplexityService';
+import { useAppSettings } from '../../stores/useAppSettingsStore';
+import { Button } from '../ui';
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+export default function SettingsWing(): React.ReactElement {
+  const { settings, isLoading, error, fetchSettings, saveSettings, updateSettings } =
+    useAppSettings();
 
-const KEY_SAVE_NOTIFICATION_MS = 2000;
-
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-type SettingsTab = 'settings' | 'log';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const LOG_LEVEL_COLOR: Record<LogLevel, string> = {
-  debug: 'var(--color-text-muted)',
-  info: 'var(--color-text-muted)',
-  warn: 'var(--color-accent-500)',
-  error: 'var(--color-danger-500)',
-};
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function TabBar({
-  active,
-  onChange,
-}: {
-  active: SettingsTab;
-  onChange: (t: SettingsTab) => void;
-}): React.ReactElement {
-  const tabs: { id: SettingsTab; label: string }[] = [
-    { id: 'settings', label: '設定' },
-    { id: 'log', label: 'ログ' },
-  ];
-  return (
-    <div
-      style={{
-        display: 'flex',
-        borderBottom: '1px solid var(--color-border-subtle)',
-        marginBottom: '16px',
-      }}
-    >
-      {tabs.map(({ id, label }) => (
-        <button
-          key={id}
-          type="button"
-          onClick={() => onChange(id)}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            letterSpacing: '0.08em',
-            padding: '6px 14px',
-            background: 'transparent',
-            border: 'none',
-            borderBottom:
-              active === id ? '2px solid var(--color-cyan-500)' : '2px solid transparent',
-            color: active === id ? 'var(--color-cyan-500)' : 'var(--color-text-muted)',
-            cursor: 'pointer',
-            marginBottom: '-1px',
-          }}
-        >
-          {label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function SectionTitle({ children }: { children: string }): React.ReactElement {
-  return (
-    <div
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '10px',
-        fontWeight: 700,
-        color: 'var(--color-text-secondary)',
-        letterSpacing: '0.1em',
-        marginBottom: '8px',
-        textTransform: 'uppercase',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function SettingsTabContent(): React.ReactElement {
-  const pollIntervalMs = useSettingsStore((s) => s.pollIntervalMs);
-  const perplexityApiKey = useSettingsStore((s) => s.perplexityApiKey);
-  const setPollInterval = useSettingsStore((s) => s.setPollInterval);
-  const setPerplexityApiKey = useSettingsStore((s) => s.setPerplexityApiKey);
-  const isPolling = usePulseStore((s) => s.isPolling);
-  const startPolling = usePulseStore((s) => s.startPolling);
-  const stopPolling = usePulseStore((s) => s.stopPolling);
-  const autoBoostEnabled = useLauncherStore((s) => s.autoBoostEnabled);
-
+  // Local state for API key input and test result
   const [apiKeyInput, setApiKeyInput] = useState('');
-  const [keySaved, setKeySaved] = useState(false);
+  const [isTestingKey, setIsTestingKey] = useState(false);
+  const [testResult, setTestResult] = useState<{ valid: boolean; message: string } | null>(null);
 
-  const handlePollChange = (ms: number): void => {
-    setPollInterval(ms);
-    // Zustand の set() は同期的なので、stopPolling → startPolling で新しい値が確実に反映される
-    if (isPolling) {
-      stopPolling();
-      startPolling();
+  // Initialize settings on mount
+  useEffect(() => {
+    void fetchSettings();
+  }, [fetchSettings]);
+
+  // Sync API key input with current settings
+  useEffect(() => {
+    if (settings) {
+      setApiKeyInput(settings.perplexityApiKey);
+      setTestResult(null); // Clear test result when settings change
+    }
+  }, [settings]);
+
+  const handleTestApiKey = async (): Promise<void> => {
+    if (!apiKeyInput.trim()) {
+      setTestResult({ valid: false, message: 'APIキーが空です' });
+      return;
+    }
+
+    setIsTestingKey(true);
+    setTestResult(null);
+
+    try {
+      const result = await testApiKey(apiKeyInput);
+      setTestResult({
+        valid: result.ok,
+        message: result.ok ? 'APIキーは有効です' : result.error,
+      });
+    } catch (err) {
+      setTestResult({
+        valid: false,
+        message: err instanceof Error ? err.message : 'テストに失敗しました',
+      });
+    } finally {
+      setIsTestingKey(false);
     }
   };
 
-  const handleSaveApiKey = (): void => {
-    setPerplexityApiKey(apiKeyInput);
-    setApiKeyInput('');
-    setKeySaved(true);
-    setTimeout(() => setKeySaved(false), KEY_SAVE_NOTIFICATION_MS);
+  const handleSaveAll = async (): Promise<void> => {
+    if (!settings) return;
+
+    const updatedSettings = {
+      ...settings,
+      perplexityApiKey: apiKeyInput,
+    };
+
+    await saveSettings(updatedSettings);
+    setTestResult(null); // Clear test result after saving
   };
 
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-      {/* ── ポーリング間隔 ── */}
-      <div>
-        <SectionTitle>ポーリング間隔</SectionTitle>
-        <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
-          {POLL_INTERVAL_OPTIONS.map((opt) => {
-            const active = pollIntervalMs === opt.value;
-            return (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => handlePollChange(opt.value)}
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '10px',
-                  padding: '4px 10px',
-                  background: active ? 'var(--color-cyan-500)' : 'transparent',
-                  color: active ? 'var(--color-base-900)' : 'var(--color-text-muted)',
-                  border: `1px solid ${active ? 'var(--color-cyan-500)' : 'var(--color-border-subtle)'}`,
-                  borderRadius: '3px',
-                  cursor: 'pointer',
-                }}
-              >
-                {opt.label}
-              </button>
-            );
-          })}
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          ※ 変更後は監視を自動的に再起動します
-        </div>
-      </div>
+  const handleToggleStartWithWindows = async (): Promise<void> => {
+    if (!settings) return;
+    await updateSettings({ startWithWindows: !settings.startWithWindows });
+  };
 
-      {/* ── Perplexity API キー ── */}
-      <div>
-        <SectionTitle>Perplexity API キー</SectionTitle>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
-          <input
-            type="password"
-            value={apiKeyInput}
-            onChange={(e) => setApiKeyInput(e.target.value)}
-            placeholder={perplexityApiKey ? '\u25cf\u25cf\u25cf\u25cf\u25cf（設定済み）' : '未設定'}
-            style={{
-              flex: 1,
-              padding: '4px 8px',
-              background: 'var(--color-base-800)',
-              border: '1px solid var(--color-border-subtle)',
-              borderRadius: '3px',
-              color: 'var(--color-text-primary)',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-            }}
-          />
-          <button
-            type="button"
-            onClick={handleSaveApiKey}
-            disabled={!apiKeyInput}
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              padding: '4px 12px',
-              background: apiKeyInput ? 'var(--color-accent-500)' : 'var(--color-base-600)',
-              color: apiKeyInput ? 'var(--color-base-900)' : 'var(--color-text-muted)',
-              border: 'none',
-              borderRadius: '3px',
-              cursor: apiKeyInput ? 'pointer' : 'default',
-              letterSpacing: '0.05em',
-            }}
-          >
-            {keySaved ? '\u2713 保存済み' : '保存'}
-          </button>
-        </div>
-        <div
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
-          {perplexityApiKey ? '\u2713 API キー設定済み' : '※ 未設定の場合 AI 提案は表示されません'}
-        </div>
-      </div>
+  const handleToggleMinimizeToTray = async (): Promise<void> => {
+    if (!settings) return;
+    await updateSettings({ minimizeToTray: !settings.minimizeToTray });
+  };
 
-      {/* ── AUTO BOOST トグル ── */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '10px 0',
-          borderBottom: '1px solid var(--color-border-subtle)',
-        }}
-      >
-        <div>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--color-text-primary)',
-              letterSpacing: '0.08em',
-            }}
-          >
-            AUTO BOOST ON LAUNCH
-          </div>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              color: 'var(--color-text-muted)',
-              marginTop: '2px',
-            }}
-          >
-            ゲーム起動時に自動でプロセス最適化を実行します
-          </div>
-        </div>
-        <button
-          type="button"
-          onClick={() => useLauncherStore.getState().toggleAutoBoost()}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            padding: '2px 10px',
-            background: autoBoostEnabled ? 'var(--color-accent-500)' : 'transparent',
-            color: autoBoostEnabled ? '#000' : 'var(--color-text-secondary)',
-            border: `1px solid ${
-              autoBoostEnabled ? 'var(--color-accent-500)' : 'var(--color-border-subtle)'
-            }`,
-            cursor: 'pointer',
-            letterSpacing: '0.1em',
-            transition: 'all 0.1s ease',
-          }}
-        >
-          {autoBoostEnabled ? 'ON' : 'OFF'}
-        </button>
-      </div>
+  // Get app version and build date from package.json
+  const appVersion = '0.1.0'; // This should come from package.json in a real implementation
+  const buildDate = new Date().toISOString().split('T')[0]; // Placeholder
+
+  // Error banner (inline)
+  const errorBanner = error ? (
+    <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
+      ERROR: {error}
     </div>
-  );
-}
-
-function LogTabContent(): React.ReactElement {
-  const entries = useLogStore((s) => s.entries);
-  const clear = useLogStore((s) => s.clear);
-  const logBottomRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    logBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  });
+  ) : null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
-        <button
-          type="button"
-          onClick={clear}
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            padding: '3px 10px',
-            background: 'transparent',
-            color: 'var(--color-text-muted)',
-            border: '1px solid var(--color-border-subtle)',
-            borderRadius: '3px',
-            cursor: 'pointer',
-          }}
-        >
-          クリア
-        </button>
+    <div className="flex flex-col h-full p-4">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-cyan-500)] font-bold tracking-widest">
+          ▶ SETTINGS / CONFIG
+        </div>
+        <Button variant="primary" size="sm" onClick={handleSaveAll} disabled={isLoading}>
+          SAVE ALL
+        </Button>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', fontFamily: 'var(--font-mono)', fontSize: '10px' }}>
-        {entries.length === 0 ? (
-          <div style={{ color: 'var(--color-text-muted)', padding: '16px 0' }}>ログなし</div>
-        ) : (
-          entries.map((entry) => (
-            <div
-              key={entry.id}
-              style={{
-                display: 'flex',
-                gap: '8px',
-                padding: '2px 0',
-                borderBottom: '1px solid var(--color-border-subtle)',
-              }}
+
+      {/* Error Banner */}
+      {errorBanner}
+
+      {/* API Section */}
+      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
+        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
+          API
+        </div>
+        <div className="space-y-2">
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+            Perplexity API Key
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="password"
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
+              placeholder="sk-per-******************"
+              className="flex-1 bg-[var(--color-base-700)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-[var(--font-mono)] text-[11px] px-2 py-1 rounded"
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleTestApiKey}
+              disabled={isTestingKey}
             >
-              <span style={{ color: 'var(--color-text-muted)', flexShrink: 0 }}>
-                {new Date(entry.timestamp).toLocaleTimeString('ja-JP', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit',
-                })}
-              </span>
+              {isTestingKey ? 'TESTING...' : 'TEST'}
+            </Button>
+          </div>
+          {/* Test Result */}
+          {testResult && (
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  testResult.valid
+                    ? 'bg-[var(--color-success-500)]'
+                    : 'bg-[var(--color-danger-500)]'
+                }`}
+              />
               <span
-                style={{
-                  flexShrink: 0,
-                  textTransform: 'uppercase',
-                  width: '36px',
-                  color: LOG_LEVEL_COLOR[entry.level],
-                }}
+                className={`font-[var(--font-mono)] text-[10px] ${
+                  testResult.valid
+                    ? 'text-[var(--color-success-500)]'
+                    : 'text-[var(--color-danger-500)]'
+                }`}
               >
-                {entry.level}
+                {testResult.valid ? 'VALID' : 'INVALID'}
               </span>
-              <span
-                style={{
-                  color: 'var(--color-text-secondary)',
-                  flex: 1,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {entry.message}
+              <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+                — {testResult.message}
               </span>
             </div>
-          ))
-        )}
-        <div ref={logBottomRef} />
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
 
-// ─── Root ─────────────────────────────────────────────────────────────────────
-
-export default function SettingsWing(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<SettingsTab>('settings');
-
-  return (
-    <div style={{ padding: '16px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
-          fontWeight: 700,
-          color: 'var(--color-cyan-500)',
-          letterSpacing: '0.15em',
-          marginBottom: '12px',
-        }}
-      >
-        {'\u25b6'} 設定
+      {/* APPLICATION Section */}
+      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
+        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
+          APPLICATION
+        </div>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+              Start with Windows
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  settings?.startWithWindows
+                    ? 'bg-[var(--color-success-500)]'
+                    : 'bg-[var(--color-text-muted)]'
+                }`}
+              />
+              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+                {settings?.startWithWindows ? 'ENABLED' : 'DISABLED'}
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleToggleStartWithWindows}
+                disabled={isLoading}
+              >
+                TOGGLE
+              </Button>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+              Minimize to Tray
+            </div>
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  settings?.minimizeToTray
+                    ? 'bg-[var(--color-success-500)]'
+                    : 'bg-[var(--color-text-muted)]'
+                }`}
+              />
+              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+                {settings?.minimizeToTray ? 'ENABLED' : 'DISABLED'}
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleToggleMinimizeToTray}
+                disabled={isLoading}
+              >
+                TOGGLE
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
-      <TabBar active={activeTab} onChange={setActiveTab} />
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: 0,
-          overflowY: activeTab === 'settings' ? 'auto' : 'hidden',
-        }}
-      >
-        {activeTab === 'settings' && <SettingsTabContent />}
-        {activeTab === 'log' && <LogTabContent />}
+
+      {/* ABOUT Section */}
+      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3">
+        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
+          ABOUT
+        </div>
+        <div className="space-y-1">
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+            Version: {appVersion}
+          </div>
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+            Built: {buildDate}
+          </div>
+        </div>
       </div>
     </div>
   );

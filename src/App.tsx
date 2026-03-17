@@ -4,6 +4,7 @@ import HomeWing from './components/home/HomeWing';
 import LauncherWing from './components/launcher/LauncherWing';
 import Shell from './components/layout/Shell';
 import SettingsWing from './components/settings/SettingsWing';
+import WindowsWing from './components/windows/WindowsWing';
 import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
@@ -12,6 +13,7 @@ const WING_COMPONENTS: Record<WingId, React.ReactNode> = {
   boost: <BoostWing />,
   launcher: <LauncherWing />,
   settings: <SettingsWing />,
+  windows: <WindowsWing />,
 };
 
 export default function App(): React.ReactElement {

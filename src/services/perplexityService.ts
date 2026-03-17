@@ -88,3 +88,48 @@ ${processNames.join(', ')}
     return { ok: false, error: err instanceof Error ? err.message : 'AI提案の取得に失敗しました' };
   }
 }
+
+// APIキーの有効性をテスト
+export async function testApiKey(apiKey: string): Promise<ApiResult<boolean>> {
+  if (!apiKey.trim()) {
+    return { ok: false, error: 'APIキーが空です' };
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'user',
+            content: 'Hello',
+          },
+        ],
+        max_tokens: 1,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return { ok: false, error: 'APIキーが無効です' };
+      }
+      return { ok: false, error: `HTTP ${response.status}` };
+    }
+
+    await response.json();
+
+    // レスポンスがあればAPIキーは有効
+    return { ok: true, data: true };
+  } catch (err) {
+    log.error({ err }, 'Failed to test API key');
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'APIキーのテストに失敗しました',
+    };
+  }
+}

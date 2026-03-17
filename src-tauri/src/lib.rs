@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    boost, hardware, launcher, ops, pulse, storage, winopt,
+    app_settings, boost, hardware, launcher, ops, pulse, storage, winopt, windows_settings,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -101,6 +101,16 @@ pub fn run() {
             winopt::flush_dns_cache,
             winopt::apply_net_setting,
             winopt::revert_net_setting,
+            // WINDOWS SETTINGS
+            windows_settings::get_windows_settings,
+            windows_settings::set_power_plan,
+            windows_settings::toggle_game_mode,
+            windows_settings::toggle_fullscreen_optimization,
+            windows_settings::toggle_hardware_gpu_scheduling,
+            windows_settings::set_visual_effects,
+            // APP SETTINGS
+            app_settings::get_app_settings,
+            app_settings::save_app_settings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

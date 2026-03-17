@@ -35,7 +35,7 @@ export interface ExecutionLog {
 }
 
 // ─── WING IDs ────────────────────────────────────────────────────────────────
-export type WingId = 'home' | 'boost' | 'launcher' | 'settings';
+export type WingId = 'home' | 'boost' | 'launcher' | 'settings' | 'windows';
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
 export interface DriveInfo {
@@ -48,7 +48,18 @@ export interface DriveInfo {
 // ─── HARDWARE ────────────────────────────────────────────────────────────────
 export interface HardwareInfo {
   cpuName: string;
+  cpuCores: number;
+  cpuThreads: number;
+  cpuBaseGhz: number;
   cpuTempC: number | null;
+  memTotalGb: number;
+  memUsedGb: number;
+  osName: string;
+  osVersion: string;
+  hostname: string;
+  uptimeSecs: number;
+  bootTimeUnix: number;
+  disks: DiskInfo[];
   gpuName: string | null;
   gpuVramTotalMb: number | null;
   gpuVramUsedMb: number | null;
@@ -56,10 +67,45 @@ export interface HardwareInfo {
   gpuUsagePercent: number | null;
 }
 
+export interface DiskInfo {
+  mount: string;
+  kind: string;
+  totalGb: number;
+  usedGb: number;
+}
+
+// ─── WINDOWS SETTINGS ────────────────────────────────────────────────────────
+export interface WindowsSettings {
+  powerPlan: PowerPlan;
+  gameMode: boolean;
+  fullscreenOptimization: boolean;
+  hardwareGpuScheduling: boolean;
+  visualEffects: VisualEffects;
+}
+
+export enum PowerPlan {
+  Balanced = 'Balanced',
+  HighPerformance = 'High Performance',
+  PowerSaver = 'Power Saver',
+}
+
+export enum VisualEffects {
+  BestPerformance = 'Best Performance',
+  Balanced = 'Balanced',
+  BestAppearance = 'Best Appearance',
+}
+
 export interface WingStatus {
   id: WingId;
   label: string;
   online: boolean;
+}
+
+// ─── APP SETTINGS ────────────────────────────────────────────────────────
+export interface AppSettings {
+  perplexityApiKey: string;
+  startWithWindows: boolean;
+  minimizeToTray: boolean;
 }
 
 // ─── INTEL FEED ──────────────────────────────────────────────────────────────

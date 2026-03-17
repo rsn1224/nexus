@@ -1,3 +1,4 @@
+pub mod app_settings;
 pub mod boost;
 pub mod hardware;
 pub mod launcher;
@@ -5,3 +6,4 @@ pub mod ops;
 pub mod pulse;
 pub mod storage;
 pub mod winopt;
+pub mod windows_settings;

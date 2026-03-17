@@ -1,7 +1,7 @@
 import type React from 'react';
 
 interface ButtonProps {
-  variant: 'primary' | 'ghost' | 'danger';
+  variant: 'primary' | 'ghost' | 'danger' | 'secondary';
   size?: 'sm' | 'md';
   children: React.ReactNode;
   onClick?: () => void;
@@ -28,6 +28,8 @@ export default function Button({
       'border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:bg-[var(--color-base-700)]',
     danger:
       'bg-[var(--color-danger-500)] text-white border-[var(--color-danger-500)] hover:bg-[var(--color-danger-600)]',
+    secondary:
+      'border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] bg-[var(--color-base-700)] hover:bg-[var(--color-base-600)]',
   };
 
   const sizeClasses = {
