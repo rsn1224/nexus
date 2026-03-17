@@ -51,27 +51,27 @@ export default function HomeWing(): React.ReactElement {
   const navigate = useNavStore((s) => s.navigate);
 
   // Storage and Hardware stores
-  const fetchStorage = useStorageStore((s) => s.fetchStorage);
-  const drives = useStorageStore((s) => s.drives);
+  const fetchStorageInfo = useStorageStore((s) => s.fetchStorageInfo);
+  const storageInfo = useStorageStore((s) => s.storageInfo);
   const fetchHardware = useHardwareStore((s) => s.fetchHardware);
   const hwInfo = useHardwareStore((s) => s.info);
 
   useEffect(() => {
     // Auto-fetch data on mount
     void fetchProcesses();
-    void fetchStorage();
+    void fetchStorageInfo();
     void fetchHardware();
     // Auto-start pulse polling
     if (!isPolling) {
       startPolling();
     }
-  }, [fetchProcesses, fetchStorage, fetchHardware, isPolling, startPolling]);
+  }, [fetchProcesses, fetchStorageInfo, fetchHardware, isPolling, startPolling]);
 
   const topProcesses = useMemo(() => getTopCpuProcesses(processes, 3), [processes]);
 
   const suggestions = useMemo(
-    () => homePageSuggestions(latestSnapshot ?? null, drives, hwInfo),
-    [latestSnapshot, drives, hwInfo],
+    () => homePageSuggestions(latestSnapshot ?? null, storageInfo?.drives ?? [], hwInfo),
+    [latestSnapshot, storageInfo, hwInfo],
   );
 
   const activeProcessCount = useMemo(
@@ -204,13 +204,14 @@ export default function HomeWing(): React.ReactElement {
       {/* Storage Card */}
       <Card title="ストレージ" className="mt-4">
         <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
-          {drives.length > 0 ? (
-            drives.map((drive) => (
+          {storageInfo?.drives && storageInfo.drives.length > 0 ? (
+            storageInfo.drives.map((drive) => (
               <div key={drive.name}>
                 {drive.name}
                 {'  '}
                 <span className="text-[var(--color-accent-500)]">
-                  {drive.usedPercent.toFixed(0)}% ({drive.freeGb.toFixed(0)} GB 空き)
+                  {((drive.usedBytes / drive.sizeBytes) * 100).toFixed(0)}% (
+                  {(drive.availableBytes / (1024 * 1024 * 1024)).toFixed(0)} GB 空き)
                 </span>
               </div>
             ))

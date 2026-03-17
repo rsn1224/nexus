@@ -113,6 +113,13 @@ pub fn run() {
             netopt::get_current_dns,
             netopt::set_dns,
             netopt::ping_host,
+            // STORAGE
+            storage::get_storage_info,
+            storage::cleanup_temp_files,
+            storage::cleanup_recycle_bin,
+            storage::cleanup_system_cache,
+            storage::run_full_cleanup,
+            storage::analyze_disk_usage,
             // APP SETTINGS
             app_settings::get_app_settings,
             app_settings::save_app_settings,

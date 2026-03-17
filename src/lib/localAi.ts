@@ -1,4 +1,4 @@
-import type { DriveInfo, HardwareInfo, ResourceSnapshot, WinSetting } from '../types';
+import type { DiskDrive, HardwareInfo, ResourceSnapshot, WinSetting } from '../types';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ function sortAndSlice(suggestions: LocalSuggestion[], max = 3): LocalSuggestion[
 
 export function homePageSuggestions(
   snapshot: ResourceSnapshot | null,
-  drives: DriveInfo[],
+  drives: DiskDrive[],
   hwInfo: HardwareInfo | null,
 ): LocalSuggestion[] {
   const suggestions: LocalSuggestion[] = [];
@@ -68,17 +68,20 @@ export function homePageSuggestions(
   }
 
   for (const drive of drives) {
-    if (drive.usedPercent >= 95) {
+    const usedPercent = (drive.usedBytes / drive.sizeBytes) * 100;
+    const freeGb = drive.availableBytes / (1024 * 1024 * 1024);
+
+    if (usedPercent >= 95) {
       suggestions.push({
         id: `disk_critical_${drive.name}`,
         level: 'critical',
-        message: `ドライブ ${drive.name} の使用率が ${drive.usedPercent.toFixed(0)}% です。空き容量を確保してください。`,
+        message: `ドライブ ${drive.name} の使用率が ${usedPercent.toFixed(0)}% です。空き容量を確保してください。`,
       });
-    } else if (drive.usedPercent >= 85) {
+    } else if (usedPercent >= 85) {
       suggestions.push({
         id: `disk_warn_${drive.name}`,
         level: 'warn',
-        message: `ドライブ ${drive.name} の空き容量が残り ${drive.freeGb.toFixed(0)} GB です。`,
+        message: `ドライブ ${drive.name} の空き容量が残り ${freeGb.toFixed(0)} GB です。`,
       });
     }
   }
