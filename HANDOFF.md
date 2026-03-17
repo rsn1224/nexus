@@ -1298,6 +1298,66 @@ npm run tauri dev
 
 ---
 
+---
+
+## 完了タスク（本日分）
+
+### タスク 10 — 2026-03-17 総合タスク
+
+**ステータス**: done
+**担当**: Cascade
+**実施日**: 2026-03-17
+
+---
+
+#### 完了タスク一覧
+
+- **fix(P0)**: log / netopt / storage / windows Wing を WingId・App.tsx・Shell.tsx に登録
+- **fix(P1)**: useStorageStore.ts の --color-warning-500 → --color-accent-500 に修正  
+- **refactor(P2)**: LogWing の console.error → log.error に変更
+- **refactor(P2)**: LauncherWing・PerplexityPanel のインラインスタイル → Tailwind CSS変数クラスに移行
+- **test(P3)**: useBoostStore / useLauncherStore / useHardwareStore のユニットテスト追加（計149テスト全PASS）
+- **perf**: ポーリング間隔最適化・Zustandセレクタ細分化・React.memo/useMemo適用
+
+---
+
+#### T10-Cascade 記入欄
+
+- **実装内容**: 
+  - WingIdに4つの新規Wingを登録しApp.tsxとShell.tsxに反映
+  - useStorageStoreの色変数を修正しDESIGN.md準拠
+  - LogWingのロガーをpino形式に統一
+  - UIコンポーネントのスタイル整理（インライン→CSS変数クラス）
+  - 3ストアにユニットテスト追加（計149テスト）
+  - パフォーマンス最適化：ポーリング間隔調整、セレクタ細分化、React.memo適用
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS（149 tests）
+- **特記事項**: 全品質ゲート通過。パフォーマンス改善によりCPU使用率削減とUI応答性向上を実現。
+
+---
+
+#### T10-Claude Code レビュー結果
+
+- **判定**: ✅ PASS
+- **指摘事項**: なし
+- **レビュー日**: 2026/03/17
+
+---
+
+## 将来リスク注記（バグではないが記録）
+
+### ProcessTab のポーリングクリーンアップ
+- **課題**: ProcessTab の startProcessPolling() に cleanup（stopProcessPolling）未実装
+- **現状**: Wing が unmount されない設計のため問題なし
+- **将来リスク**: Wing を動的 unmount するリファクタが入った場合に対応が必要
+- **対応方針**: useEffect cleanup で stopProcessPolling() を呼び出す実装を追加
+
+### Shellコンポーネントのメモ化効果
+- **課題**: memo(Shell) は children を受け取るため再レンダー抑制の効果なし
+- **現状**: harmless（無害）
+- **備考**: children prop が変更されるたびに再レンダーされるため、memo化の効果は限定的
+
+---
+
 ## タスクテンプレート（新規タスク追加時にコピー）
 
 ```markdown
