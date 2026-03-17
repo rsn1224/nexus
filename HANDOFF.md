@@ -18,10 +18,11 @@
 | 再構築 Phase 2 | ✅ 完了 |
 | 再構築 Phase 4 | ✅ 完了 |
 | 再構築 Phase 5 | ✅ 完了 |
-| 再構築 Phase 3, 6〜7 | ⬜ 未着手 |
+| 再構築 Phase 3 | ✅ 完了 |
+| 再構築 Phase 6・7 | ⬜ 未着手 |
 
-**最新コミット:** `77a196e`
-**テスト:** 149 unit + 3 E2E green
+**最新コミット:** `ca12635`
+**テスト:** 129 unit + 3 E2E green
 
 ---
 
@@ -490,7 +491,7 @@ cd src-tauri && cargo build && cargo test && cargo clippy -- -D warnings
 
 ## Phase 3: フロントエンド基盤強化
 
-**ステータス:** ⬜ 未着手（Phase 4-5 完了後に着手を推奨）
+**ステータス:** ✅ 完了（2026-03-18）
 **工数見積もり:** 4〜5日
 **担当:** Cascade
 
