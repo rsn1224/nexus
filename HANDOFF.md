@@ -705,6 +705,184 @@ interface BoostStore {
 
 ---
 
+### タスク 7 — OH-B3: ゲームスコア実装（CPU/MEM/DISK/GPU 加重平均）
+
+**ステータス**: done
+**担当**: Cascade
+**前提**: OH2（GPU取得）・OH4（GPU UI）・OH7（テスト）完了済み
+**背景**: HomeWing の SCORE カードが現在 `-- / 100` のプレースホルダー状態。
+CPU・メモリ・ディスク・GPU の4指標を加重平均してリアルタイムなゲームスコアを計算・表示する。
+スコアは Shell のサイドバー下部にも表示する（現在 `-- / 100` プレースホルダー）。
+
+---
+
+#### ワイヤーフレーム
+
+HomeWing SCORE カード（現状の4カードグリッド右端）:
+```
+┌─────────────────────────┐
+│  SCORE                  │
+│                         │
+│    87 / 100             │
+│    ████████░░  87%      │
+│    GOOD                 │
+│                         │
+│  CPU   ×0.40  = 21.6    │
+│  MEM   ×0.30  = 22.8    │
+│  DISK  ×0.20  = 18.4    │
+│  GPU   ×0.10  = 9.0     │
+└─────────────────────────┘
+```
+
+サイドバー下部（Shell.tsx）:
+```
+SCORE  87 / 100
+```
+
+---
+
+#### 仕様
+
+**目的**: ゲームパフォーマンススコアのリアルタイム計算・表示
+
+**スコア計算ロジック（クライアントサイド）**:
+
+```typescript
+// src/lib/score.ts（新規）
+export const SCORE_WEIGHTS = {
+  cpu:  0.40,
+  mem:  0.30,
+  disk: 0.20,
+  gpu:  0.10,
+} as const;
+
+// 各指標: 使用率が低いほど高スコア（0〜100）
+// CPU: 100 - cpuPercent
+// MEM: 100 - (memUsedGb / memTotalGb * 100)
+// DISK: 100 - diskUsagePercent (useHardwareStore から取得。nullなら除外)
+// GPU:  100 - gpuUsagePercent (useHardwareStore から取得。nullなら除外)
+//
+// GPU/DISKが null の場合は残りのウェイトで正規化する
+// 例: GPU null → CPU×(0.40/0.90) + MEM×(0.30/0.90) + DISK×(0.20/0.90)
+//
+// 最終スコア: Math.round(加重合計)、範囲クランプ 0〜100
+
+export function calcScore(params: {
+  cpuPercent: number | null;
+  memUsedGb: number | null;
+  memTotalGb: number | null;
+  diskUsagePercent: number | null;
+  gpuUsagePercent: number | null;
+}): number | null {
+  // データ未取得時（全null）は null を返す → UI は '--' 表示
+}
+```
+
+**ランクラベル**:
+```typescript
+// src/lib/score.ts に追記
+export function getScoreRank(score: number): { label: string; color: string } {
+  if (score >= 90) return { label: 'EXCELLENT', color: 'var(--color-success-500)' };
+  if (score >= 75) return { label: 'GOOD',      color: 'var(--color-cyan-500)' };
+  if (score >= 50) return { label: 'FAIR',      color: 'var(--color-accent-400)' };
+  return               { label: 'POOR',      color: 'var(--color-danger-500)' };
+}
+```
+
+**変更ファイル一覧**:
+
+| ファイル | 変更種別 | 内容 |
+|---|---|---|
+| `src/lib/score.ts` | 新規 | `calcScore` / `getScoreRank` / `SCORE_WEIGHTS` 定数 |
+| `src/components/home/HomeWing.tsx` | 修正 | SCOREカードを `calcScore` で実装、プレースホルダー除去 |
+| `src/components/layout/Shell.tsx` | 修正 | サイドバー下部の `-- / 100` を `calcScore` 結果に置き換え |
+| `src/test/score.test.ts` | 新規 | `calcScore` / `getScoreRank` の境界値テスト |
+
+**HomeWing SCOREカードの表示仕様**:
+- スコア値: `fontSize: 24px`, `fontWeight: 700`, スコアに応じた `getScoreRank().color` 
+- プログレスバー: DESIGN.md § 7 準拠、色は `getScoreRank().color` 
+- ランクラベル: `fontSize: 10px`, `letterSpacing: 0.15em`, `getScoreRank().color` 
+- 内訳ミニテーブル（任意）: CPU/MEM/DISK/GPU の寄与値を10px mutedで表示
+- データ未取得時: `--` を `var(--color-text-muted)` で表示
+
+**Shell.tsx サイドバー下部の表示仕様**:
+- 既存の `-- / 100` プレースホルダー文字列を `calcScore` の結果に置き換える
+- スコアが null の場合は `-- / 100` のまま（変更なし）
+- スコアあり: `{score} / 100` を `getScoreRank().color` で表示
+- Shell は `usePulseStore` と `useHardwareStore` を既にインポート済みのはずなので確認してから使うこと
+
+**データソース**:
+- `cpuPercent`: `usePulseStore.snapshot.cpuPercent` 
+- `memUsedGb` / `memTotalGb`: `usePulseStore.snapshot.memUsedGb` / `memTotalGb` 
+- `diskUsagePercent`: `useHardwareStore.hardware.diskUsagePercent`（フィールド名は実際の型定義を確認して使うこと）
+- `gpuUsagePercent`: `useHardwareStore.hardware.gpuUsagePercent`（同上）
+
+---
+
+#### テスト仕様（`src/test/score.test.ts`）
+
+```typescript
+// 最低限のテストケース
+describe('calcScore', () => {
+  it('全指標正常: CPU0% MEM0 DISK0 GPU0 → 100', ...)
+  it('全指標最悪: CPU100% MEM=TOTAL DISK100 GPU100 → 0', ...)
+  it('GPU null → 残り3指標で正規化', ...)
+  it('GPU/DISK null → CPU/MEMのみで正規化', ...)
+  it('全 null → null を返す', ...)
+  it('スコアは 0〜100 にクランプされる', ...)
+});
+
+describe('getScoreRank', () => {
+  it('90以上 → EXCELLENT', ...)
+  it('75〜89 → GOOD', ...)
+  it('50〜74 → FAIR', ...)
+  it('49以下 → POOR', ...)
+});
+```
+
+---
+
+#### 受け入れ条件
+
+- [ ] HomeWing の SCORE カードにリアルタイムスコアが表示される
+- [ ] Pulse 未起動時（snapshot null）はスコアが `--` になる
+- [ ] GPU 未取得時（null）はスコア計算から除外し、残り3指標で正規化される
+- [ ] スコアに応じたランクラベル（EXCELLENT / GOOD / FAIR / POOR）と色が表示される
+- [ ] Shell サイドバー下部の `-- / 100` が実スコアに置き換わる
+- [ ] `src/lib/score.ts` は副作用なし（純粋関数のみ）
+- [ ] `npm run typecheck` PASS
+- [ ] `npm run check` PASS
+- [ ] `npm run test` PASS（新規テスト含む）
+
+#### DESIGN.md 準拠チェックポイント
+
+- [ ] CSS 変数のみ使用（`src/lib/styles.ts` の `S.xxx` を積極活用すること）
+- [ ] スコア色は `getScoreRank().color` 経由のみ。直書き禁止
+- [ ] プログレスバーは DESIGN.md § 7 準拠
+- [ ] フォント `var(--font-mono)`、サイズ規約通り
+- [ ] データ未取得（null）の empty 状態表示あり
+
+#### T7-Cascade 記入欄
+
+- **実装内容**: score.ts（calcScore/getScoreRank/createProgressBar）、useHardwareStore.ts（diskUsagePercent追加）、HomeWing.tsx（SCOREカード刷新）、Shell.tsx（サイドバー下部スコア表示）、score.test.ts（14件テスト）。
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [ ] **未実施（納品時に実行漏れ）** / `npm run test` [x] PASS（100 tests）
+- **特記事項**: `npm run check` 未実施で納品。Claude Code がコミット前に `npm run check` を実行し5ファイル自動修正してコミット。
+
+#### タスク 7 — Claude Code レビュー結果
+
+- **判定**: ✅ PASS（指摘事項修正済み）
+- **指摘事項**:
+  1. **inline style 使用禁止**: HomeWing.tsx L360/363/366 で `style={{ color: ... }}` を使用していたため、Tailwindクラス文字列に修正
+     - `getScoreRank()` の重複呼び出しを解消し、IIFE内で一度だけ呼び出すように最適化
+     - 色分岐ロジックを `rankColorClass` 変数に抽出し、3つのdivで再利用
+  2. **diskUsagePercent のドライブ依存**: useHardwareStore.ts L90-92 で `disks[0]` を使用している点について確認
+     - 現状のまま（最初のドライブを使用）で仕様上問題ないと判断
+     - 将来的にCドライブ固定が必要な場合は `find(d => d.mount === 'C:')` でのフィルタを推奨
+- **修正内容**: inline styleをTailwindクラスに置き換え、パフォーマンス最適化を実施
+- **レビュー日**: 2026-03-17
+
+---
+
 #### 4. BoostWing レイアウト
 
 ```
@@ -872,8 +1050,16 @@ npm run tauri dev
 
 #### T-Cascade 記入欄
 
+> ⚠️ **納品前に必ず以下の順番で実行し、全て PASS を確認してから報告すること**
+> ```bash
+> npm run typecheck   # 型チェック
+> npm run check       # Biome lint + format ← 忘れがち！必須
+> npm run test        # Vitest テスト
+> # Rust 変更がある場合: cd src-tauri && cargo test && cargo clippy -- -D warnings
+> ```
+
 - **実装内容**:
-- **テスト実行結果**: npm run typecheck [ ] PASS / npm run check [ ] PASS / npm run test [ ] PASS
+- **テスト実行結果**: `npm run typecheck` [ ] PASS / `npm run check` [ ] PASS / `npm run test` [ ] PASS
 - **特記事項**:
 
 #### T-Claude Code レビュー結果
