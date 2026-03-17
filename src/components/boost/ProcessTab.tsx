@@ -217,7 +217,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         <div>
           {/* Simulation Mode Warning */}
           {lastResult.isSimulation && (
-            <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded px-2 py-1 mb-2">
+            <div className="font-[var(--font-mono)] text-[9px] text-text-muted bg-base-800 border border-border-subtle rounded-[3px] px-2 py-1 mb-2">
               ⚠ シミュレーションモード — 実際のプロセス最適化は未実装です
             </div>
           )}

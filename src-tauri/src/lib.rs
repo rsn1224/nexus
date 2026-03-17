@@ -80,8 +80,6 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             // PULSE
             pulse::get_resource_snapshot,
-            // STORAGE
-            storage::get_storage_info,
             // HARDWARE
             hardware::get_hardware_info,
             // BOOST
