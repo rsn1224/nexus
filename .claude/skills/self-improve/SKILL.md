@@ -1,8 +1,6 @@
 ---
 name: self-improve
 description: スキル・ルール・エージェント定義を改善するメタスキル。作業中に発見した知識をルールに昇格させる。
-version: 2026.03.17
-tags: [meta, skills, learning, improvement]
 ---
 
 # Self-Improve スキル

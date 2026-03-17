@@ -1,8 +1,6 @@
 ---
 name: wrap-up
 description: セッション終了時のまとめと次回引き継ぎ準備。HANDOFF.md 更新・メモリ保存・git状態確認。
-version: 2026.03.17
-tags: [workflow, session, handoff, memory]
 ---
 
 # Wrap-Up スキル

@@ -1,8 +1,6 @@
 ---
 name: deep-investigate
 description: 原因不明のバグ・型エラー・パフォーマンス問題を体系的に調査する。Explore サブエージェントを活用。
-version: 2026.03.17
-tags: [debugging, investigation, subagent, explore]
 ---
 
 # Deep Investigate スキル

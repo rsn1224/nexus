@@ -1,8 +1,6 @@
 ---
 name: claude-code-cascade-workflow
 description: Claude CodeとCascadeの最適ワークフロー。モデル使い分け、サブエージェント活用、MCP統合、並列開発パターン、ベストプラクティス。
-version: 2026.03.17
-tags: [workflow, claude-code, cascade, mcp, best-practices]
 ---
 
 # Cascade エージェント定義
