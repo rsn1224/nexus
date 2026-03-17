@@ -97,6 +97,38 @@ fn run_powershell(command: &str) -> Result<String, AppError> {
     Ok(stdout.trim().to_string())
 }
 
+// ─── Validation Functions (Phase 1) ─────────────────────────────────────
+
+/// GUIDバリデーション（8-4-4-4-12 形式）
+fn validate_guid(s: &str) -> Result<&str, AppError> {
+    let trimmed = s.trim();
+    if trimmed.len() == 36
+        && trimmed.chars().filter(|&c| c == '-').count() == 4
+        && trimmed.chars().all(|c| c.is_ascii_hexdigit() || c == '-')
+    {
+        Ok(trimmed)
+    } else {
+        Err(AppError::InvalidInput(format!("Invalid GUID format: {}", s)))
+    }
+}
+
+/// u32数値のバリデーション（PowerShell の -Value に渡す整数値）
+fn validate_u32_value(s: &str) -> Result<u32, AppError> {
+    s.trim().parse::<u32>()
+        .map_err(|_| AppError::InvalidInput(format!("Invalid numeric value: {}", s)))
+}
+
+/// マウス速度値のバリデーション（"0" or "1" or "2"）
+fn validate_mouse_speed(s: &str) -> Result<&str, AppError> {
+    let trimmed = s.trim();
+    match trimmed {
+        "0" | "1" | "2" => Ok(trimmed),
+        _ => Err(AppError::InvalidInput(format!(
+            "Invalid mouse speed value: {}. Expected 0, 1, or 2", s
+        ))),
+    }
+}
+
 // ─── Windows Settings Commands ───────────────────────────────────────────────────
 
 #[tauri::command]
@@ -249,11 +281,12 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
                     .split_whitespace()
                     .find(|s| s.len() == 36 && s.chars().filter(|&c| c == '-').count() == 4)
                     .unwrap_or("SCHEME_BALANCED");
-                run_powershell(&format!("powercfg /setactive {}", guid))?;
+                let validated_guid = validate_guid(guid)?;  // ← 追加
+                run_powershell(&format!("powercfg /setactive {}", validated_guid))?;
             }
             "game_mode" => {
                 // Restore original game mode setting
-                let value: u32 = original_value.trim().parse().unwrap_or(0);
+                let value = validate_u32_value(&original_value)?;  // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -Value {} -Type DWord -Force",
                     value
@@ -261,7 +294,7 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
             }
             "game_dvr" => {
                 // Restore original game DVR setting
-                let value: u32 = original_value.trim().parse().unwrap_or(1);
+                let value = validate_u32_value(&original_value)?;  // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -Value {} -Type DWord -Force",
                     value
@@ -269,14 +302,15 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
             }
             "mouse_acceleration" => {
                 // Restore original mouse settings
+                let value = validate_mouse_speed(&original_value)?;  // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -Value '{}' -Type String -Force",
-                    original_value.trim()
+                    value
                 ))?;
             }
             "visual_effects" => {
                 // Restore original visual effects setting
-                let value: u32 = original_value.trim().parse().unwrap_or(0);
+                let value = validate_u32_value(&original_value)?;  // ← 追加
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -Value {} -Type DWord -Force",
                     value
@@ -471,5 +505,45 @@ mod tests {
         let deserialized: WinSetting = serde_json::from_str(&json).unwrap();
         assert_eq!(deserialized.id, setting.id);
         assert_eq!(deserialized.label, setting.label);
+    }
+
+    // --- PowerShell インジェクション対策バリデーション ---
+    #[test]
+    fn test_validate_guid_valid() {
+        assert!(validate_guid("381b4222-f694-41f0-9685-ff5bb260df2e").is_ok());
+    }
+
+    #[test]
+    fn test_validate_guid_injection() {
+        assert!(validate_guid("'; Remove-Item -Recurse C:\\; '").is_err());
+        assert!(validate_guid("not-a-guid").is_err());
+        assert!(validate_guid("").is_err());
+    }
+
+    #[test]
+    fn test_validate_u32_value_valid() {
+        assert_eq!(validate_u32_value("0").unwrap(), 0);
+        assert_eq!(validate_u32_value("1").unwrap(), 1);
+        assert_eq!(validate_u32_value(" 42 ").unwrap(), 42);
+    }
+
+    #[test]
+    fn test_validate_u32_value_injection() {
+        assert!(validate_u32_value("1; whoami").is_err());
+        assert!(validate_u32_value("-1").is_err());
+        assert!(validate_u32_value("abc").is_err());
+    }
+
+    #[test]
+    fn test_validate_mouse_speed_valid() {
+        assert!(validate_mouse_speed("0").is_ok());
+        assert!(validate_mouse_speed("1").is_ok());
+        assert!(validate_mouse_speed("2").is_ok());
+    }
+
+    #[test]
+    fn test_validate_mouse_speed_injection() {
+        assert!(validate_mouse_speed("0'; whoami; echo '").is_err());
+        assert!(validate_mouse_speed("3").is_err());
     }
 }

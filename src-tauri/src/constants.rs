@@ -1,0 +1,64 @@
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+/// 保護プロセスリスト — kill / 優先度変更の対象外
+/// 拡張子なしの正規化名で管理（比較時に .exe を除去して小文字化）
+pub const PROTECTED_PROCESSES: &[&str] = &[
+    "system",
+    "registry",
+    "smss",
+    "csrss",
+    "wininit",
+    "winlogon",
+    "lsass",
+    "services",
+    "svchost",
+    "dwm",
+    "explorer",
+    "msmpeng",    // Windows Defender
+    "msseces",    // Microsoft Security Essentials
+    "avp",        // Kaspersky
+    "nexus",      // 自アプリ
+];
+
+/// プロセス名が保護リストに含まれるか判定
+/// `.exe` を除去（大文字小文字を区別せず）、小文字化してから比較
+pub fn is_protected_process(name: &str) -> bool {
+    let name_lower = name.to_lowercase();
+    let normalized = name_lower
+        .strip_suffix(".exe")
+        .unwrap_or(&name_lower);
+    PROTECTED_PROCESSES.contains(&normalized)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_protected_with_exe() {
+        assert!(is_protected_process("explorer.exe"));
+        assert!(is_protected_process("svchost.exe"));
+        assert!(is_protected_process("nexus.exe"));
+    }
+
+    #[test]
+    fn test_is_protected_without_exe() {
+        assert!(is_protected_process("System"));
+        assert!(is_protected_process("csrss"));
+        assert!(is_protected_process("LSASS"));
+    }
+
+    #[test]
+    fn test_is_protected_case_insensitive() {
+        assert!(is_protected_process("explorer.EXE"));
+        assert!(is_protected_process("SVCHOST.exe"));
+        assert!(is_protected_process("DWM"));
+    }
+
+    #[test]
+    fn test_non_protected() {
+        assert!(!is_protected_process("chrome.exe"));
+        assert!(!is_protected_process("notepad.exe"));
+        assert!(!is_protected_process("game.exe"));
+    }
+}

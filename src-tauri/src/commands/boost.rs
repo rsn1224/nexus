@@ -1,25 +1,7 @@
+use crate::constants::is_protected_process;
 use crate::error::AppError;
 use serde::Serialize;
 use std::time::Instant;
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const PROTECTED_PROCESSES: &[&str] = &[
-    "system",
-    "smss.exe",
-    "csrss.exe",
-    "wininit.exe",
-    "winlogon.exe",
-    "lsass.exe",
-    "services.exe",
-    "svchost.exe",
-    "dwm.exe",
-    "explorer.exe",
-    "msmpeng.exe",
-    "msseces.exe",
-    "avp.exe",
-    "nexus.exe",
-];
 
 // ─── Types ─────────────────────────────────────────────────────────────────
 
@@ -59,9 +41,7 @@ pub fn run_boost(_threshold_percent: Option<f32>) -> Result<BoostResult, AppErro
     let actions: Vec<BoostAction> = sim_entries
         .iter()
         .map(|(name, _protected)| {
-            // 保護チェック: to_lowercase() してから as_str() で比較
-            let name_lower = name.to_lowercase();
-            let is_protected = PROTECTED_PROCESSES.contains(&name_lower.as_str());
+            let is_protected = is_protected_process(name);
 
             BoostAction {
                 label: name.to_string(),
@@ -116,12 +96,12 @@ mod tests {
 
     #[test]
     fn test_protected_processes_list_not_empty() {
-        assert!(!PROTECTED_PROCESSES.is_empty());
+        assert!(is_protected_process("system.exe"));
     }
 
     #[test]
     fn test_nexus_exe_is_protected() {
-        assert!(PROTECTED_PROCESSES.contains(&"nexus.exe"));
+        assert!(is_protected_process("nexus.exe"));
     }
 
     #[test]
@@ -129,8 +109,8 @@ mod tests {
         let must_protect = ["lsass.exe", "csrss.exe", "winlogon.exe", "explorer.exe"];
         for p in must_protect {
             assert!(
-                PROTECTED_PROCESSES.contains(&p),
-                "{} should be in PROTECTED_PROCESSES",
+                is_protected_process(p),
+                "{} should be protected",
                 p
             );
         }

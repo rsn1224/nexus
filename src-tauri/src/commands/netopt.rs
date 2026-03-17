@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::net::Ipv4Addr;
 use std::process::Command;
 use tracing::{info, warn};
 
@@ -19,6 +20,47 @@ pub struct PingResult {
     pub target: String,
     pub latency_ms: Option<u64>,
     pub success: bool,
+}
+
+// ─── Validation Functions (Phase 1) ─────────────────────────────────────
+
+/// IPv4アドレスのバリデーション
+fn validate_ipv4(ip: &str) -> Result<(), AppError> {
+    ip.parse::<Ipv4Addr>()
+        .map_err(|_| AppError::InvalidInput(format!("Invalid IPv4 address: {}", ip)))?;
+    Ok(())
+}
+
+/// ネットワークアダプタ名のバリデーション（危険文字の排除）
+fn validate_adapter_name(name: &str) -> Result<(), AppError> {
+    if name.is_empty() || name.len() > 256 {
+        return Err(AppError::InvalidInput("Adapter name must be 1-256 characters".into()));
+    }
+    // シェルメタ文字を拒否
+    if name.chars().any(|c| matches!(c, ';' | '|' | '&' | '`' | '$' | '<' | '>' | '"' | '\'' | '\\')) {
+        return Err(AppError::InvalidInput(format!(
+            "Adapter name contains forbidden characters: {}", name
+        )));
+    }
+    Ok(())
+}
+
+/// ping対象のバリデーション（IP or ホスト名）
+fn validate_ping_target(target: &str) -> Result<(), AppError> {
+    if target.is_empty() || target.len() > 253 {
+        return Err(AppError::InvalidInput("Target must be 1-253 characters".into()));
+    }
+    // IPアドレスとして有効 OR ホスト名として有効
+    if target.parse::<Ipv4Addr>().is_ok() {
+        return Ok(());
+    }
+    // ホスト名: 英数字, ハイフン, ドットのみ
+    if target.chars().all(|c| c.is_ascii_alphanumeric() || c == '-' || c == '.') {
+        return Ok(());
+    }
+    Err(AppError::InvalidInput(format!(
+        "Invalid ping target: {}. Only IP addresses or hostnames (alphanumeric, '-', '.') are allowed", target
+    )))
 }
 
 #[tauri::command]
@@ -154,6 +196,13 @@ pub fn get_current_dns() -> Result<Vec<String>, AppError> {
 
 #[tauri::command]
 pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<(), AppError> {
+    // ── バリデーション（Phase 1 追加）──
+    validate_adapter_name(&adapter)?;
+    validate_ipv4(&primary)?;
+    if !secondary.trim().is_empty() {
+        validate_ipv4(&secondary)?;
+    }
+
     info!(
         "set_dns: setting DNS for adapter {}: {}, {}",
         adapter, primary, secondary
@@ -218,6 +267,7 @@ pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<()
 
 #[tauri::command]
 pub fn ping_host(target: String) -> Result<PingResult, AppError> {
+    validate_ping_target(&target)?;  // ← 追加
     info!("ping_host: pinging {}", target);
 
     let output = Command::new("ping")
@@ -275,5 +325,56 @@ mod tests {
         assert_eq!(result.target, deserialized.target);
         assert_eq!(result.latency_ms, deserialized.latency_ms);
         assert_eq!(result.success, deserialized.success);
+    }
+
+    // --- set_dns バリデーション ---
+    #[test]
+    fn test_validate_ipv4_valid() {
+        assert!(validate_ipv4("8.8.8.8").is_ok());
+        assert!(validate_ipv4("192.168.1.1").is_ok());
+        assert!(validate_ipv4("0.0.0.0").is_ok());
+        assert!(validate_ipv4("255.255.255.255").is_ok());
+    }
+
+    #[test]
+    fn test_validate_ipv4_invalid() {
+        assert!(validate_ipv4("").is_err());
+        assert!(validate_ipv4("not-an-ip").is_err());
+        assert!(validate_ipv4("256.1.1.1").is_err());
+        assert!(validate_ipv4("1.2.3").is_err());
+        assert!(validate_ipv4("; rm -rf /").is_err());
+        assert!(validate_ipv4("8.8.8.8; whoami").is_err());
+    }
+
+    #[test]
+    fn test_validate_adapter_name_valid() {
+        assert!(validate_adapter_name("Ethernet").is_ok());
+        assert!(validate_adapter_name("Wi-Fi").is_ok());
+        assert!(validate_adapter_name("イーサネット").is_ok());
+        assert!(validate_adapter_name("Local Area Connection 2").is_ok());
+    }
+
+    #[test]
+    fn test_validate_adapter_name_injection() {
+        assert!(validate_adapter_name("eth0; whoami").is_err());
+        assert!(validate_adapter_name("eth0 | cat /etc/passwd").is_err());
+        assert!(validate_adapter_name("eth0 & dir").is_err());
+        assert!(validate_adapter_name("").is_err());
+    }
+
+    // --- ping_host バリデーション ---
+    #[test]
+    fn test_validate_ping_target_valid() {
+        assert!(validate_ping_target("8.8.8.8").is_ok());
+        assert!(validate_ping_target("google.com").is_ok());
+        assert!(validate_ping_target("sub.domain.example.com").is_ok());
+    }
+
+    #[test]
+    fn test_validate_ping_target_invalid() {
+        assert!(validate_ping_target("").is_err());
+        assert!(validate_ping_target("; whoami").is_err());
+        assert!(validate_ping_target("google.com; ls").is_err());
+        assert!(validate_ping_target("test space.com").is_err());
     }
 }

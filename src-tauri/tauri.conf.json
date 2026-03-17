@@ -20,7 +20,7 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' https://cdn.akamai.steamstatic.com data:; connect-src 'self' https://api.perplexity.ai; font-src 'self' data:"
     }
   },
   "bundle": {

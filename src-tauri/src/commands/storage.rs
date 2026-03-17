@@ -7,6 +7,23 @@ use std::process::Command;
 use sysinfo::Disks;
 use tracing::{info, warn};
 
+// ─── Validation Functions (Phase 1) ─────────────────────────────────────
+
+/// Windows ドライブレター形式のバリデーション
+fn validate_drive_name(name: &str) -> Result<(), AppError> {
+    // "C:", "C:\", "D:", "D:\" のいずれか
+    let trimmed = name.trim_end_matches('\\');
+    if trimmed.len() == 2
+        && trimmed.chars().next().is_some_and(|c| c.is_ascii_alphabetic())
+        && trimmed.chars().nth(1) == Some(':')
+    {
+        return Ok(());
+    }
+    Err(AppError::InvalidInput(format!(
+        "Invalid drive name: '{}'. Expected format: 'C:' or 'C:\\'", name
+    )))
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DiskDrive {
@@ -239,6 +256,7 @@ pub fn run_full_cleanup() -> Result<CleanupResult, AppError> {
 
 #[tauri::command]
 pub fn analyze_disk_usage(drive_name: String) -> Result<Vec<String>, AppError> {
+    validate_drive_name(&drive_name)?;  // ← 追加
     info!(
         "analyze_disk_usage: analyzing usage for drive {}",
         drive_name
@@ -309,6 +327,24 @@ mod tests {
         let deserialized: CleanupResult = serde_json::from_str(&serialized).unwrap();
 
         assert_eq!(result.total_freed_bytes, deserialized.total_freed_bytes);
-        assert_eq!(result.temp_files_cleaned, deserialized.temp_files_cleaned);
+    }
+
+    // --- analyze_disk_usage バリデーション ---
+    #[test]
+    fn test_validate_drive_name_valid() {
+        assert!(validate_drive_name("C:").is_ok());
+        assert!(validate_drive_name("C:\\").is_ok());
+        assert!(validate_drive_name("D:").is_ok());
+        assert!(validate_drive_name("D:\\").is_ok());
+    }
+
+    #[test]
+    fn test_validate_drive_name_invalid() {
+        assert!(validate_drive_name("").is_err());
+        assert!(validate_drive_name("../").is_err());
+        assert!(validate_drive_name("C:\\Users\\..\\..").is_err());
+        assert!(validate_drive_name("/etc/passwd").is_err());
+        assert!(validate_drive_name("CC:").is_err());
+        assert!(validate_drive_name("1:").is_err());
     }
 }

@@ -1,3 +1,4 @@
+use crate::constants::is_protected_process;
 use crate::error::AppError;
 use serde::Serialize;
 use sysinfo::{Process, ProcessesToUpdate, System};
@@ -16,20 +17,10 @@ pub struct SystemProcess {
     pub can_terminate: bool,
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const PROTECTED_NAMES: &[&str] = &[
-    "System", "Registry", "smss", "csrss", "wininit", "winlogon", "lsass", "services", "svchost",
-];
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 fn process_name(p: &Process) -> String {
     p.name().to_string_lossy().to_string()
-}
-
-fn is_protected(name: &str) -> bool {
-    PROTECTED_NAMES.iter().any(|n| n.eq_ignore_ascii_case(name))
 }
 
 fn fresh_system() -> System {
@@ -49,7 +40,7 @@ pub fn list_processes() -> Result<Vec<SystemProcess>, AppError> {
         .values()
         .map(|p: &Process| {
             let name = process_name(p);
-            let can_terminate = !is_protected(&name);
+            let can_terminate = !is_protected_process(&name);
             SystemProcess {
                 pid: p.pid().as_u32(),
                 name,
@@ -81,7 +72,7 @@ pub fn kill_process(pid: u32) -> Result<String, AppError> {
 
     if let Some(process) = sys.process(sysinfo_pid) {
         let name = process_name(process);
-        if is_protected(&name) {
+        if is_protected_process(&name) {
             return Err(AppError::Command("Protected process".to_string()));
         }
         if process.kill() {
@@ -143,7 +134,7 @@ pub fn get_ai_suggestions() -> Result<Vec<String>, AppError> {
         .processes()
         .values()
         .map(|p: &Process| (process_name(p), p.cpu_usage()))
-        .filter(|(name, _)| !is_protected(name))
+        .filter(|(name, _)| !is_protected_process(name))
         .collect();
 
     // Sort by CPU descending
@@ -173,11 +164,11 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_is_protected() {
-        assert!(is_protected("lsass"));
-        assert!(is_protected("svchost"));
-        assert!(!is_protected("chrome"));
-        assert!(!is_protected("notepad"));
+    fn test_is_protected_process() {
+        assert!(is_protected_process("lsass"));
+        assert!(is_protected_process("svchost"));
+        assert!(!is_protected_process("chrome"));
+        assert!(!is_protected_process("notepad"));
     }
 
     #[test]
