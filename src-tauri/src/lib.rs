@@ -2,7 +2,7 @@ mod commands;
 mod error;
 
 use crate::commands::{
-    app_settings, boost, hardware, launcher, netopt, ops, pulse, storage, winopt, windows_settings,
+    app_settings, boost, hardware, launcher, log, netopt, ops, pulse, storage, winopt, windows_settings,
 };
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -120,6 +120,11 @@ pub fn run() {
             storage::cleanup_system_cache,
             storage::run_full_cleanup,
             storage::analyze_disk_usage,
+            // LOG
+            log::get_system_logs,
+            log::get_application_logs,
+            log::analyze_logs,
+            log::export_logs,
             // APP SETTINGS
             app_settings::get_app_settings,
             app_settings::save_app_settings,

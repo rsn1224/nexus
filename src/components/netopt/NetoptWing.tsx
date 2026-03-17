@@ -242,11 +242,9 @@ export default function NetoptWing(): React.ReactElement {
                   </span>
                 </>
               ) : (
-                <>
-                  <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger-500)]">
-                    TIMEOUT
-                  </span>
-                </>
+                <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger-500)]">
+                  TIMEOUT
+                </span>
               )}
             </div>
           )}
