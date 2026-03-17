@@ -1,32 +1,34 @@
-import { useCallback, useEffect, useState } from 'react';
-import BoostWing from './components/boost/BoostWing';
-import HardwareWing from './components/hardware/HardwareWing';
-import HomeWing from './components/home/HomeWing';
-import LauncherWing from './components/launcher/LauncherWing';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Shell from './components/layout/Shell';
-import LogWing from './components/log/LogWing';
-import NetoptWing from './components/netopt/NetoptWing';
-import SettingsWing from './components/settings/SettingsWing';
-import StorageWing from './components/storage/StorageWing';
-import WindowsWing from './components/windows/WindowsWing';
+import LoadingFallback from './components/ui/LoadingFallback';
 import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
-const WING_COMPONENTS: Record<WingId, React.ReactNode> = {
-  home: <HomeWing />,
-  boost: <BoostWing />,
-  launcher: <LauncherWing />,
-  settings: <SettingsWing />,
-  windows: <WindowsWing />,
-  hardware: <HardwareWing />,
-  log: <LogWing />,
-  netopt: <NetoptWing />,
-  storage: <StorageWing />,
+const HomeWing = lazy(() => import('./components/home/HomeWing'));
+const BoostWing = lazy(() => import('./components/boost/BoostWing'));
+const LauncherWing = lazy(() => import('./components/launcher/LauncherWing'));
+const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
+const WindowsWing = lazy(() => import('./components/windows/WindowsWing'));
+const HardwareWing = lazy(() => import('./components/hardware/HardwareWing'));
+const LogWing = lazy(() => import('./components/log/LogWing'));
+const NetoptWing = lazy(() => import('./components/netopt/NetoptWing'));
+const StorageWing = lazy(() => import('./components/storage/StorageWing'));
+
+const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
+  home: HomeWing,
+  boost: BoostWing,
+  launcher: LauncherWing,
+  settings: SettingsWing,
+  windows: WindowsWing,
+  hardware: HardwareWing,
+  log: LogWing,
+  netopt: NetoptWing,
+  storage: StorageWing,
 };
 
 export default function App(): React.ReactElement {
   const [activeWing, setActiveWing] = useState<WingId>('home');
-  // Wings are kept mounted once visited so state (e.g. Vault unlock) persists
+  // Wings are kept mounted once visited so state persists
   const [mountedWings, setMountedWings] = useState<Set<WingId>>(new Set<WingId>(['home']));
 
   const setNavigate = useNavStore((s) => s.setNavigate);
@@ -42,21 +44,20 @@ export default function App(): React.ReactElement {
 
   return (
     <Shell activeWing={activeWing} onWingChange={handleWingChange}>
-      {(Object.keys(WING_COMPONENTS) as WingId[]).map((wingId) =>
-        mountedWings.has(wingId) ? (
+      {(Object.keys(WING_COMPONENTS) as WingId[]).map((wingId) => {
+        if (!mountedWings.has(wingId)) return null;
+        const WingComponent = WING_COMPONENTS[wingId];
+        return (
           <div
             key={wingId}
-            style={{
-              display: wingId === activeWing ? 'flex' : 'none',
-              flexDirection: 'column',
-              height: '100%',
-              overflow: 'hidden',
-            }}
+            className={wingId === activeWing ? 'flex flex-col h-full overflow-hidden' : 'hidden'}
           >
-            {WING_COMPONENTS[wingId]}
+            <Suspense fallback={<LoadingFallback />}>
+              <WingComponent />
+            </Suspense>
           </div>
-        ) : null,
-      )}
+        );
+      })}
     </Shell>
   );
 }
