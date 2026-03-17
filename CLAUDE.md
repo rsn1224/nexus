@@ -42,6 +42,59 @@ cd src-tauri && cargo fmt
 
 ---
 
+## レビューワークフロー
+
+Cascade が実装完了したら、以下の手順でレビューしてから push する。
+
+### ステップ 1 — ステージング
+
+```bash
+git add -p   # 変更を1ブロックずつ確認しながらステージング
+             # y = 追加 / n = スキップ / s = 分割 / ? = ヘルプ
+```
+
+### ステップ 2 — Claude Code レビュー
+
+**TSX / TS ファイルのレビュー:**
+```bash
+./scripts/review.sh                          # ステージング済み全ファイル
+./scripts/review.sh src/components/xxx/XxxWing.tsx  # 特定ファイルのみ
+```
+
+**Rust ファイルのレビュー:**
+```bash
+./scripts/review-rust.sh                           # src-tauri/src/commands/ 全体
+./scripts/review-rust.sh src-tauri/src/commands/xxx.rs  # 特定ファイルのみ
+```
+
+> **ヒント:** 2回目以降は `↑ Enter` で再実行できる
+
+### ステップ 3 — 結果の判定
+
+| 出力 | 対応 |
+|------|------|
+| `APPROVED` | そのまま `git commit && git push` |
+| `REQUIRES_CHANGES` | 指摘内容を Cascade に貼り付けて修正依頼 → ステップ1に戻る |
+
+### ステップ 4 — push
+
+```bash
+git commit -m "feat: xxx"
+git push
+```
+
+### タイミングまとめ
+
+```
+Cascade 実装完了の報告
+  └─ git add -p              （変更を目視確認）
+  └─ ./scripts/review.sh     （↑ Enter で再実行可）
+  └─ APPROVED → git push
+  └─ REQUIRES_CHANGES → Cascade に修正指示 → 繰り返し
+```
+
+---
+
 ## アーキテクチャルール
 
 ### フロントエンド
