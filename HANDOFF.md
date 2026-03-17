@@ -1203,6 +1203,33 @@ const fmt = (mb: number) => mb >= 1024 ? `${(mb / 1024).toFixed(1)}GB` : `${mb}M
 
 ---
 
+### タスク 8 — OH-B1: ProcessTab リアルタイムプロセスリスト
+
+**ステータス**: done
+**担当**: Cascade
+**前提**: タスク6（BoostWing実装）完了済み
+**背景**: ProcessTab が「RUN BOOSTボタン → 結果テーブル」のみで、実行前にどのプロセスが対象になるか見えない。`useOpsStore.fetchProcesses` / `list_processes` コマンドは既存。`ProcessTab.tsx` 1ファイルのみ修正。
+
+#### T8-Cascade 記入欄
+
+- **実装内容**: LIVE PROCESSESパネル追加（CPU%降順ソート、TARGET/PROT/─バッジ）、CPU%色分け（<20%: secondary / 20-49%: accent-400 / >=50%: danger）、REFRESHボタン・LAST: HH:MM表示追加、BOOST実行後に自動fetchProcesses()呼び出し、BOOST RESULTテキスト英語化（PROCESS/ACTION/STATUS）、エラーバナーをCSS変数に修正（red-* → color-danger-*）。
+- **テスト実行結果**: `npm run typecheck` [x] PASS / `npm run check` [x] PASS / `npm run test` [x] PASS
+- **特記事項**: 変更は `src/components/boost/ProcessTab.tsx` の1ファイルのみ（+183行 / -29行）。
+
+#### T8-Claude Code レビュー結果
+
+- **判定**: ✅ PASS
+- **指摘事項**:
+  - 変更ファイルが `ProcessTab.tsx` 1ファイルのみで仕様通り — ✅
+  - エラーバナーの `red-*` → `color-danger-*` CSS変数修正を自発的に実施 — ✅ 評価
+  - `npm run check` 今回は PASS（T7の再発なし）— ✅
+  - `PROTECTED_PROCESS_NAMES` をコンポーネント内定数として定義した設計は妥当。将来 `src/lib/boost.ts` 等に切り出す余地あり
+  - `useMemo` によるプロセスソートキャッシュの実装を確認 — ✅
+  - 全品質ゲート（typecheck / check / test）通過確認
+- **レビュー日**: 2026-03-17
+
+---
+
 ## 完了タスク
 
 ### タスク 1 — GPO 統合スモークテスト
