@@ -40,10 +40,11 @@ pub fn get_timer_state(state: &State<'_, SharedState>) -> Result<TimerResolution
     };
 
     Ok(TimerResolutionState {
-        current_resolution_ns: 15625000,
-        minimum_resolution_ns: 500000,
-        maximum_resolution_ns: 15625000,
+        current_100ns: 156250,
         nexus_requested_100ns: requested,
+        default_100ns: 156250,
+        minimum_100ns: 5000,
+        maximum_100ns: 156250,
     })
 }
 

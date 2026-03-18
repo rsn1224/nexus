@@ -267,6 +267,7 @@ pub fn reset_to_defaults() -> Result<TcpTuningState, AppError> {
 // --- ヘルパー関数 ---
 
 /// アクティブなネットワークインターフェースの一覧を取得
+#[cfg(windows)]
 fn get_active_interfaces() -> Result<Vec<String>, AppError> {
     // 簡易実装: レジストリからインターフェースキーの一覧を取得
     // 実際の実装では WMI や GetAdaptersAddresses を使用するべき
@@ -274,6 +275,7 @@ fn get_active_interfaces() -> Result<Vec<String>, AppError> {
     Ok(interfaces)
 }
 
+#[cfg(windows)]
 /// Nagle の現在状態を取得
 fn get_nagle_status() -> Result<bool, AppError> {
     let interfaces = get_active_interfaces()?;
@@ -289,6 +291,7 @@ fn get_nagle_status() -> Result<bool, AppError> {
     Ok(false) // デフォルトは有効
 }
 
+#[cfg(windows)]
 /// Delayed ACK の現在状態を取得
 fn get_delayed_ack_status() -> Result<bool, AppError> {
     let interfaces = get_active_interfaces()?;
@@ -325,7 +328,7 @@ fn get_tcp_auto_tuning_level() -> Result<TcpAutoTuningLevel, AppError> {
     } else if output_str.contains("experimental") {
         Ok(TcpAutoTuningLevel::Experimental)
     } else {
-        Ok(TcpAutoTuningLevel::Normal)
+        Ok(TcpAutoTuningLevel::Normal) // デフォルト
     }
 }
 
