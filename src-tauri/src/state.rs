@@ -73,3 +73,6 @@ impl AppState {
 
 /// Tauri Managed State の型エイリアス
 pub type SharedState = Mutex<AppState>;
+
+/// Watchdog エンジン状態
+pub type WatchdogState = std::sync::Arc<Mutex<crate::services::watchdog::WatchdogEngine>>;

@@ -17,15 +17,16 @@ mod types;
 use crate::commands::{
     ai, app_settings, boost, cleanup, core_parking, frame_time, hardware, health_check, launcher,
     launcher_settings, log, memory, netopt, ops, profile, pulse, script, session, storage, timer,
-    windows_settings, winopt,
+    windows_settings, winopt, watchdog,
 };
+use crate::emitters;
 use tracing::info;
 
 // Manager トレイトをインポート
 use tauri::Manager;
 
 // state.rs から re-export
-pub use state::{AppState, SharedState};
+pub use state::{AppState, SharedState, WatchdogState};
 
 // types::game から再エクスポート
 pub use types::game::*;
@@ -48,6 +49,7 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_notification::init())
         .manage(<SharedState>::new(AppState::new()))
+        .manage(<WatchdogState>::new(std::sync::Mutex::new(crate::services::watchdog::WatchdogEngine::new())))
         .invoke_handler(tauri::generate_handler![
             // AI
             ai::get_optimization_suggestions,
@@ -151,6 +153,13 @@ pub fn run() {
             session::delete_session,
             session::compare_sessions,
             session::update_session_note,
+            // WATCHDOG
+            watchdog::get_watchdog_rules,
+            watchdog::add_watchdog_rule,
+            watchdog::update_watchdog_rule,
+            watchdog::remove_watchdog_rule,
+            watchdog::get_watchdog_events,
+            watchdog::get_watchdog_presets,
             // CLEANUP
             cleanup::revert_all_settings,
             cleanup::cleanup_app_data,
@@ -203,6 +212,19 @@ pub fn run() {
                     crate::services::game_monitor::start_polling(game_handle).await;
                 });
                 info!("game_monitor: ゲーム監視開始（sysinfo polling=3s）");
+            }
+
+            // Watchdog ルール読み込み
+            {
+                let watchdog_state = app.state::<WatchdogState>();
+                if let Ok(mut watchdog) = watchdog_state.lock() {
+                    if let Ok(rules) = crate::services::watchdog::WatchdogEngine::load_rules(&handle) {
+                        for rule in rules {
+                            let _ = watchdog.add_rule(rule);
+                        }
+                        info!("watchdog: {} rules loaded from disk", watchdog.get_rules().len());
+                    }
+                }
             }
 
             Ok(())

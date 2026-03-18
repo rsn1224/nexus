@@ -8,10 +8,11 @@ import { ErrorBanner, TabBar } from '../ui';
 import NetworkTab from './NetworkTab';
 import ProcessTab from './ProcessTab';
 import ProfileTab from './ProfileTab';
+import WatchdogTab from './WatchdogTab';
 import WinoptTab from './WinoptTab';
 
 export default function BoostWing(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<'process' | 'windows' | 'network' | 'profiles'>(
+  const [activeTab, setActiveTab] = useState<'process' | 'windows' | 'network' | 'profiles' | 'watchdog'>(
     'process',
   );
 
@@ -40,6 +41,7 @@ export default function BoostWing(): React.ReactElement {
     { id: 'windows', label: 'Windows設定' },
     { id: 'network', label: 'ネット最適化' },
     { id: 'profiles', label: 'プロファイル' },
+    { id: 'watchdog', label: 'WATCHDOG' },
   ];
 
   return (
@@ -68,6 +70,7 @@ export default function BoostWing(): React.ReactElement {
         {activeTab === 'windows' && <WinoptTab />}
         {activeTab === 'network' && <NetworkTab />}
         {activeTab === 'profiles' && <ProfileTab />}
+        {activeTab === 'watchdog' && <WatchdogTab />}
       </div>
 
       <AiPanel suggestions={boostSuggestions} />

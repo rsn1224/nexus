@@ -15,4 +15,4 @@ pub mod profile;
 pub mod session_store;
 pub mod system_monitor;
 pub mod thermal_monitor;
-pub mod timer;
+pub mod watchdog;
