@@ -170,7 +170,12 @@ pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
 }
 
 #[cfg(not(windows))]
-pub fn set_network_throttling(_index: i32) -> Result<(), AppError> {
+pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
+    if !(-1..=70).contains(&index) {
+        return Err(AppError::InvalidInput(
+            "Network Throttling Index must be -1 to 70".into(),
+        ));
+    }
     Err(AppError::Command("Windows 専用機能です".into()))
 }
 
@@ -190,7 +195,12 @@ pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
 }
 
 #[cfg(not(windows))]
-pub fn set_qos_reserved_bandwidth(_percent: u32) -> Result<(), AppError> {
+pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
+    if percent > 100 {
+        return Err(AppError::InvalidInput(
+            "QoS bandwidth must be 0-100%".into(),
+        ));
+    }
     Err(AppError::Command("Windows 専用機能です".into()))
 }
 

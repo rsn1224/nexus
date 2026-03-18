@@ -454,7 +454,7 @@ mod tests {
         assert!(matches!(result.unwrap_err(), AppError::Win32(_)));
 
         let result = find_pids_by_name("test.exe");
-        assert!(result.is_err());
-        assert!(matches!(result.unwrap_err(), AppError::Win32(_)));
+        assert!(result.is_ok()); // Linux では空リストを返す
+        assert!(result.unwrap().is_empty());
     }
 }

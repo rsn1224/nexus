@@ -117,12 +117,21 @@ pub fn find_profile_by_exe(
     let exe_lower = exe_path.to_lowercase();
     Ok(profiles.into_iter().find(|p| {
         let profile_exe = p.exe_path.to_string_lossy().to_lowercase();
-        // フルパス一致、またはファイル名のみ一致
-        profile_exe == exe_lower
-            || p.exe_path
-                .file_name()
-                .map(|f| f.to_string_lossy().to_lowercase() == exe_lower)
-                .unwrap_or(false)
+        // フルパス一致
+        if profile_exe == exe_lower {
+            return true;
+        }
+        // file_name() によるファイル名一致（Linux では Windows パスの \ を認識しないため両方試みる）
+        let os_file_name = p
+            .exe_path
+            .file_name()
+            .map(|f| f.to_string_lossy().to_lowercase());
+        if os_file_name.as_deref() == Some(exe_lower.as_str()) {
+            return true;
+        }
+        // \ 区切りでフォールバック（Windows パスを Linux でパースする場合）
+        let backslash_file_name = profile_exe.rsplit('\\').next().unwrap_or(&profile_exe);
+        backslash_file_name == exe_lower
     }))
 }
 
