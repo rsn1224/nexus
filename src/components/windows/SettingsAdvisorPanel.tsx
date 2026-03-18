@@ -2,6 +2,56 @@ import type React from 'react';
 import { useEffect } from 'react';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import type { RecommendedValue } from '../../types';
+import Button from '../ui/Button';
+
+const importanceBorderClass = (importance: string) => {
+  switch (importance) {
+    case 'high':
+      return 'border-l-danger-500';
+    case 'medium':
+      return 'border-l-accent-500';
+    default:
+      return 'border-l-text-secondary';
+  }
+};
+
+const importanceTextClass = (importance: string) => {
+  switch (importance) {
+    case 'high':
+      return 'text-danger-500';
+    case 'medium':
+      return 'text-accent-500';
+    default:
+      return 'text-text-secondary';
+  }
+};
+
+// Returns combined text + bg classes for safety badge
+const safetyBadgeClass = (safety: string) => {
+  switch (safety) {
+    case 'safe':
+      return 'text-success-500 bg-success-500/10';
+    case 'moderate':
+      return 'text-accent-500 bg-accent-500/10';
+    case 'advanced':
+      return 'text-danger-500 bg-danger-500/10';
+    default:
+      return 'text-text-secondary bg-base-700';
+  }
+};
+
+const scoreTextClass = (score: number) => {
+  if (score >= 80) return 'text-success-500';
+  if (score >= 60) return 'text-accent-500';
+  return 'text-danger-500';
+};
+
+const formatRecommendedValue = (value: RecommendedValue) => {
+  if ('boolean' in value) return value.boolean ? 'ON' : 'OFF';
+  if ('string' in value) return value.string.toUpperCase();
+  if ('enum' in value) return value.enum.toUpperCase();
+  return String(value);
+};
 
 const SettingsAdvisorPanel: React.FC = () => {
   const {
@@ -17,177 +67,80 @@ const SettingsAdvisorPanel: React.FC = () => {
     fetchAdvisorResult();
   }, [fetchAdvisorResult]);
 
-  const getImportanceColor = (importance: string) => {
-    switch (importance) {
-      case 'high':
-        return 'var(--color-danger-500)';
-      case 'medium':
-        return 'var(--color-warning-500)';
-      case 'low':
-        return 'var(--color-text-secondary)';
-      default:
-        return 'var(--color-text-secondary)';
-    }
-  };
-
-  const getSafetyColor = (safety: string) => {
-    switch (safety) {
-      case 'safe':
-        return 'var(--color-success-500)';
-      case 'moderate':
-        return 'var(--color-warning-500)';
-      case 'advanced':
-        return 'var(--color-danger-500)';
-      default:
-        return 'var(--color-text-secondary)';
-    }
-  };
-
-  const formatRecommendedValue = (value: RecommendedValue) => {
-    if ('boolean' in value) {
-      return value.boolean ? 'ON' : 'OFF';
-    }
-    if ('string' in value) {
-      return value.string.toUpperCase();
-    }
-    if ('enum' in value) {
-      return value.enum.toUpperCase();
-    }
-    return String(value);
-  };
-
   if (advisorLoading) {
     return (
-      <div style={{ padding: '16px', textAlign: 'center' }}>
-        <div style={{ color: 'var(--color-text-secondary)' }}>ANALYZING SETTINGS...</div>
+      <div className="p-4 text-center">
+        <div className="text-text-secondary text-[11px]">ANALYZING SETTINGS...</div>
       </div>
     );
   }
 
   if (advisorError) {
     return (
-      <div style={{ padding: '16px' }}>
-        <div style={{ color: 'var(--color-danger-500)', marginBottom: '8px' }}>
-          ERROR: {advisorError}
-        </div>
-        <button
-          type="button"
-          onClick={fetchAdvisorResult}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'var(--color-accent-500)',
-            color: 'var(--color-background)',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-          }}
-        >
+      <div className="p-4">
+        <div className="text-danger-500 text-[11px] mb-2">ERROR: {advisorError}</div>
+        <Button variant="primary" size="sm" onClick={fetchAdvisorResult}>
           RETRY
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (!advisorResult) {
     return (
-      <div style={{ padding: '16px', textAlign: 'center' }}>
-        <div style={{ color: 'var(--color-text-secondary)' }}>NO DATA AVAILABLE</div>
+      <div className="p-4 text-center">
+        <div className="text-text-secondary text-[11px]">NO DATA AVAILABLE</div>
       </div>
     );
   }
 
+  const safeCount = advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length;
+
   return (
-    <div style={{ padding: '16px' }}>
+    <div className="p-4">
       {/* Header */}
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{ color: 'var(--color-text-primary)', fontSize: '14px', marginBottom: '8px' }}>
-          SETTINGS OPTIMIZATION ADVISOR
-        </h3>
+      <div className="mb-4">
+        <h3 className="text-text-primary text-[14px] mb-2">SETTINGS OPTIMIZATION ADVISOR</h3>
 
         {/* Optimization Score */}
-        <div style={{ marginBottom: '12px' }}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '4px',
-            }}
-          >
-            <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>
-              OPTIMIZATION SCORE
-            </span>
+        <div className="mb-3">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-text-secondary text-[12px]">OPTIMIZATION SCORE</span>
             <span
-              style={{
-                color:
-                  advisorResult.optimizationScore >= 80
-                    ? 'var(--color-success-500)'
-                    : advisorResult.optimizationScore >= 60
-                      ? 'var(--color-warning-500)'
-                      : 'var(--color-danger-500)',
-                fontSize: '12px',
-                fontWeight: 'bold',
-              }}
+              className={`${scoreTextClass(advisorResult.optimizationScore)} text-[12px] font-bold`}
             >
               {advisorResult.optimizationScore}%
             </span>
           </div>
-          <div
-            style={{
-              width: '100%',
-              height: '4px',
-              backgroundColor: 'var(--color-surface)',
-              borderRadius: '2px',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="w-full h-1 bg-base-800 rounded-full overflow-hidden">
+            {/* width is dynamic — inline style required */}
             <div
-              style={{
-                width: `${advisorResult.optimizationScore}%`,
-                height: '100%',
-                backgroundColor:
-                  advisorResult.optimizationScore >= 80
-                    ? 'var(--color-success-500)'
-                    : advisorResult.optimizationScore >= 60
-                      ? 'var(--color-warning-500)'
-                      : 'var(--color-danger-500)',
-                transition: 'width 0.3s ease',
-              }}
+              className={`h-full transition-[width] duration-300 ${
+                advisorResult.optimizationScore >= 80
+                  ? 'bg-success-500'
+                  : advisorResult.optimizationScore >= 60
+                    ? 'bg-accent-500'
+                    : 'bg-danger-500'
+              }`}
+              style={{ width: `${advisorResult.optimizationScore}%` }}
             />
           </div>
         </div>
 
         {/* Hardware Summary */}
-        <div
-          style={{
-            padding: '8px',
-            backgroundColor: 'var(--color-surface)',
-            borderRadius: '4px',
-            marginBottom: '12px',
-          }}
-        >
-          <div
-            style={{ color: 'var(--color-text-secondary)', fontSize: '10px', marginBottom: '4px' }}
-          >
-            HARDWARE SUMMARY
-          </div>
-          <div style={{ color: 'var(--color-text-primary)', fontSize: '11px' }}>
-            {advisorResult.hardwareSummary}
-          </div>
+        <div className="p-2 bg-base-800 rounded mb-3">
+          <div className="text-text-secondary text-[10px] mb-1">HARDWARE SUMMARY</div>
+          <div className="text-text-primary text-[11px]">{advisorResult.hardwareSummary}</div>
         </div>
 
         {/* Warnings */}
         {advisorResult.warnings.length > 0 && (
-          <div style={{ marginBottom: '12px' }}>
-            <div
-              style={{ color: 'var(--color-warning-500)', fontSize: '11px', marginBottom: '4px' }}
-            >
-              WARNINGS:
-            </div>
+          <div className="mb-3">
+            <div className="text-accent-500 text-[11px] mb-1">WARNINGS:</div>
             {advisorResult.warnings.map((warning) => (
               <div
                 key={`warning-${warning.substring(0, 30)}`}
-                style={{ color: 'var(--color-warning-500)', fontSize: '10px', marginBottom: '2px' }}
+                className="text-accent-500 text-[10px] mb-0.5"
               >
                 • {warning}
               </div>
@@ -196,218 +149,91 @@ const SettingsAdvisorPanel: React.FC = () => {
         )}
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', gap: '8px', marginBottom: '16px' }}>
-          <button
-            type="button"
+        <div className="flex gap-2 mb-4">
+          <Button
+            variant={safeCount > 0 ? 'primary' : 'ghost'}
+            size="sm"
             onClick={applyAllSafeRecommendations}
-            disabled={
-              advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length === 0
-            }
-            style={{
-              padding: '6px 12px',
-              backgroundColor:
-                advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length > 0
-                  ? 'var(--color-success-500)'
-                  : 'var(--color-surface)',
-              color:
-                advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length > 0
-                  ? 'var(--color-background)'
-                  : 'var(--color-text-muted)',
-              border: 'none',
-              borderRadius: '4px',
-              cursor:
-                advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length > 0
-                  ? 'pointer'
-                  : 'default',
-              fontSize: '11px',
-            }}
+            disabled={safeCount === 0}
           >
-            APPLY ALL SAFE (
-            {advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length})
-          </button>
-          <button
-            type="button"
-            onClick={fetchAdvisorResult}
-            style={{
-              padding: '6px 12px',
-              backgroundColor: 'var(--color-surface)',
-              color: 'var(--color-text-primary)',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontSize: '11px',
-            }}
-          >
+            APPLY ALL SAFE ({safeCount})
+          </Button>
+          <Button variant="ghost" size="sm" onClick={fetchAdvisorResult}>
             REFRESH
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* Recommendations */}
       <div>
-        <h4 style={{ color: 'var(--color-text-primary)', fontSize: '12px', marginBottom: '8px' }}>
+        <h4 className="text-text-primary text-[12px] mb-2">
           RECOMMENDATIONS ({advisorResult.recommendations.length})
         </h4>
 
         {advisorResult.recommendations.length === 0 ? (
-          <div
-            style={{
-              padding: '12px',
-              backgroundColor: 'var(--color-surface)',
-              borderRadius: '4px',
-              textAlign: 'center',
-            }}
-          >
-            <div style={{ color: 'var(--color-success-500)', fontSize: '11px' }}>
-              ALL SETTINGS OPTIMAL
-            </div>
+          <div className="p-3 bg-base-800 rounded text-center">
+            <div className="text-success-500 text-[11px]">ALL SETTINGS OPTIMAL</div>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {advisorResult.recommendations.map((rec) => (
-              <div
-                key={rec.settingId}
-                style={{
-                  padding: '12px',
-                  backgroundColor: rec.isOptimal
-                    ? 'var(--color-surface)'
-                    : 'var(--color-background)',
-                  border: `1px solid ${rec.isOptimal ? 'var(--color-surface)' : 'var(--color-surface)'}`,
-                  borderRadius: '4px',
-                  borderLeft: `4px solid ${getImportanceColor(rec.importance)}`,
-                }}
-              >
+          <div className="flex flex-col gap-2">
+            {advisorResult.recommendations.map((rec) => {
+              return (
                 <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '8px',
-                  }}
+                  key={rec.settingId}
+                  className={`p-3 rounded border border-base-800 border-l-4 ${importanceBorderClass(rec.importance)} ${rec.isOptimal ? 'bg-base-800' : 'bg-base-900'}`}
                 >
-                  <div style={{ flex: 1 }}>
-                    <div
-                      style={{
-                        color: 'var(--color-text-primary)',
-                        fontSize: '11px',
-                        fontWeight: 'bold',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      {rec.label.toUpperCase()}
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <div className="text-text-primary text-[11px] font-bold mb-1">
+                        {rec.label.toUpperCase()}
+                      </div>
+                      <div className="text-text-secondary text-[10px]">{rec.reason}</div>
                     </div>
-                    <div
-                      style={{
-                        color: 'var(--color-text-secondary)',
-                        fontSize: '10px',
-                        marginBottom: '4px',
-                      }}
-                    >
-                      {rec.reason}
+                    <div className="flex flex-col items-end gap-1">
+                      <span
+                        className={`${safetyBadgeClass(rec.safetyLevel)} text-[9px] font-bold px-1.5 py-0.5 rounded`}
+                      >
+                        {rec.safetyLevel.toUpperCase()}
+                      </span>
+                      <span
+                        className={`${importanceTextClass(rec.importance)} text-[9px] font-bold`}
+                      >
+                        {rec.importance.toUpperCase()}
+                      </span>
                     </div>
                   </div>
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-end',
-                      gap: '4px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: getSafetyColor(rec.safetyLevel),
-                        fontSize: '9px',
-                        fontWeight: 'bold',
-                        padding: '2px 6px',
-                        backgroundColor: `${getSafetyColor(rec.safetyLevel)}20`,
-                        borderRadius: '2px',
-                      }}
-                    >
-                      {rec.safetyLevel.toUpperCase()}
-                    </span>
-                    <span
-                      style={{
-                        color: getImportanceColor(rec.importance),
-                        fontSize: '9px',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {rec.importance.toUpperCase()}
-                    </span>
-                  </div>
-                </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '8px',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>
-                      CURRENT:
-                    </span>
-                    <span
-                      style={{
-                        color: rec.isOptimal
-                          ? 'var(--color-success-500)'
-                          : 'var(--color-text-primary)',
-                        fontSize: '10px',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {rec.currentValue}
-                    </span>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-text-secondary text-[10px]">CURRENT:</span>
+                      <span
+                        className={`${rec.isOptimal ? 'text-success-500' : 'text-text-primary'} text-[10px] font-bold`}
+                      >
+                        {rec.currentValue}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-text-secondary text-[10px]">RECOMMENDED:</span>
+                      <span
+                        className={`${rec.isOptimal ? 'text-text-primary' : 'text-accent-500'} text-[10px] font-bold`}
+                      >
+                        {formatRecommendedValue(rec.recommendedValue)}
+                      </span>
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>
-                      RECOMMENDED:
-                    </span>
-                    <span
-                      style={{
-                        color: rec.isOptimal
-                          ? 'var(--color-text-primary)'
-                          : 'var(--color-accent-500)',
-                        fontSize: '10px',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {formatRecommendedValue(rec.recommendedValue)}
-                    </span>
-                  </div>
-                </div>
 
-                {!rec.isOptimal && (
-                  <button
-                    type="button"
-                    onClick={() => applyRecommendation(rec.settingId)}
-                    style={{
-                      padding: '4px 8px',
-                      backgroundColor:
-                        rec.safetyLevel === 'safe'
-                          ? 'var(--color-accent-500)'
-                          : 'var(--color-surface)',
-                      color:
-                        rec.safetyLevel === 'safe'
-                          ? 'var(--color-background)'
-                          : 'var(--color-text-primary)',
-                      border:
-                        rec.safetyLevel === 'safe'
-                          ? 'none'
-                          : `1px solid ${getSafetyColor(rec.safetyLevel)}`,
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                      fontSize: '10px',
-                    }}
-                  >
-                    {rec.safetyLevel === 'safe' ? 'APPLY' : 'APPLY (ADVANCED)'}
-                  </button>
-                )}
-              </div>
-            ))}
+                  {!rec.isOptimal && (
+                    <Button
+                      variant={rec.safetyLevel === 'safe' ? 'primary' : 'secondary'}
+                      size="sm"
+                      onClick={() => applyRecommendation(rec.settingId)}
+                    >
+                      {rec.safetyLevel === 'safe' ? 'APPLY' : 'APPLY (ADVANCED)'}
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

@@ -9,7 +9,9 @@ import {
 import type { WatchdogAction, WatchdogRule } from '../../types';
 import Button from '../ui/Button';
 import EmptyState from '../ui/EmptyState';
+import ErrorBanner from '../ui/ErrorBanner';
 import LoadingFallback from '../ui/LoadingFallback';
+import SectionHeader from '../ui/SectionHeader';
 
 export default function WatchdogTab() {
   const rules = useWatchdogRules();
@@ -78,55 +80,25 @@ export default function WatchdogTab() {
 
   if (error) {
     return (
-      <div style={{ padding: '16px' }}>
-        <div
-          style={{
-            padding: '12px',
-            backgroundColor: 'var(--color-danger-100)',
-            border: '1px solid var(--color-danger-300)',
-            borderRadius: '4px',
-            color: 'var(--color-danger-700)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-          }}
-        >
-          ERROR: {error}
-        </div>
+      <div className="p-4">
+        <ErrorBanner message={error} />
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '16px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>
+    <div className="p-4 font-mono text-[12px]">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '16px',
-        }}
-      >
-        <h2
-          style={{
-            margin: 0,
-            fontSize: '11px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          WATCHDOG RULES
-        </h2>
-        <div style={{ display: 'flex', gap: '8px' }}>
+      <SectionHeader title="▶ BOOST / WATCHDOG" color="accent">
+        <div className="flex gap-2">
           <Button variant="secondary" onClick={handleLoadPresets} disabled={isLoading}>
             PRESETS
           </Button>
           <Button variant="primary" onClick={handleAddRule} disabled={isLoading}>
-            + ADD RULE
+            ADD RULE
           </Button>
         </div>
-      </div>
+      </SectionHeader>
 
       {isLoading && <LoadingFallback />}
 
@@ -138,186 +110,63 @@ export default function WatchdogTab() {
             action="ADD RULE"
           />
         ) : (
-          <div
-            style={{
-              border: '1px solid var(--color-border)',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              marginBottom: '24px',
-            }}
-          >
-            <table
-              style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                fontSize: '12px',
-              }}
-            >
+          <div className="border border-border overflow-hidden mb-6">
+            <table className="w-full border-collapse text-[12px]">
               <thead>
-                <tr
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    borderBottom: '1px solid var(--color-border)',
-                  }}
-                >
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                <tr className="bg-base-800 border-b border-border">
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     NAME
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     STATUS
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     CONDITIONS
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     ACTION
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     PROFILE
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'right',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-right font-bold text-text-muted uppercase text-[10px]">
                     ACTIONS
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {rules.map((rule: WatchdogRule) => (
-                  <tr
-                    key={rule.id}
-                    style={{
-                      borderBottom: '1px solid var(--color-border)',
-                    }}
-                  >
-                    <td style={{ padding: '12px' }}>
-                      <div
-                        style={{
-                          fontWeight: 'bold',
-                          color: 'var(--color-text-primary)',
-                        }}
-                      >
-                        {rule.name}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: '10px',
-                          color: 'var(--color-text-secondary)',
-                          marginTop: '2px',
-                        }}
-                      >
-                        ID: {rule.id}
-                      </div>
+                  <tr key={rule.id} className="border-b border-border">
+                    <td className="px-3 py-[5px]">
+                      <div className="font-bold text-text-primary">{rule.name}</div>
+                      <div className="text-[10px] text-text-muted mt-[2px]">ID: {rule.id}</div>
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      <button
-                        type="button"
+                    <td className="px-3 py-[5px]">
+                      <Button
+                        variant={rule.enabled ? 'primary' : 'secondary'}
+                        size="sm"
                         onClick={() => handleToggleRule(rule)}
-                        style={{
-                          padding: '4px 8px',
-                          borderRadius: '4px',
-                          border: rule.enabled
-                            ? '1px solid var(--color-success-500)'
-                            : '1px solid var(--color-text-muted)',
-                          backgroundColor: rule.enabled
-                            ? 'var(--color-success-500)'
-                            : 'transparent',
-                          color: rule.enabled ? 'white' : 'var(--color-text-secondary)',
-                          fontSize: '10px',
-                          fontWeight: 'bold',
-                          textTransform: 'uppercase',
-                          cursor: 'pointer',
-                          transition: 'all 0.2s',
-                        }}
                       >
                         {rule.enabled ? 'ENABLED' : 'DISABLED'}
-                      </button>
+                      </Button>
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-text-primary)',
-                          fontSize: '11px',
-                        }}
-                      >
+                    <td className="px-3 py-[5px]">
+                      <div className="text-text-primary text-[11px]">
                         {formatConditions(rule.conditions)}
                       </div>
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-accent-500)',
-                          fontWeight: 'bold',
-                          fontSize: '11px',
-                        }}
-                      >
+                    <td className="px-3 py-[5px]">
+                      <div className="text-(--color-accent-500) font-bold text-[11px]">
                         {formatAction(rule.action)}
                       </div>
                     </td>
-                    <td style={{ padding: '12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-text-primary)',
-                          fontSize: '11px',
-                        }}
-                      >
+                    <td className="px-3 py-[5px]">
+                      <div className="text-text-primary text-[11px]">
                         {rule.profileId || 'GLOBAL'}
                       </div>
                     </td>
-                    <td style={{ padding: '12px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end' }}>
+                    <td className="px-3 py-[5px] text-right">
+                      <div className="flex gap-1 justify-end">
                         <Button variant="secondary" size="sm" onClick={() => handleEditRule(rule)}>
                           EDIT
                         </Button>
@@ -338,105 +187,29 @@ export default function WatchdogTab() {
         ))}
 
       {/* Event Log */}
-      <div style={{ marginTop: '24px' }}>
-        <h3
-          style={{
-            margin: '0 0 16px 0',
-            fontSize: '11px',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            color: 'var(--color-text-primary)',
-          }}
-        >
-          EVENT LOG
-        </h3>
+      <div className="mt-6">
+        <h3 className="mb-4 text-[11px] font-bold uppercase text-text-primary">EVENT LOG</h3>
 
         {events.length === 0 ? (
           <EmptyState message="NO EVENTS YET — Watchdog events will appear here when rules are triggered" />
         ) : (
-          <div
-            style={{
-              border: '1px solid var(--color-border)',
-              borderRadius: '4px',
-              overflow: 'hidden',
-              maxHeight: '300px',
-              overflowY: 'auto',
-            }}
-          >
-            <table
-              style={{
-                width: '100%',
-                borderCollapse: 'collapse',
-                fontSize: '12px',
-              }}
-            >
+          <div className="border border-border overflow-hidden max-h-[300px] overflow-y-auto">
+            <table className="w-full border-collapse text-[12px]">
               <thead>
-                <tr
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    borderBottom: '1px solid var(--color-border)',
-                    position: 'sticky',
-                    top: 0,
-                  }}
-                >
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                <tr className="bg-base-800 border-b border-border sticky top-0">
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     TIME
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     RULE
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     PROCESS
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     ACTION
                   </th>
-                  <th
-                    style={{
-                      padding: '8px 12px',
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      color: 'var(--color-text-secondary)',
-                      textTransform: 'uppercase',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
                     RESULT
                   </th>
                 </tr>
@@ -445,61 +218,29 @@ export default function WatchdogTab() {
                 {events.slice(0, 50).map((event) => (
                   <tr
                     key={`${event.ruleId}-${event.timestamp}`}
-                    style={{
-                      borderBottom: '1px solid var(--color-border)',
-                      backgroundColor: event.success ? 'transparent' : 'var(--color-danger-50)',
-                    }}
+                    className={`border-b border-border ${event.success ? '' : 'bg-danger-50'}`}
                   >
-                    <td style={{ padding: '8px 12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-text-secondary)',
-                          fontSize: '10px',
-                        }}
-                      >
+                    <td className="px-3 py-[5px]">
+                      <div className="text-text-muted text-[10px]">
                         {formatTime(event.timestamp)}
                       </div>
                     </td>
-                    <td style={{ padding: '8px 12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-text-primary)',
-                          fontSize: '11px',
-                        }}
-                      >
-                        {event.ruleName}
-                      </div>
+                    <td className="px-3 py-[5px]">
+                      <div className="text-text-primary text-[11px]">{event.ruleName}</div>
                     </td>
-                    <td style={{ padding: '8px 12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-text-primary)',
-                          fontSize: '11px',
-                        }}
-                      >
+                    <td className="px-3 py-[5px]">
+                      <div className="text-text-primary text-[11px]">
                         {event.processName} ({event.pid})
                       </div>
                     </td>
-                    <td style={{ padding: '8px 12px' }}>
-                      <div
-                        style={{
-                          color: 'var(--color-accent-500)',
-                          fontWeight: 'bold',
-                          fontSize: '11px',
-                        }}
-                      >
+                    <td className="px-3 py-[5px]">
+                      <div className="text-(--color-accent-500) font-bold text-[11px]">
                         {event.actionTaken}
                       </div>
                     </td>
-                    <td style={{ padding: '8px 12px' }}>
+                    <td className="px-3 py-[5px]">
                       <div
-                        style={{
-                          color: event.success
-                            ? 'var(--color-success-500)'
-                            : 'var(--color-danger-500)',
-                          fontWeight: 'bold',
-                          fontSize: '11px',
-                        }}
+                        className={`font-bold text-[11px] ${event.success ? 'text-success-500' : 'text-danger-500'}`}
                       >
                         {event.success ? 'SUCCESS' : 'FAILED'}
                       </div>
@@ -514,34 +255,11 @@ export default function WatchdogTab() {
 
       {/* Modals would be implemented here */}
       {showModal && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'var(--color-background)',
-              padding: '24px',
-              borderRadius: '8px',
-              minWidth: '600px',
-              maxWidth: '80vw',
-              maxHeight: '80vh',
-              overflowY: 'auto',
-            }}
-          >
-            <h3 style={{ margin: '0 0 16px 0' }}>{editingRule ? 'EDIT RULE' : 'ADD RULE'}</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
+          <div className="bg-base-900 p-6 min-w-[600px] max-w-[80vw] max-h-[80vh] overflow-y-auto">
+            <h3 className="mb-4">{editingRule ? 'EDIT RULE' : 'ADD RULE'}</h3>
             <p>Rule modal implementation would go here</p>
-            <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
+            <div className="mt-4 flex gap-2">
               <Button variant="ghost" onClick={() => setShowModal(false)}>
                 CANCEL
               </Button>
@@ -551,47 +269,18 @@ export default function WatchdogTab() {
       )}
 
       {showPresets && (
-        <div
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'var(--color-background)',
-              padding: '24px',
-              borderRadius: '8px',
-              minWidth: '500px',
-              maxWidth: '80vw',
-            }}
-          >
-            <h3 style={{ margin: '0 0 16px 0' }}>PRESET RULES</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
+          <div className="bg-base-900 p-6 min-w-[600px] max-w-[80vw] max-h-[80vh] overflow-y-auto">
+            <h3 className="mb-4">PRESET RULES</h3>
             {presets.map((preset) => (
-              <div
-                key={preset.id}
-                style={{
-                  padding: '12px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '4px',
-                  marginBottom: '8px',
-                }}
-              >
-                <div style={{ fontWeight: 'bold' }}>{preset.name}</div>
-                <div style={{ fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+              <div key={preset.id} className="p-3 border border-border mb-2">
+                <div className="font-bold">{preset.name}</div>
+                <div className="text-[10px] text-text-muted">
                   {formatConditions(preset.conditions)}
                 </div>
               </div>
             ))}
-            <div style={{ marginTop: '16px', display: 'flex', gap: '8px' }}>
+            <div className="mt-4 flex gap-2">
               <Button variant="ghost" onClick={() => setShowPresets(false)}>
                 CLOSE
               </Button>

@@ -2,6 +2,7 @@ import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useEcoModeStore } from '../../stores/useEcoModeStore';
 import type { EcoModeConfig } from '../../types';
+import Button from '../ui/Button';
 
 const EcoModePanel: React.FC = () => {
   const {
@@ -59,190 +60,97 @@ const EcoModePanel: React.FC = () => {
 
   if (error) {
     return (
-      <div style={{ padding: '16px' }}>
-        <div style={{ color: 'var(--color-danger-500)', marginBottom: '8px' }}>ERROR: {error}</div>
-        <button
-          type="button"
+      <div className="p-4">
+        <div className="text-danger-500 mb-2 text-[10px]">ERROR: {error}</div>
+        <Button
+          variant="primary"
+          size="sm"
           onClick={() => {
             fetchConfig();
             fetchPowerEstimate();
           }}
-          style={{
-            padding: '8px 16px',
-            backgroundColor: 'var(--color-accent-500)',
-            color: 'var(--color-background)',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer',
-            fontSize: '10px',
-          }}
         >
           RETRY
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (!config || !powerEstimate || !tempConfig) {
     return (
-      <div style={{ padding: '16px', textAlign: 'center' }}>
-        <div style={{ color: 'var(--color-text-secondary)' }}>LOADING...</div>
+      <div className="p-4 text-center">
+        <div className="text-text-secondary text-[10px]">LOADING...</div>
       </div>
     );
   }
 
+  const isDirty = JSON.stringify(tempConfig) !== JSON.stringify(config);
+  const totalColor = powerEstimate.totalEstimatedW > 400 ? 'text-accent-500' : 'text-success-500';
+
   return (
-    <div style={{ padding: '16px' }}>
+    <div className="p-4">
       {/* Header */}
-      <div style={{ marginBottom: '16px' }}>
-        <h3 style={{ color: 'var(--color-text-primary)', fontSize: '14px', marginBottom: '8px' }}>
-          ECO MODE & POWER MANAGEMENT
-        </h3>
+      <div className="mb-4">
+        <h3 className="text-text-primary text-[14px] mb-2">ECO MODE & POWER MANAGEMENT</h3>
       </div>
 
       {/* Current Power Estimate */}
-      <div style={{ marginBottom: '16px' }}>
-        <h4 style={{ color: 'var(--color-text-primary)', fontSize: '12px', marginBottom: '8px' }}>
-          CURRENT POWER CONSUMPTION
-        </h4>
-        <div
-          style={{
-            padding: '12px',
-            backgroundColor: 'var(--color-surface)',
-            borderRadius: '4px',
-          }}
-        >
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '8px',
-              marginBottom: '8px',
-            }}
-          >
+      <div className="mb-4">
+        <h4 className="text-text-primary text-[12px] mb-2">CURRENT POWER CONSUMPTION</h4>
+        <div className="p-3 bg-base-800 rounded">
+          <div className="grid grid-cols-2 gap-2 mb-2">
             <div>
-              <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>CPU</div>
-              <div
-                style={{ color: 'var(--color-text-primary)', fontSize: '11px', fontWeight: 'bold' }}
-              >
+              <div className="text-text-secondary text-[10px]">CPU</div>
+              <div className="text-text-primary text-[11px] font-bold">
                 {powerEstimate.cpuPowerW.toFixed(1)}W
               </div>
             </div>
             <div>
-              <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>GPU</div>
-              <div
-                style={{ color: 'var(--color-text-primary)', fontSize: '11px', fontWeight: 'bold' }}
-              >
+              <div className="text-text-secondary text-[10px]">GPU</div>
+              <div className="text-text-primary text-[11px] font-bold">
                 {powerEstimate.gpuActualPowerW || powerEstimate.gpuPowerW.toFixed(1)}W
               </div>
             </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingTop: '8px',
-              borderTop: '1px solid var(--color-surface)',
-            }}
-          >
+          <div className="flex justify-between items-center pt-2 border-t border-base-800">
             <div>
-              <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>TOTAL</div>
-              <div
-                style={{
-                  color:
-                    powerEstimate.totalEstimatedW > 400
-                      ? 'var(--color-warning-500)'
-                      : 'var(--color-success-500)',
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                }}
-              >
+              <div className="text-text-secondary text-[10px]">TOTAL</div>
+              <div className={`${totalColor} text-[12px] font-bold`}>
                 {powerEstimate.totalEstimatedW.toFixed(1)}W
               </div>
             </div>
-            <button
-              type="button"
-              onClick={fetchPowerEstimate}
-              disabled={isLoading}
-              style={{
-                padding: '4px 8px',
-                backgroundColor: 'var(--color-surface)',
-                color: 'var(--color-text-primary)',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '10px',
-              }}
-            >
+            <Button variant="ghost" size="sm" onClick={fetchPowerEstimate} disabled={isLoading}>
               REFRESH
-            </button>
+            </Button>
           </div>
         </div>
       </div>
 
       {/* Eco Mode Toggle */}
-      <div style={{ marginBottom: '16px' }}>
-        <h4 style={{ color: 'var(--color-text-primary)', fontSize: '12px', marginBottom: '8px' }}>
-          ECO MODE
-        </h4>
-        <div
-          style={{
-            padding: '12px',
-            backgroundColor: 'var(--color-surface)',
-            borderRadius: '4px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '12px',
-            }}
-          >
+      <div className="mb-4">
+        <h4 className="text-text-primary text-[12px] mb-2">ECO MODE</h4>
+        <div className="p-3 bg-base-800 rounded">
+          <div className="flex justify-between items-center mb-3">
             <div>
-              <div
-                style={{ color: 'var(--color-text-primary)', fontSize: '11px', fontWeight: 'bold' }}
-              >
-                ENABLE ECO MODE
-              </div>
-              <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>
+              <div className="text-text-primary text-[11px] font-bold">ENABLE ECO MODE</div>
+              <div className="text-text-secondary text-[10px]">
                 Reduce power consumption and FPS limits
               </div>
             </div>
-            <button
-              type="button"
+            <Button
+              variant={config.enabled ? 'primary' : 'ghost'}
+              size="sm"
               onClick={handleToggleEcoMode}
               disabled={isLoading}
-              style={{
-                padding: '6px 12px',
-                backgroundColor: config.enabled
-                  ? 'var(--color-success-500)'
-                  : 'var(--color-surface)',
-                color: config.enabled ? 'var(--color-background)' : 'var(--color-text-primary)',
-                border: config.enabled ? 'none' : '1px solid var(--color-text-muted)',
-                borderRadius: '4px',
-                cursor: 'pointer',
-                fontSize: '10px',
-              }}
             >
               {config.enabled ? 'ENABLED' : 'DISABLED'}
-            </button>
+            </Button>
           </div>
 
           {/* FPS Limit */}
-          <div style={{ marginBottom: '12px' }}>
-            <div
-              style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: '10px',
-                marginBottom: '4px',
-              }}
-            >
-              TARGET FPS LIMIT
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="mb-3">
+            <div className="text-text-secondary text-[10px] mb-1">TARGET FPS LIMIT</div>
+            <div className="flex items-center gap-2">
               <input
                 type="range"
                 min="30"
@@ -251,16 +159,11 @@ const EcoModePanel: React.FC = () => {
                 value={tempConfig.targetFps}
                 onChange={(e) => handleTargetFpsChange(Number(e.target.value))}
                 disabled={!config.enabled}
-                style={{ flex: 1 }}
+                aria-label="Target FPS limit"
+                className="flex-1"
               />
               <span
-                style={{
-                  color: config.enabled ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                  fontSize: '11px',
-                  fontWeight: 'bold',
-                  minWidth: '40px',
-                  textAlign: 'right',
-                }}
+                className={`${config.enabled ? 'text-text-primary' : 'text-text-muted'} text-[11px] font-bold min-w-[40px] text-right`}
               >
                 {tempConfig.targetFps}
               </span>
@@ -268,31 +171,14 @@ const EcoModePanel: React.FC = () => {
           </div>
 
           {/* Power Plan */}
-          <div style={{ marginBottom: '12px' }}>
-            <div
-              style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: '10px',
-                marginBottom: '4px',
-              }}
-            >
-              POWER PLAN
-            </div>
+          <div className="mb-3">
+            <div className="text-text-secondary text-[10px] mb-1">POWER PLAN</div>
             <select
               value={tempConfig.ecoPowerPlan}
               onChange={(e) => handlePowerPlanChange(e.target.value)}
               disabled={!config.enabled}
-              style={{
-                width: '100%',
-                padding: '4px 8px',
-                backgroundColor: config.enabled
-                  ? 'var(--color-background)'
-                  : 'var(--color-surface)',
-                color: config.enabled ? 'var(--color-text-primary)' : 'var(--color-text-muted)',
-                border: '1px solid var(--color-surface)',
-                borderRadius: '4px',
-                fontSize: '10px',
-              }}
+              aria-label="Power plan"
+              className={`w-full px-2 py-1 ${config.enabled ? 'bg-base-900 text-text-primary' : 'bg-base-800 text-text-muted'} border border-base-800 rounded text-[10px]`}
             >
               <option value="Balanced">Balanced</option>
               <option value="Power Saver">Power Saver</option>
@@ -304,29 +190,13 @@ const EcoModePanel: React.FC = () => {
 
       {/* Cost Estimation */}
       {costEstimate && (
-        <div style={{ marginBottom: '16px' }}>
-          <h4 style={{ color: 'var(--color-text-primary)', fontSize: '12px', marginBottom: '8px' }}>
-            MONTHLY COST ESTIMATE
-          </h4>
-          <div
-            style={{
-              padding: '12px',
-              backgroundColor: 'var(--color-surface)',
-              borderRadius: '4px',
-            }}
-          >
+        <div className="mb-4">
+          <h4 className="text-text-primary text-[12px] mb-2">MONTHLY COST ESTIMATE</h4>
+          <div className="p-3 bg-base-800 rounded">
             {/* Play Time Input */}
-            <div style={{ marginBottom: '12px' }}>
-              <div
-                style={{
-                  color: 'var(--color-text-secondary)',
-                  fontSize: '10px',
-                  marginBottom: '4px',
-                }}
-              >
-                HOURS PER DAY
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div className="mb-3">
+              <div className="text-text-secondary text-[10px] mb-1">HOURS PER DAY</div>
+              <div className="flex items-center gap-2">
                 <input
                   type="range"
                   min="1"
@@ -334,82 +204,35 @@ const EcoModePanel: React.FC = () => {
                   step="0.5"
                   value={hoursPerDay}
                   onChange={(e) => setHoursPerDay(Number(e.target.value))}
-                  style={{ flex: 1 }}
+                  aria-label="Hours per day"
+                  className="flex-1"
                 />
-                <span
-                  style={{
-                    color: 'var(--color-text-primary)',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    minWidth: '40px',
-                    textAlign: 'right',
-                  }}
-                >
+                <span className="text-text-primary text-[11px] font-bold min-w-[40px] text-right">
                   {hoursPerDay}h
                 </span>
               </div>
             </div>
 
             {/* Cost Comparison */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '8px',
-                marginBottom: '8px',
-              }}
-            >
+            <div className="grid grid-cols-2 gap-2 mb-2">
               <div>
-                <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>
-                  NORMAL MODE
-                </div>
-                <div
-                  style={{
-                    color: 'var(--color-text-primary)',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                  }}
-                >
+                <div className="text-text-secondary text-[10px]">NORMAL MODE</div>
+                <div className="text-text-primary text-[11px] font-bold">
                   ¥{costEstimate.normalMonthlyYen.toFixed(0)}
                 </div>
               </div>
               <div>
-                <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>
-                  ECO MODE
-                </div>
-                <div
-                  style={{
-                    color: 'var(--color-success-500)',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                  }}
-                >
+                <div className="text-text-secondary text-[10px]">ECO MODE</div>
+                <div className="text-success-500 text-[11px] font-bold">
                   ¥{costEstimate.ecoMonthlyYen.toFixed(0)}
                 </div>
               </div>
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                paddingTop: '8px',
-                borderTop: '1px solid var(--color-surface)',
-              }}
-            >
+            <div className="flex justify-between items-center pt-2 border-t border-base-800">
               <div>
-                <div style={{ color: 'var(--color-text-secondary)', fontSize: '10px' }}>
-                  SAVINGS
-                </div>
+                <div className="text-text-secondary text-[10px]">SAVINGS</div>
                 <div
-                  style={{
-                    color:
-                      costEstimate.savingsYen > 0
-                        ? 'var(--color-success-500)'
-                        : 'var(--color-text-secondary)',
-                    fontSize: '12px',
-                    fontWeight: 'bold',
-                  }}
+                  className={`${costEstimate.savingsYen > 0 ? 'text-success-500' : 'text-text-secondary'} text-[12px] font-bold`}
                 >
                   ¥{costEstimate.savingsYen.toFixed(0)}/month
                 </div>
@@ -420,28 +243,12 @@ const EcoModePanel: React.FC = () => {
       )}
 
       {/* Configuration */}
-      <div style={{ marginBottom: '16px' }}>
-        <h4 style={{ color: 'var(--color-text-primary)', fontSize: '12px', marginBottom: '8px' }}>
-          CONFIGURATION
-        </h4>
-        <div
-          style={{
-            padding: '12px',
-            backgroundColor: 'var(--color-surface)',
-            borderRadius: '4px',
-          }}
-        >
+      <div className="mb-4">
+        <h4 className="text-text-primary text-[12px] mb-2">CONFIGURATION</h4>
+        <div className="p-3 bg-base-800 rounded">
           {/* Electricity Rate */}
-          <div style={{ marginBottom: '12px' }}>
-            <div
-              style={{
-                color: 'var(--color-text-secondary)',
-                fontSize: '10px',
-                marginBottom: '4px',
-              }}
-            >
-              ELECTRICITY RATE (¥/kWh)
-            </div>
+          <div className="mb-3">
+            <div className="text-text-secondary text-[10px] mb-1">ELECTRICITY RATE (¥/kWh)</div>
             <input
               type="number"
               min="10"
@@ -449,42 +256,21 @@ const EcoModePanel: React.FC = () => {
               step="1"
               value={tempConfig.electricityRateYen}
               onChange={(e) => handleElectricityRateChange(Number(e.target.value))}
-              style={{
-                width: '100%',
-                padding: '4px 8px',
-                backgroundColor: 'var(--color-background)',
-                color: 'var(--color-text-primary)',
-                border: '1px solid var(--color-surface)',
-                borderRadius: '4px',
-                fontSize: '10px',
-              }}
+              aria-label="Electricity rate in yen per kWh"
+              className="w-full px-2 py-1 bg-base-900 text-text-primary border border-base-800 rounded text-[10px]"
             />
           </div>
 
           {/* Save Button */}
-          <button
-            type="button"
+          <Button
+            variant={isDirty ? 'primary' : 'ghost'}
+            size="sm"
+            fullWidth
             onClick={handleSaveConfig}
-            disabled={isLoading || JSON.stringify(tempConfig) === JSON.stringify(config)}
-            style={{
-              padding: '6px 12px',
-              backgroundColor:
-                JSON.stringify(tempConfig) === JSON.stringify(config)
-                  ? 'var(--color-surface)'
-                  : 'var(--color-accent-500)',
-              color:
-                JSON.stringify(tempConfig) === JSON.stringify(config)
-                  ? 'var(--color-text-muted)'
-                  : 'var(--color-background)',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: JSON.stringify(tempConfig) === JSON.stringify(config) ? 'default' : 'pointer',
-              fontSize: '10px',
-              width: '100%',
-            }}
+            disabled={isLoading || !isDirty}
           >
-            {JSON.stringify(tempConfig) === JSON.stringify(config) ? 'NO CHANGES' : 'SAVE CONFIG'}
-          </button>
+            {isDirty ? 'SAVE CONFIG' : 'NO CHANGES'}
+          </Button>
         </div>
       </div>
     </div>
