@@ -15,8 +15,8 @@ mod state;
 mod types;
 
 use crate::commands::{
-    app_settings, boost, cleanup, frame_time, hardware, launcher, launcher_settings, log, netopt,
-    ops, profile, pulse, storage, timer, windows_settings, winopt,
+    ai, app_settings, boost, cleanup, frame_time, hardware, launcher, launcher_settings, log,
+    netopt, ops, profile, pulse, script, storage, timer, windows_settings, winopt,
 };
 use tracing::info;
 
@@ -48,6 +48,9 @@ pub fn run() {
         .plugin(tauri_plugin_notification::init())
         .manage(<SharedState>::new(AppState::new()))
         .invoke_handler(tauri::generate_handler![
+            // AI
+            ai::get_optimization_suggestions,
+            ai::test_api_key,
             // PULSE
             pulse::get_resource_snapshot,
             // HARDWARE
@@ -124,6 +127,13 @@ pub fn run() {
             // CLEANUP
             cleanup::revert_all_settings,
             cleanup::cleanup_app_data,
+            // SCRIPT
+            script::list_scripts,
+            script::add_script,
+            script::delete_script,
+            script::execute_script,
+            script::list_execution_logs,
+            script::clear_execution_logs,
         ])
         .setup(|app| {
             let handle = app.handle().clone();

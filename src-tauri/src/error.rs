@@ -7,6 +7,8 @@ use thiserror::Error;
 pub enum AppError {
     Io(String),
 
+    Network(String),
+
     Serialization(String),
 
     Command(String),
@@ -42,6 +44,7 @@ impl fmt::Display for AppError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Io(msg) => write!(f, "IOエラー: {}", msg),
+            Self::Network(msg) => write!(f, "ネットワークエラー: {}", msg),
             Self::Serialization(msg) => write!(f, "シリアライズエラー: {}", msg),
             Self::Command(msg) => write!(f, "コマンドエラー: {}", msg),
             Self::NotFound(msg) => write!(f, "未検出: {}", msg),

@@ -14,7 +14,7 @@ vi.mock('@tauri-apps/api/core', () => ({
 }));
 
 vi.mock('../../services/perplexityService', () => ({
-  testApiKey: vi.fn(),
+  testApiKey: vi.fn().mockResolvedValue({ ok: true, data: true }),
 }));
 
 vi.mock('../../hooks/useInitialData', () => ({

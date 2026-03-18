@@ -1,3 +1,4 @@
+pub mod ai;
 pub mod app_settings;
 pub mod boost;
 pub mod cleanup;
@@ -10,6 +11,7 @@ pub mod netopt;
 pub mod ops;
 pub mod profile;
 pub mod pulse;
+pub mod script;
 pub mod storage;
 pub mod timer;
 pub mod windows_settings;

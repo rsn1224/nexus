@@ -46,7 +46,16 @@ export default function SettingsWing(): React.ReactElement {
     setTestResult(null);
 
     try {
-      const result = await testApiKey(apiKeyInput);
+      // まずAPIキーを保存
+      await saveSettings({
+        ...settings,
+        perplexityApiKey: apiKeyInput,
+        startWithWindows: settings?.startWithWindows ?? false,
+        minimizeToTray: settings?.minimizeToTray ?? true,
+      });
+
+      // 保存したAPIキーでテスト
+      const result = await testApiKey();
       setTestResult({
         valid: result.ok,
         message: result.ok ? 'APIキーは有効です' : result.error,
