@@ -142,7 +142,7 @@ export default function SettingsWing(): React.ReactElement {
     <div className="flex flex-col h-full p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-cyan-500)] font-bold tracking-widest">
+        <div className="font-(--font-mono) text-[11px] text-cyan-500 font-bold tracking-widest">
           ▶ SETTINGS / CONFIG
         </div>
         <Button variant="primary" size="sm" onClick={handleSaveAll} disabled={isLoading}>
@@ -154,12 +154,10 @@ export default function SettingsWing(): React.ReactElement {
       {errorBanner}
 
       {/* API Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          API
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">API</div>
         <div className="space-y-2">
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+          <div className="font-(--font-mono) text-[11px] text-text-secondary">
             Perplexity API Key
           </div>
           <div className="flex items-center gap-2">
@@ -168,7 +166,7 @@ export default function SettingsWing(): React.ReactElement {
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
               placeholder="sk-per-******************"
-              className="flex-1 bg-[var(--color-base-700)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-[var(--font-mono)] text-[11px] px-2 py-1 rounded"
+              className="flex-1 bg-base-700 border border-border-subtle text-text-primary font-(--font-mono) text-[11px] px-2 py-1 rounded"
             />
             <Button
               variant="secondary"
@@ -184,21 +182,17 @@ export default function SettingsWing(): React.ReactElement {
             <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${
-                  testResult.valid
-                    ? 'bg-[var(--color-success-500)]'
-                    : 'bg-[var(--color-danger-500)]'
+                  testResult.valid ? 'bg-success-500' : 'bg-danger-500'
                 }`}
               />
               <span
-                className={`font-[var(--font-mono)] text-[10px] ${
-                  testResult.valid
-                    ? 'text-[var(--color-success-500)]'
-                    : 'text-[var(--color-danger-500)]'
+                className={`font-(--font-mono) text-[10px] ${
+                  testResult.valid ? 'text-success-500' : 'text-danger-500'
                 }`}
               >
                 {testResult.valid ? 'VALID' : 'INVALID'}
               </span>
-              <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+              <span className="font-(--font-mono) text-[10px] text-text-muted">
                 — {testResult.message}
               </span>
             </div>
@@ -207,24 +201,20 @@ export default function SettingsWing(): React.ReactElement {
       </div>
 
       {/* APPLICATION Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          APPLICATION
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">APPLICATION</div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+            <div className="font-(--font-mono) text-[11px] text-text-secondary">
               Start with Windows
             </div>
             <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${
-                  settings?.startWithWindows
-                    ? 'bg-[var(--color-success-500)]'
-                    : 'bg-[var(--color-text-muted)]'
+                  settings?.startWithWindows ? 'bg-success-500' : 'bg-text-muted'
                 }`}
               />
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+              <span className="font-(--font-mono) text-[11px] text-text-primary">
                 {settings?.startWithWindows ? 'ENABLED' : 'DISABLED'}
               </span>
               <Button
@@ -238,18 +228,16 @@ export default function SettingsWing(): React.ReactElement {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+            <div className="font-(--font-mono) text-[11px] text-text-secondary">
               Minimize to Tray
             </div>
             <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${
-                  settings?.minimizeToTray
-                    ? 'bg-[var(--color-success-500)]'
-                    : 'bg-[var(--color-text-muted)]'
+                  settings?.minimizeToTray ? 'bg-success-500' : 'bg-text-muted'
                 }`}
               />
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+              <span className="font-(--font-mono) text-[11px] text-text-primary">
                 {settings?.minimizeToTray ? 'ENABLED' : 'DISABLED'}
               </span>
               <Button
@@ -266,18 +254,16 @@ export default function SettingsWing(): React.ReactElement {
       </div>
 
       {/* MAINTENANCE Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          MAINTENANCE
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">MAINTENANCE</div>
         <div className="space-y-3">
           {/* 全設定リバート */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+              <div className="font-(--font-mono) text-[11px] text-text-secondary">
                 全設定リバート
               </div>
-              <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+              <div className="font-(--font-mono) text-[10px] text-text-muted">
                 nexus が変更した Windows 設定を全て元に戻します
               </div>
             </div>
@@ -293,15 +279,13 @@ export default function SettingsWing(): React.ReactElement {
           </div>
 
           {/* 区切り線 */}
-          <div className="border-t border-[var(--color-border-subtle)]" />
+          <div className="border-t border-border-subtle" />
 
           {/* アプリデータ削除 */}
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger-500)]">
-                アプリデータ削除
-              </div>
-              <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+              <div className="font-(--font-mono) text-[11px] text-danger-500">アプリデータ削除</div>
+              <div className="font-(--font-mono) text-[10px] text-text-muted">
                 プロファイル・設定・API キーを完全に削除します
               </div>
             </div>
@@ -319,27 +303,21 @@ export default function SettingsWing(): React.ReactElement {
 
         {/* リバート結果表示 */}
         {revertResult && (
-          <div className="mt-3 border-t border-[var(--color-border-subtle)] pt-3">
-            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-1">
+          <div className="mt-3 border-t border-border-subtle pt-3">
+            <div className="font-(--font-mono) text-[10px] text-text-muted mb-1">
               RESULT: {revertResult.successCount} 成功 / {revertResult.failCount} 失敗
             </div>
             {revertResult.items.map((item) => (
               <div
                 key={`${item.category}-${item.label}`}
-                className="flex items-center gap-2 font-[var(--font-mono)] text-[10px]"
+                className="flex items-center gap-2 font-(--font-mono) text-[10px]"
               >
-                <span
-                  className={
-                    item.success
-                      ? 'text-[var(--color-success-500)]'
-                      : 'text-[var(--color-danger-500)]'
-                  }
-                >
+                <span className={item.success ? 'text-success-500' : 'text-danger-500'}>
                   {item.success ? '✓' : '✗'}
                 </span>
-                <span className="text-[var(--color-text-secondary)]">[{item.category}]</span>
-                <span className="text-[var(--color-text-primary)]">{item.label}</span>
-                <span className="text-[var(--color-text-muted)]">— {item.detail}</span>
+                <span className="text-text-secondary">[{item.category}]</span>
+                <span className="text-text-primary">{item.label}</span>
+                <span className="text-text-muted">— {item.detail}</span>
               </div>
             ))}
           </div>
@@ -347,15 +325,13 @@ export default function SettingsWing(): React.ReactElement {
       </div>
 
       {/* ABOUT Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          ABOUT
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">ABOUT</div>
         <div className="space-y-1">
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+          <div className="font-(--font-mono) text-[11px] text-text-secondary">
             Version: {appVersion}
           </div>
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+          <div className="font-(--font-mono) text-[11px] text-text-secondary">
             Built: {buildDate}
           </div>
         </div>
@@ -369,16 +345,16 @@ export default function SettingsWing(): React.ReactElement {
         size="md"
       >
         <div className="space-y-3">
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+          <div className="font-(--font-mono) text-[11px] text-text-primary">
             以下のデータが完全に削除されます：
           </div>
-          <ul className="list-disc list-inside space-y-1 font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)]">
+          <ul className="list-disc list-inside space-y-1 font-(--font-mono) text-[10px] text-text-secondary">
             <li>ゲームプロファイル (profiles.json)</li>
             <li>アプリ設定 (app_settings.json)</li>
             <li>Windows 設定バックアップ (winopt_backup.json)</li>
             <li>API キー (keyring)</li>
           </ul>
-          <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-danger-500)]">
+          <div className="font-(--font-mono) text-[10px] text-danger-500">
             ⚠ この操作は元に戻せません
           </div>
         </div>

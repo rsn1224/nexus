@@ -65,7 +65,7 @@ export default function NetoptWing(): React.ReactElement {
     <div className="flex flex-col h-full p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-cyan-500)] font-bold tracking-widest">
+        <div className="font-(--font-mono) text-[11px] text-cyan-500 font-bold tracking-widest">
           ▶ NETOPT / NETWORK
         </div>
         <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isLoading}>
@@ -77,80 +77,62 @@ export default function NetoptWing(): React.ReactElement {
       {errorBanner}
 
       {/* ADAPTER Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          ADAPTER
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">ADAPTER</div>
         {primaryAdapter ? (
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-                Name
-              </span>
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+              <span className="font-(--font-mono) text-[11px] text-text-secondary">Name</span>
+              <span className="font-(--font-mono) text-[11px] text-text-primary">
                 {primaryAdapter.name}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-                IP
-              </span>
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+              <span className="font-(--font-mono) text-[11px] text-text-secondary">IP</span>
+              <span className="font-(--font-mono) text-[11px] text-text-primary">
                 {primaryAdapter.ip}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-                MAC
-              </span>
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+              <span className="font-(--font-mono) text-[11px] text-text-secondary">MAC</span>
+              <span className="font-(--font-mono) text-[11px] text-text-primary">
                 {primaryAdapter.mac}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-                Status
-              </span>
+              <span className="font-(--font-mono) text-[11px] text-text-secondary">Status</span>
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-[var(--color-success-500)]" />
-                <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
-                  CONNECTED
-                </span>
+                <div className="w-2 h-2 rounded-full bg-success-500" />
+                <span className="font-(--font-mono) text-[11px] text-text-primary">CONNECTED</span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]">
+          <div className="font-(--font-mono) text-[11px] text-text-muted">
             No connected adapters found
           </div>
         )}
       </div>
 
       {/* DNS Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          DNS
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">DNS</div>
         <div className="space-y-2">
           {/* Current DNS */}
           <div className="flex justify-between">
-            <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-              Current
-            </span>
-            <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+            <span className="font-(--font-mono) text-[11px] text-text-secondary">Current</span>
+            <span className="font-(--font-mono) text-[11px] text-text-primary">
               {currentDns.length > 0 ? currentDns.join(', ') : 'Not configured'}
             </span>
           </div>
 
           {/* Preset DNS */}
           <div className="flex items-center gap-2">
-            <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-              Preset
-            </span>
+            <span className="font-(--font-mono) text-[11px] text-text-secondary">Preset</span>
             <select
               value={selectedPreset}
               onChange={(e) => setSelectedPreset(e.target.value)}
-              className="bg-[var(--color-base-700)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-[var(--font-mono)] text-[11px] px-2 py-1 rounded"
+              className="bg-base-700 border border-border-subtle text-text-primary font-(--font-mono) text-[11px] px-2 py-1 rounded"
             >
               {dnsPresets.map((preset) => (
                 <option key={preset.name} value={preset.name}>
@@ -170,22 +152,20 @@ export default function NetoptWing(): React.ReactElement {
 
           {/* Custom DNS */}
           <div className="flex items-center gap-2">
-            <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-              Custom
-            </span>
+            <span className="font-(--font-mono) text-[11px] text-text-secondary">Custom</span>
             <input
               type="text"
               value={customPrimary}
               onChange={(e) => setCustomPrimary(e.target.value)}
               placeholder="Primary DNS"
-              className="bg-[var(--color-base-700)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-[var(--font-mono)] text-[11px] px-2 py-1 rounded w-32"
+              className="bg-base-700 border border-border-subtle text-text-primary font-(--font-mono) text-[11px] px-2 py-1 rounded w-32"
             />
             <input
               type="text"
               value={customSecondary}
               onChange={(e) => setCustomSecondary(e.target.value)}
               placeholder="Secondary DNS"
-              className="bg-[var(--color-base-700)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-[var(--font-mono)] text-[11px] px-2 py-1 rounded w-32"
+              className="bg-base-700 border border-border-subtle text-text-primary font-(--font-mono) text-[11px] px-2 py-1 rounded w-32"
             />
             <Button
               variant="secondary"
@@ -200,21 +180,17 @@ export default function NetoptWing(): React.ReactElement {
       </div>
 
       {/* PING Section */}
-      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
-          PING
-        </div>
+      <div className="bg-base-800 border border-border-subtle rounded p-3">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">PING</div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-              Target
-            </span>
+            <span className="font-(--font-mono) text-[11px] text-text-secondary">Target</span>
             <input
               type="text"
               value={pingTarget}
               onChange={(e) => setPingTarget(e.target.value)}
               placeholder="8.8.8.8"
-              className="bg-[var(--color-base-700)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] font-[var(--font-mono)] text-[11px] px-2 py-1 rounded flex-1"
+              className="bg-base-700 border border-border-subtle text-text-primary font-(--font-mono) text-[11px] px-2 py-1 rounded flex-1"
             />
             <Button variant="primary" size="sm" onClick={handlePing} disabled={isLoading}>
               ▶ PING
@@ -224,23 +200,17 @@ export default function NetoptWing(): React.ReactElement {
           {/* Ping Result */}
           {pingResult && (
             <div className="flex items-center gap-2">
-              <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-                Result
-              </span>
+              <span className="font-(--font-mono) text-[11px] text-text-secondary">Result</span>
               {pingResult.success ? (
                 <>
-                  <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-success-500)]">
+                  <span className="font-(--font-mono) text-[11px] text-success-500">
                     {pingResult.latencyMs}ms
                   </span>
-                  <div className="w-2 h-2 rounded-full bg-[var(--color-success-500)]" />
-                  <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-success-500)]">
-                    OK
-                  </span>
+                  <div className="w-2 h-2 rounded-full bg-success-500" />
+                  <span className="font-(--font-mono) text-[11px] text-success-500">OK</span>
                 </>
               ) : (
-                <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger-500)]">
-                  TIMEOUT
-                </span>
+                <span className="font-(--font-mono) text-[11px] text-danger-500">TIMEOUT</span>
               )}
             </div>
           )}
