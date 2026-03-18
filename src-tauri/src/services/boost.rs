@@ -9,6 +9,7 @@ use tracing::{info, warn};
 use crate::constants::is_protected_process;
 use crate::error::AppError;
 use crate::infra::{cpu_affinity, power_plan, process_control};
+use crate::services::core_parking;
 use crate::state::SharedState;
 use crate::types::game::{BoostLevel, GameProfile, ProfileApplyResult, RevertSnapshot};
 
@@ -39,6 +40,22 @@ pub fn apply_profile_boost(
             apply_level1(profile, state, &mut result)?;
             apply_level2(profile, state, &mut result)?;
             apply_level3(profile, &mut result)?;
+        }
+    }
+
+    // コアパーキング制御（プロファイル設定による）
+    if profile.core_parking_disabled {
+        match core_parking::disable_parking() {
+            Ok(prev_percent) => {
+                result.prev_core_parking = Some(prev_percent);
+                result.applied.push("コアパーキング無効化".to_string());
+                info!("コアパーキング無効化完了: 元の値={}%", prev_percent);
+            }
+            Err(e) => {
+                let msg = format!("コアパーキング無効化失敗: {}", e);
+                warn!("{}", msg);
+                result.warnings.push(msg);
+            }
         }
     }
 
@@ -439,6 +456,15 @@ pub fn revert_boost(state: &State<'_, SharedState>) -> Result<(), AppError> {
         }
     }
 
+    // コアパーキングを復元
+    if let Some(prev_percent) = snapshot.prev_core_parking {
+        if let Err(e) = core_parking::restore_parking(prev_percent) {
+            warn!("コアパーキング復元失敗: {}%", e);
+        } else {
+            info!("コアパーキング復元完了: {}%", prev_percent);
+        }
+    }
+
     // 電源プランを元に戻す
     if let Some(prev_guid) = &snapshot.prev_power_plan_guid {
         if let Err(e) = power_plan::revert_power_plan(Some(prev_guid.to_string())) {
@@ -509,6 +535,7 @@ fn save_revert_snapshot(
         prev_power_plan_guid: result.prev_power_plan.clone(),
         suspended_pids: result.suspended_pids.clone(),
         prev_affinities,
+        prev_core_parking: result.prev_core_parking,
         created_at: std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap_or_default()

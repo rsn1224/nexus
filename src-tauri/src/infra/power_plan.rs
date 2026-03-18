@@ -105,6 +105,11 @@ impl PowerPlanController {
     /// - `Ok(Option<String>)`: 切り替え前の電源プラン GUID（リバート用）
     /// - `Err(AppError)`: 失敗
     pub fn switch_with_revert(&self, plan: PowerPlan) -> Result<Option<String>, AppError> {
+        // Unchanged の場合は何もせず None を返す
+        if plan.guid().is_none() {
+            return Ok(None);
+        }
+
         // 現在の電源プランを保存
         let prev_guid = self.get_active_plan_guid()?;
 
@@ -266,7 +271,7 @@ impl PowerPlanController {
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
-        
+
         // 出力から電源プラン名を抽出
         // 例: "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)"
         for line in stdout.lines() {

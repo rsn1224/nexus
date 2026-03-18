@@ -31,6 +31,8 @@ pub enum AppError {
 
     Power(String),
 
+    PowerPlan(String),
+
     GameMonitor(String),
 
     LauncherError(String),
@@ -58,6 +60,7 @@ impl fmt::Display for AppError {
             Self::Keyring(msg) => write!(f, "資格情報エラー: {}", msg),
             Self::Profile(msg) => write!(f, "プロファイルエラー: {}", msg),
             Self::Power(msg) => write!(f, "電源プランエラー: {}", msg),
+            Self::PowerPlan(msg) => write!(f, "コアパーキングエラー: {}", msg),
             Self::GameMonitor(msg) => write!(f, "ゲーム監視エラー: {}", msg),
             Self::LauncherError(msg) => write!(f, "ランチャー設定エラー: {}", msg),
             Self::FrameTime(msg) => write!(f, "フレームタイムエラー: {}", msg),

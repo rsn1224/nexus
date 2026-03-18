@@ -1,11 +1,11 @@
 //! スタンバイメモリリストクリーナー
 //! ISLC (Intelligent Standby List Cleaner) の機能を統合
 
+use serde::{Deserialize, Serialize};
 use std::process::Command;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
-use tracing::{info, warn, error};
-use serde::{Deserialize, Serialize};
+use tracing::{error, info, warn};
 
 use crate::error::AppError;
 
@@ -36,7 +36,7 @@ impl Default for MemoryCleanerConfig {
         Self {
             enabled: false,
             interval_seconds: 300, // 5分
-            threshold_mb: 1024,     // 1GB
+            threshold_mb: 1024,    // 1GB
         }
     }
 }
@@ -77,13 +77,13 @@ impl MemoryCleaner {
         self.is_running = true;
         let token = tokio_util::sync::CancellationToken::new();
         self.cancellation_token = Some(token.clone());
-        
+
         let config = self.config.clone();
         let app_clone = app.clone();
 
         tokio::spawn(async move {
             let mut interval = tokio::time::interval(Duration::from_secs(config.interval_seconds));
-            
+
             loop {
                 tokio::select! {
                     _ = interval.tick() => {
@@ -95,16 +95,16 @@ impl MemoryCleaner {
                             if should_cleanup {
                                 match Self::cleanup_standby_lists().await {
                                     Ok(result) => {
-                                        info!("メモリ自動クリーニング実行: {}MB解放", 
+                                        info!("メモリ自動クリーニング実行: {}MB解放",
                                             result.freed_mb.unwrap_or(0));
-                                        
+
                                         if let Err(e) = app_clone.emit("nexus://memory-cleanup-result", &result) {
                                             error!("メモリクリーニング結果の送信に失敗: {}", e);
                                         }
                                     }
                                     Err(e) => {
                                         warn!("メモリクリーニング失敗: {}", e);
-                                        
+
                                         let error_result = MemoryCleanupResult {
                                             success: false,
                                             freed_mb: None,
@@ -114,7 +114,7 @@ impl MemoryCleaner {
                                                 .unwrap_or_default()
                                                 .as_secs(),
                                         };
-                                        
+
                                         if let Err(e) = app_clone.emit("nexus://memory-cleanup-result", &error_result) {
                                             error!("メモリクリーニングエラーの送信に失敗: {}", e);
                                         }
@@ -131,7 +131,10 @@ impl MemoryCleaner {
             }
         });
 
-        info!("メモリ自動クリーニングを開始 ({}秒間隔)", config.interval_seconds);
+        info!(
+            "メモリ自動クリーニングを開始 ({}秒間隔)",
+            config.interval_seconds
+        );
         Ok(())
     }
 
@@ -166,7 +169,7 @@ impl MemoryCleaner {
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
-        
+
         // 出力から空きメモリを抽出 (KB単位)
         if let Ok(free_kb) = stdout.trim().parse::<u64>() {
             let free_mb = free_kb / 1024;
@@ -184,7 +187,7 @@ impl MemoryCleaner {
         // Windows APIを使用してスタンバイリストをクリア
         // SetProcessWorkingSetSizeExを使用してプロセスのワーキングセットを縮小
         // EmptyWorkingSetを使用してスタンバイリストをクリア
-        
+
         let result = Command::new("powershell")
             .args([
                 "-Command",
@@ -195,7 +198,7 @@ impl MemoryCleaner {
                     [DllImport(\"kernel32.dll\")]
                     public static extern IntPtr GetCurrentProcess();
                 }
-                [Memory]::EmptyWorkingSet([Memory]::GetCurrentProcess());'"
+                [Memory]::EmptyWorkingSet([Memory]::GetCurrentProcess());'",
             ])
             .output()
             .map_err(|e| AppError::Command(format!("PowerShell実行エラー: {}", e)))?;
@@ -239,7 +242,7 @@ impl MemoryCleaner {
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
-        
+
         if let Ok(free_kb) = stdout.trim().parse::<u64>() {
             return Ok(free_kb / 1024); // KB -> MB
         }

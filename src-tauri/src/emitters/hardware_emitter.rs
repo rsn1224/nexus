@@ -1,5 +1,5 @@
 use crate::commands::hardware::HardwareInfo;
-use std::sync::{Mutex, LazyLock};
+use std::sync::{LazyLock, Mutex};
 use sysinfo::{DiskKind, Disks, System};
 use tauri::{AppHandle, Emitter, Manager};
 use tokio::time::{Duration, interval};
@@ -12,7 +12,8 @@ struct ThermalState {
     last_alert_time: u64,
 }
 
-static THERMAL_STATE: LazyLock<Mutex<ThermalState>> = LazyLock::new(|| Mutex::new(ThermalState::default()));
+static THERMAL_STATE: LazyLock<Mutex<ThermalState>> =
+    LazyLock::new(|| Mutex::new(ThermalState::default()));
 
 /// ハードウェア情報を定期的にフロントエンドへ配信する
 pub async fn start(app: AppHandle) {
@@ -213,10 +214,15 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
 
 /// サーマルアラートをチェックしてemitする
 /// 同じアラートの連続emitを防止し、最低30秒間隔を空ける
-fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_temp_c: Option<f32>) {
+fn check_and_emit_thermal_alerts(
+    app: &AppHandle,
+    cpu_temp_c: Option<f32>,
+    gpu_temp_c: Option<f32>,
+) {
     let thresholds = &crate::constants::THERMAL_THRESHOLDS;
-    let alerts = crate::services::thermal_monitor::check_thermal(cpu_temp_c, gpu_temp_c, thresholds);
-    
+    let alerts =
+        crate::services::thermal_monitor::check_thermal(cpu_temp_c, gpu_temp_c, thresholds);
+
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
@@ -227,7 +233,12 @@ fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_t
         let mut state = THERMAL_STATE.lock().unwrap();
         if let Some(ref last_alerts) = state.last_alerts {
             // 前回のアラートがあり、すべてNormalでなければ復帰通知
-            let has_non_normal = last_alerts.iter().any(|a| !matches!(a.level, crate::services::thermal_monitor::ThermalAlertLevel::Normal));
+            let has_non_normal = last_alerts.iter().any(|a| {
+                !matches!(
+                    a.level,
+                    crate::services::thermal_monitor::ThermalAlertLevel::Normal
+                )
+            });
             if has_non_normal && now.saturating_sub(state.last_alert_time) >= 30 {
                 // Normalアラートを生成してemit
                 let normal_alerts = vec![
@@ -248,13 +259,13 @@ fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_t
                         timestamp: now,
                     },
                 ];
-                
+
                 for alert in &normal_alerts {
                     if let Err(e) = app.emit("nexus://thermal-alert", alert) {
                         error!("thermal_alert: イベント送信失敗: {}", e);
                     }
                 }
-                
+
                 state.last_alerts = Some(normal_alerts);
                 state.last_alert_time = now;
             }
@@ -269,13 +280,16 @@ fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_t
     let mut state = THERMAL_STATE.lock().unwrap();
     let should_emit = if let Some(ref last_alerts) = state.last_alerts {
         // アラート内容に変化があるかチェック
-        let alerts_changed = alerts.len() != last_alerts.len() ||
-            alerts.iter().zip(last_alerts.iter()).any(|(current, last)| {
-                current.component != last.component ||
-                current.level != last.level ||
-                (current.timestamp - last.timestamp) >= 30 // 30秒以上経過
-            });
-        
+        let alerts_changed = alerts.len() != last_alerts.len()
+            || alerts
+                .iter()
+                .zip(last_alerts.iter())
+                .any(|(current, last)| {
+                    current.component != last.component
+                        || current.level != last.level
+                        || (current.timestamp - last.timestamp) >= 30 // 30秒以上経過
+                });
+
         alerts_changed || now.saturating_sub(state.last_alert_time) >= 30
     } else {
         true // 初回アラート
@@ -294,7 +308,7 @@ fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_t
                 );
             }
         }
-        
+
         state.last_alerts = Some(alerts);
         state.last_alert_time = now;
     }

@@ -187,6 +187,7 @@ pub fn export_game_profile(app: AppHandle, id: String) -> Result<String, AppErro
         auto_suspend_enabled: profile.auto_suspend_enabled,
         timer_resolution_100ns: profile.timer_resolution_100ns,
         boost_level: profile.boost_level,
+        core_parking_disabled: profile.core_parking_disabled,
         exported_at: now,
     };
 
@@ -230,6 +231,7 @@ pub fn import_game_profile(app: AppHandle, json: String) -> Result<GameProfile, 
         auto_suspend_enabled: shared.auto_suspend_enabled,
         timer_resolution_100ns: shared.timer_resolution_100ns,
         boost_level: shared.boost_level,
+        core_parking_disabled: shared.core_parking_disabled,
         last_played: None,
         total_play_secs: 0,
         created_at: now,

@@ -20,7 +20,7 @@ pub enum ThermalAlertLevel {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ThermalAlert {
-    pub component: String,     // "CPU" or "GPU"
+    pub component: String, // "CPU" or "GPU"
     pub level: ThermalAlertLevel,
     pub current_temp_c: f32,
     pub threshold_c: f32,
@@ -62,7 +62,10 @@ pub fn check_thermal(
                 level: ThermalAlertLevel::Warning,
                 current_temp_c: temp,
                 threshold_c: thresholds.cpu_warning_c,
-                message: format!("CPU 温度が {}℃ です。冷却状態を確認してください", temp as u32),
+                message: format!(
+                    "CPU 温度が {}℃ です。冷却状態を確認してください",
+                    temp as u32
+                ),
                 timestamp: now,
             });
         }
@@ -87,7 +90,10 @@ pub fn check_thermal(
                 level: ThermalAlertLevel::Warning,
                 current_temp_c: temp,
                 threshold_c: thresholds.gpu_warning_c,
-                message: format!("GPU 温度が {}℃ です。冷却状態を確認してください", temp as u32),
+                message: format!(
+                    "GPU 温度が {}℃ です。冷却状態を確認してください",
+                    temp as u32
+                ),
                 timestamp: now,
             });
         }

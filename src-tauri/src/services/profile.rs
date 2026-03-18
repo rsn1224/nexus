@@ -190,6 +190,7 @@ pub fn create_default_profile(display_name: &str, exe_path: &str) -> GameProfile
         processes_to_kill: vec![],
         timer_resolution_100ns: None,
         boost_level: BoostLevel::default(),
+        core_parking_disabled: false,
         auto_suspend_enabled: true,
         last_played: None,
         total_play_secs: 0,

@@ -64,7 +64,9 @@ impl AppState {
             frame_time_session: None,
             cpu_topology: None,
             gpu_static: None,
-            memory_cleaner: MemoryCleaner::new(crate::services::memory_cleaner::MemoryCleanerConfig::default()),
+            memory_cleaner: MemoryCleaner::new(
+                crate::services::memory_cleaner::MemoryCleanerConfig::default(),
+            ),
         }
     }
 }

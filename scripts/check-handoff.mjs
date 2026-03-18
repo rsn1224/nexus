@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 // HANDOFF.md は nexus の親ディレクトリ（ワークスペースルート）にある
-const HANDOFF_FILE = join(__dirname, '..', '..', 'HANDOFF.md');
+const HANDOFF_FILE = join(__dirname, '..', 'HANDOFF.md');
 
 const VALID_STATUSES = new Set(['pending', 'in-progress', 'review', 'done']);
 

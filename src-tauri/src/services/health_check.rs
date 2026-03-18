@@ -101,21 +101,33 @@ pub fn run_health_check(input: &HealthCheckInput) -> HealthCheckResult {
         .max()
         .unwrap_or(HealthSeverity::Ok);
 
-    HealthCheckResult { items, overall, timestamp: now }
+    HealthCheckResult {
+        items,
+        overall,
+        timestamp: now,
+    }
 }
 
 fn check_storage(free_gb: f32, total_gb: f32) -> HealthCheckItem {
     let usage_pct = if total_gb > 0.0 {
         ((total_gb - free_gb) / total_gb * 100.0) as u32
-    } else { 0 };
+    } else {
+        0
+    };
 
     if free_gb < 10.0 {
         HealthCheckItem {
             id: "storage-low".into(),
             label: "ストレージ空き容量".into(),
             severity: HealthSeverity::Critical,
-            message: format!("空き容量 {:.1}GB — ゲームの動作に影響する可能性があります", free_gb),
-            fix_action: Some(HealthFixAction { id: "navigate-storage".into(), label: "ストレージ管理".into() }),
+            message: format!(
+                "空き容量 {:.1}GB — ゲームの動作に影響する可能性があります",
+                free_gb
+            ),
+            fix_action: Some(HealthFixAction {
+                id: "navigate-storage".into(),
+                label: "ストレージ管理".into(),
+            }),
         }
     } else if free_gb < 30.0 {
         HealthCheckItem {
@@ -123,7 +135,10 @@ fn check_storage(free_gb: f32, total_gb: f32) -> HealthCheckItem {
             label: "ストレージ空き容量".into(),
             severity: HealthSeverity::Warning,
             message: format!("空き容量 {:.1}GB — 余裕を持たせることを推奨します", free_gb),
-            fix_action: Some(HealthFixAction { id: "navigate-storage".into(), label: "ストレージ管理".into() }),
+            fix_action: Some(HealthFixAction {
+                id: "navigate-storage".into(),
+                label: "ストレージ管理".into(),
+            }),
         }
     } else {
         HealthCheckItem {
@@ -151,7 +166,10 @@ fn check_gpu_temp(temp: f32) -> HealthCheckItem {
             id: "gpu-temp-warn".into(),
             label: "GPU 温度".into(),
             severity: HealthSeverity::Warning,
-            message: format!("GPU {:.0}℃ — やや高めです。ファンの状態を確認してください", temp),
+            message: format!(
+                "GPU {:.0}℃ — やや高めです。ファンの状態を確認してください",
+                temp
+            ),
             fix_action: None,
         }
     } else {
@@ -197,23 +215,37 @@ fn check_cpu_temp(temp: f32) -> HealthCheckItem {
 fn check_memory(used_mb: u64, total_mb: u64) -> HealthCheckItem {
     let usage_pct = if total_mb > 0 {
         (used_mb as f32 / total_mb as f32 * 100.0) as u32
-    } else { 0 };
+    } else {
+        0
+    };
 
     if usage_pct >= 90 {
         HealthCheckItem {
             id: "mem-critical".into(),
             label: "メモリ使用率".into(),
             severity: HealthSeverity::Critical,
-            message: format!("メモリ使用率 {}% — ゲームに十分なメモリがありません", usage_pct),
-            fix_action: Some(HealthFixAction { id: "memory-cleanup".into(), label: "メモリクリーニング".into() }),
+            message: format!(
+                "メモリ使用率 {}% — ゲームに十分なメモリがありません",
+                usage_pct
+            ),
+            fix_action: Some(HealthFixAction {
+                id: "memory-cleanup".into(),
+                label: "メモリクリーニング".into(),
+            }),
         }
     } else if usage_pct >= 75 {
         HealthCheckItem {
             id: "mem-warn".into(),
             label: "メモリ使用率".into(),
             severity: HealthSeverity::Warning,
-            message: format!("メモリ使用率 {}% — ブーストでメモリを解放することを推奨", usage_pct),
-            fix_action: Some(HealthFixAction { id: "navigate-boost".into(), label: "ブースト".into() }),
+            message: format!(
+                "メモリ使用率 {}% — ブーストでメモリを解放することを推奨",
+                usage_pct
+            ),
+            fix_action: Some(HealthFixAction {
+                id: "navigate-boost".into(),
+                label: "ブースト".into(),
+            }),
         }
     } else {
         HealthCheckItem {
@@ -227,10 +259,7 @@ fn check_memory(used_mb: u64, total_mb: u64) -> HealthCheckItem {
 }
 
 fn check_heavy_processes(processes: &[HeavyProcess]) -> HealthCheckItem {
-    let heavy: Vec<&HeavyProcess> = processes
-        .iter()
-        .filter(|p| p.cpu_percent >= 15.0)
-        .collect();
+    let heavy: Vec<&HeavyProcess> = processes.iter().filter(|p| p.cpu_percent >= 15.0).collect();
 
     if heavy.len() >= 3 {
         let names: Vec<String> = heavy.iter().take(3).map(|p| p.name.clone()).collect();
@@ -239,7 +268,10 @@ fn check_heavy_processes(processes: &[HeavyProcess]) -> HealthCheckItem {
             label: "バックグラウンドプロセス".into(),
             severity: HealthSeverity::Warning,
             message: format!("CPU を消費中: {} — サスペンドを推奨", names.join(", ")),
-            fix_action: Some(HealthFixAction { id: "navigate-boost".into(), label: "ブースト".into() }),
+            fix_action: Some(HealthFixAction {
+                id: "navigate-boost".into(),
+                label: "ブースト".into(),
+            }),
         }
     } else if !heavy.is_empty() {
         let names: Vec<String> = heavy.iter().map(|p| p.name.clone()).collect();
@@ -284,7 +316,12 @@ mod tests {
         let input = make_input();
         let result = run_health_check(&input);
         assert_eq!(result.overall, HealthSeverity::Ok);
-        assert!(result.items.iter().all(|i| i.severity == HealthSeverity::Ok));
+        assert!(
+            result
+                .items
+                .iter()
+                .all(|i| i.severity == HealthSeverity::Ok)
+        );
     }
 
     #[test]
@@ -316,9 +353,21 @@ mod tests {
     fn test_heavy_processes() {
         let mut input = make_input();
         input.heavy_processes = vec![
-            HeavyProcess { name: "chrome.exe".into(), cpu_percent: 25.0, mem_mb: 500 },
-            HeavyProcess { name: "discord.exe".into(), cpu_percent: 18.0, mem_mb: 300 },
-            HeavyProcess { name: "spotify.exe".into(), cpu_percent: 16.0, mem_mb: 200 },
+            HeavyProcess {
+                name: "chrome.exe".into(),
+                cpu_percent: 25.0,
+                mem_mb: 500,
+            },
+            HeavyProcess {
+                name: "discord.exe".into(),
+                cpu_percent: 18.0,
+                mem_mb: 300,
+            },
+            HeavyProcess {
+                name: "spotify.exe".into(),
+                cpu_percent: 16.0,
+                mem_mb: 200,
+            },
         ];
         let result = run_health_check(&input);
         assert!(result.items.iter().any(|i| i.id == "process-heavy"));
@@ -327,8 +376,8 @@ mod tests {
     #[test]
     fn test_overall_uses_worst_severity() {
         let mut input = make_input();
-        input.disk_free_gb = 5.0;  // Critical
-        input.gpu_temp_c = Some(88.0);  // Warning
+        input.disk_free_gb = 5.0; // Critical
+        input.gpu_temp_c = Some(88.0); // Warning
         let result = run_health_check(&input);
         assert_eq!(result.overall, HealthSeverity::Critical);
     }

@@ -1,6 +1,6 @@
 pub mod boost;
-pub mod bottleneck;
 pub mod cleanup;
+pub mod core_parking;
 pub mod cpu_topology;
 pub mod credentials;
 pub mod frame_time;
@@ -8,6 +8,8 @@ pub mod game_monitor;
 pub mod hardware;
 pub mod health_check;
 pub mod memory_cleaner;
+pub mod network_monitor;
+pub mod network_tuning;
 pub mod process;
 pub mod profile;
 pub mod session_store;

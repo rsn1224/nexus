@@ -4,6 +4,7 @@ use std::process::Command;
 use tracing::{info, warn};
 
 use crate::error::AppError;
+use crate::services::{network_tuning, network_monitor};
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -321,6 +322,74 @@ pub fn ping_host(target: String) -> Result<PingResult, AppError> {
     })
 }
 
+// ─── TCP Tuning Commands (Phase δ-2) ─────────────────────────────────────
+
+#[tauri::command]
+pub fn get_tcp_tuning_state() -> Result<network_tuning::TcpTuningState, AppError> {
+    info!("get_tcp_tuning_state: fetching current TCP tuning state");
+    network_tuning::get_tcp_tuning_state()
+}
+
+#[tauri::command]
+pub fn set_nagle_disabled(disabled: bool) -> Result<(), AppError> {
+    info!("set_nagle_disabled: {}", disabled);
+    network_tuning::set_nagle(disabled)
+}
+
+#[tauri::command]
+pub fn set_delayed_ack_disabled(disabled: bool) -> Result<(), AppError> {
+    info!("set_delayed_ack_disabled: {}", disabled);
+    network_tuning::set_delayed_ack(disabled)
+}
+
+#[tauri::command]
+pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
+    info!("set_network_throttling: {}", index);
+    network_tuning::set_network_throttling(index)
+}
+
+#[tauri::command]
+pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
+    info!("set_qos_reserved_bandwidth: {}%", percent);
+    network_tuning::set_qos_reserved_bandwidth(percent)
+}
+
+#[tauri::command]
+pub fn set_tcp_auto_tuning(level: String) -> Result<(), AppError> {
+    info!("set_tcp_auto_tuning: {}", level);
+    let tuning_level = match level.as_str() {
+        "normal" => network_tuning::TcpAutoTuningLevel::Normal,
+        "disabled" => network_tuning::TcpAutoTuningLevel::Disabled,
+        "highlyRestricted" => network_tuning::TcpAutoTuningLevel::HighlyRestricted,
+        "restricted" => network_tuning::TcpAutoTuningLevel::Restricted,
+        "experimental" => network_tuning::TcpAutoTuningLevel::Experimental,
+        _ => return Err(AppError::InvalidInput(
+            "Invalid TCP auto-tuning level".into(),
+        )),
+    };
+    network_tuning::set_tcp_auto_tuning(tuning_level)
+}
+
+#[tauri::command]
+pub fn apply_gaming_network_preset() -> Result<network_tuning::TcpTuningState, AppError> {
+    info!("apply_gaming_network_preset: applying gaming preset");
+    network_tuning::apply_gaming_preset()
+}
+
+#[tauri::command]
+pub fn reset_network_defaults() -> Result<network_tuning::TcpTuningState, AppError> {
+    info!("reset_network_defaults: resetting to defaults");
+    network_tuning::reset_to_defaults()
+}
+
+// ─── Network Quality Commands (Phase δ-2) ─────────────────────────────
+
+#[tauri::command]
+pub fn measure_network_quality(target: String, count: u32) -> Result<network_monitor::NetworkQualitySnapshot, AppError> {
+    info!("measure_network_quality: target={}, count={}", target, count);
+    network_monitor::measure_network_quality(&target, count)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -390,5 +459,48 @@ mod tests {
         assert!(validate_ping_target("; whoami").is_err());
         assert!(validate_ping_target("google.com; ls").is_err());
         assert!(validate_ping_target("test space.com").is_err());
+    }
+
+    // --- TCP Tuning バリデーション ---
+    #[test]
+    fn test_set_qos_bandwidth_validation() {
+        // 無効な値のみテスト（有効な値は環境依存のためスキップ）
+        assert!(matches!(
+            set_qos_reserved_bandwidth(101),
+            Err(AppError::InvalidInput(_))
+        ));
+    }
+
+    #[test]
+    fn test_set_network_throttling_validation() {
+        // 無効な値のみテスト（有効な値は環境依存のためスキップ）
+        assert!(matches!(
+            set_network_throttling(-2),
+            Err(AppError::InvalidInput(_))
+        ));
+        assert!(matches!(
+            set_network_throttling(71),
+            Err(AppError::InvalidInput(_))
+        ));
+    }
+
+    #[test]
+    fn test_set_tcp_auto_tuning_validation() {
+        // 無効な値のみテスト（有効な値は環境依存のためスキップ）
+        assert!(matches!(
+            set_tcp_auto_tuning("invalid".to_string()),
+            Err(AppError::InvalidInput(_))
+        ));
+    }
+
+    #[test]
+    fn test_measure_network_quality_validation() {
+        // 有効な値
+        assert!(measure_network_quality("8.8.8.8".to_string(), 10).is_ok()); // 環境依存
+        
+        // 無効な値
+        assert!(measure_network_quality("".to_string(), 10).is_err());
+        assert!(measure_network_quality("8.8.8.8".to_string(), 0).is_err());
+        assert!(measure_network_quality("8.8.8.8".to_string(), 51).is_err());
     }
 }

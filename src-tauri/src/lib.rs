@@ -15,7 +15,7 @@ mod state;
 mod types;
 
 use crate::commands::{
-    ai, app_settings, boost, bottleneck, cleanup, frame_time, hardware, health_check, launcher,
+    ai, app_settings, boost, cleanup, core_parking, frame_time, hardware, health_check, launcher,
     launcher_settings, log, memory, netopt, ops, profile, pulse, script, session, storage, timer,
     windows_settings, winopt,
 };
@@ -53,8 +53,6 @@ pub fn run() {
             ai::get_optimization_suggestions,
             ai::test_api_key,
             ai::analyze_bottleneck_ai,
-            // BOTTLENECK
-            bottleneck::analyze_bottleneck,
             // HEALTH CHECK
             health_check::run_health_check,
             // PULSE
@@ -95,6 +93,16 @@ pub fn run() {
             netopt::get_current_dns,
             netopt::set_dns,
             netopt::ping_host,
+            // TCP TUNING
+            netopt::get_tcp_tuning_state,
+            netopt::set_nagle_disabled,
+            netopt::set_delayed_ack_disabled,
+            netopt::set_network_throttling,
+            netopt::set_qos_reserved_bandwidth,
+            netopt::set_tcp_auto_tuning,
+            netopt::apply_gaming_network_preset,
+            netopt::reset_network_defaults,
+            netopt::measure_network_quality,
             // STORAGE
             storage::get_storage_info,
             storage::cleanup_temp_files,
@@ -126,6 +134,9 @@ pub fn run() {
             profile::get_suspend_candidates,
             profile::export_game_profile,
             profile::import_game_profile,
+            // CORE PARKING
+            core_parking::get_core_parking_state,
+            core_parking::set_core_parking,
             // TIMER RESOLUTION
             timer::get_timer_resolution,
             timer::set_timer_resolution,

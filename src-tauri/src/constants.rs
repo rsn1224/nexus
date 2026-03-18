@@ -15,24 +15,44 @@ pub const PROTECTED_PROCESSES: &[&str] = &[
 /// 拡張子なしの正規化名で管理（比較時に .exe を除去して小文字化）
 pub const DEFAULT_SUSPEND_CANDIDATES: &[&str] = &[
     // Webブラウザ
-    "chrome", "firefox", "msedge", "opera", "brave",
+    "chrome",
+    "firefox",
+    "msedge",
+    "opera",
+    "brave",
     // コーディング/開発ツール
-    "code", "devenv", "sublime_text", "notepad++",
+    "code",
+    "devenv",
+    "sublime_text",
+    "notepad++",
     // 通信ソフト
-    "discord", "slack", "teams", "zoom", "skype",
+    "discord",
+    "slack",
+    "teams",
+    "zoom",
+    "skype",
     // メディアプレイヤー
-    "spotify", "vlc", "wmplayer", "itunes",
+    "spotify",
+    "vlc",
+    "wmplayer",
+    "itunes",
     // その他
-    "onedrive", "dropbox", "googledrive", "acrobat", "winword", "excel", "powerpnt",
+    "onedrive",
+    "dropbox",
+    "googledrive",
+    "acrobat",
+    "winword",
+    "excel",
+    "powerpnt",
 ];
 
 /// サーマル監視の温度閾値（摂氏）
 /// フロントエンドの src/lib/constants.ts と値を合わせること
 pub const THERMAL_THRESHOLDS: ThermalThresholds = ThermalThresholds {
-    cpu_warning_c: 75.0,   // CPU_TEMP_WARN_C
-    cpu_critical_c: 90.0,  // CPU_TEMP_CRITICAL_C
-    gpu_warning_c: 85.0,   // GPU_TEMP_WARN_C
-    gpu_critical_c: 95.0,  // GPU_TEMP_CRITICAL_C
+    cpu_warning_c: 75.0,  // CPU_TEMP_WARN_C
+    cpu_critical_c: 90.0, // CPU_TEMP_CRITICAL_C
+    gpu_warning_c: 85.0,  // GPU_TEMP_WARN_C
+    gpu_critical_c: 95.0, // GPU_TEMP_CRITICAL_C
 };
 
 /// 温度閾値設定構造体

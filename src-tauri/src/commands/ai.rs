@@ -246,10 +246,12 @@ pub async fn analyze_bottleneck_ai(
         cpu_name = request.cpu_name,
         cpu_pct = request.cpu_percent,
         gpu_name = request.gpu_name.as_deref().unwrap_or("N/A"),
-        gpu_pct = request.gpu_usage_percent
+        gpu_pct = request
+            .gpu_usage_percent
             .map(|g| format!("{:.0}%", g))
             .unwrap_or_else(|| "N/A".to_string()),
-        gpu_temp = request.gpu_temp_c
+        gpu_temp = request
+            .gpu_temp_c
             .map(|t| format!("{:.0}℃", t))
             .unwrap_or_else(|| "N/A".to_string()),
         mem_used = request.mem_used_gb,
@@ -283,7 +285,10 @@ pub async fn analyze_bottleneck_ai(
     if !response.status().is_success() {
         let status = response.status();
         error!("Perplexity API error: {}", status);
-        return Err(AppError::Network(format!("Perplexity API エラー: {}", status)));
+        return Err(AppError::Network(format!(
+            "Perplexity API エラー: {}",
+            status
+        )));
     }
 
     let data: PerplexityResponse = response
@@ -299,7 +304,10 @@ pub async fn analyze_bottleneck_ai(
 
     let recommendations = parse_ai_recommendations(content);
 
-    info!("AI ボトルネック分析完了: {} 件の推奨事項", recommendations.len());
+    info!(
+        "AI ボトルネック分析完了: {} 件の推奨事項",
+        recommendations.len()
+    );
 
     Ok(AiBottleneckResponse {
         analysis: content.to_string(),
@@ -311,8 +319,15 @@ pub async fn analyze_bottleneck_ai(
 fn parse_ai_recommendations(content: &str) -> Vec<AiRecommendation> {
     let mut recommendations = Vec::new();
     let nexus_keywords = [
-        "アフィニティ", "優先度", "サスペンド", "タイマー", "電源プラン",
-        "ブースト", "メモリクリーン", "リゾリューション", "プロセス停止",
+        "アフィニティ",
+        "優先度",
+        "サスペンド",
+        "タイマー",
+        "電源プラン",
+        "ブースト",
+        "メモリクリーン",
+        "リゾリューション",
+        "プロセス停止",
     ];
 
     for line in content.lines() {
@@ -329,7 +344,15 @@ fn parse_ai_recommendations(content: &str) -> Vec<AiRecommendation> {
             // 先頭の番号部分を除去
             let text: String = trimmed
                 .chars()
-                .skip_while(|c| c.is_ascii_digit() || *c == '.' || *c == '．' || *c == '、' || *c == ' ' || *c == '　' || ('０'..='９').contains(c))
+                .skip_while(|c| {
+                    c.is_ascii_digit()
+                        || *c == '.'
+                        || *c == '．'
+                        || *c == '、'
+                        || *c == ' '
+                        || *c == '　'
+                        || ('０'..='９').contains(c)
+                })
                 .collect::<String>()
                 .trim()
                 .to_string();
@@ -339,7 +362,11 @@ fn parse_ai_recommendations(content: &str) -> Vec<AiRecommendation> {
             }
 
             let applicable = nexus_keywords.iter().any(|kw| text.contains(kw));
-            let action = if applicable { Some("boost".to_string()) } else { None };
+            let action = if applicable {
+                Some("boost".to_string())
+            } else {
+                None
+            };
 
             recommendations.push(AiRecommendation {
                 title: text,

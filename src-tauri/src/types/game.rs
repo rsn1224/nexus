@@ -57,6 +57,10 @@ pub struct GameProfile {
     /// ゲーム起動時に適用するブーストレベル
     pub boost_level: BoostLevel,
 
+    /// ゲーム中にコアパーキングを無効化するか
+    #[serde(default)]
+    pub core_parking_disabled: bool,
+
     /// 最終プレイ日時（Unix タイムスタンプ）
     pub last_played: Option<u64>,
 
@@ -228,6 +232,8 @@ pub struct ProfileApplyResult {
     pub prev_power_plan: Option<String>,
     /// 一時停止したプロセスの PID リスト（リバート用）
     pub suspended_pids: Vec<u32>,
+    /// コアパーキング変更前の値（リバート用）
+    pub prev_core_parking: Option<u32>,
 }
 
 impl ProfileApplyResult {
@@ -243,6 +249,7 @@ impl ProfileApplyResult {
                 .as_secs(),
             prev_power_plan: None,
             suspended_pids: Vec::new(),
+            prev_core_parking: None,
         }
     }
 }
@@ -262,6 +269,8 @@ pub struct RevertSnapshot {
     pub suspended_pids: Vec<u32>,
     /// 変更前のアフィニティ（Phase 8b で使用）: (pid, affinity_mask)
     pub prev_affinities: Vec<(u32, usize)>,
+    /// コアパーキング変更前の値
+    pub prev_core_parking: Option<u32>,
     /// スナップショット作成時刻（Unix タイムスタンプ）
     pub created_at: u64,
 }
@@ -337,6 +346,7 @@ mod tests {
             processes_to_kill: vec![],
             timer_resolution_100ns: None,
             boost_level: BoostLevel::default(),
+            core_parking_disabled: false,
             auto_suspend_enabled: true,
             last_played: None,
             total_play_secs: 0,
@@ -544,6 +554,8 @@ pub struct SharedProfile {
     pub timer_resolution_100ns: Option<u32>,
     /// ブーストレベル
     pub boost_level: BoostLevel,
+    /// ゲーム中にコアパーキングを無効化するか
+    pub core_parking_disabled: bool,
     /// エクスポート日時（Unix ms）
     pub exported_at: u64,
 }
