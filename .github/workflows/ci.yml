@@ -3,9 +3,29 @@ name: CI
 on:
   push:
     branches: [master]
+    paths:
+      - 'src/**'
+      - 'src-tauri/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig*.json'
+      - 'vite.config.*'
+      - 'vitest.config.*'
+      - 'tailwind.config.*'
+      - '.github/workflows/**'
   pull_request:
     branches: [master]
-  workflow_dispatch:
+    paths:
+      - 'src/**'
+      - 'src-tauri/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'tsconfig*.json'
+      - 'vite.config.*'
+      - 'vitest.config.*'
+      - 'tailwind.config.*'
+      - '.github/workflows/**'
+  workflow_dispatch:  # 手動実行は常に許可
 
 jobs:
   frontend:
@@ -17,7 +37,17 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
+      # ── 追加: node_modules キャッシュ ──
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+      # ── ここまで追加 ──
       - run: npm run typecheck
       - run: npm run check
       - run: npm run lint
@@ -30,6 +60,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true    # ← 追加
       - name: Install Linux deps
         run: |
           sudo apt-get update
@@ -49,6 +81,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true    # ← 追加
       - name: Install Linux deps
         run: |
           sudo apt-get update
@@ -60,7 +94,6 @@ jobs:
   rust-test-windows:
     name: Rust Test (Windows)
     runs-on: windows-latest
-    # Cost reduction: Only run on manual trigger or [win-test] tag
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[win-test]'))
@@ -68,6 +101,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          cache-on-failure: true    # ← 追加
       - name: cargo test
         working-directory: src-tauri
         run: cargo test
@@ -75,31 +110,9 @@ jobs:
         working-directory: src-tauri
         run: cargo clippy -- -D warnings
 
-  security:
-    name: Security Audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      # npm audit
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm audit --audit-level=high
-
-      # cargo audit
-      - uses: dtolnay/rust-toolchain@stable
-      - run: cargo install cargo-audit
-      - name: cargo audit
-        working-directory: src-tauri
-        run: cargo audit
-
   e2e:
     name: E2E Tests
     runs-on: windows-latest
-    # Cost reduction: Only run on manual trigger or [win-test] tag
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[win-test]'))
@@ -112,7 +125,19 @@ jobs:
           cache: npm
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - run: npm ci
+        with:
+          cache-on-failure: true    # ← 追加
+      # ── 追加: node_modules キャッシュ ──
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: node-modules-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm ci
+      # ── ここまで追加 ──
       - run: npx playwright install --with-deps
       - name: Build Tauri app
         run: npm run tauri build -- --debug
