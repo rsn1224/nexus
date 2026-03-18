@@ -26,6 +26,8 @@ on:
       - 'tailwind.config.*'
       - '.github/workflows/**'
   workflow_dispatch:  # 手動実行は常に許可
+  schedule:
+    - cron: '0 0 * * 1'  # 毎週月曜 00:00 UTC（日本時間 09:00）
 
 jobs:
   frontend:
@@ -96,6 +98,7 @@ jobs:
     runs-on: windows-latest
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[win-test]'))
     steps:
       - uses: actions/checkout@v4
@@ -115,6 +118,7 @@ jobs:
     runs-on: windows-latest
     if: >-
       github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'schedule' ||
       (github.event_name == 'push' && contains(github.event.head_commit.message, '[win-test]'))
     continue-on-error: true  # 初期は失敗しても CI 全体はブロックしない
     steps:
