@@ -1,39 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import type React from 'react';
+import { useMemo, useState } from 'react';
 import { useBoostStore } from '../../stores/useBoostStore';
 import { useOpsStore } from '../../stores/useOpsStore';
-import type { SystemProcess } from '../../types';
-import { Button, EmptyState, LoadingState } from '../ui';
+import { Button } from '../ui';
 import Input from '../ui/Input';
 import Modal, { ModalActions } from '../ui/Modal';
+import type { ProcessSortKey } from './ProcessTable';
+import ProcessTable from './ProcessTable';
 
 const DEFAULT_CPU_THRESHOLD = 15;
 const BOOST_DURATION_SHORT_MS = 1000;
-
-// 保護プロセスリスト
-const PROTECTED_PROCESS_NAMES = new Set([
-  'system',
-  'smss.exe',
-  'csrss.exe',
-  'wininit.exe',
-  'winlogon.exe',
-  'lsass.exe',
-  'services.exe',
-  'svchost.exe',
-]);
-
-function getProcessStatus(p: SystemProcess, threshold: number): 'target' | 'protected' | 'normal' {
-  if (PROTECTED_PROCESS_NAMES.has(p.name.toLowerCase())) return 'protected';
-  if (p.cpuPercent >= threshold && p.canTerminate) return 'target';
-  return 'normal';
-}
-
-function formatMemory(mb: number): string {
-  return mb >= 1024 ? `${(mb / 1024).toFixed(1)}GB` : `${mb}MB`;
-}
-
-function formatDiskIO(kb: number): string {
-  return kb >= 1024 ? `${(kb / 1024).toFixed(1)}MB/s` : `${kb.toFixed(1)}KB/s`;
-}
 
 interface ProcessTabProps {
   className?: string;
@@ -44,7 +20,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
   const { processes, isLoading, lastUpdated, killProcess, setProcessPriority } = useOpsStore();
   const [threshold, setThreshold] = useState(DEFAULT_CPU_THRESHOLD);
   const [filterText, setFilterText] = useState('');
-  const [sortKey, setSortKey] = useState<'name' | 'cpu' | 'mem' | 'diskRead' | 'diskWrite'>('cpu');
+  const [sortKey, setSortKey] = useState<ProcessSortKey>('cpu');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedPid, setSelectedPid] = useState<number | null>(null);
   const [killModalOpen, setKillModalOpen] = useState(false);
@@ -218,159 +194,23 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         </div>
       </div>
 
-      {/* Live Processes Panel */}
-      <div className="mb-6">
-        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2 tracking-[0.12em]">
-          {filterText
-            ? `LIVE PROCESSES (表示 ${filteredProcesses.length} / 全 ${processes.length} 件 / BOOST対象: ${targetCount}件)`
-            : `LIVE PROCESSES (${processes.length}件 / BOOST対象: ${targetCount}件)`}
-        </div>
-        <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
-          {isLoading ? (
-            <LoadingState message="LOADING PROCESSES..." />
-          ) : processes.length === 0 ? (
-            <EmptyState message="NO DATA" action="PRESS REFRESH TO LOAD" />
-          ) : (
-            <table className="w-full border-collapse font-(--font-mono) text-[10px]">
-              <thead className="sticky top-0 bg-base-800 border-b border-border-subtle">
-                <tr>
-                  <th
-                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none"
-                    onClick={() => handleSort('name')}
-                  >
-                    NAME {sortKey === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
-                  </th>
-                  <th
-                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
-                    onClick={() => handleSort('cpu')}
-                  >
-                    CPU% {sortKey === 'cpu' && (sortDirection === 'asc' ? '▲' : '▼')}
-                  </th>
-                  <th
-                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
-                    onClick={() => handleSort('mem')}
-                  >
-                    MEM {sortKey === 'mem' && (sortDirection === 'asc' ? '▲' : '▼')}
-                  </th>
-                  <th
-                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
-                    onClick={() => handleSort('diskRead')}
-                  >
-                    DISK R {sortKey === 'diskRead' && (sortDirection === 'asc' ? '▲' : '▼')}
-                  </th>
-                  <th
-                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
-                    onClick={() => handleSort('diskWrite')}
-                  >
-                    DISK W {sortKey === 'diskWrite' && (sortDirection === 'asc' ? '▲' : '▼')}
-                  </th>
-                  <th className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left w-20">
-                    STATUS
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedProcesses.map((process, index) => {
-                  const status = getProcessStatus(process, threshold);
-                  const cpuColor =
-                    process.cpuPercent >= 50
-                      ? 'text-danger-500'
-                      : process.cpuPercent >= 20
-                        ? 'text-accent-400'
-                        : 'text-text-secondary';
-                  const isSelected = selectedPid === process.pid;
-                  const canTerminate = process.canTerminate;
+      <ProcessTable
+        processes={processes}
+        filteredProcesses={filteredProcesses}
+        sortedProcesses={sortedProcesses}
+        filterText={filterText}
+        targetCount={targetCount}
+        threshold={threshold}
+        isLoading={isLoading}
+        sortKey={sortKey}
+        sortDirection={sortDirection}
+        onSort={handleSort}
+        selectedPid={selectedPid}
+        onRowClick={handleRowClick}
+        onPriority={handlePriority}
+        onKillRequest={handleKillRequest}
+      />
 
-                  return (
-                    <React.Fragment key={process.pid}>
-                      <tr
-                        className={`cursor-pointer hover:bg-base-700 ${
-                          isSelected ? 'bg-base-900/10 border-l-2 border-accent-500' : ''
-                        } ${index % 2 === 0 ? 'bg-white/[0.02]' : ''}`}
-                        onClick={() => handleRowClick(process.pid)}
-                      >
-                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-text-primary">
-                          {process.name}
-                        </td>
-                        <td
-                          className={`px-3 py-[5px] font-(--font-mono) text-[12px] text-right ${cpuColor}`}
-                        >
-                          {process.cpuPercent.toFixed(1)}%
-                        </td>
-                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
-                          {formatMemory(process.memMb)}
-                        </td>
-                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
-                          {formatDiskIO(process.diskReadKb)}
-                        </td>
-                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
-                          {formatDiskIO(process.diskWriteKb)}
-                        </td>
-                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px]">
-                          {status === 'target' ? (
-                            <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px] font-(--font-mono)">
-                              [TARGET]
-                            </span>
-                          ) : status === 'protected' ? (
-                            <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-text-muted text-[9px] font-(--font-mono)">
-                              [PROT]
-                            </span>
-                          ) : (
-                            <span className="text-text-muted">─</span>
-                          )}
-                        </td>
-                      </tr>
-
-                      {/* アクションパネル */}
-                      {isSelected && (
-                        <tr>
-                          <td colSpan={6} className="px-3 py-2 bg-base-700">
-                            <div className="flex items-center gap-2">
-                              <span className="font-(--font-mono) text-[10px] text-text-muted">
-                                PRIORITY:
-                              </span>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handlePriority(process.pid, 'high')}
-                              >
-                                HIGH
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handlePriority(process.pid, 'normal')}
-                              >
-                                NORMAL
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => handlePriority(process.pid, 'idle')}
-                              >
-                                IDLE
-                              </Button>
-                              <div className="w-px h-4 bg-[var(--color-border-subtle)] mx-1" />
-                              <Button
-                                size="sm"
-                                variant="danger"
-                                onClick={() => handleKillRequest(process.pid, process.name)}
-                                disabled={!canTerminate}
-                              >
-                                ✕ KILL
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
       {/* Boost Results Panel */}
       {lastResult && (
         <div>
