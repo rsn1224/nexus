@@ -1,5 +1,6 @@
 pub mod app_settings;
 pub mod boost;
+pub mod cleanup;
 pub mod frame_time;
 pub mod hardware;
 pub mod launcher;

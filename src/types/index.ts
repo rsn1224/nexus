@@ -500,3 +500,18 @@ export type FrameTimeMonitorState =
   | { type: 'stopped' }
   | { type: 'monitoring'; pid: number; processName: string }
   | { type: 'error'; message: string };
+
+// ─── CLEANUP ──────────────────────────────────────────────────────────────
+export interface RevertItem {
+  category: string;
+  label: string;
+  success: boolean;
+  detail: string;
+}
+
+export interface RevertAllResult {
+  items: RevertItem[];
+  total: number;
+  successCount: number;
+  failCount: number;
+}

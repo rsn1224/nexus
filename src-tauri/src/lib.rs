@@ -9,8 +9,8 @@ mod state;
 mod types;
 
 use crate::commands::{
-    app_settings, boost, frame_time, hardware, launcher, log, netopt, ops, profile, pulse, storage,
-    timer, windows_settings, winopt,
+    app_settings, boost, cleanup, frame_time, hardware, launcher, log, netopt, ops, profile, pulse,
+    storage, timer, windows_settings, winopt,
 };
 use tracing::info;
 
@@ -111,6 +111,9 @@ pub fn run() {
             frame_time::start_frame_time_monitor,
             frame_time::stop_frame_time_monitor,
             frame_time::get_frame_time_status,
+            // CLEANUP
+            cleanup::revert_all_settings,
+            cleanup::cleanup_app_data,
         ])
         .setup(|app| {
             let handle = app.handle().clone();

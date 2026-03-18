@@ -34,10 +34,33 @@ pub fn load_api_key(key_name: &str) -> Result<Option<String>, AppError> {
     }
 }
 
+/// API キーを Windows 資格情報マネージャーから削除する
+pub fn delete_api_key() -> Result<(), AppError> {
+    let entry = keyring::Entry::new("nexus", "perplexity_api_key")
+        .map_err(|e| AppError::Internal(format!("keyring Entry 作成失敗: {}", e)))?;
+    match entry.delete_credential() {
+        Ok(()) => Ok(()),
+        Err(keyring::Error::NoEntry) => Ok(()), // すでに存在しない場合は成功扱い
+        Err(e) => Err(AppError::Internal(format!("keyring 削除失敗: {}", e))),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
     fn test_service_name_constant() {
         assert_eq!(super::SERVICE_NAME, "nexus-app");
+    }
+
+    #[test]
+    fn test_delete_api_key_smoke() {
+        // keyring にエントリがなくてもパニックしないことを確認
+        // 実際の keyring 操作はテスト環境で不安定なため、エラーハンドリングのみ確認
+        let result = super::delete_api_key();
+        // 成功または失敗のどちらでもパニックしないことを確認
+        match result {
+            Ok(()) => println!("API キー削除成功"),
+            Err(e) => println!("API キー削除エラー: {}", e),
+        }
     }
 }

@@ -1,9 +1,12 @@
+import { invoke } from '@tauri-apps/api/core';
 import type React from 'react';
 import { useState } from 'react';
 import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
-import { Button } from '../ui';
+import type { RevertAllResult, RevertItem } from '../../types';
+import Button from '../ui/Button';
+import Modal from '../ui/Modal';
 
 export default function SettingsWing(): React.ReactElement {
   const { settings, isLoading, error, fetchSettings, saveSettings, updateSettings } =
@@ -13,6 +16,12 @@ export default function SettingsWing(): React.ReactElement {
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [isTestingKey, setIsTestingKey] = useState(false);
   const [testResult, setTestResult] = useState<{ valid: boolean; message: string } | null>(null);
+
+  // Maintenance state
+  const [isReverting, setIsReverting] = useState(false);
+  const [isCleaning, setIsCleaning] = useState(false);
+  const [revertResult, setRevertResult] = useState<RevertAllResult | null>(null);
+  const [showCleanupConfirm, setShowCleanupConfirm] = useState(false);
 
   // 初回データフェッチ
   useInitialData(() => fetchSettings(), [fetchSettings]);
@@ -70,6 +79,45 @@ export default function SettingsWing(): React.ReactElement {
   const handleToggleMinimizeToTray = async (): Promise<void> => {
     if (!settings) return;
     await updateSettings({ minimizeToTray: !settings.minimizeToTray });
+  };
+
+  const handleRevertAll = async (): Promise<void> => {
+    setIsReverting(true);
+    setRevertResult(null);
+    try {
+      const result = await invoke<RevertAllResult>('revert_all_settings');
+      setRevertResult(result);
+    } catch (err) {
+      console.error('Revert failed:', err);
+    } finally {
+      setIsReverting(false);
+    }
+  };
+
+  const handleCleanupRequest = (): void => {
+    setShowCleanupConfirm(true);
+  };
+
+  const handleCleanupConfirm = async (): Promise<void> => {
+    setShowCleanupConfirm(false);
+    setIsCleaning(true);
+    try {
+      // 1. まず全設定リバート
+      const revertRes = await invoke<RevertAllResult>('revert_all_settings');
+      // 2. 次にデータ削除
+      const cleanupItems = await invoke<RevertItem[]>('cleanup_app_data');
+      // 結合して表示
+      setRevertResult({
+        items: [...revertRes.items, ...cleanupItems],
+        total: revertRes.total + cleanupItems.length,
+        successCount: revertRes.successCount + cleanupItems.filter((i) => i.success).length,
+        failCount: revertRes.failCount + cleanupItems.filter((i) => !i.success).length,
+      });
+    } catch (err) {
+      console.error('Cleanup failed:', err);
+    } finally {
+      setIsCleaning(false);
+    }
   };
 
   // Get app version and build date from package.json
@@ -210,6 +258,87 @@ export default function SettingsWing(): React.ReactElement {
         </div>
       </div>
 
+      {/* MAINTENANCE Section */}
+      <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3 mb-4">
+        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
+          MAINTENANCE
+        </div>
+        <div className="space-y-3">
+          {/* 全設定リバート */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
+                全設定リバート
+              </div>
+              <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+                nexus が変更した Windows 設定を全て元に戻します
+              </div>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleRevertAll}
+              disabled={isReverting}
+              loading={isReverting}
+            >
+              ↩ REVERT ALL
+            </Button>
+          </div>
+
+          {/* 区切り線 */}
+          <div className="border-t border-[var(--color-border-subtle)]" />
+
+          {/* アプリデータ削除 */}
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-danger-500)]">
+                アプリデータ削除
+              </div>
+              <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+                プロファイル・設定・API キーを完全に削除します
+              </div>
+            </div>
+            <Button
+              variant="danger"
+              size="sm"
+              onClick={handleCleanupRequest}
+              disabled={isCleaning}
+              loading={isCleaning}
+            >
+              ✕ DELETE ALL DATA
+            </Button>
+          </div>
+        </div>
+
+        {/* リバート結果表示 */}
+        {revertResult && (
+          <div className="mt-3 border-t border-[var(--color-border-subtle)] pt-3">
+            <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-1">
+              RESULT: {revertResult.successCount} 成功 / {revertResult.failCount} 失敗
+            </div>
+            {revertResult.items.map((item) => (
+              <div
+                key={`${item.category}-${item.label}`}
+                className="flex items-center gap-2 font-[var(--font-mono)] text-[10px]"
+              >
+                <span
+                  className={
+                    item.success
+                      ? 'text-[var(--color-success-500)]'
+                      : 'text-[var(--color-danger-500)]'
+                  }
+                >
+                  {item.success ? '✓' : '✗'}
+                </span>
+                <span className="text-[var(--color-text-secondary)]">[{item.category}]</span>
+                <span className="text-[var(--color-text-primary)]">{item.label}</span>
+                <span className="text-[var(--color-text-muted)]">— {item.detail}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* ABOUT Section */}
       <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded p-3">
         <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2">
@@ -224,6 +353,37 @@ export default function SettingsWing(): React.ReactElement {
           </div>
         </div>
       </div>
+
+      {/* Cleanup Confirmation Modal */}
+      <Modal
+        isOpen={showCleanupConfirm}
+        onClose={() => setShowCleanupConfirm(false)}
+        title="⚠ データ削除の確認"
+        size="md"
+      >
+        <div className="space-y-3">
+          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+            以下のデータが完全に削除されます：
+          </div>
+          <ul className="list-disc list-inside space-y-1 font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)]">
+            <li>ゲームプロファイル (profiles.json)</li>
+            <li>アプリ設定 (app_settings.json)</li>
+            <li>Windows 設定バックアップ (winopt_backup.json)</li>
+            <li>API キー (keyring)</li>
+          </ul>
+          <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-danger-500)]">
+            ⚠ この操作は元に戻せません
+          </div>
+        </div>
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="secondary" size="sm" onClick={() => setShowCleanupConfirm(false)}>
+            CANCEL
+          </Button>
+          <Button variant="danger" size="sm" onClick={handleCleanupConfirm} loading={isCleaning}>
+            DELETE ALL DATA
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
