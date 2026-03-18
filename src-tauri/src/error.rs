@@ -81,3 +81,60 @@ impl From<serde_json::Error> for AppError {
         Self::Serialization(e.to_string())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_display_variants() {
+        assert_eq!(
+            AppError::Io("disk full".to_string()).to_string(),
+            "IOエラー: disk full"
+        );
+        assert_eq!(
+            AppError::Network("timeout".to_string()).to_string(),
+            "ネットワークエラー: timeout"
+        );
+        assert_eq!(
+            AppError::NotFound("profile".to_string()).to_string(),
+            "未検出: profile"
+        );
+        assert_eq!(
+            AppError::InvalidInput("bad value".to_string()).to_string(),
+            "不正な入力: bad value"
+        );
+        assert_eq!(
+            AppError::Win32("access denied".to_string()).to_string(),
+            "Win32 API エラー: access denied"
+        );
+        assert_eq!(
+            AppError::Internal("bug".to_string()).to_string(),
+            "内部エラー: bug"
+        );
+    }
+
+    #[test]
+    fn test_from_io_error() {
+        let io_err = std::io::Error::new(std::io::ErrorKind::NotFound, "file not found");
+        let app_err = AppError::from(io_err);
+        assert!(matches!(app_err, AppError::Io(_)));
+        assert!(app_err.to_string().starts_with("IOエラー:"));
+    }
+
+    #[test]
+    fn test_from_serde_json_error() {
+        let json_err = serde_json::from_str::<serde_json::Value>("{invalid}").unwrap_err();
+        let app_err = AppError::from(json_err);
+        assert!(matches!(app_err, AppError::Serialization(_)));
+        assert!(app_err.to_string().starts_with("シリアライズエラー:"));
+    }
+
+    #[test]
+    fn test_serde_serialization() {
+        let err = AppError::InvalidInput("too large".to_string());
+        let json = serde_json::to_string(&err).unwrap(); // unwrap: test only
+        assert!(json.contains("InvalidInput"));
+        assert!(json.contains("too large"));
+    }
+}

@@ -29,6 +29,10 @@ on:
   schedule:
     - cron: '0 0 * * 1'  # 毎週月曜 00:00 UTC（日本時間 09:00）
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node.js 20 deprecation対応 (2026-06-02 強制移行)
 
@@ -36,6 +40,7 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -56,11 +61,12 @@ jobs:
       - run: npm run typecheck
       - run: npm run check
       - run: npm run lint
-      - run: npm run test
+      - run: npm run test:coverage
 
   rust-lint:
     name: Rust Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -81,6 +87,7 @@ jobs:
   rust-test-linux:
     name: Rust Test (Linux)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: rust-lint
     steps:
       - uses: actions/checkout@v4
@@ -99,6 +106,7 @@ jobs:
   rust-test-windows:
     name: Rust Test (Windows)
     runs-on: windows-latest
+    timeout-minutes: 20
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule' ||
@@ -119,6 +127,7 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: windows-latest
+    timeout-minutes: 30
     if: >-
       github.event_name == 'workflow_dispatch' ||
       github.event_name == 'schedule' ||

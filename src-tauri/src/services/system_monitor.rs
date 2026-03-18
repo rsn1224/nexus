@@ -87,3 +87,54 @@ pub fn collect_snapshot(state: &State<'_, SharedState>) -> Result<SnapshotData, 
         net_sent_kb,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn make_snapshot(cpu: f32, mem_used: u64, mem_total: u64) -> SnapshotData {
+        SnapshotData {
+            timestamp: 1_700_000_000,
+            cpu_percent: cpu,
+            cpu_temp_c: None,
+            mem_used_mb: mem_used,
+            mem_total_mb: mem_total,
+            disk_read_kb: 0,
+            disk_write_kb: 0,
+            net_recv_kb: 0,
+            net_sent_kb: 0,
+        }
+    }
+
+    #[test]
+    fn test_snapshot_fields() {
+        let s = make_snapshot(45.0, 8192, 16384);
+        assert_eq!(s.cpu_percent, 45.0);
+        assert_eq!(s.mem_used_mb, 8192);
+        assert_eq!(s.mem_total_mb, 16384);
+        assert!(s.cpu_temp_c.is_none());
+        assert_eq!(s.timestamp, 1_700_000_000);
+    }
+
+    #[test]
+    fn test_snapshot_with_temp() {
+        let mut s = make_snapshot(50.0, 4096, 8192);
+        s.cpu_temp_c = Some(72.5);
+        assert_eq!(s.cpu_temp_c, Some(72.5));
+    }
+
+    #[test]
+    fn test_mem_used_not_exceeds_total() {
+        let s = make_snapshot(10.0, 4096, 16384);
+        assert!(s.mem_used_mb <= s.mem_total_mb);
+    }
+
+    #[test]
+    fn test_disk_net_zero_default() {
+        let s = make_snapshot(0.0, 0, 0);
+        assert_eq!(s.disk_read_kb, 0);
+        assert_eq!(s.disk_write_kb, 0);
+        assert_eq!(s.net_recv_kb, 0);
+        assert_eq!(s.net_sent_kb, 0);
+    }
+}
