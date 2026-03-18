@@ -1,13 +1,18 @@
 use crate::commands::hardware::HardwareInfo;
-use std::sync::Mutex;
+use std::sync::{Mutex, LazyLock};
 use sysinfo::{DiskKind, Disks, System};
 use tauri::{AppHandle, Emitter, Manager};
 use tokio::time::{Duration, interval};
 use tracing::{debug, error, warn};
 
 /// サーマルアラートの状態管理
-static mut LAST_THERMAL_ALERTS: Option<Vec<crate::services::thermal_monitor::ThermalAlert>> = None;
-static mut LAST_ALERT_TIME: u64 = 0;
+#[derive(Debug, Default)]
+struct ThermalState {
+    last_alerts: Option<Vec<crate::services::thermal_monitor::ThermalAlert>>,
+    last_alert_time: u64,
+}
+
+static THERMAL_STATE: LazyLock<Mutex<ThermalState>> = LazyLock::new(|| Mutex::new(ThermalState::default()));
 
 /// ハードウェア情報を定期的にフロントエンドへ配信する
 pub async fn start(app: AppHandle) {
@@ -209,8 +214,8 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
 /// サーマルアラートをチェックしてemitする
 /// 同じアラートの連続emitを防止し、最低30秒間隔を空ける
 fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_temp_c: Option<f32>) {
-    let thresholds = crate::services::thermal_monitor::ThermalThresholds::default();
-    let alerts = crate::services::thermal_monitor::check_thermal(cpu_temp_c, gpu_temp_c, &thresholds);
+    let thresholds = &crate::constants::THERMAL_THRESHOLDS;
+    let alerts = crate::services::thermal_monitor::check_thermal(cpu_temp_c, gpu_temp_c, thresholds);
     
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -219,80 +224,78 @@ fn check_and_emit_thermal_alerts(app: &AppHandle, cpu_temp_c: Option<f32>, gpu_t
 
     // アラートがない場合、前回のアラートがNormalでなければNormalをemit
     if alerts.is_empty() {
-        unsafe {
-            if let Some(ref last_alerts) = LAST_THERMAL_ALERTS {
-                // 前回のアラートがあり、すべてNormalでなければ復帰通知
-                let has_non_normal = last_alerts.iter().any(|a| !matches!(a.level, crate::services::thermal_monitor::ThermalAlertLevel::Normal));
-                if has_non_normal && now.saturating_sub(LAST_ALERT_TIME) >= 30 {
-                    // Normalアラートを生成してemit
-                    let normal_alerts = vec![
-                        crate::services::thermal_monitor::ThermalAlert {
-                            component: "CPU".to_string(),
-                            level: crate::services::thermal_monitor::ThermalAlertLevel::Normal,
-                            current_temp_c: cpu_temp_c.unwrap_or(0.0),
-                            threshold_c: thresholds.cpu_warning_c,
-                            message: "温度が正常範囲に戻りました".to_string(),
-                            timestamp: now,
-                        },
-                        crate::services::thermal_monitor::ThermalAlert {
-                            component: "GPU".to_string(),
-                            level: crate::services::thermal_monitor::ThermalAlertLevel::Normal,
-                            current_temp_c: gpu_temp_c.unwrap_or(0.0),
-                            threshold_c: thresholds.gpu_warning_c,
-                            message: "温度が正常範囲に戻りました".to_string(),
-                            timestamp: now,
-                        },
-                    ];
-                    
-                    for alert in &normal_alerts {
-                        if let Err(e) = app.emit("nexus://thermal-alert", alert) {
-                            error!("thermal_alert: イベント送信失敗: {}", e);
-                        }
+        let mut state = THERMAL_STATE.lock().unwrap();
+        if let Some(ref last_alerts) = state.last_alerts {
+            // 前回のアラートがあり、すべてNormalでなければ復帰通知
+            let has_non_normal = last_alerts.iter().any(|a| !matches!(a.level, crate::services::thermal_monitor::ThermalAlertLevel::Normal));
+            if has_non_normal && now.saturating_sub(state.last_alert_time) >= 30 {
+                // Normalアラートを生成してemit
+                let normal_alerts = vec![
+                    crate::services::thermal_monitor::ThermalAlert {
+                        component: "CPU".to_string(),
+                        level: crate::services::thermal_monitor::ThermalAlertLevel::Normal,
+                        current_temp_c: cpu_temp_c.unwrap_or(0.0),
+                        threshold_c: thresholds.cpu_warning_c,
+                        message: "温度が正常範囲に戻りました".to_string(),
+                        timestamp: now,
+                    },
+                    crate::services::thermal_monitor::ThermalAlert {
+                        component: "GPU".to_string(),
+                        level: crate::services::thermal_monitor::ThermalAlertLevel::Normal,
+                        current_temp_c: gpu_temp_c.unwrap_or(0.0),
+                        threshold_c: thresholds.gpu_warning_c,
+                        message: "温度が正常範囲に戻りました".to_string(),
+                        timestamp: now,
+                    },
+                ];
+                
+                for alert in &normal_alerts {
+                    if let Err(e) = app.emit("nexus://thermal-alert", alert) {
+                        error!("thermal_alert: イベント送信失敗: {}", e);
                     }
-                    
-                    LAST_THERMAL_ALERTS = Some(normal_alerts);
-                    LAST_ALERT_TIME = now;
                 }
-            } else {
-                // 初回または前回アラートなし
-                LAST_THERMAL_ALERTS = None;
+                
+                state.last_alerts = Some(normal_alerts);
+                state.last_alert_time = now;
             }
+        } else {
+            // 初回または前回アラートなし
+            state.last_alerts = None;
         }
         return;
     }
 
     // アラートがある場合、前回と同じか30秒経過しているかチェック
-    unsafe {
-        let should_emit = if let Some(ref last_alerts) = LAST_THERMAL_ALERTS {
-            // アラート内容に変化があるかチェック
-            let alerts_changed = alerts.len() != last_alerts.len() ||
-                alerts.iter().zip(last_alerts.iter()).any(|(current, last)| {
-                    current.component != last.component ||
-                    current.level != last.level ||
-                    (current.timestamp - last.timestamp) >= 30 // 30秒以上経過
-                });
-            
-            alerts_changed || now.saturating_sub(LAST_ALERT_TIME) >= 30
-        } else {
-            true // 初回アラート
-        };
+    let mut state = THERMAL_STATE.lock().unwrap();
+    let should_emit = if let Some(ref last_alerts) = state.last_alerts {
+        // アラート内容に変化があるかチェック
+        let alerts_changed = alerts.len() != last_alerts.len() ||
+            alerts.iter().zip(last_alerts.iter()).any(|(current, last)| {
+                current.component != last.component ||
+                current.level != last.level ||
+                (current.timestamp - last.timestamp) >= 30 // 30秒以上経過
+            });
+        
+        alerts_changed || now.saturating_sub(state.last_alert_time) >= 30
+    } else {
+        true // 初回アラート
+    };
 
-        if should_emit {
-            for alert in &alerts {
-                if let Err(e) = app.emit("nexus://thermal-alert", alert) {
-                    error!("thermal_alert: イベント送信失敗: {}", e);
-                } else {
-                    debug!(
-                        component = %alert.component,
-                        level = ?alert.level,
-                        temp = alert.current_temp_c,
-                        "thermal_alert: アラート送信"
-                    );
-                }
+    if should_emit {
+        for alert in &alerts {
+            if let Err(e) = app.emit("nexus://thermal-alert", alert) {
+                error!("thermal_alert: イベント送信失敗: {}", e);
+            } else {
+                debug!(
+                    component = %alert.component,
+                    level = ?alert.level,
+                    temp = alert.current_temp_c,
+                    "thermal_alert: アラート送信"
+                );
             }
-            
-            LAST_THERMAL_ALERTS = Some(alerts);
-            LAST_ALERT_TIME = now;
         }
+        
+        state.last_alerts = Some(alerts);
+        state.last_alert_time = now;
     }
 }

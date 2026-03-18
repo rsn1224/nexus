@@ -53,8 +53,7 @@ function ThermalAlertBanner({
           <button
             type="button"
             onClick={() => onClear(alert.component)}
-            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+            className="text-xs text-text-muted hover:text-text bg-transparent border-none cursor-pointer"
           >
             ✕
           </button>

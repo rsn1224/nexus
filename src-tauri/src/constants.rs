@@ -26,6 +26,23 @@ pub const DEFAULT_SUSPEND_CANDIDATES: &[&str] = &[
     "onedrive", "dropbox", "googledrive", "acrobat", "winword", "excel", "powerpnt",
 ];
 
+/// サーマル監視の温度閾値（摂氏）
+/// フロントエンドの src/lib/constants.ts と値を合わせること
+pub const THERMAL_THRESHOLDS: ThermalThresholds = ThermalThresholds {
+    cpu_warning_c: 75.0,   // CPU_TEMP_WARN_C
+    cpu_critical_c: 90.0,  // CPU_TEMP_CRITICAL_C
+    gpu_warning_c: 85.0,   // GPU_TEMP_WARN_C
+    gpu_critical_c: 95.0,  // GPU_TEMP_CRITICAL_C
+};
+
+/// 温度閾値設定構造体
+pub struct ThermalThresholds {
+    pub cpu_warning_c: f32,
+    pub cpu_critical_c: f32,
+    pub gpu_warning_c: f32,
+    pub gpu_critical_c: f32,
+}
+
 /// プロセス名が保護リストに含まれるか判定
 /// `.exe` を除去（大文字小文字を区別せず）、小文字化してから比較
 pub fn is_protected_process(name: &str) -> bool {
