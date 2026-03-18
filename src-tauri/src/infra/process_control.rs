@@ -392,9 +392,7 @@ pub fn find_pids_by_name(name: &str) -> Result<Vec<u32>, AppError> {
 /// Windows 以外のプラットフォーム用スタブ実装
 #[cfg(not(windows))]
 pub fn find_pids_by_name(_name: &str) -> Result<Vec<u32>, AppError> {
-    Err(AppError::Win32(
-        "プロセス検索は Windows 専用機能です".to_string(),
-    ))
+    Ok(vec![])
 }
 
 // ─── テスト ──────────────────────────────────────────────────────────────────

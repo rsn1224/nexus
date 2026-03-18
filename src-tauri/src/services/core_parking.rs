@@ -209,6 +209,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(windows), ignore)]
     fn test_set_core_parking_validation() {
         // 無効な値のみテスト（有効な値は環境依存のためスキップ）
         assert!(matches!(

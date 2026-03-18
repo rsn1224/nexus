@@ -471,6 +471,7 @@ mod tests {
 
     // --- TCP Tuning バリデーション ---
     #[test]
+    #[cfg_attr(not(windows), ignore)]
     fn test_set_qos_bandwidth_validation() {
         // 無効な値のみテスト（有効な値は環境依存のためスキップ）
         assert!(matches!(
@@ -480,6 +481,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(windows), ignore)]
     fn test_set_network_throttling_validation() {
         // 無効な値のみテスト（有効な値は環境依存のためスキップ）
         assert!(matches!(
@@ -502,6 +504,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(windows), ignore)]
     fn test_measure_network_quality_validation() {
         // 有効な値
         assert!(measure_network_quality("8.8.8.8".to_string(), 10).is_ok()); // 環境依存

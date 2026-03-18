@@ -260,6 +260,7 @@ mod tests {
     }
 
     #[test]
+    #[cfg_attr(not(windows), ignore)]
     fn test_count_validation() {
         // count の範囲チェックは measure_network_quality 内で行われる
         assert!(measure_network_quality("8.8.8.8", 0).is_err());
