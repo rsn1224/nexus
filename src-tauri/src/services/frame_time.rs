@@ -215,13 +215,6 @@ mod tests {
         assert_eq!(percentile(&data, 50.0), 0.0);
     }
 
-    #[cfg(windows)]
-    #[test]
-    fn test_frame_time_session_compiles() {
-        // ETW は Windows でのみ動作するため、コンパイルテストのみ
-        assert!(true);
-    }
-
     #[cfg(not(windows))]
     #[test]
     fn test_frame_time_session_stub() {

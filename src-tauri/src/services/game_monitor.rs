@@ -236,10 +236,6 @@ fn get_running_processes(app: &AppHandle) -> Result<Vec<(u32, String)>, AppError
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn test_module_compiles() {
-        // ゲーム監視は AppHandle 依存のため、ユニットテストは限定的
-        // 統合テストは E2E で行う
-        assert!(true);
-    }
+    // ゲーム監視は AppHandle 依存のため、ユニットテストは限定的
+    // 統合テストは E2E で行う
 }

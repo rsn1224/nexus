@@ -91,10 +91,4 @@ pub fn restore_timer(state: &State<'_, SharedState>) -> Result<(), AppError> {
 mod tests {
     // services 層のテストは State が必要なため、統合テストまたは commands 層で行う。
     // ロジックの単体テストは infra 層で完結している。
-
-    #[test]
-    fn test_timer_module_compiles() {
-        // コンパイル確認用の最小テスト
-        assert!(true);
-    }
 }

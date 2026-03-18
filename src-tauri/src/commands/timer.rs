@@ -31,14 +31,3 @@ pub fn set_timer_resolution(
 pub fn restore_timer_resolution(state: State<'_, SharedState>) -> Result<(), AppError> {
     timer::restore_timer(&state)
 }
-
-// ─── テスト ──────────────────────────────────────────────────────────────────
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_commands_compile() {
-        // コマンドハンドラのコンパイル確認
-        assert!(true);
-    }
-}

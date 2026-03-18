@@ -96,11 +96,3 @@ pub async fn get_frame_time_status(
 }
 
 // ─── テスト ──────────────────────────────────────────────────────────────────
-
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn test_commands_compile() {
-        assert!(true);
-    }
-}

@@ -19,6 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run check
+      - run: npm run lint
       - run: npm run test
 
   rust:
@@ -39,3 +40,45 @@ jobs:
       - name: cargo fmt check
         working-directory: src-tauri
         run: cargo fmt -- --check
+
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # npm audit
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=high
+
+      # cargo audit
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo install cargo-audit
+      - name: cargo audit
+        working-directory: src-tauri
+        run: cargo audit
+
+  e2e:
+    name: E2E Tests
+    runs-on: windows-latest
+    continue-on-error: true  # 初期は失敗しても CI 全体はブロックしない
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workdir: src-tauri
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - name: Build Tauri app
+        run: npm run tauri build -- --debug
+      - name: Run E2E tests
+        run: npx playwright test
