@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -173,7 +173,9 @@ describe('ProfileTab', () => {
       expect(screen.getByText(/プロファイルがありません/)).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: /新規プロファイル/ }));
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: /新規プロファイル/ }));
+    });
 
     // フォーム要素が表示される
     expect(screen.getByPlaceholderText(/Rocket League/)).toBeInTheDocument();
@@ -189,10 +191,14 @@ describe('ProfileTab', () => {
       expect(screen.getByText(/プロファイルがありません/)).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: /新規プロファイル/ }));
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: /新規プロファイル/ }));
+    });
     expect(screen.getByText('保存')).toBeInTheDocument();
 
-    await user.click(screen.getByText('キャンセル'));
+    await act(async () => {
+      await user.click(screen.getByText('キャンセル'));
+    });
     expect(screen.queryByText('保存')).not.toBeInTheDocument();
   });
 
@@ -208,7 +214,9 @@ describe('ProfileTab', () => {
       expect(screen.getByText('テストエラーメッセージ')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: 'Dismiss' }));
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Dismiss' }));
+    });
 
     await waitFor(() => {
       expect(screen.queryByText('テストエラーメッセージ')).not.toBeInTheDocument();

@@ -37,7 +37,7 @@ export default function AiPanel({
   const topLevel: SuggestionLevel = suggestions[0]?.level ?? 'ok';
 
   return (
-    <div className="mt-4 border border-border-subtle rounded-sm overflow-hidden">
+    <div className="mt-4 border border-border-subtle overflow-hidden">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}

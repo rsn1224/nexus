@@ -81,18 +81,16 @@ export default function GameReadinessPanel() {
                 </span>
               ) : (
                 <>
-                  <div className="flex-1 h-1.5 bg-[var(--color-base-700)] rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-base-800 rounded overflow-hidden">
                     <div
-                      className="h-full rounded-full transition-all duration-300"
-                      style={{
-                        width: `${Math.max(0, score)}%`,
-                        backgroundColor:
-                          score >= 70
-                            ? 'var(--color-success-500)'
-                            : score >= 40
-                              ? 'var(--color-accent-400)'
-                              : 'var(--color-danger-500)',
-                      }}
+                      className={`h-full transition-all duration-300 ${
+                        score >= 70
+                          ? 'bg-[var(--color-success-500)]'
+                          : score >= 40
+                            ? 'bg-[var(--color-accent-400)]'
+                            : 'bg-[var(--color-danger-500)]'
+                      }`}
+                      style={{ width: `${Math.max(0, score)}%` }}
                     />
                   </div>
                   <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-primary)] w-[24px] text-right">

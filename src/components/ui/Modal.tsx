@@ -84,7 +84,7 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
-        className={`relative bg-base-800 border border-border-subtle rounded-lg shadow-xl w-full ${sizeClasses[size]} ${className}`}
+        className={`relative bg-base-800 border border-border-subtle w-full ${sizeClasses[size]} ${className}`}
       >
         {/* Header */}
         {(title || showCloseButton) && (

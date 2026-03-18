@@ -163,9 +163,9 @@ export default function StorageWing(): React.ReactElement {
                     </span>
                   </div>
                   {/* Usage Bar */}
-                  <div className="w-full bg-[var(--color-base-700)] rounded-full h-2 mt-1">
+                  <div className="w-full bg-base-800 rounded h-2 mt-1 overflow-hidden">
                     <div
-                      className="bg-[var(--color-accent-500)] h-2 rounded-full transition-all duration-300"
+                      className="bg-[var(--color-accent-500)] h-2 transition-all duration-300"
                       style={{ width: `${getUsagePercentage(drive.usedBytes, drive.sizeBytes)}%` }}
                     />
                   </div>
