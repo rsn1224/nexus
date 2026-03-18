@@ -1,9 +1,24 @@
 import { invoke } from '@tauri-apps/api/core';
 import log from '../lib/logger';
+import type { AiBottleneckResponse } from '../types';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
+
+export interface AiBottleneckRequest {
+  gameName: string;
+  bottleneckType: string;
+  cpuName: string;
+  gpuName: string | null;
+  avgFps: number;
+  pct1Low: number;
+  cpuPercent: number;
+  gpuUsagePercent: number | null;
+  gpuTempC: number | null;
+  memTotalGb: number;
+  memUsedGb: number;
+}
 
 export async function getOptimizationSuggestions(
   processNames: string[],
@@ -33,6 +48,23 @@ export async function testApiKey(): Promise<ApiResult<boolean>> {
     return {
       ok: false,
       error: err instanceof Error ? err.message : 'APIキーのテストに失敗しました',
+    };
+  }
+}
+
+export async function analyzeBottleneckAi(
+  request: AiBottleneckRequest,
+): Promise<ApiResult<AiBottleneckResponse>> {
+  try {
+    log.info('Requesting AI bottleneck analysis via Rust proxy');
+    const response = await invoke<AiBottleneckResponse>('analyze_bottleneck_ai', { request });
+    log.info(`AI analysis complete: ${response.recommendations.length} recommendations`);
+    return { ok: true, data: response };
+  } catch (err) {
+    log.error({ err }, 'Failed to get AI bottleneck analysis');
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'AI分析の取得に失敗しました',
     };
   }
 }

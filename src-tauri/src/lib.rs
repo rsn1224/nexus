@@ -15,7 +15,7 @@ mod state;
 mod types;
 
 use crate::commands::{
-    ai, app_settings, boost, bottleneck, cleanup, frame_time, hardware, launcher, launcher_settings, log,
+    ai, app_settings, boost, bottleneck, cleanup, frame_time, hardware, health_check, launcher, launcher_settings, log,
     memory, netopt, ops, profile, pulse, script, storage, timer, windows_settings, winopt,
 };
 use tracing::info;
@@ -51,8 +51,11 @@ pub fn run() {
             // AI
             ai::get_optimization_suggestions,
             ai::test_api_key,
+            ai::analyze_bottleneck_ai,
             // BOTTLENECK
             bottleneck::analyze_bottleneck,
+            // HEALTH CHECK
+            health_check::run_health_check,
             // PULSE
             pulse::get_resource_snapshot,
             // HARDWARE

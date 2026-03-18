@@ -423,6 +423,59 @@ export interface BottleneckResult {
   timestamp: number;
 }
 
+// ─── AI BOTTLENECK ──────────────────────────────────────────────────────────
+
+export interface AiRecommendation {
+  title: string;
+  description: string;
+  applicableInNexus: boolean;
+  action: string | null;
+}
+
+export interface AiBottleneckResponse {
+  analysis: string;
+  recommendations: AiRecommendation[];
+}
+
+// ─── HEALTH CHECK ───────────────────────────────────────────────────────────
+
+export type HealthSeverity = 'ok' | 'warning' | 'critical';
+
+export interface HealthFixAction {
+  id: string;
+  label: string;
+}
+
+export interface HealthCheckItem {
+  id: string;
+  label: string;
+  severity: HealthSeverity;
+  message: string;
+  fixAction: HealthFixAction | null;
+}
+
+export interface HealthCheckResult {
+  items: HealthCheckItem[];
+  overall: HealthSeverity;
+  timestamp: number;
+}
+
+export interface HealthCheckInput {
+  diskFreeGb: number;
+  diskTotalGb: number;
+  cpuTempC: number | null;
+  gpuTempC: number | null;
+  memUsedMb: number;
+  memTotalMb: number;
+  heavyProcesses: HeavyProcess[];
+}
+
+export interface HeavyProcess {
+  name: string;
+  cpuPercent: number;
+  memMb: number;
+}
+
 export interface RevertAllResult {
   items: RevertItem[];
   total: number;

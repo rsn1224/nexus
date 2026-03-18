@@ -5,6 +5,7 @@ pub mod bottleneck;
 pub mod cleanup;
 pub mod frame_time;
 pub mod hardware;
+pub mod health_check;
 pub mod launcher;
 pub mod launcher_settings;
 pub mod log;
