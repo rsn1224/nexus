@@ -161,7 +161,7 @@ export default function ProcessTable({
                             [TARGET]
                           </span>
                         ) : status === 'protected' ? (
-                          <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-text-muted text-[9px] font-(--font-mono)">
+                          <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-(--font-mono)">
                             [PROT]
                           </span>
                         ) : (
@@ -199,7 +199,7 @@ export default function ProcessTable({
                             >
                               IDLE
                             </Button>
-                            <div className="w-px h-4 bg-[var(--color-border-subtle)] mx-1" />
+                            <div className="w-px h-4 bg-border-subtle mx-1" />
                             <Button
                               size="sm"
                               variant="danger"

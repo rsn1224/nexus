@@ -249,7 +249,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
                       {action.isProtected ? (
                         <span className="flex items-center gap-1">
                           SKIPPED
-                          <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-text-muted text-[9px] font-(--font-mono)">
+                          <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-(--font-mono)">
                             [PROT]
                           </span>
                         </span>

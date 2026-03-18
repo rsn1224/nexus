@@ -15,7 +15,7 @@ export default function ProfileBadge({
     return (
       <span
         data-testid="profile-badge"
-        className={`font-[var(--font-mono)] text-[8px] text-text-muted tracking-[0.05em] ${className}`}
+        className={`font-(--font-mono) text-[8px] text-text-muted tracking-[0.05em] ${className}`}
       >
         PROFILE: {profileName}
       </span>
@@ -25,7 +25,7 @@ export default function ProfileBadge({
   return (
     <span
       data-testid="profile-badge-active"
-      className={`font-[var(--font-mono)] text-[8px] text-[var(--color-cyan-500)] tracking-[0.05em] ${className}`}
+      className={`font-(--font-mono) text-[8px] text-cyan-500 tracking-[0.05em] ${className}`}
     >
       ● PROFILE: {profileName}
     </span>

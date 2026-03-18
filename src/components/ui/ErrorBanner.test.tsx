@@ -24,10 +24,7 @@ describe('ErrorBanner', () => {
     expect(screen.getByRole('alert')).toHaveClass('border-cyan-500', 'text-cyan-500');
 
     rerender(<ErrorBanner message="Test" variant="success" />);
-    expect(screen.getByRole('alert')).toHaveClass(
-      'border-[var(--color-success-500)]',
-      'text-[var(--color-success-500)]',
-    );
+    expect(screen.getByRole('alert')).toHaveClass('border-success-500', 'text-success-500');
   });
 
   it('shows dismiss button when onDismiss is provided', () => {
@@ -62,7 +59,7 @@ describe('ErrorBanner', () => {
     expect(alert).toHaveClass(
       'px-4',
       'py-2',
-      'font-[var(--font-mono)]',
+      'font-(--font-mono)',
       'text-[11px]',
       'flex-shrink-0',
       'flex',

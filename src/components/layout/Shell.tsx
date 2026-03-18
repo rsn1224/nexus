@@ -108,23 +108,19 @@ const Shell = memo(function Shell({
   }, [cpuPercent, latestSnapshot, diskUsagePercent, gpuUsage]);
 
   return (
-    <div className="flex h-screen bg-[var(--color-base-900)] overflow-hidden">
+    <div className="flex h-screen bg-base-900 overflow-hidden">
       {/* Scan line */}
       <div className="scan-line fixed top-0 left-0 right-0 z-[1000]" />
 
       {/* Sidebar */}
       <div
-        className="w-40 flex-shrink-0 bg-[var(--color-base-950)] border-r border-[var(--color-border-subtle)] flex flex-col"
+        className="w-40 flex-shrink-0 bg-base-950 border-r border-border-subtle flex flex-col"
         data-testid="sidebar"
       >
         {/* Logo area (48px) */}
-        <div className="h-12 flex flex-col items-center justify-center px-3 py-2 border-b border-[var(--color-border-subtle)]">
-          <div className="text-[var(--color-accent-500)] text-sm font-bold tracking-widest mb-0.5">
-            NEXUS
-          </div>
-          <div className="text-[9px] text-[var(--color-text-muted)] tracking-[0.15em]">
-            GAMING TOOLS
-          </div>
+        <div className="h-12 flex flex-col items-center justify-center px-3 py-2 border-b border-border-subtle">
+          <div className="text-accent-500 text-sm font-bold tracking-widest mb-0.5">NEXUS</div>
+          <div className="text-[9px] text-text-muted tracking-[0.15em]">GAMING TOOLS</div>
         </div>
 
         {/* Navigation zone */}
@@ -133,7 +129,7 @@ const Shell = memo(function Shell({
             <div key={zone.label || 'home'}>
               {/* Zone header */}
               {zone.label && (
-                <div className="text-[9px] text-[var(--color-text-muted)] tracking-[0.15em] px-3 py-3 pb-1 uppercase">
+                <div className="text-[9px] text-text-muted tracking-[0.15em] px-3 py-3 pb-1 uppercase">
                   {zone.label}
                 </div>
               )}
@@ -148,12 +144,12 @@ const Shell = memo(function Shell({
                     type="button"
                     onClick={() => onWingChange(wing.id)}
                     data-testid={`nav-${wing.id}`}
-                    className={`w-full h-7 px-4 pl-4 font-[var(--font-mono)] text-xs tracking-[0.08em] transition-all duration-150 text-left border-l-2 ${
+                    className={`w-full h-7 px-4 pl-4 font-(--font-mono) text-xs tracking-[0.08em] transition-all duration-150 text-left border-l-2 ${
                       isActive
-                        ? 'bg-[var(--color-base-800)] text-[var(--color-cyan-500)] border-[var(--color-cyan-500)]'
+                        ? 'bg-base-800 text-cyan-500 border-cyan-500'
                         : hoveredWing === wing.id
-                          ? 'bg-[var(--color-base-800)] text-[var(--color-text-secondary)] border-transparent'
-                          : 'bg-transparent text-[var(--color-text-secondary)] border-transparent hover:bg-[var(--color-base-800)]'
+                          ? 'bg-base-800 text-text-secondary border-transparent'
+                          : 'bg-transparent text-text-secondary border-transparent hover:bg-base-800'
                     }`}
                     onMouseEnter={() => setHoveredWing(wing.id)}
                     onMouseLeave={() => setHoveredWing(null)}
@@ -170,31 +166,31 @@ const Shell = memo(function Shell({
         </div>
 
         {/* Status bar (56px) */}
-        <div className="h-14 border-t border-[var(--color-border-subtle)] flex flex-col items-center justify-center px-3 py-2 gap-1">
+        <div className="h-14 border-t border-border-subtle flex flex-col items-center justify-center px-3 py-2 gap-1">
           <div
-            className={`text-[10px] font-[var(--font-mono)] ${
+            className={`text-[10px] font-(--font-mono) ${
               cpuPercent !== null && cpuPercent >= 50
-                ? 'text-[var(--color-danger-500)]'
+                ? 'text-danger-500'
                 : cpuPercent !== null && cpuPercent >= 20
-                  ? 'text-[var(--color-accent-500)]'
-                  : 'text-[var(--color-text-muted)]'
+                  ? 'text-accent-500'
+                  : 'text-text-muted'
             }`}
           >
             CPU {cpuPercent !== null ? `${cpuPercent.toFixed(0)}%` : '--'}
           </div>
           <div
-            className={`text-[10px] font-[var(--font-mono)] ${
+            className={`text-[10px] font-(--font-mono) ${
               memPercent !== null && memPercent >= 80
-                ? 'text-[var(--color-danger-500)]'
+                ? 'text-danger-500'
                 : memPercent !== null && memPercent >= 50
-                  ? 'text-[var(--color-accent-500)]'
-                  : 'text-[var(--color-text-muted)]'
+                  ? 'text-accent-500'
+                  : 'text-text-muted'
             }`}
           >
             MEM {memPercent !== null ? `${memPercent.toFixed(0)}%` : '--'}
           </div>
           <div
-            className={`text-[10px] font-[var(--font-mono)] ${
+            className={`text-[10px] font-(--font-mono) ${
               gameScore !== null
                 ? (
                     () => {
@@ -219,15 +215,15 @@ const Shell = memo(function Shell({
                       });
                       const style = getRankStyle(readiness.rank);
                       return style.color === 'var(--color-success-500)'
-                        ? 'text-[var(--color-success-500)]'
+                        ? 'text-success-500'
                         : style.color === 'var(--color-cyan-500)'
-                          ? 'text-[var(--color-cyan-500)]'
+                          ? 'text-cyan-500'
                           : style.color === 'var(--color-accent-400)'
-                            ? 'text-[var(--color-accent-400)]'
-                            : 'text-[var(--color-danger-500)]';
+                            ? 'text-accent-400'
+                            : 'text-danger-500';
                     }
                   )()
-                : 'text-[var(--color-text-muted)]'
+                : 'text-text-muted'
             }`}
           >
             SCORE {gameScore !== null ? `${gameScore} / 100` : '-- / 100'}

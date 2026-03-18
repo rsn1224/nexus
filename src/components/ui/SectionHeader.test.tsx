@@ -66,7 +66,7 @@ describe('SectionHeader', () => {
 
     const title = screen.getByText('TEST');
     expect(title).toHaveClass(
-      'font-[var(--font-mono)]',
+      'font-(--font-mono)',
       'text-[11px]',
       'font-bold',
       'tracking-[0.15em]',

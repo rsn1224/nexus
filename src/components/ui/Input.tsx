@@ -62,7 +62,7 @@ export default function Input({
   autoComplete,
 }: InputProps): React.ReactElement {
   const baseClasses =
-    'font-[var(--font-mono)] border transition-all duration-150 focus:outline-none focus:ring-2';
+    'font-(--font-mono) border transition-all duration-150 focus:outline-none focus:ring-2';
 
   const sizeClasses = {
     sm: 'text-[10px] px-2 py-1',
@@ -72,11 +72,10 @@ export default function Input({
 
   const stateClasses = {
     default:
-      'border-[var(--color-border-subtle)] bg-[var(--color-base-800)] text-[var(--color-text-primary)] focus:border-[var(--color-accent-500)] focus:ring-[var(--color-accent-500)] focus:ring-opacity-50',
+      'border-border-subtle bg-base-800 text-text-primary focus:border-accent-500 focus:ring-accent-500 focus:ring-opacity-50',
     error:
-      'border-[var(--color-danger-500)] bg-[var(--color-base-800)] text-[var(--color-text-primary)] focus:border-[var(--color-danger-500)] focus:ring-[var(--color-danger-500)] focus:ring-opacity-50',
-    disabled:
-      'border-[var(--color-border-subtle)] bg-[var(--color-base-700)] text-[var(--color-text-muted)] cursor-not-allowed',
+      'border-danger-500 bg-base-800 text-text-primary focus:border-danger-500 focus:ring-danger-500 focus:ring-opacity-50',
+    disabled: 'border-border-subtle bg-base-700 text-text-muted cursor-not-allowed',
   };
 
   const iconClasses = {
@@ -102,7 +101,7 @@ export default function Input({
   return (
     <div className={`relative inline-block ${fullWidth ? 'w-full' : ''}`}>
       {leftIcon && (
-        <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[var(--color-text-muted)] pointer-events-none">
+        <div className="absolute left-2 top-1/2 transform -translate-y-1/2 text-text-muted pointer-events-none">
           {leftIcon}
         </div>
       )}
@@ -136,7 +135,7 @@ export default function Input({
       />
 
       {rightIcon && (
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-[var(--color-text-muted)] pointer-events-none">
+        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 text-text-muted pointer-events-none">
           {rightIcon}
         </div>
       )}

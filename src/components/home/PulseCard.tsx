@@ -13,13 +13,13 @@ export default function PulseCard(): React.ReactElement {
 
   return (
     <Card title="システム監視">
-      <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+      <div className="font-(--font-mono) text-xs text-text-secondary">
         <div className="mb-1">
           CPU: <StatusBadge value={cpuPercent} unit="%" thresholds={{ warn: 50, danger: 80 }} />
         </div>
         <div>
           RAM:{' '}
-          <span className="text-[var(--color-text-primary)]">
+          <span className="text-text-primary">
             {memUsed !== null && memTotal !== null
               ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB`
               : '--'}

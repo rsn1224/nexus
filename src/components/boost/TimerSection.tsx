@@ -51,16 +51,14 @@ export default function TimerSection(): React.ReactElement {
   const isActive = timerState?.nexusRequested100ns != null;
 
   return (
-    <div className="p-3 bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded">
+    <div className="p-3 bg-base-800 border border-border-subtle rounded">
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span
-            className={isActive ? 'text-[var(--color-cyan-500)]' : 'text-[var(--color-text-muted)]'}
-          >
+          <span className={isActive ? 'text-cyan-500' : 'text-text-muted'}>
             {isActive ? '●' : '○'}
           </span>
-          <span className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-primary)]">
+          <span className="font-(--font-mono) text-[11px] font-semibold text-text-primary">
             タイマーリゾリューション
           </span>
         </div>
@@ -72,33 +70,31 @@ export default function TimerSection(): React.ReactElement {
       </div>
 
       {/* 説明 */}
-      <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)] leading-[1.4] mb-3">
+      <div className="font-(--font-mono) text-[10px] text-text-secondary leading-[1.4] mb-3">
         Windows
         のシステムタイマー精度を変更します。低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
       </div>
 
       {/* 現在値の表示 */}
       {isLoading ? (
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] py-2">
-          読み込み中...
-        </div>
+        <div className="font-(--font-mono) text-[10px] text-text-muted py-2">読み込み中...</div>
       ) : timerState ? (
         <div className="grid grid-cols-2 gap-2 mb-3">
           <div className="flex flex-col gap-0.5">
-            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               現在値
             </span>
-            <span className="font-[var(--font-mono)] text-[12px] text-[var(--color-text-primary)] font-bold">
+            <span className="font-(--font-mono) text-[12px] text-text-primary font-bold">
               {toMs(timerState.current100ns)} ms
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               nexus 要求値
             </span>
             <span
-              className={`font-[var(--font-mono)] text-[12px] font-bold ${
-                isActive ? 'text-[var(--color-cyan-500)]' : 'text-[var(--color-text-muted)]'
+              className={`font-(--font-mono) text-[12px] font-bold ${
+                isActive ? 'text-cyan-500' : 'text-text-muted'
               }`}
             >
               {timerState.nexusRequested100ns != null
@@ -107,18 +103,18 @@ export default function TimerSection(): React.ReactElement {
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               最小（最高精度）
             </span>
-            <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)]">
+            <span className="font-(--font-mono) text-[10px] text-text-secondary">
               {toMs(timerState.minimum100ns)} ms
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               デフォルト
             </span>
-            <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)]">
+            <span className="font-(--font-mono) text-[10px] text-text-secondary">
               {toMs(timerState.default100ns)} ms
             </span>
           </div>
@@ -133,10 +129,10 @@ export default function TimerSection(): React.ReactElement {
             type="button"
             onClick={() => handlePresetApply(preset.value)}
             disabled={isApplying}
-            className={`px-2 py-1 rounded font-[var(--font-mono)] text-[10px] border transition-colors ${
+            className={`px-2 py-1 rounded font-(--font-mono) text-[10px] border transition-colors ${
               timerState?.nexusRequested100ns === preset.value
-                ? 'bg-[var(--color-cyan-500)]/20 border-[var(--color-cyan-500)] text-[var(--color-cyan-500)]'
-                : 'bg-[var(--color-base-900)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-cyan-500)] hover:text-[var(--color-text-primary)]'
+                ? 'bg-cyan-500/20 border-cyan-500 text-cyan-500'
+                : 'bg-base-900 border-border-subtle text-text-secondary hover:border-cyan-500 hover:text-text-primary'
             }`}
           >
             {preset.label}
@@ -154,7 +150,7 @@ export default function TimerSection(): React.ReactElement {
           min={0.5}
           max={15.625}
           step={0.1}
-          className="flex-1 bg-[var(--color-base-900)] border border-[var(--color-border-subtle)] rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)] outline-none focus:border-[var(--color-cyan-500)]"
+          className="flex-1 bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
         />
         <Button
           variant="primary"
@@ -167,11 +163,7 @@ export default function TimerSection(): React.ReactElement {
       </div>
 
       {/* エラー表示 */}
-      {error && (
-        <div className="mt-2 font-[var(--font-mono)] text-[10px] text-[var(--color-danger-500)]">
-          {error}
-        </div>
-      )}
+      {error && <div className="mt-2 font-(--font-mono) text-[10px] text-danger-500">{error}</div>}
     </div>
   );
 }

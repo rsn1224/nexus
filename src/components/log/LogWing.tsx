@@ -97,26 +97,26 @@ export default function LogWing(): React.ReactElement {
   const getLevelTextClass = (level: string) => {
     switch (level) {
       case 'Error':
-        return 'text-[var(--color-danger-500)]';
+        return 'text-danger-500';
       case 'Warn':
-        return 'text-[var(--color-accent-500)]';
+        return 'text-accent-500';
       case 'Info':
-        return 'text-[var(--color-cyan-500)]';
+        return 'text-cyan-500';
       default:
-        return 'text-[var(--color-text-muted)]';
+        return 'text-text-muted';
     }
   };
 
   const getLevelDotClass = (level: string) => {
     switch (level) {
       case 'Error':
-        return 'bg-[var(--color-danger-500)]';
+        return 'bg-danger-500';
       case 'Warn':
-        return 'bg-[var(--color-accent-500)]';
+        return 'bg-accent-500';
       case 'Info':
-        return 'bg-[var(--color-cyan-500)]';
+        return 'bg-cyan-500';
       default:
-        return 'bg-[var(--color-text-muted)]';
+        return 'bg-text-muted';
     }
   };
 
@@ -132,9 +132,7 @@ export default function LogWing(): React.ReactElement {
     <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="mb-4">
-        <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] mb-2">
-          LOG MANAGEMENT
-        </div>
+        <div className="font-(--font-mono) text-[11px] text-text-muted mb-2">LOG MANAGEMENT</div>
       </div>
 
       {/* Controls */}

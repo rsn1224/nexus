@@ -51,7 +51,7 @@ export default function BoostWing(): React.ReactElement {
 
       {/* Header */}
       <div className="mb-4 flex justify-between items-center">
-        <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-cyan-500)] tracking-[0.15em] shrink-0 pb-2 border-b border-[var(--color-border-subtle)]">
+        <div className="font-(--font-mono) text-xs font-bold text-cyan-500 tracking-[0.15em] shrink-0 pb-2 border-b border-border-subtle">
           ▶ 最適化
         </div>
       </div>

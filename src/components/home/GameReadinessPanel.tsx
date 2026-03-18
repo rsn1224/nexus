@@ -57,9 +57,9 @@ export default function GameReadinessPanel() {
   ];
 
   return (
-    <div className="p-3 bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded mt-4">
+    <div className="p-3 bg-base-800 border border-border-subtle rounded mt-4">
       {/* ヘッダー */}
-      <div className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-primary)] mb-3">
+      <div className="font-(--font-mono) text-[11px] font-semibold text-text-primary mb-3">
         GAME READINESS
       </div>
 
@@ -72,28 +72,26 @@ export default function GameReadinessPanel() {
         <div className="flex-1 flex flex-col gap-2">
           {axisLabels.map(({ label, score, isPerformance }) => (
             <div key={label} className="flex items-center gap-2">
-              <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] tracking-[0.1em] w-[52px]">
+              <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em] w-[52px]">
                 {label}
               </span>
               {isPerformance && score < 0 ? (
-                <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)]">
-                  N/A
-                </span>
+                <span className="font-(--font-mono) text-[9px] text-text-muted">N/A</span>
               ) : (
                 <>
                   <div className="flex-1 h-1.5 bg-base-800 rounded overflow-hidden">
                     <div
                       className={`h-full transition-all duration-300 ${
                         score >= 70
-                          ? 'bg-[var(--color-success-500)]'
+                          ? 'bg-success-500'
                           : score >= 40
-                            ? 'bg-[var(--color-accent-400)]'
-                            : 'bg-[var(--color-danger-500)]'
+                            ? 'bg-accent-400'
+                            : 'bg-danger-500'
                       }`}
                       style={{ width: `${Math.max(0, score)}%` }}
                     />
                   </div>
-                  <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-primary)] w-[24px] text-right">
+                  <span className="font-(--font-mono) text-[10px] text-text-primary w-[24px] text-right">
                     {score}
                   </span>
                 </>

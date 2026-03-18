@@ -27,7 +27,7 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
   return (
     <div className={className}>
       {/* DNS Cache Flush Button */}
-      <div className="mb-4 p-3 bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded">
+      <div className="mb-4 p-3 bg-base-800 border border-border-subtle rounded">
         <Button
           variant="primary"
           size="sm"
@@ -39,7 +39,7 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
           {activeId === 'flush_dns' ? 'RUNNING...' : '▶ DNSキャッシュをクリア'}
         </Button>
         {flushDnsResult && (
-          <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-secondary)]">
+          <div className="font-(--font-mono) text-[9px] text-text-secondary">
             最後の実行結果: {flushDnsResult}
           </div>
         )}
@@ -53,24 +53,18 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
           {netSettings.map((setting) => (
             <div
               key={setting.id}
-              className="p-3 bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded flex justify-between items-start"
+              className="p-3 bg-base-800 border border-border-subtle rounded flex justify-between items-start"
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span
-                    className={
-                      setting.isOptimized
-                        ? 'text-[var(--color-cyan-500)]'
-                        : 'text-[var(--color-text-muted)]'
-                    }
-                  >
+                  <span className={setting.isOptimized ? 'text-cyan-500' : 'text-text-muted'}>
                     {setting.isOptimized ? '●' : '○'}
                   </span>
-                  <div className="font-[var(--font-mono)] text-[11px] font-semibold text-[var(--color-text-primary)]">
+                  <div className="font-(--font-mono) text-[11px] font-semibold text-text-primary">
                     {setting.label}
                   </div>
                 </div>
-                <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-secondary)] leading-[1.4]">
+                <div className="font-(--font-mono) text-[10px] text-text-secondary leading-[1.4]">
                   {setting.description}
                 </div>
               </div>
@@ -86,9 +80,7 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
                     {activeId === setting.id ? 'RUNNING...' : '↩ 元に戻す'}
                   </Button>
                 ) : setting.isOptimized ? (
-                  <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] px-2 py-1">
-                    -
-                  </span>
+                  <span className="font-(--font-mono) text-[9px] text-text-muted px-2 py-1">-</span>
                 ) : (
                   <Button
                     variant="primary"

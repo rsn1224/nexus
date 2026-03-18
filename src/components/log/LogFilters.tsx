@@ -26,7 +26,7 @@ export default function LogFilters({
       <select
         value={selectedLevel}
         onChange={onLevelChange}
-        className="font-[var(--font-mono)] text-xs bg-[var(--color-base-800)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] px-2 py-1 rounded"
+        className="font-(--font-mono) text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded"
       >
         <option value="All">全レベル</option>
         <option value="Error">エラー</option>
@@ -38,7 +38,7 @@ export default function LogFilters({
       <select
         value={selectedSource}
         onChange={onSourceChange}
-        className="font-[var(--font-mono)] text-xs bg-[var(--color-base-800)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] px-2 py-1 rounded"
+        className="font-(--font-mono) text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded"
       >
         <option value="">全ソース</option>
         {uniqueSources.map((source) => (

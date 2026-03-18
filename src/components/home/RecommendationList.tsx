@@ -7,9 +7,9 @@ interface RecommendationListProps {
 }
 
 const PRIORITY_STYLES: Record<string, string> = {
-  high: 'text-[var(--color-danger-500)]',
-  medium: 'text-[var(--color-accent-400)]',
-  low: 'text-[var(--color-text-muted)]',
+  high: 'text-danger-500',
+  medium: 'text-accent-400',
+  low: 'text-text-muted',
 };
 
 const PRIORITY_ICONS: Record<string, string> = {
@@ -30,7 +30,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
 
   if (recommendations.length === 0) {
     return (
-      <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-success-500)] text-center py-2">
+      <div className="font-(--font-mono) text-[10px] text-success-500 text-center py-2">
         ✓ 改善推奨事項はありません
       </div>
     );
@@ -39,11 +39,11 @@ export default function RecommendationList({ recommendations }: RecommendationLi
   return (
     <div className="flex flex-col gap-1.5">
       {recommendations.map((rec) => (
-        <div key={rec.id} className="flex items-start gap-2 font-[var(--font-mono)] text-[10px]">
+        <div key={rec.id} className="flex items-start gap-2 font-(--font-mono) text-[10px]">
           <span className={`shrink-0 ${PRIORITY_STYLES[rec.priority]}`}>
             {PRIORITY_ICONS[rec.priority]}
           </span>
-          <span className="text-[var(--color-text-secondary)] flex-1">{rec.message}</span>
+          <span className="text-text-secondary flex-1">{rec.message}</span>
           {rec.action && actionToWing[rec.action] && (
             <button
               type="button"
@@ -51,7 +51,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
                 const wingId = actionToWing[rec.action as keyof typeof actionToWing];
                 if (wingId) navigate(wingId);
               }}
-              className="shrink-0 text-[var(--color-cyan-500)] hover:underline"
+              className="shrink-0 text-cyan-500 hover:underline"
             >
               →
             </button>

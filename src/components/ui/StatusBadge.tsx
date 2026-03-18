@@ -17,25 +17,22 @@ export default function StatusBadge({
     return (
       <span
         data-testid="ui-status-badge"
-        className={`text-[var(--color-text-muted)] font-[var(--font-mono)] ${className}`}
+        className={`text-text-muted font-(--font-mono) ${className}`}
       >
         --{unit}
       </span>
     );
   }
 
-  let colorClass = 'text-[var(--color-success-500)]';
+  let colorClass = 'text-success-500';
   if (value >= thresholds.danger) {
-    colorClass = 'text-[var(--color-danger-500)]';
+    colorClass = 'text-danger-500';
   } else if (value >= thresholds.warn) {
-    colorClass = 'text-[var(--color-accent-500)]';
+    colorClass = 'text-accent-500';
   }
 
   return (
-    <span
-      data-testid="ui-status-badge"
-      className={`${colorClass} font-[var(--font-mono)] ${className}`}
-    >
+    <span data-testid="ui-status-badge" className={`${colorClass} font-(--font-mono) ${className}`}>
       {value.toFixed(1)}
       {unit}
     </span>

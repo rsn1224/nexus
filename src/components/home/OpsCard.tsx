@@ -20,12 +20,12 @@ export default function OpsCard(): React.ReactElement {
 
   return (
     <Card title="プロセス管理">
-      <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+      <div className="font-(--font-mono) text-xs text-text-secondary">
         <div className="mb-1">
-          アクティブ: <span className="text-[var(--color-accent-500)]">{activeProcessCount}</span>
+          アクティブ: <span className="text-accent-500">{activeProcessCount}</span>
         </div>
         {topProcesses.length > 0 && (
-          <div className="text-[10px] text-[var(--color-text-muted)]">
+          <div className="text-[10px] text-text-muted">
             CPU上位:
             {topProcesses.map((p: SystemProcess) => (
               <div key={p.pid} className="ml-2">

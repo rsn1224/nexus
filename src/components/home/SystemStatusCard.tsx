@@ -87,16 +87,16 @@ export default function SystemStatusCard(): React.ReactElement {
       {/* サーマルアラートバナー */}
       <ThermalAlertBanner alerts={thermalAlerts} onClear={clearThermalAlert} />
 
-      <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
+      <div className="font-(--font-mono) text-xs text-text-secondary flex flex-col gap-1">
         <div>
           CPU{'     '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {cpuPercent !== null ? `${cpuPercent.toFixed(1)}%` : '--'}
           </span>
         </div>
         <div>
           MEM{'     '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {memUsed !== null && memTotal !== null
               ? `${memUsed.toFixed(0)} / ${memTotal.toFixed(0)} MB (${(
                   (memUsed / memTotal) * 100
@@ -106,31 +106,31 @@ export default function SystemStatusCard(): React.ReactElement {
         </div>
         <div>
           DISK R{'  '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {diskRead !== null ? formatNetSpeed(diskRead) : '--'}
           </span>
         </div>
         <div>
           DISK W{'  '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {diskWrite !== null ? formatNetSpeed(diskWrite) : '--'}
           </span>
         </div>
         <div>
           NET ↓{'   '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {netRecv !== null ? formatNetSpeed(netRecv) : '--'}
           </span>
         </div>
         <div>
           NET ↑{'   '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {netSent !== null ? formatNetSpeed(netSent) : '--'}
           </span>
         </div>
         <div>
           DISK {'   '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {hardwareData.diskUsagePercent !== null
               ? `${hardwareData.diskUsagePercent.toFixed(0)}%`
               : '--'}
@@ -138,7 +138,7 @@ export default function SystemStatusCard(): React.ReactElement {
         </div>
         <div>
           GPU%{'    '}
-          <span className="text-[var(--color-accent-500)]">
+          <span className="text-accent-500">
             {gpuUsagePercent !== null ? `${gpuUsagePercent.toFixed(1)}%` : '--'}
           </span>
         </div>

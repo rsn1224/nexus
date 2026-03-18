@@ -24,7 +24,7 @@ export default function LogEntries({
       {logs.map((log) => (
         <div
           key={`${log.timestamp}-${log.source}-${log.message.slice(0, 20)}`}
-          className="font-[var(--font-mono)] text-xs border-b border-[var(--color-border-subtle)] pb-1"
+          className="font-(--font-mono) text-xs border-b border-border-subtle pb-1"
         >
           <div className="flex items-start gap-2">
             <div
@@ -32,17 +32,13 @@ export default function LogEntries({
             />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[var(--color-text-muted)]">
-                  {formatTimestamp(log.timestamp)}
-                </span>
-                <span className="text-[var(--color-text-muted)]">•</span>
-                <span className="text-[var(--color-text-muted)]">{log.source}</span>
-                <span className="text-[var(--color-text-muted)]">•</span>
+                <span className="text-text-muted">{formatTimestamp(log.timestamp)}</span>
+                <span className="text-text-muted">•</span>
+                <span className="text-text-muted">{log.source}</span>
+                <span className="text-text-muted">•</span>
                 <span className={getLevelTextClass(log.level)}>{log.level}</span>
               </div>
-              <div className="text-[var(--color-text-primary)] break-words">
-                {truncateMessage(log.message)}
-              </div>
+              <div className="text-text-primary break-words">{truncateMessage(log.message)}</div>
             </div>
           </div>
         </div>

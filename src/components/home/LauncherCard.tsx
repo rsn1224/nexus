@@ -7,12 +7,12 @@ export default function LauncherCard(): React.ReactElement {
 
   return (
     <Card title="ゲーム起動">
-      <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+      <div className="font-(--font-mono) text-xs text-text-secondary">
         <div className="mb-1">
-          ゲーム数: <span className="text-[var(--color-accent-500)]">{games.length}</span>
+          ゲーム数: <span className="text-accent-500">{games.length}</span>
         </div>
         {games.length > 0 && (
-          <div className="text-[10px] text-[var(--color-text-muted)]">
+          <div className="text-[10px] text-text-muted">
             Recent:{' '}
             {games
               .slice(0, 4)

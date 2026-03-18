@@ -55,7 +55,7 @@ export default function FrameTimeCard() {
   }
 
   return (
-    <div className="p-4 bg-base-800 border border-border-subtle font-[var(--font-mono)] text-[12px] text-text-primary">
+    <div className="p-4 bg-base-800 border border-border-subtle font-(--font-mono) text-[12px] text-text-primary">
       {/* ヘッダー */}
       <div className="flex justify-between items-center mb-3">
         <div className="font-bold text-[11px] text-(--color-accent-500)">FRAME TIME</div>
@@ -157,7 +157,7 @@ export default function FrameTimeCard() {
             type="button"
             onClick={handleStop}
             disabled={isLoading}
-            className={`flex-1 px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] font-(--font-mono) text-[10px] font-bold border ${
               isLoading
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-danger-500 text-base-900 cursor-pointer border-danger-500 hover:bg-danger-600'

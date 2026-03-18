@@ -133,7 +133,7 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
     <div className="relative">
       <canvas ref={canvasRef} className="w-full h-[60px] block" />
       {/* オーバーレイ情報 */}
-      <div className="absolute top-1 right-1 text-[9px] text-text-muted font-[var(--font-mono)] pointer-events-none">
+      <div className="absolute top-1 right-1 text-[9px] text-text-muted font-(--font-mono) pointer-events-none">
         {frameTimes.length > 0 && <div>{frameTimes[frameTimes.length - 1]?.toFixed(1)} ms</div>}
       </div>
     </div>

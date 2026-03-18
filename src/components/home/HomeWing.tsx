@@ -101,12 +101,10 @@ const HomeWing = function HomeWing(): React.ReactElement {
     <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="mb-5">
-        <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-accent-500)] tracking-[0.15em] mb-1">
+        <div className="font-(--font-mono) text-xs font-bold text-accent-500 tracking-[0.15em] mb-1">
           ▶ HOME / OVERVIEW
         </div>
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
-          SYSTEM DASHBOARD
-        </div>
+        <div className="font-(--font-mono) text-[10px] text-text-muted">SYSTEM DASHBOARD</div>
       </div>
 
       {/* Grid Layout */}
@@ -141,61 +139,49 @@ const HomeWing = function HomeWing(): React.ReactElement {
 
       {/* Storage Card */}
       <Card title="ストレージ" className="mt-4">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
+        <div className="font-(--font-mono) text-xs text-text-secondary flex flex-col gap-1">
           {storageInfo?.drives && storageInfo.drives.length > 0 ? (
             storageInfo.drives.map((drive) => (
               <div key={drive.name}>
                 {drive.name}
                 {'  '}
-                <span className="text-[var(--color-accent-500)]">
+                <span className="text-accent-500">
                   {((drive.usedBytes / drive.sizeBytes) * 100).toFixed(0)}% (
                   {(drive.availableBytes / (1024 * 1024 * 1024)).toFixed(0)} GB 空き)
                 </span>
               </div>
             ))
           ) : (
-            <div className="text-[var(--color-text-muted)]">情報がありません</div>
+            <div className="text-text-muted">情報がありません</div>
           )}
         </div>
       </Card>
 
       {/* Hardware Card */}
       <Card title="ハードウェア" className="mt-4">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
+        <div className="font-(--font-mono) text-xs text-text-secondary flex flex-col gap-1">
           {hwInfo ? (
             <>
               <div>
                 CPU{'     '}
-                <span className="text-[var(--color-accent-500)]">{hwInfo.cpuName}</span>
+                <span className="text-accent-500">{hwInfo.cpuName}</span>
               </div>
               {hwInfo.cpuTempC !== null && (
                 <div>
                   TEMP{'    '}
-                  <span className="text-[var(--color-accent-500)]">
-                    {hwInfo.cpuTempC.toFixed(1)}°C
-                  </span>
+                  <span className="text-accent-500">{hwInfo.cpuTempC.toFixed(1)}°C</span>
                 </div>
               )}
               <div>
                 GPU{'     '}
-                <span
-                  className={
-                    hwInfo.gpuName
-                      ? 'text-[var(--color-accent-500)]'
-                      : 'text-[var(--color-text-muted)]'
-                  }
-                >
+                <span className={hwInfo.gpuName ? 'text-accent-500' : 'text-text-muted'}>
                   {hwInfo.gpuName ?? 'N/A'}
                 </span>
               </div>
               <div>
                 VRAM{'    '}
                 <span
-                  className={
-                    hwInfo.gpuVramTotalMb != null
-                      ? 'text-[var(--color-accent-500)]'
-                      : 'text-[var(--color-text-muted)]'
-                  }
+                  className={hwInfo.gpuVramTotalMb != null ? 'text-accent-500' : 'text-text-muted'}
                 >
                   {hwInfo.gpuVramTotalMb != null && hwInfo.gpuVramUsedMb != null
                     ? `${hwInfo.gpuVramUsedMb} / ${hwInfo.gpuVramTotalMb} MB (${((hwInfo.gpuVramUsedMb / hwInfo.gpuVramTotalMb) * 100).toFixed(1)}%)`
@@ -207,28 +193,20 @@ const HomeWing = function HomeWing(): React.ReactElement {
               {hwInfo.gpuUsagePercent !== null && (
                 <div>
                   GPU%{'    '}
-                  <span className="text-[var(--color-accent-500)]">
-                    {hwInfo.gpuUsagePercent.toFixed(1)}%
-                  </span>
+                  <span className="text-accent-500">{hwInfo.gpuUsagePercent.toFixed(1)}%</span>
                 </div>
               )}
               {hwInfo.gpuTempC !== null && (
                 <div>
                   TEMP{'    '}
-                  <span
-                    className={
-                      hwInfo.gpuTempC >= 80
-                        ? 'text-[var(--color-danger-500)]'
-                        : 'text-[var(--color-accent-500)]'
-                    }
-                  >
+                  <span className={hwInfo.gpuTempC >= 80 ? 'text-danger-500' : 'text-accent-500'}>
                     {hwInfo.gpuTempC.toFixed(1)}°C
                   </span>
                 </div>
               )}
             </>
           ) : (
-            <div className="text-[var(--color-text-muted)]">情報がありません</div>
+            <div className="text-text-muted">情報がありません</div>
           )}
         </div>
       </Card>
@@ -236,7 +214,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
       {/* Optimization History */}
       <Card title="最適化履歴" className="mt-4">
         {optimizationHistory.length > 0 ? (
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
+          <div className="font-(--font-mono) text-xs text-text-secondary">
             {optimizationHistory.map((item) => (
               <div
                 key={`${item.timestamp}-${item.action}`}
@@ -244,7 +222,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
               >
                 <span>● {item.action.split(' ').slice(0, 2).join(' ')}</span>
                 <span
-                  className={`text-[10px] ${item.result === 'SUCCESS' ? 'text-[var(--color-success-500)]' : 'text-[var(--color-danger-500)]'}`}
+                  className={`text-[10px] ${item.result === 'SUCCESS' ? 'text-success-500' : 'text-danger-500'}`}
                 >
                   {formatTime(item.timestamp)}
                 </span>
@@ -252,7 +230,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
             ))}
           </div>
         ) : (
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center py-5">
+          <div className="font-(--font-mono) text-[11px] text-text-muted text-center py-5">
             NO HISTORY YET
           </div>
         )}
@@ -261,7 +239,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
       {/* Alerts */}
       <Card title="アラート" className="mt-4">
         {highCpuProcesses.length > 0 ? (
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-danger-500)]">
+          <div className="font-(--font-mono) text-xs text-danger-500">
             {highCpuProcesses.map((process: SystemProcess) => (
               <div key={process.pid} className="mb-1 flex justify-between items-center">
                 <span>
@@ -274,7 +252,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
             ))}
           </div>
         ) : (
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-success-500)] text-center py-5">
+          <div className="font-(--font-mono) text-[11px] text-success-500 text-center py-5">
             ● SYSTEM NOMINAL
           </div>
         )}

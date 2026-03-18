@@ -119,7 +119,7 @@ export default function ProfileForm({
     <div className="flex flex-col gap-3 p-3 bg-base-800 border border-border-subtle rounded">
       {/* ゲーム名 */}
       <label className="flex flex-col gap-1">
-        <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+        <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
           ゲーム名
         </span>
         <input
@@ -127,13 +127,13 @@ export default function ProfileForm({
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="例: Rocket League"
-          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
         />
       </label>
 
       {/* EXE パス */}
       <label className="flex flex-col gap-1">
-        <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+        <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
           実行ファイル（EXE パス）
         </span>
         <input
@@ -141,19 +141,19 @@ export default function ProfileForm({
           value={exePath}
           onChange={(e) => setExePath(e.target.value)}
           placeholder="例: C:\Games\RocketLeague\RocketLeague.exe"
-          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
         />
       </label>
 
       {/* ブーストレベル */}
       <label className="flex flex-col gap-1">
-        <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+        <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
           ブーストレベル
         </span>
         <select
           value={boostLevel}
           onChange={(e) => setBoostLevel(e.target.value as BoostLevel)}
-          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
         >
           {(Object.entries(BOOST_LABELS) as [BoostLevel, string][]).map(([value, label]) => (
             <option key={value} value={value}>
@@ -168,7 +168,7 @@ export default function ProfileForm({
         <>
           {/* サスペンドプロセス */}
           <label className="flex flex-col gap-1">
-            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               サスペンドプロセス（カンマ区切り）
             </span>
             <input
@@ -176,7 +176,7 @@ export default function ProfileForm({
               value={processesToSuspend}
               onChange={(e) => setProcessesToSuspend(e.target.value)}
               placeholder="例: chrome.exe, discord.exe"
-              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
             />
           </label>
 
@@ -186,9 +186,9 @@ export default function ProfileForm({
               type="checkbox"
               checked={autoSuspendEnabled}
               onChange={(e) => setAutoSuspendEnabled(e.target.checked)}
-              className="w-3 h-3 rounded border-border-subtle bg-base-900 text-[var(--color-cyan-500)] focus:ring-[var(--color-cyan-500)] focus:ring-offset-0"
+              className="w-3 h-3 rounded border-border-subtle bg-base-900 text-cyan-500 focus:ring-cyan-500 focus:ring-offset-0"
             />
-            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               バックグラウンドプロセスを自動でサスペンドする
             </span>
           </label>
@@ -200,13 +200,13 @@ export default function ProfileForm({
         <>
           {/* プロセス優先度 */}
           <label className="flex flex-col gap-1">
-            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               プロセス優先度
             </span>
             <select
               value={processPriority}
               onChange={(e) => setProcessPriority(e.target.value as ProcessPriorityLevel)}
-              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
             >
               <option value="normal">通常</option>
               <option value="aboveNormal">通常以上</option>
@@ -217,13 +217,13 @@ export default function ProfileForm({
 
           {/* 電源プラン */}
           <label className="flex flex-col gap-1">
-            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               電源プラン
             </span>
             <select
               value={powerPlan}
               onChange={(e) => setPowerPlan(e.target.value as PowerPlanType)}
-              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
             >
               <option value="unchanged">変更なし</option>
               <option value="highPerformance">高パフォーマンス</option>
@@ -253,7 +253,7 @@ export default function ProfileForm({
         <>
           {/* タイマーリゾリューション */}
           <label className="flex flex-col gap-1">
-            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
               タイマーリゾリューション（ms）
             </span>
             <input
@@ -264,9 +264,9 @@ export default function ProfileForm({
               min={0.5}
               max={15.625}
               step={0.1}
-              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
             />
-            <span className="font-[var(--font-mono)] text-[9px] text-text-secondary">
+            <span className="font-(--font-mono) text-[9px] text-text-secondary">
               低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
             </span>
           </label>
@@ -276,7 +276,7 @@ export default function ProfileForm({
       {/* === Level 3 追加フィールド === */}
       {boostLevel === 'hard' && (
         <label className="flex flex-col gap-1">
-          <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+          <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
             強制終了プロセス（カンマ区切り）
           </span>
           <input
@@ -284,9 +284,9 @@ export default function ProfileForm({
             value={processesToKill}
             onChange={(e) => setProcessesToKill(e.target.value)}
             placeholder="例: wallpaper_engine.exe, obs64.exe"
-            className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+            className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
           />
-          <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-danger-500)]">
+          <span className="font-(--font-mono) text-[9px] text-danger-500">
             ⚠️ 強制終了は不可逆です。保存していないデータが失われる可能性があります。
           </span>
         </label>
@@ -294,7 +294,7 @@ export default function ProfileForm({
 
       {/* 一時停止プロセス */}
       <label className="flex flex-col gap-1">
-        <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+        <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
           一時停止プロセス（カンマ区切り）
         </span>
         <input
@@ -302,7 +302,7 @@ export default function ProfileForm({
           value={processesToSuspend}
           onChange={(e) => setProcessesToSuspend(e.target.value)}
           placeholder="例: chrome.exe, discord.exe"
-          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+          className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
         />
       </label>
 

@@ -17,8 +17,8 @@ function formatDate(ms: number): string {
 }
 
 function formatDelta(pct: number): { text: string; cls: string } {
-  if (pct > 0) return { text: `+${pct.toFixed(1)}%`, cls: 'text-[var(--color-success-500)]' };
-  if (pct < 0) return { text: `${pct.toFixed(1)}%`, cls: 'text-[var(--color-danger-500)]' };
+  if (pct > 0) return { text: `+${pct.toFixed(1)}%`, cls: 'text-success-500' };
+  if (pct < 0) return { text: `${pct.toFixed(1)}%`, cls: 'text-danger-500' };
   return { text: '±0%', cls: 'text-text-muted' };
 }
 
@@ -43,7 +43,7 @@ function SessionRow({
     <button
       type="button"
       className={`w-full flex items-center gap-2 px-2 py-1 border-b border-border-subtle text-[10px] font-(--font-mono) text-left ${
-        isSelected ? 'bg-[var(--color-accent-500)]/10' : 'hover:bg-base-700'
+        isSelected ? 'bg-accent-500/10' : 'hover:bg-base-700'
       } cursor-pointer`}
       onClick={() => onSelect(session.id)}
     >
@@ -64,7 +64,7 @@ function SessionRow({
               onDelete(session.id);
               setConfirmDelete(false);
             }}
-            className="px-1 py-[1px] font-(--font-mono) text-[9px] border border-[var(--color-danger-500)] text-[var(--color-danger-500)] hover:bg-[var(--color-danger-500)] hover:text-base-900 transition-colors"
+            className="px-1 py-[1px] font-(--font-mono) text-[9px] border border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-base-900 transition-colors"
           >
             YES
           </button>
@@ -86,7 +86,7 @@ function SessionRow({
             e.stopPropagation();
             setConfirmDelete(true);
           }}
-          className="shrink-0 px-1 py-[1px] font-(--font-mono) text-[9px] border border-border-subtle text-text-muted hover:border-[var(--color-danger-500)] hover:text-[var(--color-danger-500)] transition-colors"
+          className="shrink-0 px-1 py-[1px] font-(--font-mono) text-[9px] border border-border-subtle text-text-muted hover:border-danger-500 hover:text-danger-500 transition-colors"
         >
           DEL
         </button>
@@ -327,9 +327,7 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
               <span className="font-(--font-mono) text-[10px] text-text-muted">STUTTER Δ</span>
               <span
                 className={`font-(--font-mono) text-[10px] ${
-                  comparisonResult.stutterDelta <= 0
-                    ? 'text-[var(--color-success-500)]'
-                    : 'text-[var(--color-danger-500)]'
+                  comparisonResult.stutterDelta <= 0 ? 'text-success-500' : 'text-danger-500'
                 }`}
               >
                 {comparisonResult.stutterDelta > 0 ? '+' : ''}
@@ -409,9 +407,7 @@ const PerformanceTimelineCard: React.FC = () => {
 
       {/* エラー */}
       {error && (
-        <div className="mb-2 font-(--font-mono) text-[10px] text-[var(--color-danger-500)]">
-          ERROR: {error}
-        </div>
+        <div className="mb-2 font-(--font-mono) text-[10px] text-danger-500">ERROR: {error}</div>
       )}
 
       {/* コンテンツ */}
