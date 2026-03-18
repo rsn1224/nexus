@@ -8,7 +8,7 @@ use crate::error::AppError;
 use crate::infra::power_plan::PowerPlanController;
 use crate::services;
 use crate::state::SharedState;
-use crate::types::game::{GameProfile, ProfileApplyResult};
+use crate::types::game::{GameProfile, ProfileApplyResult, SharedProfile};
 
 /// app_data_dir を取得するヘルパー
 fn get_app_data_dir(app: &AppHandle) -> Result<std::path::PathBuf, AppError> {
@@ -144,7 +144,8 @@ pub fn get_process_affinity(pid: u32) -> Result<Vec<usize>, AppError> {
 #[tauri::command]
 pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
     let controller = PowerPlanController::new();
-    let guid = controller.get_active_plan_guid()?
+    let guid = controller
+        .get_active_plan_guid()?
         .ok_or_else(|| AppError::Power("現在の電源プランが取得できません".to_string()))?;
     let name = controller.get_plan_name(&guid)?;
     Ok(crate::types::game::CurrentPowerPlan { name, guid })
@@ -157,4 +158,84 @@ pub fn get_suspend_candidates() -> Vec<String> {
         .iter()
         .map(|s| s.to_string())
         .collect()
+}
+
+// ─── プロファイル共有（エクスポート / インポート） ────────────────────────────
+
+/// プロファイルをコミュニティ共有用 JSON にエクスポート
+/// マシン固有情報（exe_path / id / プレイ統計）を除いた設定のみを返す
+#[tauri::command]
+pub fn export_game_profile(app: AppHandle, id: String) -> Result<String, AppError> {
+    let dir = get_app_data_dir(&app)?;
+    let profile = services::profile::get_profile(&dir, &id)?
+        .ok_or_else(|| AppError::Profile(format!("プロファイルが見つかりません: {}", id)))?;
+
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64;
+
+    let shared = SharedProfile {
+        version: 1,
+        display_name: profile.display_name,
+        cpu_affinity_game: profile.cpu_affinity_game,
+        cpu_affinity_background: profile.cpu_affinity_background,
+        process_priority: profile.process_priority,
+        power_plan: profile.power_plan,
+        processes_to_suspend: profile.processes_to_suspend,
+        processes_to_kill: profile.processes_to_kill,
+        auto_suspend_enabled: profile.auto_suspend_enabled,
+        timer_resolution_100ns: profile.timer_resolution_100ns,
+        boost_level: profile.boost_level,
+        exported_at: now,
+    };
+
+    serde_json::to_string_pretty(&shared)
+        .map_err(|e| AppError::Profile(format!("JSON シリアライズ失敗: {}", e)))
+}
+
+/// 共有 JSON からプロファイルをインポートしてストレージに保存
+/// id を新規生成し exe_path は空にする（ユーザーが後から設定する）
+#[tauri::command]
+pub fn import_game_profile(app: AppHandle, json: String) -> Result<GameProfile, AppError> {
+    let shared: SharedProfile = serde_json::from_str(&json)
+        .map_err(|e| AppError::Profile(format!("JSON パース失敗: {}", e)))?;
+
+    if shared.version != 1 {
+        return Err(AppError::Profile(format!(
+            "未対応のフォーマットバージョン: {}",
+            shared.version
+        )));
+    }
+
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_millis() as u64;
+
+    // 新規 ID を生成（タイムスタンプベース）
+    let new_id = format!("imported_{}", now);
+
+    let profile = GameProfile {
+        id: new_id,
+        display_name: format!("[IMPORTED] {}", shared.display_name),
+        exe_path: std::path::PathBuf::new(), // ユーザーが後から設定
+        steam_app_id: None,
+        cpu_affinity_game: shared.cpu_affinity_game,
+        cpu_affinity_background: shared.cpu_affinity_background,
+        process_priority: shared.process_priority,
+        power_plan: shared.power_plan,
+        processes_to_suspend: shared.processes_to_suspend,
+        processes_to_kill: shared.processes_to_kill,
+        auto_suspend_enabled: shared.auto_suspend_enabled,
+        timer_resolution_100ns: shared.timer_resolution_100ns,
+        boost_level: shared.boost_level,
+        last_played: None,
+        total_play_secs: 0,
+        created_at: now,
+        updated_at: now,
+    };
+
+    let dir = get_app_data_dir(&app)?;
+    services::profile::save_profile(&dir, profile)
 }

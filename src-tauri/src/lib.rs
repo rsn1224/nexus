@@ -124,6 +124,8 @@ pub fn run() {
             profile::get_process_affinity,
             profile::get_current_power_plan,
             profile::get_suspend_candidates,
+            profile::export_game_profile,
+            profile::import_game_profile,
             // TIMER RESOLUTION
             timer::get_timer_resolution,
             timer::set_timer_resolution,

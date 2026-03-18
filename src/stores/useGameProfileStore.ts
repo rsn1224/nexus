@@ -13,6 +13,7 @@ import type {
   PowerPlanType,
   ProcessPriorityLevel,
   ProfileApplyResult,
+  SharedProfile,
 } from '../types';
 
 // ─── ストア型定義 ────────────────────────────────────────────────────────────
@@ -39,6 +40,8 @@ interface GameProfileActions {
   stopMonitoring: () => Promise<void>;
   setupListeners: () => Promise<() => void>;
   getCpuTopology: () => Promise<void>;
+  exportProfile: (id: string) => Promise<string | null>;
+  importProfile: (json: string) => Promise<GameProfile | null>;
   clearError: () => void;
 }
 
@@ -234,7 +237,39 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   },
 
   clearError: () => set({ error: null }),
+
+  exportProfile: async (id: string): Promise<string | null> => {
+    try {
+      const json = await invoke<string>('export_game_profile', { id });
+      log.info({ id }, 'gameProfile: エクスポート完了');
+      return json;
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'gameProfile: エクスポート失敗: %s', msg);
+      set({ error: msg });
+      return null;
+    }
+  },
+
+  importProfile: async (json: string): Promise<GameProfile | null> => {
+    try {
+      const profile = await invoke<GameProfile>('import_game_profile', { json });
+      log.info({ id: profile.id }, 'gameProfile: インポート完了');
+      // ストアのプロファイル一覧を更新
+      const { profiles } = useGameProfileStore.getState();
+      set({ profiles: [...profiles, profile] });
+      return profile;
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'gameProfile: インポート失敗: %s', msg);
+      set({ error: msg });
+      return null;
+    }
+  },
 }));
+
+// SharedProfile 型は import/export の戻り値として commands から直接使用される
+export type { SharedProfile };
 
 // ─── useShallow セレクタ ─────────────────────────────────────────────────────
 
@@ -265,6 +300,8 @@ export const useGameProfileActions = () =>
       stopMonitoring: s.stopMonitoring,
       setupListeners: s.setupListeners,
       getCpuTopology: s.getCpuTopology,
+      exportProfile: s.exportProfile,
+      importProfile: s.importProfile,
       clearError: s.clearError,
     })),
   );

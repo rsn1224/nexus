@@ -9,6 +9,7 @@ import type { GameProfile } from '../../types';
 import { Button, EmptyState, ErrorBanner, LoadingState } from '../ui';
 import ProfileCard, { CurrentPowerPlanDisplay } from './ProfileCard';
 import ProfileForm from './ProfileForm';
+import ProfileSharePanel from './ProfileSharePanel';
 
 interface ProfileTabProps {
   className?: string;
@@ -78,7 +79,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
       {/* ヘッダー + リバートボタン + 新規ボタン */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="font-[var(--font-mono)] text-[10px] text-text-muted">
+          <span className="font-(--font-mono) text-[10px] text-text-muted">
             {profiles.length} 件のプロファイル
           </span>
           <CurrentPowerPlanDisplay />
@@ -109,7 +110,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
 
       {/* 適用中インジケーター */}
       {isApplying && (
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-cyan-500)] text-center py-2">
+        <div className="font-(--font-mono) text-[10px] text-cyan-500 text-center py-2">
           プロファイル適用中...
         </div>
       )}
@@ -134,6 +135,11 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
           />
         ))}
       </div>
+
+      {/* プロファイル共有（エクスポート / インポート） */}
+      <ProfileSharePanel
+        selectedProfile={profiles.find((p) => p.id === activeProfileId) ?? profiles[0] ?? null}
+      />
     </div>
   );
 }

@@ -483,13 +483,6 @@ export interface RevertAllResult {
   failCount: number;
 }
 
-// セッション記録・比較用の型
-export interface FrameTimeSnapshot {
-  timestamp: number;
-  frameTimeMs: number;
-  fps: number;
-}
-
 export interface SessionSummary {
   avgFps: number;
   pct1Low: number;
@@ -548,4 +541,22 @@ export interface SessionComparisonResult {
   pct01LowDeltaPct: number;
   stutterDelta: number;
   autoSummary: string;
+}
+
+// ─── Profile Sharing ─────────────────────────────────────────────────────────
+
+/** コミュニティ共有用プロファイル（マシン固有情報を除く） */
+export interface SharedProfile {
+  version: number;
+  displayName: string;
+  cpuAffinityGame: number[] | null;
+  cpuAffinityBackground: number[] | null;
+  processPriority: ProcessPriorityLevel;
+  powerPlan: PowerPlanType;
+  processesToSuspend: string[];
+  processesToKill: string[];
+  autoSuspendEnabled: boolean;
+  timerResolution100ns: number | null;
+  boostLevel: BoostLevel;
+  exportedAt: number;
 }

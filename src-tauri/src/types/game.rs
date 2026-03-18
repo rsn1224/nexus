@@ -515,6 +515,39 @@ pub struct SessionListItem {
     pub summary: SessionSummary,
 }
 
+// ─── SharedProfile ────────────────────────────────────────────────────────────
+
+/// コミュニティ共有用プロファイル。
+/// マシン固有の情報（exe_path / id / プレイ統計）を除いた設定のみを保持する。
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SharedProfile {
+    /// フォーマットバージョン（後方互換チェック用）
+    pub version: u32,
+    /// プロファイル表示名
+    pub display_name: String,
+    /// ゲーム CPU コアのインデックスリスト
+    pub cpu_affinity_game: Option<Vec<usize>>,
+    /// バックグラウンドプロセス追い出し先コア
+    pub cpu_affinity_background: Option<Vec<usize>>,
+    /// プロセス優先度
+    pub process_priority: ProcessPriority,
+    /// 電源プラン
+    pub power_plan: PowerPlan,
+    /// サスペンド対象プロセス名
+    pub processes_to_suspend: Vec<String>,
+    /// 終了対象プロセス名
+    pub processes_to_kill: Vec<String>,
+    /// 自動サスペンド有効
+    pub auto_suspend_enabled: bool,
+    /// タイマーリゾリューション（100ns 単位）
+    pub timer_resolution_100ns: Option<u32>,
+    /// ブーストレベル
+    pub boost_level: BoostLevel,
+    /// エクスポート日時（Unix ms）
+    pub exported_at: u64,
+}
+
 /// セッション比較結果
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
