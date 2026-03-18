@@ -322,7 +322,7 @@ pub fn cleanup_system_cache(confirmed: bool) -> Result<u64, AppError> {
 
 #[tauri::command]
 #[cfg(not(windows))]
-pub fn cleanup_system_cache(confirmed: bool) -> Result<u64, AppError> {
+pub fn cleanup_system_cache(_confirmed: bool) -> Result<u64, AppError> {
     info!("cleanup_system_cache: stub implementation for non-Windows");
     Ok(0)
 }

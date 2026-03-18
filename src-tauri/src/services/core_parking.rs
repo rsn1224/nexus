@@ -7,7 +7,9 @@ use crate::infra::powershell;
 use serde::{Deserialize, Serialize};
 
 /// コアパーキング設定の GUID（Windows 電源オプション内部識別子）
+#[cfg(windows)]
 const PROCESSOR_SETTINGS_SUBGROUP: &str = "54533251-82be-4824-96c1-47b60b740d00";
+#[cfg(windows)]
 const CORE_PARKING_MIN_CORES: &str = "0cc5b647-c1df-4637-891a-dec35c318583";
 
 /// 現在のコアパーキング設定
@@ -24,6 +26,7 @@ pub struct CoreParkingState {
 }
 
 /// powercfg /query の出力をパース
+#[cfg(windows)]
 fn parse_powercfg_output(output: &str) -> Result<u32, AppError> {
     // 出力例: "Power Setting GUID: 0cc5b647-c1df-4637-891a-dec35c318583  (Core Parking Min Cores)\nMinimum: 50%\nMaximum: 100%\n"
     for line in output.lines() {
@@ -160,7 +163,7 @@ pub fn set_core_parking(min_cores_percent: u32) -> Result<(), AppError> {
 }
 
 #[cfg(not(windows))]
-pub fn set_core_parking(min_cores_percent: u32) -> Result<(), AppError> {
+pub fn set_core_parking(_min_cores_percent: u32) -> Result<(), AppError> {
     Err(AppError::Command("Windows 専用機能です".into()))
 }
 
@@ -188,6 +191,7 @@ pub fn restore_parking(original_percent: u32) -> Result<(), AppError> {
 mod tests {
     use super::*;
 
+    #[cfg(windows)]
     #[test]
     fn test_parse_powercfg_output_valid() {
         let output = "Power Setting GUID: 0cc5b647-c1df-4637-891a-dec35c318583  (Core Parking Min Cores)\nMinimum: 50%\nMaximum: 100%\n";
@@ -195,6 +199,7 @@ mod tests {
         assert_eq!(result.unwrap(), 50);
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_parse_powercfg_output_invalid() {
         let output = "Power Setting GUID: 0cc5b647-c1df-4637-891a-dec35c318583  (Core Parking Min Cores)\nMaximum: 100%\n";

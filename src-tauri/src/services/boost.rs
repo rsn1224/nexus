@@ -490,11 +490,11 @@ pub fn revert_boost(state: &State<'_, SharedState>) -> Result<(), AppError> {
     }
 
     // 電源プランを元に戻す
-    if let Some(prev_guid) = &snapshot.prev_power_plan_guid {
+    if let Some(_prev_guid) = &snapshot.prev_power_plan_guid {
         #[cfg(windows)]
         {
-            if let Err(e) = power_plan::revert_power_plan(Some(prev_guid.to_string())) {
-                warn!("電源プラン復元失敗: {}: {}", prev_guid, e);
+            if let Err(e) = power_plan::revert_power_plan(Some(_prev_guid.to_string())) {
+                warn!("電源プラン復元失敗: {}: {}", _prev_guid, e);
             }
         }
         #[cfg(not(windows))]

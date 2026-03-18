@@ -1,6 +1,7 @@
 // src-tauri/src/infra/gpu.rs
 
 use crate::error::AppError;
+#[cfg(windows)]
 use tracing::{info, warn};
 
 /// NVML から取得できる GPU のリアルタイムデータ

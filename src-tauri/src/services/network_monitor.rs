@@ -235,8 +235,8 @@ pub fn measure_network_quality_powershell(
 #[cfg(not(windows))]
 #[allow(dead_code)]
 pub fn measure_network_quality_powershell(
-    target: &str,
-    count: u32,
+    _target: &str,
+    _count: u32,
 ) -> Result<NetworkQualitySnapshot, AppError> {
     Err(AppError::Command("Windows 専用機能です".into()))
 }

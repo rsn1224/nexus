@@ -1,7 +1,9 @@
 //! タイマーリゾリューション管理サービス（services 層）
 //! 仕様: docs/specs/game-enhancement-spec.md §8
 
-use tracing::{info, warn};
+use tracing::info;
+#[cfg(windows)]
+use tracing::warn;
 
 use crate::error::AppError;
 #[cfg(windows)]

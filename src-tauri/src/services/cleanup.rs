@@ -61,10 +61,11 @@ pub fn revert_all(state: &State<'_, SharedState>) -> RevertAllResult {
     }
 }
 
-fn revert_win_settings(items: &mut Vec<RevertItem>) {
+fn revert_win_settings(_items: &mut Vec<RevertItem>) {
     // winopt_backup.json を読み込み、全キーをリバート
     #[cfg(windows)]
     {
+        let items = _items;
         let settings = match crate::commands::winopt::get_win_settings() {
             Ok(s) => s,
             Err(e) => {
@@ -93,9 +94,10 @@ fn revert_win_settings(items: &mut Vec<RevertItem>) {
     }
 }
 
-fn revert_net_settings(items: &mut Vec<RevertItem>) {
+fn revert_net_settings(_items: &mut Vec<RevertItem>) {
     #[cfg(windows)]
     {
+        let items = _items;
         let settings = match crate::commands::winopt::get_net_settings() {
             Ok(s) => s,
             Err(e) => {

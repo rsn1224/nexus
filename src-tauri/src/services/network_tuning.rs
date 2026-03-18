@@ -6,6 +6,7 @@ use crate::error::AppError;
 use crate::infra::registry;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
+#[cfg(windows)]
 use tracing::info;
 
 /// TCP 最適化設定の現在の状態
@@ -39,9 +40,12 @@ pub enum TcpAutoTuningLevel {
 }
 
 /// 各設定のレジストリパス
+#[cfg(windows)]
 const INTERFACES_KEY: &str = r"SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces";
+#[cfg(windows)]
 const MULTIMEDIA_KEY: &str =
     r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile";
+#[cfg(windows)]
 const QOS_KEY: &str = r"SOFTWARE\Policies\Microsoft\Windows\Psched";
 
 /// 現在の TCP 最適化状態を取得
@@ -309,6 +313,7 @@ fn get_delayed_ack_status() -> Result<bool, AppError> {
 }
 
 /// TCP Auto-Tuning レベルを取得
+#[cfg(windows)]
 fn get_tcp_auto_tuning_level() -> Result<TcpAutoTuningLevel, AppError> {
     let output = Command::new("netsh")
         .args(["int", "tcp", "show", "global"])

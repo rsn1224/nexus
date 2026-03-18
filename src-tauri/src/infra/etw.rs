@@ -45,6 +45,7 @@ const D3D9_PRESENT_START: u16 = 1; // 0x01
 
 /// フレームイベント — Present::Start のタイムスタンプを記録
 #[derive(Debug, Clone)]
+#[cfg_attr(not(windows), allow(dead_code))]
 pub struct FrameEvent {
     pub pid: u32,
     pub timestamp: Instant,
@@ -202,6 +203,7 @@ pub type FrameEventBuffer = Arc<Mutex<std::collections::VecDeque<FrameEvent>>>;
 mod tests {
     use super::*;
 
+    #[cfg(windows)]
     #[test]
     fn test_guid_parsing() {
         // GUID が正しくパースできることを確認

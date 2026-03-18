@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 /// 推奨設定とその理由
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(not(windows), allow(dead_code))]
 pub struct SettingRecommendation {
     /// 設定 ID（フロントエンドでの紐付け用）
     pub setting_id: String,
@@ -29,6 +30,7 @@ pub struct SettingRecommendation {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(not(windows), allow(dead_code))]
 pub enum RecommendedValue {
     Boolean(bool),
     String(String),
@@ -38,6 +40,7 @@ pub enum RecommendedValue {
 /// アドバイザー結果
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(not(windows), allow(dead_code))]
 pub struct AdvisorResult {
     /// 推奨設定リスト
     pub recommendations: Vec<SettingRecommendation>,
@@ -52,6 +55,7 @@ pub struct AdvisorResult {
 /// 現在の Windows 設定スナップショット取得
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[cfg_attr(not(windows), allow(dead_code))]
 pub struct WindowsSettingsSnapshot {
     pub game_mode: bool,
     pub hags: bool,
@@ -62,6 +66,7 @@ pub struct WindowsSettingsSnapshot {
 }
 
 /// ハードウェア情報から推奨設定を生成
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn analyze_settings(
     topology: &CpuTopology,
     gpu_name: Option<&str>,
@@ -204,6 +209,7 @@ pub fn analyze_settings(
 }
 
 /// 現在の Windows 設定スナップショット取得
+#[cfg_attr(not(windows), allow(dead_code))]
 pub fn get_current_settings_snapshot() -> Result<WindowsSettingsSnapshot, AppError> {
     // 各レジストリ値・powercfg から現在値を収集
     // TODO: 実装 - いったんダミー値を返す

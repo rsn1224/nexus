@@ -2,6 +2,7 @@ use crate::constants::is_protected_process;
 use crate::error::AppError;
 use serde::Serialize;
 use std::time::Instant;
+#[cfg(windows)]
 use sysinfo::{ProcessStatus, System};
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -31,7 +32,7 @@ pub struct BoostResult {
 #[tauri::command]
 pub fn run_boost(threshold_percent: Option<f32>) -> Result<BoostResult, AppError> {
     let start = Instant::now();
-    let threshold = threshold_percent.unwrap_or(5.0);
+    let _threshold = threshold_percent.unwrap_or(5.0);
 
     #[cfg(windows)]
     {
@@ -44,7 +45,7 @@ pub fn run_boost(threshold_percent: Option<f32>) -> Result<BoostResult, AppError
             .iter()
             .filter(|(_, process)| {
                 // 実行中のプロセスのみ対象
-                process.status() == ProcessStatus::Run && process.cpu_usage() > threshold
+                process.status() == ProcessStatus::Run && process.cpu_usage() > _threshold
             })
             .collect();
 

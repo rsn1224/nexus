@@ -5,7 +5,9 @@ use crate::error::AppError;
 use crate::infra::powershell;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use tracing::{info, warn};
+use tracing::info;
+#[cfg(windows)]
+use tracing::warn;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -93,8 +95,8 @@ pub fn get_system_logs(
 #[tauri::command]
 #[cfg(not(windows))]
 pub fn get_system_logs(
-    level: Option<String>,
-    limit: Option<usize>,
+    _level: Option<String>,
+    _limit: Option<usize>,
 ) -> Result<Vec<LogEntry>, AppError> {
     info!("get_system_logs: stub implementation for non-Windows");
     Ok(Vec::new())
@@ -284,6 +286,7 @@ pub fn export_logs(logs: Vec<LogEntry>, format: String) -> Result<String, AppErr
     Ok(file_path.to_string_lossy().to_string())
 }
 
+#[cfg(windows)]
 fn parse_windows_log_value(
     json: &serde_json::Value,
 ) -> Result<LogEntry, Box<dyn std::error::Error>> {
@@ -349,6 +352,7 @@ fn parse_log_line(line: &str, app_name: &str) -> Result<LogEntry, Box<dyn std::e
     }
 }
 
+#[cfg(windows)]
 fn matches_log_level(entry_level: &LogLevel, filter: &str) -> bool {
     match filter.to_lowercase().as_str() {
         "error" => matches!(entry_level, LogLevel::Error),

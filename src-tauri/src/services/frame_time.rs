@@ -1,7 +1,6 @@
 //! フレームタイム統計計算サービス（services 層）
 
 use crate::error::AppError;
-use std::time::Instant;
 
 #[cfg(windows)]
 use crate::infra::etw::{self, EtwSession, FrameEvent, FrameEventBuffer};
@@ -9,9 +8,11 @@ use crate::infra::etw::{self, EtwSession, FrameEvent, FrameEventBuffer};
 use crate::types::game::FrameTimeSnapshot;
 #[cfg(windows)]
 use std::sync::{Arc, Mutex};
+#[cfg(windows)]
+use std::time::Instant;
 
 #[cfg(not(windows))]
-use crate::types::game::{FrameTimeMonitorState, FrameTimeSnapshot};
+use crate::types::game::FrameTimeSnapshot;
 
 /// フレームタイム監視セッション
 pub struct FrameTimeSession {
@@ -188,6 +189,7 @@ impl FrameTimeSession {
 }
 
 /// パーセンタイル計算
+#[cfg(windows)]
 fn percentile(sorted: &[f64], p: f64) -> f64 {
     if sorted.is_empty() {
         return 0.0;
@@ -200,6 +202,7 @@ fn percentile(sorted: &[f64], p: f64) -> f64 {
 mod tests {
     use super::*;
 
+    #[cfg(windows)]
     #[test]
     fn test_percentile() {
         let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
@@ -208,6 +211,7 @@ mod tests {
         assert_eq!(percentile(&data, 100.0), 5.0);
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_percentile_empty() {
         let data: Vec<f64> = vec![];

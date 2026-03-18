@@ -7,7 +7,9 @@
 
 use crate::error::AppError;
 use crate::types::game::CpuTopology;
-use tracing::{info, warn};
+use tracing::info;
+#[cfg(windows)]
+use tracing::warn;
 
 /// CPU トポロジーを検出して返す。
 /// Windows 環境では `GetLogicalProcessorInformationEx` を使用。
