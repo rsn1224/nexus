@@ -251,6 +251,7 @@ pub fn set_process_priority_class(
 /// Windows 以外のプラットフォーム用スタブ実装
 #[cfg(not(windows))]
 #[allow(dead_code)]
+#[derive(Debug)]
 pub struct ProcessController {
     _private: (),
 }
