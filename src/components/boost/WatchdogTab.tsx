@@ -91,10 +91,20 @@ export default function WatchdogTab() {
       {/* Header */}
       <SectionHeader title="▶ BOOST / WATCHDOG" color="accent">
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={handleLoadPresets} disabled={isLoading}>
+          <Button
+            variant="secondary"
+            onClick={handleLoadPresets}
+            disabled={isLoading}
+            aria-label="プリセットルールを読み込む"
+          >
             PRESETS
           </Button>
-          <Button variant="primary" onClick={handleAddRule} disabled={isLoading}>
+          <Button
+            variant="primary"
+            onClick={handleAddRule}
+            disabled={isLoading}
+            aria-label="新しい監視ルールを追加"
+          >
             ADD RULE
           </Button>
         </div>
@@ -136,7 +146,10 @@ export default function WatchdogTab() {
               </thead>
               <tbody>
                 {rules.map((rule: WatchdogRule) => (
-                  <tr key={rule.id} className="border-b border-border">
+                  <tr
+                    key={rule.id}
+                    className="border-b border-border transition-colors duration-100 hover:bg-white/4"
+                  >
                     <td className="px-3 py-[5px]">
                       <div className="font-bold text-text-primary">{rule.name}</div>
                       <div className="text-[10px] text-text-muted mt-[2px]">ID: {rule.id}</div>
@@ -146,6 +159,7 @@ export default function WatchdogTab() {
                         variant={rule.enabled ? 'primary' : 'secondary'}
                         size="sm"
                         onClick={() => handleToggleRule(rule)}
+                        aria-label={`ルール「${rule.name}」を${rule.enabled ? '無効' : '有効'}にする`}
                       >
                         {rule.enabled ? 'ENABLED' : 'DISABLED'}
                       </Button>
@@ -167,13 +181,19 @@ export default function WatchdogTab() {
                     </td>
                     <td className="px-3 py-[5px] text-right">
                       <div className="flex gap-1 justify-end">
-                        <Button variant="secondary" size="sm" onClick={() => handleEditRule(rule)}>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => handleEditRule(rule)}
+                          aria-label={`ルール「${rule.name}」を編集`}
+                        >
                           EDIT
                         </Button>
                         <Button
                           variant="danger"
                           size="sm"
                           onClick={() => handleDeleteRule(rule.id)}
+                          aria-label={`ルール「${rule.name}」を削除`}
                         >
                           DELETE
                         </Button>
@@ -260,7 +280,11 @@ export default function WatchdogTab() {
             <h3 className="mb-4">{editingRule ? 'EDIT RULE' : 'ADD RULE'}</h3>
             <p>Rule modal implementation would go here</p>
             <div className="mt-4 flex gap-2">
-              <Button variant="ghost" onClick={() => setShowModal(false)}>
+              <Button
+                variant="ghost"
+                onClick={() => setShowModal(false)}
+                aria-label="ルール編集をキャンセル"
+              >
                 CANCEL
               </Button>
             </div>
@@ -281,7 +305,11 @@ export default function WatchdogTab() {
               </div>
             ))}
             <div className="mt-4 flex gap-2">
-              <Button variant="ghost" onClick={() => setShowPresets(false)}>
+              <Button
+                variant="ghost"
+                onClick={() => setShowPresets(false)}
+                aria-label="プリセット一覧を閉じる"
+              >
                 CLOSE
               </Button>
             </div>

@@ -107,6 +107,38 @@ const Shell = memo(function Shell({
     return readiness.total;
   }, [cpuPercent, latestSnapshot, diskUsagePercent, gpuUsage]);
 
+  // Calculate score color class
+  const scoreColorClass = useMemo(() => {
+    if (gameScore === null) return 'text-text-muted';
+    const readiness = calcReadiness({
+      cpuPercent,
+      memUsedMb:
+        latestSnapshot && latestSnapshot.memUsedMb !== null
+          ? latestSnapshot.memUsedMb / 1024
+          : null,
+      memTotalMb:
+        latestSnapshot && latestSnapshot.memTotalMb !== null
+          ? latestSnapshot.memTotalMb / 1024
+          : null,
+      gpuUsagePercent: gpuUsage,
+      gpuTempC: null,
+      diskUsagePercent,
+      isProfileApplied: false,
+      boostLevel: 'none',
+      timerState: null,
+      affinityConfigured: false,
+      frameTime: null,
+    });
+    const style = getRankStyle(readiness.rank);
+    // Map style.color to Tailwind class
+    const colorMap: Record<string, string> = {
+      'var(--color-success-500)': 'text-success-500',
+      'var(--color-cyan-500)': 'text-cyan-500',
+      'var(--color-accent-400)': 'text-accent-400',
+    };
+    return colorMap[style.color] ?? 'text-danger-500';
+  }, [gameScore, cpuPercent, latestSnapshot, diskUsagePercent, gpuUsage]);
+
   return (
     <div className="flex h-screen bg-base-900 overflow-hidden">
       {/* Scan line */}
@@ -189,43 +221,7 @@ const Shell = memo(function Shell({
           >
             MEM {memPercent !== null ? `${memPercent.toFixed(0)}%` : '--'}
           </div>
-          <div
-            className={`text-[10px] font-(--font-mono) ${
-              gameScore !== null
-                ? (
-                    () => {
-                      const readiness = calcReadiness({
-                        cpuPercent,
-                        memUsedMb:
-                          latestSnapshot && latestSnapshot.memUsedMb !== null
-                            ? latestSnapshot.memUsedMb / 1024
-                            : null,
-                        memTotalMb:
-                          latestSnapshot && latestSnapshot.memTotalMb !== null
-                            ? latestSnapshot.memTotalMb / 1024
-                            : null,
-                        gpuUsagePercent: gpuUsage,
-                        gpuTempC: null,
-                        diskUsagePercent,
-                        isProfileApplied: false,
-                        boostLevel: 'none',
-                        timerState: null,
-                        affinityConfigured: false,
-                        frameTime: null,
-                      });
-                      const style = getRankStyle(readiness.rank);
-                      return style.color === 'var(--color-success-500)'
-                        ? 'text-success-500'
-                        : style.color === 'var(--color-cyan-500)'
-                          ? 'text-cyan-500'
-                          : style.color === 'var(--color-accent-400)'
-                            ? 'text-accent-400'
-                            : 'text-danger-500';
-                    }
-                  )()
-                : 'text-text-muted'
-            }`}
-          >
+          <div className={`text-[10px] font-(--font-mono) ${scoreColorClass}`}>
             SCORE {gameScore !== null ? `${gameScore} / 100` : '-- / 100'}
           </div>
         </div>
