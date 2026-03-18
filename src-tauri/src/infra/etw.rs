@@ -175,6 +175,7 @@ fn handle_present_event(
 
 /// 非 Windows プラットフォーム用のスタブ実装
 #[cfg(not(windows))]
+#[allow(dead_code)]
 pub fn start_trace(
     _target_pid: Option<u32>,
     _buffer: Arc<Mutex<Vec<FrameEvent>>>,
@@ -185,6 +186,7 @@ pub fn start_trace(
 }
 
 #[cfg(not(windows))]
+#[allow(dead_code)]
 pub struct EtwSession;
 
 #[cfg(not(windows))]
@@ -195,6 +197,7 @@ impl EtwSession {
 }
 
 #[cfg(not(windows))]
+#[allow(dead_code)]
 pub type FrameEventBuffer = Arc<Mutex<std::collections::VecDeque<FrameEvent>>>;
 
 // ─── テスト ──────────────────────────────────────────────────────────────────

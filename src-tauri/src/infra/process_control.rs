@@ -256,6 +256,7 @@ pub struct ProcessController {
 }
 
 #[cfg(not(windows))]
+#[allow(dead_code)]
 impl ProcessController {
     pub fn new(_pid: u32) -> Result<Self, AppError> {
         Err(AppError::Win32(

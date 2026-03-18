@@ -154,6 +154,7 @@ pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, 
 }
 
 #[cfg(not(windows))]
+#[allow(dead_code)]
 #[tauri::command]
 pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
     Err(AppError::Command("Windows 専用機能です".into()))

@@ -5,6 +5,7 @@ use crate::error::AppError;
 #[cfg(windows)]
 use crate::infra::registry;
 use serde::{Deserialize, Serialize};
+#[cfg(windows)]
 use std::process::Command;
 #[cfg(windows)]
 use tracing::info;

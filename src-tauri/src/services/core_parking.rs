@@ -66,6 +66,7 @@ fn get_active_plan_guid() -> Result<String, AppError> {
 }
 
 #[cfg(not(windows))]
+#[allow(dead_code)]
 fn get_active_plan_guid() -> Result<String, AppError> {
     Err(AppError::PowerPlan(
         "Power plan control not available on non-Windows".to_string(),
