@@ -2,7 +2,7 @@ import type React from 'react';
 
 interface SectionHeaderProps {
   title: string; // 例: '▶ HOME / OVERVIEW'
-  color?: 'accent' | 'cyan' | 'muted'; // デフォルト: 'accent'
+  color?: 'accent' | 'muted'; // デフォルト: 'accent'
   children?: React.ReactNode; // 右側のボタン群
 }
 
@@ -13,7 +13,6 @@ export default function SectionHeader({
 }: SectionHeaderProps): React.ReactElement {
   const colorClasses = {
     accent: 'text-accent-500',
-    cyan: 'text-accent-500',
     muted: 'text-text-muted',
   };
 

@@ -16,7 +16,7 @@ vi.mock('./SettingsAdvisorPanel', () => ({
 
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import { PowerPlan, VisualEffects } from '../../types';
-import WindowsWing from './WindowsWing';
+import WindowsSettingsTab from './WindowsSettingsTab';
 
 const mockUseWindowsSettings = vi.mocked(useWindowsSettings);
 
@@ -49,7 +49,7 @@ const MOCK_SETTINGS = {
   visualEffects: VisualEffects.Balanced,
 };
 
-describe('WindowsWing', () => {
+describe('WindowsSettingsTab', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE });
@@ -57,13 +57,13 @@ describe('WindowsWing', () => {
 
   it('renders loading state when isLoading and no settings', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, isLoading: true });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByText(/LOADING/i)).toBeTruthy();
   });
 
   it('renders header when settings loaded', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByText(/WINDOWS.*SETTINGS/i)).toBeTruthy();
   });
 
@@ -73,20 +73,20 @@ describe('WindowsWing', () => {
       settings: MOCK_SETTINGS,
       error: 'registry error',
     });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByText(/registry error/i)).toBeTruthy();
   });
 
   it('renders POWER section with power plan selector', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByText('POWER')).toBeTruthy();
     expect(screen.getByText('Power Plan')).toBeTruthy();
   });
 
   it('renders GAMING section with game mode toggle', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByText('GAMING')).toBeTruthy();
     expect(screen.getByText('Game Mode')).toBeTruthy();
     expect(screen.getByText('Fullscreen Opt.')).toBeTruthy();
@@ -95,21 +95,21 @@ describe('WindowsWing', () => {
 
   it('shows ENABLED for active game mode', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     const enabledElements = screen.getAllByText('ENABLED');
     expect(enabledElements.length).toBeGreaterThan(0);
   });
 
   it('renders VISUAL section', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByText('VISUAL')).toBeTruthy();
     expect(screen.getByText('Visual Effects')).toBeTruthy();
   });
 
   it('renders advisor panel', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
-    render(<WindowsWing />);
+    render(<WindowsSettingsTab />);
     expect(screen.getByTestId('advisor-panel')).toBeTruthy();
   });
 });

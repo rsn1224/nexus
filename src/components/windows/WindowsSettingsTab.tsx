@@ -6,7 +6,7 @@ import { PowerPlan, VisualEffects } from '../../types';
 import { Button, ErrorBanner, LoadingState } from '../ui';
 import SettingsAdvisorPanel from './SettingsAdvisorPanel';
 
-export default function WindowsWing(): React.ReactElement {
+export default function WindowsSettingsTab(): React.ReactElement {
   const {
     settings,
     isLoading,
@@ -87,6 +87,7 @@ export default function WindowsWing(): React.ReactElement {
               <div className="flex items-center gap-2">
                 <select
                   value={pendingPowerPlan}
+                  title="Power Plan"
                   onChange={(e) => {
                     const plan = e.target.value as PowerPlan;
                     setPendingPowerPlan(plan);
@@ -182,6 +183,7 @@ export default function WindowsWing(): React.ReactElement {
               <div className="flex items-center gap-2">
                 <select
                   value={pendingVisualEffects}
+                  title="Visual Effects"
                   onChange={(e) => {
                     const effect = e.target.value as VisualEffects;
                     setPendingVisualEffects(effect);

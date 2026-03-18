@@ -10,7 +10,7 @@ import WinoptTab from '../boost/WinoptTab';
 import { ErrorBanner, TabBar } from '../ui';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
-import WindowsWing from '../windows/WindowsWing';
+import WindowsSettingsTab from '../windows/WindowsSettingsTab';
 
 const settingsTabs = [
   { id: 'app', label: 'アプリ設定' },
@@ -173,7 +173,7 @@ export default function SettingsWing(): React.ReactElement {
       {/* Windows 設定タブ */}
       {activeTab === 'windows' && (
         <div className="flex-1 overflow-hidden -m-4">
-          <WindowsWing />
+          <WindowsSettingsTab />
         </div>
       )}
 

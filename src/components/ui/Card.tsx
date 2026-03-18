@@ -6,7 +6,7 @@ interface CardProps {
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
-  variant?: 'default' | 'elevated' | 'outlined';
+  variant?: 'default' | 'elevated' | 'outlined' | 'glow';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hoverable?: boolean;
   clickable?: boolean;
@@ -32,6 +32,7 @@ const Card = memo(function Card({
     default: 'bg-base-800 border border-border-subtle',
     elevated: 'bg-base-800 border border-border-subtle shadow-lg',
     outlined: 'bg-transparent border border-border-subtle',
+    glow: 'bg-base-800 border border-border-subtle card-glow',
   };
 
   const paddingClasses = {

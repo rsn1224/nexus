@@ -81,13 +81,7 @@ export default function GameReadinessPanel() {
                 <>
                   <div className="flex-1 h-1.5 bg-base-800 rounded overflow-hidden">
                     <div
-                      className={`h-full transition-all duration-300 ${
-                        score >= 70
-                          ? 'bg-success-500'
-                          : score >= 40
-                            ? 'bg-accent-400'
-                            : 'bg-danger-500'
-                      }`}
+                      className="h-full transition-all duration-300 bg-accent-500"
                       style={{ width: `${Math.max(0, score)}%` }}
                     />
                   </div>

@@ -11,8 +11,8 @@ describe('SectionHeader', () => {
     expect(title).toHaveClass('text-accent-500');
   });
 
-  it('renders title with cyan color', () => {
-    render(<SectionHeader title="▶ SETTINGS" color="cyan" />);
+  it('renders title with accent color explicitly', () => {
+    render(<SectionHeader title="▶ SETTINGS" color="accent" />);
 
     const title = screen.getByText('▶ SETTINGS');
     expect(title).toHaveClass('text-accent-500');
