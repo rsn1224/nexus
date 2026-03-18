@@ -69,6 +69,7 @@ const EcoModePanel: React.FC = () => {
             fetchConfig();
             fetchPowerEstimate();
           }}
+          aria-label="エコモード設定を再読み込み"
         >
           RETRY
         </Button>
@@ -119,7 +120,13 @@ const EcoModePanel: React.FC = () => {
                 {powerEstimate.totalEstimatedW.toFixed(1)}W
               </div>
             </div>
-            <Button variant="ghost" size="sm" onClick={fetchPowerEstimate} disabled={isLoading}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={fetchPowerEstimate}
+              disabled={isLoading}
+              aria-label="電力消費量を更新"
+            >
               REFRESH
             </Button>
           </div>
@@ -141,6 +148,7 @@ const EcoModePanel: React.FC = () => {
               variant={config.enabled ? 'primary' : 'ghost'}
               size="sm"
               onClick={handleToggleEcoMode}
+              aria-label={`エコモードを${config.enabled ? '無効' : '有効'}にする`}
               disabled={isLoading}
             >
               {config.enabled ? 'ENABLED' : 'DISABLED'}
@@ -159,7 +167,7 @@ const EcoModePanel: React.FC = () => {
                 value={tempConfig.targetFps}
                 onChange={(e) => handleTargetFpsChange(Number(e.target.value))}
                 disabled={!config.enabled}
-                aria-label="Target FPS limit"
+                aria-label="ターゲット FPS"
                 className="flex-1"
               />
               <span
@@ -177,7 +185,7 @@ const EcoModePanel: React.FC = () => {
               value={tempConfig.ecoPowerPlan}
               onChange={(e) => handlePowerPlanChange(e.target.value)}
               disabled={!config.enabled}
-              aria-label="Power plan"
+              aria-label="電力プラン"
               className={`w-full px-2 py-1 ${config.enabled ? 'bg-base-900 text-text-primary' : 'bg-base-800 text-text-muted'} border border-base-800 rounded text-[10px]`}
             >
               <option value="Balanced">Balanced</option>
@@ -204,7 +212,7 @@ const EcoModePanel: React.FC = () => {
                   step="0.5"
                   value={hoursPerDay}
                   onChange={(e) => setHoursPerDay(Number(e.target.value))}
-                  aria-label="Hours per day"
+                  aria-label="プレイ時間（時間/日）"
                   className="flex-1"
                 />
                 <span className="text-text-primary text-[11px] font-bold min-w-[40px] text-right">
@@ -256,7 +264,7 @@ const EcoModePanel: React.FC = () => {
               step="1"
               value={tempConfig.electricityRateYen}
               onChange={(e) => handleElectricityRateChange(Number(e.target.value))}
-              aria-label="Electricity rate in yen per kWh"
+              aria-label="電気料金（円/kWh）"
               className="w-full px-2 py-1 bg-base-900 text-text-primary border border-base-800 rounded text-[10px]"
             />
           </div>
@@ -268,6 +276,7 @@ const EcoModePanel: React.FC = () => {
             fullWidth
             onClick={handleSaveConfig}
             disabled={isLoading || !isDirty}
+            aria-label="エコモード設定を保存"
           >
             {isDirty ? 'SAVE CONFIG' : 'NO CHANGES'}
           </Button>

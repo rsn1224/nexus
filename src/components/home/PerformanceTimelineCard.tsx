@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSessionStore } from '../../stores/useSessionStore';
 import type { SessionListItem } from '../../types';
 import { Card } from '../ui';
+import EmptyState from '../ui/EmptyState';
 import FpsTimelineGraph from './FpsTimelineGraph';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -418,9 +419,10 @@ const PerformanceTimelineCard: React.FC = () => {
               LOADING...
             </div>
           ) : sessionList.length === 0 ? (
-            <div className="flex items-center justify-center h-[60px] font-(--font-mono) text-[11px] text-text-muted tracking-[0.1em]">
-              NO SESSIONS RECORDED
-            </div>
+            <EmptyState
+              message="NO SESSIONS RECORDED"
+              action="START GAMING TO RECORD PERFORMANCE"
+            />
           ) : (
             <ul className="flex flex-col max-h-[200px] overflow-y-auto list-none p-0 m-0">
               {sessionList.map((s) => (

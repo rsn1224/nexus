@@ -45,7 +45,7 @@ export default function GameCard({
   const isBusy = autoBoostEnabled && isBoosting;
 
   return (
-    <div className="bg-base-800 border border-border-subtle rounded overflow-hidden flex flex-col">
+    <div className="bg-base-800 border border-border-subtle rounded overflow-hidden flex flex-col transition-all duration-200 hover:border-cyan-500">
       {/* サムネイル */}
       {!imgError && (
         <img

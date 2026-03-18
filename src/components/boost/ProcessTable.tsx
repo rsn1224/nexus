@@ -133,9 +133,9 @@ export default function ProcessTable({
                 return (
                   <React.Fragment key={process.pid}>
                     <tr
-                      className={`cursor-pointer hover:bg-base-700 ${
+                      className={`cursor-pointer transition-colors duration-100 hover:bg-white/4 ${
                         isSelected ? 'bg-base-900/10 border-l-2 border-accent-500' : ''
-                      } ${index % 2 === 0 ? 'bg-white/[0.02]' : ''}`}
+                      } ${index % 2 === 0 ? 'bg-white/2' : ''}`}
                       onClick={() => onRowClick(process.pid)}
                     >
                       <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-text-primary">
