@@ -2,6 +2,7 @@
 //! powercfg コマンドで電源プランのコアパーキングパラメータを操作する。
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::powershell;
 use serde::{Deserialize, Serialize};
 
@@ -42,6 +43,7 @@ fn parse_powercfg_output(output: &str) -> Result<u32, AppError> {
 }
 
 /// 現在のアクティブ電源プラン GUID を取得
+#[cfg(windows)]
 fn get_active_plan_guid() -> Result<String, AppError> {
     let output = powershell::run_powershell("powercfg /getactivescheme")?;
 
@@ -60,7 +62,15 @@ fn get_active_plan_guid() -> Result<String, AppError> {
     ))
 }
 
+#[cfg(not(windows))]
+fn get_active_plan_guid() -> Result<String, AppError> {
+    Err(AppError::PowerPlan(
+        "Power plan control not available on non-Windows".to_string(),
+    ))
+}
+
 /// 電源プラン名を取得
+#[cfg(windows)]
 fn get_plan_name(guid: &str) -> Result<String, AppError> {
     let output = powershell::run_powershell(&format!("powercfg /query {}", guid))?;
 

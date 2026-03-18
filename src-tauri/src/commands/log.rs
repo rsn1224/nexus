@@ -1,6 +1,7 @@
 // Log Wing — ログ管理機能
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::powershell;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
@@ -39,6 +40,7 @@ pub struct LogAnalysis {
 }
 
 #[tauri::command]
+#[cfg(windows)]
 pub fn get_system_logs(
     level: Option<String>,
     limit: Option<usize>,
@@ -86,6 +88,16 @@ pub fn get_system_logs(
 
     info!("get_system_logs: fetched {} log entries", logs.len());
     Ok(logs)
+}
+
+#[tauri::command]
+#[cfg(not(windows))]
+pub fn get_system_logs(
+    level: Option<String>,
+    limit: Option<usize>,
+) -> Result<Vec<LogEntry>, AppError> {
+    info!("get_system_logs: stub implementation for non-Windows");
+    Ok(Vec::new())
 }
 
 // RFC 4180 準拠のCSVフィールドエスケープ関数

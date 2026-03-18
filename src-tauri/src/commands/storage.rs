@@ -1,6 +1,7 @@
 // Storage Wing — ドライブ情報取得機能
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::powershell;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -218,6 +219,7 @@ pub fn cleanup_temp_files(confirmed: bool) -> Result<u64, AppError> {
 }
 
 #[tauri::command]
+#[cfg(windows)]
 pub fn cleanup_recycle_bin() -> Result<u64, AppError> {
     info!("cleanup_recycle_bin: scanning reclaimable recycle bin");
 
@@ -232,6 +234,14 @@ pub fn cleanup_recycle_bin() -> Result<u64, AppError> {
 }
 
 #[tauri::command]
+#[cfg(not(windows))]
+pub fn cleanup_recycle_bin() -> Result<u64, AppError> {
+    info!("cleanup_recycle_bin: stub implementation for non-Windows");
+    Ok(0)
+}
+
+#[tauri::command]
+#[cfg(windows)]
 pub fn scan_system_cache() -> Result<Vec<CleanupCandidate>, AppError> {
     info!("scan_system_cache: scanning system cache for cleanup candidates");
 
@@ -273,10 +283,12 @@ pub fn scan_system_cache() -> Result<Vec<CleanupCandidate>, AppError> {
         "scan_system_cache: found {} cleanup candidates",
         candidates.len()
     );
+
     Ok(candidates)
 }
 
 #[tauri::command]
+#[cfg(windows)]
 pub fn cleanup_system_cache(confirmed: bool) -> Result<u64, AppError> {
     info!("cleanup_system_cache: confirmed={}", confirmed);
 
@@ -291,24 +303,28 @@ pub fn cleanup_system_cache(confirmed: bool) -> Result<u64, AppError> {
         return Ok(total_size);
     }
 
-    // 実行モード - 実際にファイルを削除
-    let mut total_freed = 0u64;
-    let candidates = scan_system_cache()?;
-
-    for candidate in candidates {
-        match std::fs::remove_file(&candidate.path) {
-            Ok(_) => {
-                total_freed += candidate.size_bytes;
-                info!("Deleted: {}", candidate.path);
-            }
-            Err(e) => {
-                warn!("Failed to delete {}: {}", candidate.path, e);
-            }
-        }
-    }
+    // 実際のクリーンアップ
+    let total_freed = scan_system_cache()?
+        .into_iter()
+        .try_fold(0u64, |acc, candidate| {
+            std::fs::remove_file(&candidate.path)
+                .map(|_| acc + candidate.size_bytes)
+                .map_err(|e| {
+                    warn!("Failed to delete {}: {}", candidate.path, e);
+                    e
+                })
+        })
+        .unwrap_or(0);
 
     info!("cleanup_system_cache: freed {} bytes", total_freed);
     Ok(total_freed)
+}
+
+#[tauri::command]
+#[cfg(not(windows))]
+pub fn cleanup_system_cache(confirmed: bool) -> Result<u64, AppError> {
+    info!("cleanup_system_cache: stub implementation for non-Windows");
+    Ok(0)
 }
 
 #[tauri::command]
