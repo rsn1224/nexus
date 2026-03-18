@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
-import { useShallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import { getOptimizationSuggestions } from '../services/perplexityService';
@@ -61,13 +61,8 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
         const errorMessage = extractErrorMessage(err);
         log.error({ err }, 'ops: listen failed: %s', errorMessage);
         set({
-          processes: [],
-          suggestions: [],
-          isLoading: false,
-          isSuggestionsLoading: false,
           isListening: false,
           error: errorMessage,
-          lastUpdated: null,
         });
       });
   },
@@ -97,12 +92,8 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'ops: fetch suggestions failed: %s', errorMessage);
       set({
-        processes: [],
-        suggestions: [],
-        isLoading: false,
         isSuggestionsLoading: false,
         error: errorMessage,
-        lastUpdated: null,
       });
     } finally {
       set({ isSuggestionsLoading: false });
@@ -118,14 +109,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     } catch (err) {
       const errorMessage = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: kill process failed: %s', errorMessage);
-      set({
-        processes: [],
-        suggestions: [],
-        isLoading: false,
-        isSuggestionsLoading: false,
-        error: errorMessage,
-        lastUpdated: null,
-      });
+      set({ error: errorMessage });
     }
   },
 

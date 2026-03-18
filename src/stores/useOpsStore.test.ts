@@ -206,4 +206,58 @@ describe('useOpsStore', () => {
     const { error } = useOpsStore.getState();
     expect(error).toBeTruthy();
   });
+
+  it('preserves processes data when killProcess fails', async () => {
+    // Set initial state with processes
+    useOpsStore.setState({ processes: MOCK_PROCESSES, lastUpdated: 12345 });
+
+    vi.mocked(invoke).mockRejectedValueOnce(new Error('Process not found'));
+
+    await useOpsStore.getState().killProcess(9999);
+
+    const { processes, error, lastUpdated } = useOpsStore.getState();
+    expect(processes).toEqual(MOCK_PROCESSES); // Should be preserved
+    expect(lastUpdated).toBe(12345); // Should be preserved
+    expect(error).toBe('Process not found'); // Error should be set
+  });
+
+  it('preserves processes data when fetchSuggestions fails', async () => {
+    // Set initial state with processes
+    useOpsStore.setState({ processes: MOCK_PROCESSES, lastUpdated: 12345 });
+
+    vi.mocked(invoke).mockRejectedValueOnce(new Error('API error'));
+
+    await useOpsStore.getState().fetchSuggestions();
+
+    const { processes, error, lastUpdated, isSuggestionsLoading } = useOpsStore.getState();
+    expect(processes).toEqual(MOCK_PROCESSES); // Should be preserved
+    expect(lastUpdated).toBe(12345); // Should be preserved
+    expect(error).toBe('API error'); // Error should be set
+    expect(isSuggestionsLoading).toBe(false); // Loading state should be reset
+  });
+
+  it('preserves lastUpdated when subscribe fails', async () => {
+    // Set initial state with data
+    useOpsStore.setState({
+      processes: MOCK_PROCESSES,
+      lastUpdated: 12345,
+      suggestions: ['existing suggestion'],
+    });
+
+    const mockListen = vi.mocked(listen);
+    const testError = new Error('Subscription failed');
+    mockListen.mockRejectedValue(testError);
+
+    useOpsStore.getState().subscribe();
+
+    // エラー状態の確認を少し待つ
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    const { processes, lastUpdated, suggestions, error, isListening } = useOpsStore.getState();
+    expect(processes).toEqual(MOCK_PROCESSES); // Should be preserved
+    expect(lastUpdated).toBe(12345); // Should be preserved
+    expect(suggestions).toEqual(['existing suggestion']); // Should be preserved
+    expect(error).toBe('Subscription failed'); // Error should be set
+    expect(isListening).toBe(false); // Listening state should be reset
+  });
 });
