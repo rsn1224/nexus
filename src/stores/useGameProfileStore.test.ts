@@ -28,6 +28,7 @@ const MOCK_PROFILE: GameProfile = {
   processesToKill: [],
   timerResolution100ns: null,
   boostLevel: 'none',
+  coreParkingDisabled: false,
   autoSuspendEnabled: false,
   lastPlayed: null,
   totalPlaySecs: 0,
@@ -51,6 +52,7 @@ const MOCK_APPLY_RESULT: ProfileApplyResult = {
   appliedAt: 1710000000000,
   prevPowerPlan: '381b4222-f694-41f0-9685-ff5bb260df2e',
   suspendedPids: [],
+  prevCoreParking: null,
 };
 
 // ─── ヘルパー ────────────────────────────────────────────────────────────────

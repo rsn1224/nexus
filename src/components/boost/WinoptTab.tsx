@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWinoptStore } from '../../stores/useWinoptStore';
 import { Button, LoadingState } from '../ui';
+import CoreParkingCard from './CoreParkingCard';
 import TimerSection from './TimerSection';
 
 interface WinoptTabProps {
@@ -77,6 +78,7 @@ export default function WinoptTab({ className = '' }: WinoptTabProps): React.Rea
         </div>
       )}
       <TimerSection />
+      <CoreParkingCard />
     </div>
   );
 }

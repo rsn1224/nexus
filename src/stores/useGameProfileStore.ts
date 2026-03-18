@@ -6,6 +6,7 @@ import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type {
   BoostLevel,
+  CoreParkingState,
   CpuTopology,
   GameExitEvent,
   GameLaunchEvent,
@@ -28,6 +29,7 @@ interface GameProfileState {
   error: string | null;
   isMonitoring: boolean;
   cpuTopology: CpuTopology | null;
+  coreParkingState: CoreParkingState | null;
 }
 
 interface GameProfileActions {
@@ -40,6 +42,8 @@ interface GameProfileActions {
   stopMonitoring: () => Promise<void>;
   setupListeners: () => Promise<() => void>;
   getCpuTopology: () => Promise<void>;
+  fetchCoreParking: () => Promise<void>;
+  applyCoreParking: (minCoresPercent: number) => Promise<void>;
   exportProfile: (id: string) => Promise<string | null>;
   importProfile: (json: string) => Promise<GameProfile | null>;
   clearError: () => void;
@@ -65,6 +69,7 @@ export function createDefaultProfile(
     processesToKill: [],
     timerResolution100ns: null,
     boostLevel: 'none' as BoostLevel,
+    coreParkingDisabled: false,
     lastPlayed: null,
     totalPlaySecs: 0,
     createdAt: 0,
@@ -85,6 +90,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   error: null,
   isMonitoring: false,
   cpuTopology: null,
+  coreParkingState: null,
 
   // CRUD
   loadProfiles: async () => {
@@ -236,6 +242,30 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
     }
   },
 
+  fetchCoreParking: async () => {
+    try {
+      const state = await invoke<CoreParkingState>('get_core_parking_state');
+      set({ coreParkingState: state });
+      log.info({ state }, 'gameProfile: コアパーキング状態取得完了');
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'gameProfile: コアパーキング状態取得失敗: %s', msg);
+    }
+  },
+
+  applyCoreParking: async (minCoresPercent: number) => {
+    try {
+      await invoke('set_core_parking', { minCoresPercent });
+      log.info({ minCoresPercent }, 'gameProfile: コアパーキング設定完了');
+      const state = await invoke<CoreParkingState>('get_core_parking_state');
+      set({ coreParkingState: state });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'gameProfile: コアパーキング設定失敗: %s', msg);
+      set({ error: msg });
+    }
+  },
+
   clearError: () => set({ error: null }),
 
   exportProfile: async (id: string): Promise<string | null> => {
@@ -285,6 +315,7 @@ export const useGameProfileState = () =>
       error: s.error,
       isMonitoring: s.isMonitoring,
       cpuTopology: s.cpuTopology,
+      coreParkingState: s.coreParkingState,
     })),
   );
 
@@ -300,6 +331,8 @@ export const useGameProfileActions = () =>
       stopMonitoring: s.stopMonitoring,
       setupListeners: s.setupListeners,
       getCpuTopology: s.getCpuTopology,
+      fetchCoreParking: s.fetchCoreParking,
+      applyCoreParking: s.applyCoreParking,
       exportProfile: s.exportProfile,
       importProfile: s.importProfile,
       clearError: s.clearError,

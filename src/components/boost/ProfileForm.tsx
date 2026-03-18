@@ -91,6 +91,7 @@ export default function ProfileForm({
         : null,
       autoSuspendEnabled,
       boostLevel,
+      coreParkingDisabled: initial?.coreParkingDisabled ?? false,
       lastPlayed: initial?.lastPlayed ?? null,
       totalPlaySecs: initial?.totalPlaySecs ?? 0,
       createdAt: initial?.createdAt ?? 0,
