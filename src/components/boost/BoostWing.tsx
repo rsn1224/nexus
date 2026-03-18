@@ -4,7 +4,7 @@ import { boostPageSuggestions } from '../../lib/localAi';
 import { usePulseStore } from '../../stores/usePulseStore';
 import { useWinoptStore } from '../../stores/useWinoptStore';
 import AiPanel from '../shared/AiPanel';
-import { TabBar } from '../ui';
+import { ErrorBanner, TabBar } from '../ui';
 import NetworkTab from './NetworkTab';
 import ProcessTab from './ProcessTab';
 import ProfileTab from './ProfileTab';
@@ -45,11 +45,7 @@ export default function BoostWing(): React.ReactElement {
   return (
     <div className="p-4 h-full flex flex-col">
       {/* Error Banner */}
-      {winoptError && (
-        <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
-          {winoptError}
-        </div>
-      )}
+      {winoptError && <ErrorBanner message={winoptError} />}
 
       {/* Header */}
       <div className="mb-4 flex justify-between items-center">

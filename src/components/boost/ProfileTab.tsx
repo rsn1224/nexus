@@ -6,7 +6,7 @@ import {
   useGameProfileState,
 } from '../../stores/useGameProfileStore';
 import type { BoostLevel, GameProfile, PowerPlanType, ProcessPriorityLevel } from '../../types';
-import { Button } from '../ui';
+import { Button, EmptyState, ErrorBanner, LoadingState } from '../ui';
 import AffinityPanel from './AffinityPanel';
 
 // ─── ブーストレベルラベル ────────────────────────────────────────────────────
@@ -479,18 +479,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
   return (
     <div className={`flex flex-col gap-3 ${className}`}>
       {/* エラー表示 */}
-      {error && (
-        <div className="px-3 py-2 bg-red-500/10 border border-red-600 rounded font-[var(--font-mono)] text-[10px] text-red-500 flex justify-between items-center">
-          <span>{error}</span>
-          <button
-            type="button"
-            onClick={clearError}
-            className="text-red-400 bg-transparent border-none cursor-pointer text-[10px]"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+      {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
       {/* ヘッダー + リバートボタン + 新規ボタン */}
       <div className="flex items-center justify-between">
@@ -519,11 +508,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
       )}
 
       {/* ローディング */}
-      {isLoading && (
-        <div className="font-[var(--font-mono)] text-[10px] text-text-muted text-center py-4">
-          読み込み中...
-        </div>
-      )}
+      {isLoading && <LoadingState message="読み込み中..." />}
 
       {/* 適用中インジケーター */}
       {isApplying && (
@@ -534,9 +519,10 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
 
       {/* プロファイル一覧 */}
       {!isLoading && profiles.length === 0 && !showForm && (
-        <div className="font-[var(--font-mono)] text-[10px] text-text-muted text-center py-8">
-          プロファイルがありません。「+ 新規プロファイル」で作成してください。
-        </div>
+        <EmptyState
+          message="プロファイルがありません"
+          action="「+ 新規プロファイル」で作成してください"
+        />
       )}
 
       <div className="flex flex-col gap-2">

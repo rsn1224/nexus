@@ -1,4 +1,5 @@
 import type React from 'react';
+import { LoadingState } from './index';
 
 interface TableColumn<T> {
   key: keyof T;
@@ -121,7 +122,7 @@ export default function Table<T>({
   if (loading) {
     return (
       <div className={`flex items-center justify-center py-8 ${className}`}>
-        <div className="text-text-muted">読み込み中...</div>
+        <LoadingState message="読み込み中..." />
       </div>
     );
   }

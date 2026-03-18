@@ -5,7 +5,7 @@ import {
   useHardwareData,
   useHardwareStore,
 } from '../../stores/useHardwareStore';
-import { Card } from '../ui';
+import { Card, EmptyState, ErrorBanner, LoadingState } from '../ui';
 
 export default function HardwareWing(): React.JSX.Element {
   const { subscribe } = useHardwareStore();
@@ -18,9 +18,7 @@ export default function HardwareWing(): React.JSX.Element {
   if (isLoading) {
     return (
       <div className="p-4 h-full overflow-y-auto">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-muted)] text-center py-8">
-          LOADING HARDWARE INFO...
-        </div>
+        <LoadingState message="LOADING HARDWARE INFO..." />
       </div>
     );
   }
@@ -28,9 +26,7 @@ export default function HardwareWing(): React.JSX.Element {
   if (error) {
     return (
       <div className="p-4 h-full overflow-y-auto">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-danger-500)] text-center py-8">
-          ERROR: {error}
-        </div>
+        <ErrorBanner message={`ERROR: ${error}`} />
       </div>
     );
   }
@@ -38,9 +34,7 @@ export default function HardwareWing(): React.JSX.Element {
   if (!info) {
     return (
       <div className="p-4 h-full overflow-y-auto">
-        <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-muted)] text-center py-8">
-          NO HARDWARE DATA
-        </div>
+        <EmptyState message="NO HARDWARE DATA" action="PRESS REFRESH" />
       </div>
     );
   }

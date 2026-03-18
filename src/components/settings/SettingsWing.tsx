@@ -5,6 +5,7 @@ import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
 import type { RevertAllResult, RevertItem } from '../../types';
+import { ErrorBanner } from '../ui';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
 
@@ -125,11 +126,7 @@ export default function SettingsWing(): React.ReactElement {
   const buildDate = new Date().toISOString().split('T')[0]; // Placeholder
 
   // Error banner (inline)
-  const errorBanner = error ? (
-    <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
-      ERROR: {error}
-    </div>
-  ) : null;
+  const errorBanner = error ? <ErrorBanner message={`ERROR: ${error}`} /> : null;
 
   return (
     <div className="flex flex-col h-full p-4">

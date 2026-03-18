@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { useBoostStore } from '../../stores/useBoostStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import type { SystemProcess } from '../../types';
-import { Button } from '../ui';
+import { Button, EmptyState, LoadingState } from '../ui';
 import Input from '../ui/Input';
 import Modal, { ModalActions } from '../ui/Modal';
 
@@ -230,13 +230,9 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         </div>
         <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
           {isLoading ? (
-            <div className="p-4 text-center font-(--font-mono) text-[11px] text-text-muted">
-              LOADING PROCESSES...
-            </div>
+            <LoadingState message="LOADING PROCESSES..." />
           ) : processes.length === 0 ? (
-            <div className="p-4 text-center font-(--font-mono) text-[11px] text-text-muted">
-              NO DATA — PRESS REFRESH TO LOAD
-            </div>
+            <EmptyState message="NO DATA" action="PRESS REFRESH TO LOAD" />
           ) : (
             <table className="w-full border-collapse font-(--font-mono) text-[10px]">
               <thead className="sticky top-0 bg-base-800 border-b border-border-subtle">

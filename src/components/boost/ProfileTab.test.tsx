@@ -188,7 +188,7 @@ describe('ProfileTab', () => {
       expect(screen.getByText('テストエラーメッセージ')).toBeInTheDocument();
     });
 
-    await user.click(screen.getByRole('button', { name: '✕' }));
+    await user.click(screen.getByRole('button', { name: 'Dismiss' }));
 
     await waitFor(() => {
       expect(screen.queryByText('テストエラーメッセージ')).not.toBeInTheDocument();

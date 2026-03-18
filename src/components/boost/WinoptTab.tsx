@@ -1,6 +1,6 @@
 import React from 'react';
 import { useWinoptStore } from '../../stores/useWinoptStore';
-import { Button } from '../ui';
+import { Button, LoadingState } from '../ui';
 import TimerSection from './TimerSection';
 
 interface WinoptTabProps {
@@ -18,9 +18,7 @@ export default function WinoptTab({ className = '' }: WinoptTabProps): React.Rea
   return (
     <div className={className}>
       {isLoading ? (
-        <div className="font-[var(--font-mono)] text-[12px] text-[var(--color-text-muted)] text-center py-8">
-          読み込み中...
-        </div>
+        <LoadingState message="読み込み中..." />
       ) : (
         <div className="flex flex-col gap-3">
           {winSettings.map((setting) => (
