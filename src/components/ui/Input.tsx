@@ -62,7 +62,7 @@ export default function Input({
   autoComplete,
 }: InputProps): React.ReactElement {
   const baseClasses =
-    'font-(--font-mono) border transition-all duration-150 focus:outline-none focus:ring-2';
+    'font-mono border transition-all duration-150 focus:outline-none focus:ring-2';
 
   const sizeClasses = {
     sm: 'text-[10px] px-2 py-1',

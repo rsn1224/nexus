@@ -17,9 +17,9 @@ interface WatchdogRuleModalProps {
 
 const labelClass = 'block mb-1 text-[10px] font-bold uppercase text-text-secondary';
 const inputClass =
-  'w-full px-2 py-2 border border-border-subtle rounded bg-base-800 text-text-primary font-(--font-mono) text-[12px]';
+  'w-full px-2 py-2 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[12px]';
 const selectSmClass =
-  'px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-(--font-mono) text-[11px]';
+  'px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[11px]';
 
 export function WatchdogRuleModal({
   isOpen,
@@ -104,7 +104,7 @@ export function WatchdogRuleModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
-      <div className="bg-base-900 p-6 rounded-lg min-w-[700px] max-w-[90vw] max-h-[90vh] overflow-y-auto font-(--font-mono) text-[12px]">
+      <div className="bg-base-900 p-6 rounded-lg min-w-[700px] max-w-[90vw] max-h-[90vh] overflow-y-auto font-mono text-[12px]">
         <h2 className="mb-6 text-[14px] font-bold uppercase text-text-primary">
           {editingRule ? 'EDIT RULE' : 'ADD RULE'}
         </h2>
@@ -189,7 +189,7 @@ export function WatchdogRuleModal({
                     updateCondition(index, { threshold: parseFloat(e.target.value) || 0 })
                   }
                   aria-label="Condition threshold"
-                  className="w-20 px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-(--font-mono) text-[11px]"
+                  className="w-20 px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[11px]"
                 />
 
                 <Button variant="danger" onClick={() => removeCondition(index)}>

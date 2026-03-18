@@ -87,7 +87,7 @@ export default function SystemStatusCard(): React.ReactElement {
       {/* サーマルアラートバナー */}
       <ThermalAlertBanner alerts={thermalAlerts} onClear={clearThermalAlert} />
 
-      <div className="font-(--font-mono) text-xs text-text-secondary flex flex-col gap-1">
+      <div className="font-mono text-xs text-text-secondary flex flex-col gap-1">
         <div>
           CPU{'     '}
           <span className="text-accent-500">

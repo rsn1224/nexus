@@ -11,7 +11,7 @@ export default function LoadingState({
 }: LoadingStateProps): React.ReactElement {
   return (
     <div
-      className={`flex items-center justify-center ${height} font-(--font-mono) text-[11px] text-text-muted tracking-[0.1em]`}
+      className={`flex items-center justify-center ${height} font-mono text-[11px] text-text-muted tracking-[0.1em]`}
     >
       {message}
     </div>

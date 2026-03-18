@@ -40,7 +40,7 @@ export default function StorageWing(): React.ReactElement {
     <div className="flex flex-col h-full p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="font-(--font-mono) text-[11px] text-cyan-500 font-bold tracking-widest">
+        <div className="font-mono text-[11px] text-cyan-500 font-bold tracking-widest">
           ▶ STORAGE / DISK
         </div>
         <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isLoading}>
@@ -54,17 +54,17 @@ export default function StorageWing(): React.ReactElement {
       {/* Storage Overview */}
       {storageInfo && (
         <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-          <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">OVERVIEW</div>
+          <div className="font-mono text-[10px] text-text-muted mb-2">OVERVIEW</div>
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="font-(--font-mono) text-[11px] text-text-secondary">Total Size</span>
-              <span className="font-(--font-mono) text-[11px] text-text-primary">
+              <span className="font-mono text-[11px] text-text-secondary">Total Size</span>
+              <span className="font-mono text-[11px] text-text-primary">
                 {formatBytes(storageInfo.totalSizeBytes)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-(--font-mono) text-[11px] text-text-secondary">Used</span>
-              <span className="font-(--font-mono) text-[11px] text-text-primary">
+              <span className="font-mono text-[11px] text-text-secondary">Used</span>
+              <span className="font-mono text-[11px] text-text-primary">
                 {formatBytes(storageInfo.totalUsedBytes)} (
                 {getUsagePercentage(storageInfo.totalUsedBytes, storageInfo.totalSizeBytes).toFixed(
                   1,
@@ -73,8 +73,8 @@ export default function StorageWing(): React.ReactElement {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-(--font-mono) text-[11px] text-text-secondary">Available</span>
-              <span className="font-(--font-mono) text-[11px] text-text-primary">
+              <span className="font-mono text-[11px] text-text-secondary">Available</span>
+              <span className="font-mono text-[11px] text-text-primary">
                 {formatBytes(storageInfo.totalAvailableBytes)}
               </span>
             </div>
@@ -85,13 +85,13 @@ export default function StorageWing(): React.ReactElement {
       {/* Drives List */}
       {storageInfo && (
         <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-          <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">DRIVES</div>
+          <div className="font-mono text-[10px] text-text-muted mb-2">DRIVES</div>
           <div className="space-y-2">
             {storageInfo.drives.map((drive) => (
               <div key={drive.name} className="border-b border-border-subtle pb-2 last:border-b-0">
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-(--font-mono) text-[11px] text-text-primary font-bold">
+                    <span className="font-mono text-[11px] text-text-primary font-bold">
                       {drive.name}
                     </span>
                     <div
@@ -99,16 +99,16 @@ export default function StorageWing(): React.ReactElement {
                         drive.healthStatus === 'Critical'
                           ? 'bg-danger-500'
                           : drive.healthStatus === 'Warning'
-                            ? 'bg-(--color-accent-500)'
+                            ? 'bg-accent-500'
                             : 'bg-success-500'
                       }`}
                     />
                     <span
-                      className={`font-(--font-mono) text-[9px] ${
+                      className={`font-mono text-[9px] ${
                         drive.healthStatus === 'Critical'
                           ? 'text-danger-500'
                           : drive.healthStatus === 'Warning'
-                            ? 'text-(--color-accent-500)'
+                            ? 'text-accent-500'
                             : 'text-success-500'
                       }`}
                     >
@@ -126,33 +126,25 @@ export default function StorageWing(): React.ReactElement {
                 </div>
                 <div className="space-y-1">
                   <div className="flex justify-between">
-                    <span className="font-(--font-mono) text-[10px] text-text-secondary">
-                      Model
-                    </span>
-                    <span className="font-(--font-mono) text-[10px] text-text-primary">
-                      {drive.model}
-                    </span>
+                    <span className="font-mono text-[10px] text-text-secondary">Model</span>
+                    <span className="font-mono text-[10px] text-text-primary">{drive.model}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-(--font-mono) text-[10px] text-text-secondary">
-                      File System
-                    </span>
-                    <span className="font-(--font-mono) text-[10px] text-text-primary">
+                    <span className="font-mono text-[10px] text-text-secondary">File System</span>
+                    <span className="font-mono text-[10px] text-text-primary">
                       {drive.fileSystem}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="font-(--font-mono) text-[10px] text-text-secondary">
-                      Usage
-                    </span>
-                    <span className="font-(--font-mono) text-[10px] text-text-primary">
+                    <span className="font-mono text-[10px] text-text-secondary">Usage</span>
+                    <span className="font-mono text-[10px] text-text-primary">
                       {formatBytes(drive.usedBytes)} / {formatBytes(drive.sizeBytes)}
                     </span>
                   </div>
                   {/* Usage Bar */}
                   <div className="w-full bg-base-800 rounded h-2 mt-1 overflow-hidden">
                     <div
-                      className="bg-(--color-accent-500) h-2 transition-all duration-300"
+                      className="bg-accent-500 h-2 transition-all duration-300"
                       style={{ width: `${getUsagePercentage(drive.usedBytes, drive.sizeBytes)}%` }}
                     />
                   </div>
@@ -165,7 +157,7 @@ export default function StorageWing(): React.ReactElement {
 
       {/* Cleanup Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">CLEANUP</div>
+        <div className="font-mono text-[10px] text-text-muted mb-2">CLEANUP</div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm" onClick={cleanupTempFiles} disabled={isLoading}>
@@ -189,35 +181,29 @@ export default function StorageWing(): React.ReactElement {
       {/* Cleanup Results */}
       {cleanupResult && (
         <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-          <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">SCAN RESULTS</div>
+          <div className="font-mono text-[10px] text-text-muted mb-2">SCAN RESULTS</div>
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="font-(--font-mono) text-[10px] text-text-secondary">Temp Files</span>
-              <span className="font-(--font-mono) text-[10px] text-success-500">
+              <span className="font-mono text-[10px] text-text-secondary">Temp Files</span>
+              <span className="font-mono text-[10px] text-success-500">
                 {formatBytes(cleanupResult.tempFilesCleaned)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-(--font-mono) text-[10px] text-text-secondary">
-                Recycle Bin
-              </span>
-              <span className="font-(--font-mono) text-[10px] text-success-500">
+              <span className="font-mono text-[10px] text-text-secondary">Recycle Bin</span>
+              <span className="font-mono text-[10px] text-success-500">
                 {formatBytes(cleanupResult.recycleBinCleaned)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-(--font-mono) text-[10px] text-text-secondary">
-                System Cache
-              </span>
-              <span className="font-(--font-mono) text-[10px] text-success-500">
+              <span className="font-mono text-[10px] text-text-secondary">System Cache</span>
+              <span className="font-mono text-[10px] text-success-500">
                 {formatBytes(cleanupResult.systemCacheCleaned)}
               </span>
             </div>
             <div className="flex justify-between border-t border-border-subtle pt-1">
-              <span className="font-(--font-mono) text-[10px] text-text-secondary">
-                Total Reclaimable
-              </span>
-              <span className="font-(--font-mono) text-[10px] text-(--color-accent-500) font-bold">
+              <span className="font-mono text-[10px] text-text-secondary">Total Reclaimable</span>
+              <span className="font-mono text-[10px] text-accent-500 font-bold">
                 {formatBytes(cleanupResult.totalFreedBytes)}
               </span>
             </div>
@@ -228,12 +214,12 @@ export default function StorageWing(): React.ReactElement {
       {/* Analysis Results */}
       {selectedDrive && analysisResults.length > 0 && (
         <div className="bg-base-800 border border-border-subtle rounded p-3">
-          <div className="font-(--font-mono) text-[10px] text-text-muted mb-2">
+          <div className="font-mono text-[10px] text-text-muted mb-2">
             ANALYSIS: {selectedDrive}
           </div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {analysisResults.map((file) => (
-              <div key={file} className="font-(--font-mono) text-[9px] text-text-primary truncate">
+              <div key={file} className="font-mono text-[9px] text-text-primary truncate">
                 {file}
               </div>
             ))}
@@ -244,7 +230,7 @@ export default function StorageWing(): React.ReactElement {
       {/* Loading State */}
       {isLoading && (
         <div className="flex items-center justify-center py-4">
-          <div className="font-(--font-mono) text-[10px] text-text-muted">LOADING...</div>
+          <div className="font-mono text-[10px] text-text-muted">LOADING...</div>
         </div>
       )}
     </div>

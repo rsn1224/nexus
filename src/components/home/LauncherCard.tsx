@@ -7,7 +7,7 @@ export default function LauncherCard(): React.ReactElement {
 
   return (
     <Card title="ゲーム起動">
-      <div className="font-(--font-mono) text-xs text-text-secondary">
+      <div className="font-mono text-xs text-text-secondary">
         <div className="mb-1">
           ゲーム数: <span className="text-accent-500">{games.length}</span>
         </div>

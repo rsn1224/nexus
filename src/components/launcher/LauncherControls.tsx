@@ -39,7 +39,7 @@ export default function LauncherControls({
         <select
           value={sortMode}
           onChange={(e) => onSortModeChange(e.target.value as SortMode)}
-          className="font-(--font-mono) text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded"
+          className="font-mono text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded"
         >
           <option value="name">名前順</option>
           <option value="size">サイズ順</option>

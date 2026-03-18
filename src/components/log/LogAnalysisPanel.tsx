@@ -9,7 +9,7 @@ export function LogAnalysisPanel({ analysis }: LogAnalysisPanelProps): React.Rea
   return (
     <div className="space-y-3">
       {/* サマリーセクション */}
-      <div className="text-[11px] font-(--font-mono) tracking-wider text-text-secondary uppercase">
+      <div className="text-[11px] font-mono tracking-wider text-text-secondary uppercase">
         ▶ ANALYSIS SUMMARY
       </div>
 
@@ -22,21 +22,17 @@ export function LogAnalysisPanel({ analysis }: LogAnalysisPanelProps): React.Rea
       </div>
 
       {/* 時間範囲 */}
-      <div className="text-[10px] text-text-muted font-(--font-mono)">
-        RANGE: {analysis.timeRange}
-      </div>
+      <div className="text-[10px] text-text-muted font-mono">RANGE: {analysis.timeRange}</div>
 
       {/* トップソース */}
       {analysis.topSources.length > 0 && (
         <div>
-          <div className="text-[10px] text-text-muted font-(--font-mono) uppercase mb-1">
-            TOP SOURCES
-          </div>
+          <div className="text-[10px] text-text-muted font-mono uppercase mb-1">TOP SOURCES</div>
           <div className="space-y-0.5">
             {analysis.topSources.map(([source, count]) => (
               <div
                 key={source}
-                className="flex items-center justify-between text-[10px] font-(--font-mono) text-text-secondary px-2 py-0.5 bg-base-800"
+                className="flex items-center justify-between text-[10px] font-mono text-text-secondary px-2 py-0.5 bg-base-800"
               >
                 <span className="truncate">{source}</span>
                 <span className="text-text-muted ml-2">{count}</span>
@@ -63,13 +59,13 @@ function StatCell({
     color === 'danger'
       ? 'text-danger-500'
       : color === 'accent'
-        ? 'text-(--color-accent-500)'
+        ? 'text-accent-500'
         : 'text-text-primary';
 
   return (
     <div className="bg-base-800 px-2 py-1.5 border border-border-subtle">
-      <div className="text-[9px] text-text-muted font-(--font-mono) uppercase">{label}</div>
-      <div className={`text-[14px] font-(--font-mono) font-bold ${valueClass}`}>{value}</div>
+      <div className="text-[9px] text-text-muted font-mono uppercase">{label}</div>
+      <div className={`text-[14px] font-mono font-bold ${valueClass}`}>{value}</div>
     </div>
   );
 }

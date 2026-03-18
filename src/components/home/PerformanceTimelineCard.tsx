@@ -43,7 +43,7 @@ function SessionRow({
   return (
     <button
       type="button"
-      className={`w-full flex items-center gap-2 px-2 py-1 border-b border-border-subtle text-[10px] font-(--font-mono) text-left ${
+      className={`w-full flex items-center gap-2 px-2 py-1 border-b border-border-subtle text-[10px] font-mono text-left ${
         isSelected ? 'bg-accent-500/10' : 'hover:bg-base-700'
       } cursor-pointer`}
       onClick={() => onSelect(session.id)}
@@ -53,7 +53,7 @@ function SessionRow({
         <span className="text-text-muted">{formatDate(session.startedAt)}</span>
       </div>
       <div className="text-right shrink-0">
-        <div className="text-(--color-accent-500)">{session.summary.avgFps.toFixed(1)} FPS</div>
+        <div className="text-accent-500">{session.summary.avgFps.toFixed(1)} FPS</div>
         <div className="text-text-muted">1% {session.summary.pct1Low.toFixed(1)}</div>
       </div>
       {confirmDelete ? (
@@ -65,7 +65,7 @@ function SessionRow({
               onDelete(session.id);
               setConfirmDelete(false);
             }}
-            className="px-1 py-[1px] font-(--font-mono) text-[9px] border border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-base-900 transition-colors"
+            className="px-1 py-[1px] font-mono text-[9px] border border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-base-900 transition-colors"
           >
             YES
           </button>
@@ -75,7 +75,7 @@ function SessionRow({
               e.stopPropagation();
               setConfirmDelete(false);
             }}
-            className="px-1 py-[1px] font-(--font-mono) text-[9px] border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
+            className="px-1 py-[1px] font-mono text-[9px] border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
           >
             NO
           </button>
@@ -87,7 +87,7 @@ function SessionRow({
             e.stopPropagation();
             setConfirmDelete(true);
           }}
-          className="shrink-0 px-1 py-[1px] font-(--font-mono) text-[9px] border border-border-subtle text-text-muted hover:border-danger-500 hover:text-danger-500 transition-colors"
+          className="shrink-0 px-1 py-[1px] font-mono text-[9px] border border-border-subtle text-text-muted hover:border-danger-500 hover:text-danger-500 transition-colors"
         >
           DEL
         </button>
@@ -103,7 +103,7 @@ function DetailView() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[80px] font-(--font-mono) text-[11px] text-text-muted tracking-[0.1em]">
+      <div className="flex items-center justify-center h-[80px] font-mono text-[11px] text-text-muted tracking-[0.1em]">
         LOADING...
       </div>
     );
@@ -111,7 +111,7 @@ function DetailView() {
 
   if (!selectedSession) {
     return (
-      <div className="flex items-center justify-center h-[80px] font-(--font-mono) text-[11px] text-text-muted tracking-[0.1em]">
+      <div className="flex items-center justify-center h-[80px] font-mono text-[11px] text-text-muted tracking-[0.1em]">
         SELECT A SESSION FROM LIST
       </div>
     );
@@ -123,10 +123,10 @@ function DetailView() {
     <div className="flex flex-col gap-3">
       {/* ゲーム名・日時 */}
       <div>
-        <div className="font-(--font-mono) text-[12px] font-bold text-(--color-accent-500)">
+        <div className="font-mono text-[12px] font-bold text-accent-500">
           {selectedSession.gameName}
         </div>
-        <div className="font-(--font-mono) text-[10px] text-text-muted">
+        <div className="font-mono text-[10px] text-text-muted">
           {formatDate(selectedSession.startedAt)} — {formatDate(selectedSession.endedAt)}（
           {Math.round(selectedSession.playSecs / 60)} 分）
         </div>
@@ -135,7 +135,7 @@ function DetailView() {
       {/* FPS タイムライン */}
       {selectedSession.fpsTimeline.length > 0 && (
         <div>
-          <div className="font-(--font-mono) text-[9px] text-text-muted mb-1 tracking-[0.1em]">
+          <div className="font-mono text-[9px] text-text-muted mb-1 tracking-[0.1em]">
             FPS TIMELINE
           </div>
           <FpsTimelineGraph timeline={selectedSession.fpsTimeline} />
@@ -155,12 +155,8 @@ function DetailView() {
           ] as const
         ).map(({ label, value }) => (
           <div key={label}>
-            <div className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.08em]">
-              {label}
-            </div>
-            <div className="font-(--font-mono) text-[13px] font-bold text-(--color-accent-500)">
-              {value}
-            </div>
+            <div className="font-mono text-[9px] text-text-muted tracking-[0.08em]">{label}</div>
+            <div className="font-mono text-[13px] font-bold text-accent-500">{value}</div>
           </div>
         ))}
       </div>
@@ -168,16 +164,14 @@ function DetailView() {
       {/* パーセンタイル */}
       {selectedSession.percentiles.length > 0 && (
         <div>
-          <div className="font-(--font-mono) text-[9px] text-text-muted mb-1 tracking-[0.1em]">
+          <div className="font-mono text-[9px] text-text-muted mb-1 tracking-[0.1em]">
             PERCENTILES
           </div>
           <div className="flex gap-3">
             {selectedSession.percentiles.map((p) => (
               <div key={p.percentile} className="text-center">
-                <div className="font-(--font-mono) text-[9px] text-text-muted">P{p.percentile}</div>
-                <div className="font-(--font-mono) text-[11px] text-text-primary">
-                  {p.fps.toFixed(1)}
-                </div>
+                <div className="font-mono text-[9px] text-text-muted">P{p.percentile}</div>
+                <div className="font-mono text-[11px] text-text-primary">{p.fps.toFixed(1)}</div>
               </div>
             ))}
           </div>
@@ -187,22 +181,16 @@ function DetailView() {
       {/* ノート */}
       {selectedSession.note && (
         <div className="pt-2 border-t border-border-subtle">
-          <div className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em] mb-1">
-            NOTE
-          </div>
-          <div className="font-(--font-mono) text-[10px] text-text-secondary">
-            {selectedSession.note}
-          </div>
+          <div className="font-mono text-[9px] text-text-muted tracking-[0.1em] mb-1">NOTE</div>
+          <div className="font-mono text-[10px] text-text-secondary">{selectedSession.note}</div>
         </div>
       )}
 
       {/* ハードウェア */}
       {selectedSession.hardwareSnapshot && (
         <div className="pt-2 border-t border-border-subtle">
-          <div className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em] mb-1">
-            HARDWARE
-          </div>
-          <div className="font-(--font-mono) text-[10px] text-text-secondary flex flex-col gap-[2px]">
+          <div className="font-mono text-[9px] text-text-muted tracking-[0.1em] mb-1">HARDWARE</div>
+          <div className="font-mono text-[10px] text-text-secondary flex flex-col gap-[2px]">
             <div>CPU {selectedSession.hardwareSnapshot.cpuName}</div>
             {selectedSession.hardwareSnapshot.gpuName && (
               <div>GPU {selectedSession.hardwareSnapshot.gpuName}</div>
@@ -233,14 +221,14 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
       {/* セレクト */}
       <div className="flex gap-2">
         <div className="flex-1">
-          <div className="font-(--font-mono) text-[9px] text-text-muted mb-1 tracking-[0.08em]">
+          <div className="font-mono text-[9px] text-text-muted mb-1 tracking-[0.08em]">
             SESSION A
           </div>
           <select
             aria-label="Session A"
             value={aId}
             onChange={(e) => setAId(e.target.value)}
-            className="w-full px-2 py-1 font-(--font-mono) text-[10px] bg-base-700 border border-border-subtle text-text-primary"
+            className="w-full px-2 py-1 font-mono text-[10px] bg-base-700 border border-border-subtle text-text-primary"
           >
             <option value="">SELECT...</option>
             {sessions.map((s) => (
@@ -251,14 +239,14 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
           </select>
         </div>
         <div className="flex-1">
-          <div className="font-(--font-mono) text-[9px] text-text-muted mb-1 tracking-[0.08em]">
+          <div className="font-mono text-[9px] text-text-muted mb-1 tracking-[0.08em]">
             SESSION B
           </div>
           <select
             aria-label="Session B"
             value={bId}
             onChange={(e) => setBId(e.target.value)}
-            className="w-full px-2 py-1 font-(--font-mono) text-[10px] bg-base-700 border border-border-subtle text-text-primary"
+            className="w-full px-2 py-1 font-mono text-[10px] bg-base-700 border border-border-subtle text-text-primary"
           >
             <option value="">SELECT...</option>
             {sessions.map((s) => (
@@ -274,10 +262,10 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
         type="button"
         onClick={handleCompare}
         disabled={!aId || !bId || aId === bId || isLoading}
-        className={`w-full py-[5px] font-(--font-mono) text-[10px] font-bold border tracking-[0.1em] transition-colors ${
+        className={`w-full py-[5px] font-mono text-[10px] font-bold border tracking-[0.1em] transition-colors ${
           !aId || !bId || aId === bId || isLoading
             ? 'bg-base-800 text-text-muted border-border-subtle cursor-not-allowed'
-            : 'bg-(--color-accent-500) text-base-900 border-(--color-accent-500) cursor-pointer hover:bg-(--color-accent-600)'
+            : 'bg-accent-500 text-base-900 border-accent-500 cursor-pointer hover:bg-accent-600'
         }`}
       >
         {isLoading ? 'COMPARING...' : 'COMPARE'}
@@ -286,7 +274,7 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
       {/* 比較結果 */}
       {comparisonResult && (
         <div className="flex flex-col gap-2 pt-2 border-t border-border-subtle">
-          <div className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
+          <div className="font-mono text-[9px] text-text-muted tracking-[0.1em]">
             COMPARISON RESULT
           </div>
 
@@ -302,8 +290,8 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
               const { text, cls } = formatDelta(delta);
               return (
                 <div key={label} className="flex justify-between items-center">
-                  <span className="font-(--font-mono) text-[10px] text-text-muted">{label}</span>
-                  <div className="flex gap-4 font-(--font-mono) text-[10px]">
+                  <span className="font-mono text-[10px] text-text-muted">{label}</span>
+                  <div className="flex gap-4 font-mono text-[10px]">
                     <span className="text-text-secondary">
                       {label === 'AVG FPS'
                         ? comparisonResult.sessionA.avgFps.toFixed(1)
@@ -325,9 +313,9 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
               );
             })}
             <div className="flex justify-between items-center">
-              <span className="font-(--font-mono) text-[10px] text-text-muted">STUTTER Δ</span>
+              <span className="font-mono text-[10px] text-text-muted">STUTTER Δ</span>
               <span
-                className={`font-(--font-mono) text-[10px] ${
+                className={`font-mono text-[10px] ${
                   comparisonResult.stutterDelta <= 0 ? 'text-success-500' : 'text-danger-500'
                 }`}
               >
@@ -339,10 +327,10 @@ function CompareView({ sessions }: { sessions: SessionListItem[] }) {
 
           {/* 自動サマリー */}
           <div className="pt-2 border-t border-border-subtle">
-            <div className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.08em] mb-1">
+            <div className="font-mono text-[9px] text-text-muted tracking-[0.08em] mb-1">
               SUMMARY
             </div>
-            <div className="font-(--font-mono) text-[10px] text-text-secondary leading-relaxed">
+            <div className="font-mono text-[10px] text-text-secondary leading-relaxed">
               {comparisonResult.autoSummary}
             </div>
           </div>
@@ -395,9 +383,9 @@ const PerformanceTimelineCard: React.FC = () => {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-1 font-(--font-mono) text-[9px] tracking-[0.1em] border-b-2 -mb-[2px] transition-colors ${
+            className={`px-3 py-1 font-mono text-[9px] tracking-[0.1em] border-b-2 -mb-[2px] transition-colors ${
               activeTab === tab.id
-                ? 'border-(--color-accent-500) text-(--color-accent-500)'
+                ? 'border-accent-500 text-accent-500'
                 : 'border-transparent text-text-muted hover:text-text-secondary'
             }`}
           >
@@ -407,15 +395,13 @@ const PerformanceTimelineCard: React.FC = () => {
       </div>
 
       {/* エラー */}
-      {error && (
-        <div className="mb-2 font-(--font-mono) text-[10px] text-danger-500">ERROR: {error}</div>
-      )}
+      {error && <div className="mb-2 font-mono text-[10px] text-danger-500">ERROR: {error}</div>}
 
       {/* コンテンツ */}
       {activeTab === 'list' && (
         <div>
           {isLoading && sessionList.length === 0 ? (
-            <div className="flex items-center justify-center h-[60px] font-(--font-mono) text-[11px] text-text-muted tracking-[0.1em]">
+            <div className="flex items-center justify-center h-[60px] font-mono text-[11px] text-text-muted tracking-[0.1em]">
               LOADING...
             </div>
           ) : sessionList.length === 0 ? (

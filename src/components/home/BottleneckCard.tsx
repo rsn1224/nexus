@@ -13,9 +13,9 @@ const getBottleneckColor = (type: BottleneckType): string => {
     case 'cpu':
       return 'text-danger-500';
     case 'gpu':
-      return 'text-(--color-accent-500)';
+      return 'text-accent-500';
     case 'memory':
-      return 'text-(--color-accent-500)';
+      return 'text-accent-500';
     case 'storage':
       return 'text-text-secondary';
     case 'balanced':
@@ -51,7 +51,7 @@ const getConfidenceBorder = (confidence: BottleneckConfidence): string => {
     case 'high':
       return 'border-success-500 text-success-500';
     case 'medium':
-      return 'border-(--color-accent-500) text-(--color-accent-500)';
+      return 'border-accent-500 text-accent-500';
     case 'low':
       return 'border-danger-600 text-danger-500';
     default:
@@ -104,15 +104,13 @@ const BottleneckCard: React.FC = () => {
       {isAnalyzing && (
         <div className="flex items-center gap-2 mb-3">
           <div className="w-1.5 h-1.5 bg-cyan-500 animate-pulse" />
-          <span className="font-(--font-mono) text-[10px] text-cyan-500 tracking-[0.1em]">
-            ANALYZING...
-          </span>
+          <span className="font-mono text-[10px] text-cyan-500 tracking-[0.1em]">ANALYZING...</span>
         </div>
       )}
 
       {/* エラー表示 */}
       {error && (
-        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 font-(--font-mono) text-[11px] text-danger-500 mb-3">
+        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 font-mono text-[11px] text-danger-500 mb-3">
           ERROR: {error}
         </div>
       )}
@@ -122,12 +120,12 @@ const BottleneckCard: React.FC = () => {
           {/* 主要ボトルネック表示 */}
           <div className="flex items-center gap-3">
             <span
-              className={`font-(--font-mono) text-[14px] font-bold tracking-[0.1em] ${getBottleneckColor(bottleneck.primary)}`}
+              className={`font-mono text-[14px] font-bold tracking-[0.1em] ${getBottleneckColor(bottleneck.primary)}`}
             >
               {getBottleneckLabel(bottleneck.primary)}
             </span>
             <span
-              className={`font-(--font-mono) text-[9px] px-[5px] py-[1px] border tracking-[0.08em] ${getConfidenceBorder(bottleneck.confidence)}`}
+              className={`font-mono text-[9px] px-[5px] py-[1px] border tracking-[0.08em] ${getConfidenceBorder(bottleneck.confidence)}`}
             >
               {bottleneck.confidence.toUpperCase()}
             </span>
@@ -144,7 +142,7 @@ const BottleneckCard: React.FC = () => {
               ] as const
             ).map(({ key, label, score }) => (
               <div key={key} className="flex items-center gap-2">
-                <span className="font-(--font-mono) text-[10px] text-text-muted tracking-[0.1em] w-10">
+                <span className="font-mono text-[10px] text-text-muted tracking-[0.1em] w-10">
                   {label}
                 </span>
                 <div className="flex-1 h-2 bg-base-800 overflow-hidden">
@@ -153,7 +151,7 @@ const BottleneckCard: React.FC = () => {
                     style={{ width: `${Math.round(score * 100)}%` }}
                   />
                 </div>
-                <span className="font-(--font-mono) text-[10px] text-text-muted w-8 text-right">
+                <span className="font-mono text-[10px] text-text-muted w-8 text-right">
                   {Math.round(score * 100)}%
                 </span>
               </div>
@@ -163,19 +161,19 @@ const BottleneckCard: React.FC = () => {
           {/* 改善提案 */}
           {bottleneck.suggestions.length > 0 && (
             <div className="flex flex-col gap-2 pt-2 border-t border-border-subtle">
-              <span className="font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em]">
+              <span className="font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em]">
                 SUGGESTIONS
               </span>
               {bottleneck.suggestions.map((suggestion) => (
                 <div key={suggestion.id} className="flex items-center justify-between">
-                  <span className="font-(--font-mono) text-[11px] text-text-secondary flex-1">
+                  <span className="font-mono text-[11px] text-text-secondary flex-1">
                     {suggestion.message}
                   </span>
                   {suggestion.action && (
                     <button
                       type="button"
                       onClick={() => handleActionClick(suggestion.action)}
-                      className="ml-2 font-(--font-mono) text-[9px] px-[10px] py-[2px] border border-(--color-accent-500) text-(--color-accent-500) tracking-[0.1em] transition-all duration-100 hover:bg-(--color-accent-500) hover:text-base-900"
+                      className="ml-2 font-mono text-[9px] px-[10px] py-[2px] border border-accent-500 text-accent-500 tracking-[0.1em] transition-all duration-100 hover:bg-accent-500 hover:text-base-900"
                     >
                       APPLY
                     </button>
@@ -186,7 +184,7 @@ const BottleneckCard: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="flex items-center justify-center h-[80px] font-(--font-mono) text-[11px] text-text-muted tracking-[0.1em]">
+        <div className="flex items-center justify-center h-[80px] font-mono text-[11px] text-text-muted tracking-[0.1em]">
           WAITING FOR ANALYSIS DATA...
         </div>
       )}

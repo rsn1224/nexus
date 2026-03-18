@@ -92,7 +92,7 @@ export default function Modal({
             {title && (
               <h2
                 id="modal-title"
-                className="font-(--font-mono) text-[12px] font-semibold text-text-primary uppercase"
+                className="font-mono text-[12px] font-semibold text-text-primary uppercase"
               >
                 {title}
               </h2>

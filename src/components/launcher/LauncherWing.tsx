@@ -71,7 +71,7 @@ export default function LauncherWing(): React.ReactElement {
     <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="mb-4">
-        <div className="font-(--font-mono) text-[11px] text-text-muted mb-2">GAME LAUNCHER</div>
+        <div className="font-mono text-[11px] text-text-muted mb-2">GAME LAUNCHER</div>
       </div>
 
       {/* Controls */}
@@ -91,7 +91,7 @@ export default function LauncherWing(): React.ReactElement {
       {/* Error Display */}
       {error && (
         <Card className="mb-4 border-danger-500">
-          <div className="font-(--font-mono) text-xs text-danger-500">Error: {error}</div>
+          <div className="font-mono text-xs text-danger-500">Error: {error}</div>
         </Card>
       )}
 
@@ -113,15 +113,15 @@ export default function LauncherWing(): React.ReactElement {
             ))}
           </div>
         ) : isScanning ? (
-          <div className="font-(--font-mono) text-[11px] text-text-muted text-center py-8">
+          <div className="font-mono text-[11px] text-text-muted text-center py-8">
             ゲームをスキャン中...
           </div>
         ) : searchQuery ? (
-          <div className="font-(--font-mono) text-[11px] text-text-muted text-center py-8">
+          <div className="font-mono text-[11px] text-text-muted text-center py-8">
             検索結果がありません
           </div>
         ) : (
-          <div className="font-(--font-mono) text-[11px] text-text-muted text-center py-8">
+          <div className="font-mono text-[11px] text-text-muted text-center py-8">
             ゲームが見つかりません
             <br />
             スキャンを実行してください

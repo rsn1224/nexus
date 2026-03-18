@@ -39,7 +39,7 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
           {activeId === 'flush_dns' ? 'RUNNING...' : '▶ DNSキャッシュをクリア'}
         </Button>
         {flushDnsResult && (
-          <div className="font-(--font-mono) text-[9px] text-text-secondary">
+          <div className="font-mono text-[9px] text-text-secondary">
             最後の実行結果: {flushDnsResult}
           </div>
         )}
@@ -60,11 +60,11 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
                   <span className={setting.isOptimized ? 'text-cyan-500' : 'text-text-muted'}>
                     {setting.isOptimized ? '●' : '○'}
                   </span>
-                  <div className="font-(--font-mono) text-[11px] font-semibold text-text-primary">
+                  <div className="font-mono text-[11px] font-semibold text-text-primary">
                     {setting.label}
                   </div>
                 </div>
-                <div className="font-(--font-mono) text-[10px] text-text-secondary leading-[1.4]">
+                <div className="font-mono text-[10px] text-text-secondary leading-[1.4]">
                   {setting.description}
                 </div>
               </div>
@@ -80,7 +80,7 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
                     {activeId === setting.id ? 'RUNNING...' : '↩ 元に戻す'}
                   </Button>
                 ) : setting.isOptimized ? (
-                  <span className="font-(--font-mono) text-[9px] text-text-muted px-2 py-1">-</span>
+                  <span className="font-mono text-[9px] text-text-muted px-2 py-1">-</span>
                 ) : (
                   <Button
                     variant="primary"

@@ -170,7 +170,7 @@ export default function WatchdogTab() {
                       </div>
                     </td>
                     <td className="px-3 py-[5px]">
-                      <div className="text-(--color-accent-500) font-bold text-[11px]">
+                      <div className="text-accent-500 font-bold text-[11px]">
                         {formatAction(rule.action)}
                       </div>
                     </td>
@@ -254,7 +254,7 @@ export default function WatchdogTab() {
                       </div>
                     </td>
                     <td className="px-3 py-[5px]">
-                      <div className="text-(--color-accent-500) font-bold text-[11px]">
+                      <div className="text-accent-500 font-bold text-[11px]">
                         {event.actionTaken}
                       </div>
                     </td>

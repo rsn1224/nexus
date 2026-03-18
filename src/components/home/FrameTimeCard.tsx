@@ -55,10 +55,10 @@ export default function FrameTimeCard() {
   }
 
   return (
-    <div className="p-4 bg-base-800 border border-border-subtle font-(--font-mono) text-[12px] text-text-primary">
+    <div className="p-4 bg-base-800 border border-border-subtle font-mono text-[12px] text-text-primary">
       {/* ヘッダー */}
       <div className="flex justify-between items-center mb-3">
-        <div className="font-bold text-[11px] text-(--color-accent-500)">FRAME TIME</div>
+        <div className="font-bold text-[11px] text-accent-500">FRAME TIME</div>
         <div
           className={`text-[9px] ${
             monitorState.type === 'running' ? 'text-success-500' : 'text-text-muted'
@@ -83,7 +83,7 @@ export default function FrameTimeCard() {
           <select
             value={selectedProcessId}
             onChange={(e) => setSelectedProcessId(e.target.value)}
-            className="w-full px-2 py-1 text-[10px] bg-base-700 border border-border-subtle rounded text-text-primary font-(--font-mono)"
+            className="w-full px-2 py-1 text-[10px] bg-base-700 border border-border-subtle rounded text-text-primary font-mono"
           >
             <option value="">プロセスを選択...</option>
             {availableProcesses.map((process: SystemProcess) => (
@@ -101,13 +101,13 @@ export default function FrameTimeCard() {
           <div className="grid grid-cols-3 gap-2 mb-2">
             <div>
               <div className="text-[9px] text-text-muted">AVG FPS</div>
-              <div className="text-[14px] font-bold text-(--color-accent-500)">
+              <div className="text-[14px] font-bold text-accent-500">
                 {snapshot.avgFps.toFixed(1)}
               </div>
             </div>
             <div>
               <div className="text-[9px] text-text-muted">1% LOW</div>
-              <div className="text-[14px] font-bold text-(--color-accent-400)">
+              <div className="text-[14px] font-bold text-accent-400">
                 {snapshot.pct1Low.toFixed(1)}
               </div>
             </div>
@@ -144,10 +144,10 @@ export default function FrameTimeCard() {
             type="button"
             onClick={handleStart}
             disabled={isLoading || !selectedProcess}
-            className={`flex-1 px-3 py-[6px] font-(--font-mono) text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] font-mono text-[10px] font-bold border ${
               isLoading || !selectedProcess
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
-                : 'bg-(--color-accent-500) text-base-900 cursor-pointer border-(--color-accent-500) hover:bg-(--color-accent-600)'
+                : 'bg-accent-500 text-base-900 cursor-pointer border-accent-500 hover:bg-accent-600'
             }`}
           >
             {isLoading ? 'STARTING...' : 'START'}
@@ -157,7 +157,7 @@ export default function FrameTimeCard() {
             type="button"
             onClick={handleStop}
             disabled={isLoading}
-            className={`flex-1 px-3 py-[6px] font-(--font-mono) text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] font-mono text-[10px] font-bold border ${
               isLoading
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-danger-500 text-base-900 cursor-pointer border-danger-500 hover:bg-danger-600'

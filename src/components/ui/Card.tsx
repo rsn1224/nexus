@@ -42,7 +42,7 @@ const Card = memo(function Card({
   };
 
   const interactionClasses = `
-    ${hoverable ? 'transition-all duration-200 hover:shadow-md hover:border-(--color-accent-500)' : ''}
+    ${hoverable ? 'transition-all duration-200 hover:shadow-md hover:border-accent-500' : ''}
     ${clickable ? 'cursor-pointer' : ''}
   `;
 
@@ -58,7 +58,7 @@ const Card = memo(function Card({
     <>
       {title && (
         <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
-          <div className="text-text-secondary text-[10px] tracking-widest uppercase font-(--font-mono)">
+          <div className="text-text-secondary text-[10px] tracking-widest uppercase font-mono">
             {title}
           </div>
           {action && <div>{action}</div>}

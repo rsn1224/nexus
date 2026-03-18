@@ -58,7 +58,7 @@ export default function TimerSection(): React.ReactElement {
           <span className={isActive ? 'text-cyan-500' : 'text-text-muted'}>
             {isActive ? '●' : '○'}
           </span>
-          <span className="font-(--font-mono) text-[11px] font-semibold text-text-primary">
+          <span className="font-mono text-[11px] font-semibold text-text-primary">
             タイマーリゾリューション
           </span>
         </div>
@@ -70,30 +70,28 @@ export default function TimerSection(): React.ReactElement {
       </div>
 
       {/* 説明 */}
-      <div className="font-(--font-mono) text-[10px] text-text-secondary leading-[1.4] mb-3">
+      <div className="font-mono text-[10px] text-text-secondary leading-[1.4] mb-3">
         Windows
         のシステムタイマー精度を変更します。低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
       </div>
 
       {/* 現在値の表示 */}
       {isLoading ? (
-        <div className="font-(--font-mono) text-[10px] text-text-muted py-2">読み込み中...</div>
+        <div className="font-mono text-[10px] text-text-muted py-2">読み込み中...</div>
       ) : timerState ? (
         <div className="grid grid-cols-2 gap-2 mb-3">
           <div className="flex flex-col gap-0.5">
-            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
-              現在値
-            </span>
-            <span className="font-(--font-mono) text-[12px] text-text-primary font-bold">
+            <span className="font-mono text-[9px] text-text-muted tracking-[0.1em]">現在値</span>
+            <span className="font-mono text-[12px] text-text-primary font-bold">
               {toMs(timerState.current100ns)} ms
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-mono text-[9px] text-text-muted tracking-[0.1em]">
               nexus 要求値
             </span>
             <span
-              className={`font-(--font-mono) text-[12px] font-bold ${
+              className={`font-mono text-[12px] font-bold ${
                 isActive ? 'text-cyan-500' : 'text-text-muted'
               }`}
             >
@@ -103,18 +101,18 @@ export default function TimerSection(): React.ReactElement {
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-mono text-[9px] text-text-muted tracking-[0.1em]">
               最小（最高精度）
             </span>
-            <span className="font-(--font-mono) text-[10px] text-text-secondary">
+            <span className="font-mono text-[10px] text-text-secondary">
               {toMs(timerState.minimum100ns)} ms
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
-            <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
+            <span className="font-mono text-[9px] text-text-muted tracking-[0.1em]">
               デフォルト
             </span>
-            <span className="font-(--font-mono) text-[10px] text-text-secondary">
+            <span className="font-mono text-[10px] text-text-secondary">
               {toMs(timerState.default100ns)} ms
             </span>
           </div>
@@ -129,7 +127,7 @@ export default function TimerSection(): React.ReactElement {
             type="button"
             onClick={() => handlePresetApply(preset.value)}
             disabled={isApplying}
-            className={`px-2 py-1 rounded font-(--font-mono) text-[10px] border transition-colors ${
+            className={`px-2 py-1 rounded font-mono text-[10px] border transition-colors ${
               timerState?.nexusRequested100ns === preset.value
                 ? 'bg-cyan-500/20 border-cyan-500 text-cyan-500'
                 : 'bg-base-900 border-border-subtle text-text-secondary hover:border-cyan-500 hover:text-text-primary'
@@ -150,7 +148,7 @@ export default function TimerSection(): React.ReactElement {
           min={0.5}
           max={15.625}
           step={0.1}
-          className="flex-1 bg-base-900 border border-border-subtle rounded px-2 py-1 font-(--font-mono) text-[11px] text-text-primary outline-none focus:border-cyan-500"
+          className="flex-1 bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-cyan-500"
         />
         <Button
           variant="primary"
@@ -163,7 +161,7 @@ export default function TimerSection(): React.ReactElement {
       </div>
 
       {/* エラー表示 */}
-      {error && <div className="mt-2 font-(--font-mono) text-[10px] text-danger-500">{error}</div>}
+      {error && <div className="mt-2 font-mono text-[10px] text-danger-500">{error}</div>}
     </div>
   );
 }

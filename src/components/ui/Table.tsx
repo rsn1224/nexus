@@ -113,9 +113,9 @@ export default function Table<T>({
     }
 
     return sortDirection === 'asc' ? (
-      <span className="text-(--color-accent-500)">▲</span>
+      <span className="text-accent-500">▲</span>
     ) : (
-      <span className="text-(--color-accent-500)">▼</span>
+      <span className="text-accent-500">▼</span>
     );
   };
 
@@ -139,7 +139,7 @@ export default function Table<T>({
     <div className={`overflow-x-auto ${maxHeight ? 'overflow-y-auto' : ''}`} style={{ maxHeight }}>
       <table
         data-testid="ui-table"
-        className={`w-full border-collapse font-(--font-mono) ${sizeClasses[size]} ${className}`}
+        className={`w-full border-collapse font-mono ${sizeClasses[size]} ${className}`}
         aria-label={ariaLabel}
         aria-busy={loading ? 'true' : undefined}
       >
@@ -152,7 +152,7 @@ export default function Table<T>({
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="rounded border-border-subtle bg-base-700 text-(--color-accent-500) focus:ring-(--color-accent-500) focus:ring-opacity-50"
+                  className="rounded border-border-subtle bg-base-700 text-accent-500 focus:ring-accent-500 focus:ring-opacity-50"
                 />
               </th>
             )}
@@ -192,7 +192,7 @@ export default function Table<T>({
                     type="checkbox"
                     checked={isRowSelected(row)}
                     onChange={(e) => handleSelectRow(row, e.target.checked)}
-                    className="rounded border-border-subtle bg-base-700 text-(--color-accent-500) focus:ring-(--color-accent-500) focus:ring-opacity-50"
+                    className="rounded border-border-subtle bg-base-700 text-accent-500 focus:ring-accent-500 focus:ring-opacity-50"
                   />
                 </td>
               )}

@@ -20,7 +20,7 @@ export default function OpsCard(): React.ReactElement {
 
   return (
     <Card title="プロセス管理">
-      <div className="font-(--font-mono) text-xs text-text-secondary">
+      <div className="font-mono text-xs text-text-secondary">
         <div className="mb-1">
           アクティブ: <span className="text-accent-500">{activeProcessCount}</span>
         </div>

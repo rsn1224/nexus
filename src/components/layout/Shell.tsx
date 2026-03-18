@@ -176,7 +176,7 @@ const Shell = memo(function Shell({
                     type="button"
                     onClick={() => onWingChange(wing.id)}
                     data-testid={`nav-${wing.id}`}
-                    className={`w-full h-7 px-4 pl-4 font-(--font-mono) text-xs tracking-[0.08em] transition-all duration-150 text-left border-l-2 ${
+                    className={`w-full h-7 px-4 pl-4 font-mono text-xs tracking-[0.08em] transition-all duration-150 text-left border-l-2 ${
                       isActive
                         ? 'bg-base-800 text-cyan-500 border-cyan-500'
                         : hoveredWing === wing.id
@@ -200,7 +200,7 @@ const Shell = memo(function Shell({
         {/* Status bar (56px) */}
         <div className="h-14 border-t border-border-subtle flex flex-col items-center justify-center px-3 py-2 gap-1">
           <div
-            className={`text-[10px] font-(--font-mono) ${
+            className={`text-[10px] font-mono ${
               cpuPercent !== null && cpuPercent >= 50
                 ? 'text-danger-500'
                 : cpuPercent !== null && cpuPercent >= 20
@@ -211,7 +211,7 @@ const Shell = memo(function Shell({
             CPU {cpuPercent !== null ? `${cpuPercent.toFixed(0)}%` : '--'}
           </div>
           <div
-            className={`text-[10px] font-(--font-mono) ${
+            className={`text-[10px] font-mono ${
               memPercent !== null && memPercent >= 80
                 ? 'text-danger-500'
                 : memPercent !== null && memPercent >= 50
@@ -221,7 +221,7 @@ const Shell = memo(function Shell({
           >
             MEM {memPercent !== null ? `${memPercent.toFixed(0)}%` : '--'}
           </div>
-          <div className={`text-[10px] font-(--font-mono) ${scoreColorClass}`}>
+          <div className={`text-[10px] font-mono ${scoreColorClass}`}>
             SCORE {gameScore !== null ? `${gameScore} / 100` : '-- / 100'}
           </div>
         </div>

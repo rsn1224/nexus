@@ -140,7 +140,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
     <div className={className}>
       {/* Error Banner */}
       {error && (
-        <div className="px-4 py-2 mb-4 bg-base-800 border-b border-danger-600 text-danger-500 font-(--font-mono) text-[10px] rounded">
+        <div className="px-4 py-2 mb-4 bg-base-800 border-b border-danger-600 text-danger-500 font-mono text-[10px] rounded">
           {error}
         </div>
       )}
@@ -168,17 +168,14 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
           >
             ▶ RUN BOOST
           </Button>
-          <span className="font-(--font-mono) text-[10px] text-text-muted">
+          <span className="font-mono text-[10px] text-text-muted">
             AUTO-UPDATING · LAST: {formatTime(lastUpdated)}
           </span>
         </div>
 
         {/* Threshold Row */}
         <div className="flex items-center gap-2">
-          <label
-            htmlFor="threshold-input"
-            className="font-(--font-mono) text-[11px] text-text-secondary"
-          >
+          <label htmlFor="threshold-input" className="font-mono text-[11px] text-text-secondary">
             CPU閾値:
           </label>
           <input
@@ -188,9 +185,9 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
             max="100"
             value={threshold}
             onChange={(e) => setThreshold(Number(e.target.value))}
-            className="w-12 px-2 py-1 bg-base-800 text-text-primary border border-border-subtle rounded font-(--font-mono) text-[11px]"
+            className="w-12 px-2 py-1 bg-base-800 text-text-primary border border-border-subtle rounded font-mono text-[11px]"
           />
-          <span className="font-(--font-mono) text-[11px] text-text-secondary">%</span>
+          <span className="font-mono text-[11px] text-text-secondary">%</span>
         </div>
       </div>
 
@@ -216,16 +213,16 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         <div>
           {/* Simulation Mode Warning */}
           {lastResult.isSimulation && (
-            <div className="font-(--font-mono) text-[9px] text-text-muted bg-base-800 border border-border-subtle rounded-[3px] px-2 py-1 mb-2">
+            <div className="font-mono text-[9px] text-text-muted bg-base-800 border border-border-subtle rounded-[3px] px-2 py-1 mb-2">
               ⚠ シミュレーションモード — 実際のプロセス最適化は未実装です
             </div>
           )}
-          <div className="font-(--font-mono) text-[10px] font-semibold text-text-secondary mb-2">
+          <div className="font-mono text-[10px] font-semibold text-text-secondary mb-2">
             BOOST COMPLETE · {lastResult.actions.length} ACTIONS ·{' '}
             {formatDuration(lastResult.durationMs)}
           </div>
           <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
-            <table className="w-full border-collapse font-(--font-mono) text-[10px]">
+            <table className="w-full border-collapse font-mono text-[10px]">
               <thead>
                 <tr className="bg-base-700">
                   <th className="p-2 text-left text-text-secondary border-b border-border-subtle">
@@ -249,7 +246,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
                       {action.isProtected ? (
                         <span className="flex items-center gap-1">
                           SKIPPED
-                          <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-(--font-mono)">
+                          <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-mono">
                             [PROT]
                           </span>
                         </span>
@@ -285,7 +282,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
           </>
         }
       >
-        <div className="font-(--font-mono) text-[11px] text-text-primary">
+        <div className="font-mono text-[11px] text-text-primary">
           {killTarget && (
             <>
               「{killTarget.name}」(PID: {killTarget.pid}) を終了しますか？

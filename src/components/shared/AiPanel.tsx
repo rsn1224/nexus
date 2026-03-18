@@ -4,7 +4,7 @@ import type { LocalSuggestion, SuggestionLevel } from '../../lib/localAi';
 
 const LEVEL_COLOR: Record<SuggestionLevel, string> = {
   critical: 'text-danger-500',
-  warn: 'text-(--color-accent-500)',
+  warn: 'text-accent-500',
   info: 'text-cyan-500',
   ok: 'text-text-muted',
 };
@@ -45,11 +45,11 @@ export default function AiPanel({
       >
         <div className="flex items-center gap-[6px]">
           <span className={`text-[10px] ${LEVEL_COLOR[topLevel]}`}>{LEVEL_ICON[topLevel]}</span>
-          <span className="font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-wider">
+          <span className="font-mono text-[10px] font-semibold text-text-muted tracking-wider">
             {title}
           </span>
         </div>
-        <span className="font-(--font-mono) text-[9px] text-text-muted">
+        <span className="font-mono text-[9px] text-text-muted">
           {expanded ? '\u25b2' : '\u25bc'}
         </span>
       </button>
@@ -57,7 +57,7 @@ export default function AiPanel({
       {expanded && (
         <div className="px-3 py-2 bg-base-900">
           {suggestions.map((s) => (
-            <div key={s.id} className="flex items-start gap-2 py-1 font-(--font-mono) text-[10px]">
+            <div key={s.id} className="flex items-start gap-2 py-1 font-mono text-[10px]">
               <span className={`${LEVEL_COLOR[s.level]} shrink-0`}>{LEVEL_ICON[s.level]}</span>
               <span className="text-text-secondary leading-6">{s.message}</span>
             </div>

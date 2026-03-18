@@ -26,7 +26,7 @@ function CoreCell({ index, type, selected, onToggle }: CoreCellProps): React.Rea
       type="button"
       data-testid={`core-cell-${index}`}
       onClick={() => onToggle(index)}
-      className={`w-8 h-8 rounded-[2px] flex items-center justify-center font-(--font-mono) text-[9px] cursor-pointer border-none ${bgColor} ${textColor} hover:opacity-80`}
+      className={`w-8 h-8 rounded-[2px] flex items-center justify-center font-mono text-[9px] cursor-pointer border-none ${bgColor} ${textColor} hover:opacity-80`}
       title={`コア ${index}（${type === 'p-core' ? 'P-Core' : type === 'e-core' ? 'E-Core' : 'コア'}）${selected ? ' ✓' : ''}`}
     >
       {index}
@@ -103,7 +103,7 @@ export default function AffinityPanel({
 
   if (!cpuTopology) {
     return (
-      <div className={`font-(--font-mono) text-[10px] text-text-muted ${className}`}>
+      <div className={`font-mono text-[10px] text-text-muted ${className}`}>
         CPU 情報を取得中...
       </div>
     );
@@ -112,12 +112,10 @@ export default function AffinityPanel({
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
       {/* ラベル */}
-      <span className="font-(--font-mono) text-[9px] text-text-muted tracking-[0.1em]">
-        {label}
-      </span>
+      <span className="font-mono text-[9px] text-text-muted tracking-[0.1em]">{label}</span>
 
       {/* CPU 情報 */}
-      <div className="font-(--font-mono) text-[9px] text-text-muted">
+      <div className="font-mono text-[9px] text-text-muted">
         {cpuTopology.brand} — {cpuTopology.physicalCores}C/{cpuTopology.logicalCores}T
         {cpuTopology.eCores.length > 0 && (
           <span>
@@ -132,14 +130,14 @@ export default function AffinityPanel({
         <button
           type="button"
           onClick={handleSelectAll}
-          className="font-(--font-mono) text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
+          className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
         >
           全選択
         </button>
         <button
           type="button"
           onClick={handleClearAll}
-          className="font-(--font-mono) text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
+          className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
         >
           全解除
         </button>
@@ -148,14 +146,14 @@ export default function AffinityPanel({
             <button
               type="button"
               onClick={handleSelectPCores}
-              className="font-(--font-mono) text-[9px] px-2 py-0.5 bg-base-700 text-cyan-500 border-none rounded-[2px] cursor-pointer"
+              className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-cyan-500 border-none rounded-[2px] cursor-pointer"
             >
               P-Core のみ
             </button>
             <button
               type="button"
               onClick={handleSelectECores}
-              className="font-(--font-mono) text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
+              className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
             >
               E-Core のみ
             </button>
@@ -181,7 +179,7 @@ export default function AffinityPanel({
 
       {/* 凡例 */}
       {cpuTopology.eCores.length > 0 && (
-        <div className="flex gap-3 font-(--font-mono) text-[9px] text-text-muted">
+        <div className="flex gap-3 font-mono text-[9px] text-text-muted">
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 bg-cyan-500 rounded-[1px] inline-block" />
             P-Core
@@ -194,7 +192,7 @@ export default function AffinityPanel({
       )}
 
       {/* 選択状態 */}
-      <div className="font-(--font-mono) text-[9px] text-text-muted">
+      <div className="font-mono text-[9px] text-text-muted">
         選択中: {selectedCores.length} / {cpuTopology.logicalCores} コア
         {selectedCores.length > 0 && <span> [{selectedCores.join(', ')}]</span>}
       </div>

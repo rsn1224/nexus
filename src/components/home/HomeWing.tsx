@@ -101,10 +101,10 @@ const HomeWing = function HomeWing(): React.ReactElement {
     <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="mb-5">
-        <div className="font-(--font-mono) text-xs font-bold text-accent-500 tracking-[0.15em] mb-1">
+        <div className="font-mono text-xs font-bold text-accent-500 tracking-[0.15em] mb-1">
           ▶ HOME / OVERVIEW
         </div>
-        <div className="font-(--font-mono) text-[10px] text-text-muted">SYSTEM DASHBOARD</div>
+        <div className="font-mono text-[10px] text-text-muted">SYSTEM DASHBOARD</div>
       </div>
 
       {/* Grid Layout */}
@@ -139,7 +139,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
 
       {/* Storage Card */}
       <Card title="ストレージ" className="mt-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary flex flex-col gap-1">
+        <div className="font-mono text-xs text-text-secondary flex flex-col gap-1">
           {storageInfo?.drives && storageInfo.drives.length > 0 ? (
             storageInfo.drives.map((drive) => (
               <div key={drive.name}>
@@ -159,7 +159,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
 
       {/* Hardware Card */}
       <Card title="ハードウェア" className="mt-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary flex flex-col gap-1">
+        <div className="font-mono text-xs text-text-secondary flex flex-col gap-1">
           {hwInfo ? (
             <>
               <div>
@@ -214,7 +214,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
       {/* Optimization History */}
       <Card title="最適化履歴" className="mt-4">
         {optimizationHistory.length > 0 ? (
-          <div className="font-(--font-mono) text-xs text-text-secondary">
+          <div className="font-mono text-xs text-text-secondary">
             {optimizationHistory.map((item) => (
               <div
                 key={`${item.timestamp}-${item.action}`}
@@ -230,7 +230,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
             ))}
           </div>
         ) : (
-          <div className="font-(--font-mono) text-[11px] text-text-muted text-center py-5">
+          <div className="font-mono text-[11px] text-text-muted text-center py-5">
             NO HISTORY YET
           </div>
         )}
@@ -239,7 +239,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
       {/* Alerts */}
       <Card title="アラート" className="mt-4">
         {highCpuProcesses.length > 0 ? (
-          <div className="font-(--font-mono) text-xs text-danger-500">
+          <div className="font-mono text-xs text-danger-500">
             {highCpuProcesses.map((process: SystemProcess) => (
               <div key={process.pid} className="mb-1 flex justify-between items-center">
                 <span>
@@ -252,7 +252,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
             ))}
           </div>
         ) : (
-          <div className="font-(--font-mono) text-[11px] text-success-500 text-center py-5">
+          <div className="font-mono text-[11px] text-success-500 text-center py-5">
             ● SYSTEM NOMINAL
           </div>
         )}

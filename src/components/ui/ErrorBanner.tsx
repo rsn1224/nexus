@@ -13,7 +13,7 @@ export default function ErrorBanner({
 }: ErrorBannerProps): React.ReactElement {
   const variantClasses = {
     error: 'bg-base-800 border-b border-danger-600 text-danger-500',
-    warning: 'bg-base-800 border-b border-(--color-accent-500) text-(--color-accent-500)',
+    warning: 'bg-base-800 border-b border-accent-500 text-accent-500',
     info: 'bg-base-800 border-b border-cyan-500 text-cyan-500',
     success: 'bg-base-800 border-b border-success-500 text-success-500',
   };
@@ -21,7 +21,7 @@ export default function ErrorBanner({
   return (
     <div
       role="alert"
-      className={`px-4 py-2 font-(--font-mono) text-[11px] flex-shrink-0 flex items-center justify-between ${variantClasses[variant]}`}
+      className={`px-4 py-2 font-mono text-[11px] flex-shrink-0 flex items-center justify-between ${variantClasses[variant]}`}
     >
       <span>{message}</span>
       {onDismiss && (

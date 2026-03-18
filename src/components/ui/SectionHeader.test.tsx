@@ -8,7 +8,7 @@ describe('SectionHeader', () => {
 
     const title = screen.getByText('▶ HOME / OVERVIEW');
     expect(title).toBeInTheDocument();
-    expect(title).toHaveClass('text-(--color-accent-500)');
+    expect(title).toHaveClass('text-accent-500');
   });
 
   it('renders title with cyan color', () => {
@@ -65,12 +65,7 @@ describe('SectionHeader', () => {
     render(<SectionHeader title="TEST" />);
 
     const title = screen.getByText('TEST');
-    expect(title).toHaveClass(
-      'font-(--font-mono)',
-      'text-[11px]',
-      'font-bold',
-      'tracking-[0.15em]',
-    );
+    expect(title).toHaveClass('font-mono', 'text-[11px]', 'font-bold', 'tracking-[0.15em]');
   });
 
   it('children container has correct classes', () => {

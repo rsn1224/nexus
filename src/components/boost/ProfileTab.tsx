@@ -79,7 +79,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
       {/* ヘッダー + リバートボタン + 新規ボタン */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="font-(--font-mono) text-[10px] text-text-muted">
+          <span className="font-mono text-[10px] text-text-muted">
             {profiles.length} 件のプロファイル
           </span>
           <CurrentPowerPlanDisplay />
@@ -110,7 +110,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
 
       {/* 適用中インジケーター */}
       {isApplying && (
-        <div className="font-(--font-mono) text-[10px] text-cyan-500 text-center py-2">
+        <div className="font-mono text-[10px] text-cyan-500 text-center py-2">
           プロファイル適用中...
         </div>
       )}

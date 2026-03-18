@@ -70,7 +70,7 @@ export default function ProcessTable({
 }: ProcessTableProps): React.ReactElement {
   return (
     <div className="mb-6">
-      <div className="font-(--font-mono) text-[10px] text-text-muted mb-2 tracking-[0.12em]">
+      <div className="font-mono text-[10px] text-text-muted mb-2 tracking-[0.12em]">
         {filterText
           ? `LIVE PROCESSES (表示 ${filteredProcesses.length} / 全 ${processes.length} 件 / BOOST対象: ${targetCount}件)`
           : `LIVE PROCESSES (${processes.length}件 / BOOST対象: ${targetCount}件)`}
@@ -81,40 +81,40 @@ export default function ProcessTable({
         ) : processes.length === 0 ? (
           <EmptyState message="NO DATA" action="PRESS REFRESH TO LOAD" />
         ) : (
-          <table className="w-full border-collapse font-(--font-mono) text-[10px]">
+          <table className="w-full border-collapse font-mono text-[10px]">
             <thead className="sticky top-0 bg-base-800 border-b border-border-subtle">
               <tr>
                 <th
-                  className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none"
+                  className="px-3 py-[6px] font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none"
                   onClick={() => onSort('name')}
                 >
                   NAME {sortKey === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
+                  className="px-3 py-[6px] font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
                   onClick={() => onSort('cpu')}
                 >
                   CPU% {sortKey === 'cpu' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
+                  className="px-3 py-[6px] font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
                   onClick={() => onSort('mem')}
                 >
                   MEM {sortKey === 'mem' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
+                  className="px-3 py-[6px] font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
                   onClick={() => onSort('diskRead')}
                 >
                   DISK R {sortKey === 'diskRead' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
+                  className="px-3 py-[6px] font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
                   onClick={() => onSort('diskWrite')}
                 >
                   DISK W {sortKey === 'diskWrite' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
-                <th className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left w-20">
+                <th className="px-3 py-[6px] font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left w-20">
                   STATUS
                 </th>
               </tr>
@@ -138,30 +138,28 @@ export default function ProcessTable({
                       } ${index % 2 === 0 ? 'bg-white/2' : ''}`}
                       onClick={() => onRowClick(process.pid)}
                     >
-                      <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-text-primary">
+                      <td className="px-3 py-[5px] font-mono text-[12px] text-text-primary">
                         {process.name}
                       </td>
-                      <td
-                        className={`px-3 py-[5px] font-(--font-mono) text-[12px] text-right ${cpuColor}`}
-                      >
+                      <td className={`px-3 py-[5px] font-mono text-[12px] text-right ${cpuColor}`}>
                         {process.cpuPercent.toFixed(1)}%
                       </td>
-                      <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
+                      <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
                         {formatMemory(process.memMb)}
                       </td>
-                      <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
+                      <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
                         {formatDiskIO(process.diskReadKb)}
                       </td>
-                      <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
+                      <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
                         {formatDiskIO(process.diskWriteKb)}
                       </td>
-                      <td className="px-3 py-[5px] font-(--font-mono) text-[12px]">
+                      <td className="px-3 py-[5px] font-mono text-[12px]">
                         {status === 'target' ? (
-                          <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px] font-(--font-mono)">
+                          <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px] font-mono">
                             [TARGET]
                           </span>
                         ) : status === 'protected' ? (
-                          <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-(--font-mono)">
+                          <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-mono">
                             [PROT]
                           </span>
                         ) : (
@@ -175,9 +173,7 @@ export default function ProcessTable({
                       <tr>
                         <td colSpan={6} className="px-3 py-2 bg-base-700">
                           <div className="flex items-center gap-2">
-                            <span className="font-(--font-mono) text-[10px] text-text-muted">
-                              PRIORITY:
-                            </span>
+                            <span className="font-mono text-[10px] text-text-muted">PRIORITY:</span>
                             <Button
                               size="sm"
                               variant="secondary"

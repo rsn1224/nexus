@@ -44,15 +44,15 @@ export default function HardwareWing(): React.JSX.Element {
     <div className="p-4 h-full overflow-y-auto">
       {/* Header */}
       <div className="mb-5">
-        <div className="font-(--font-mono) text-xs font-bold text-(--color-accent-500) tracking-[0.15em] mb-1">
+        <div className="font-mono text-xs font-bold text-accent-500 tracking-[0.15em] mb-1">
           ▶ HARDWARE
         </div>
-        <div className="font-(--font-mono) text-[10px] text-text-muted">SYSTEM SPECIFICATIONS</div>
+        <div className="font-mono text-[10px] text-text-muted">SYSTEM SPECIFICATIONS</div>
       </div>
 
       {/* CPU Information */}
       <Card title="CPU" className="mb-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary space-y-2">
+        <div className="font-mono text-xs text-text-secondary space-y-2">
           <div className="flex justify-between">
             <span>MODEL:</span>
             <span className="text-text-primary">{info.cpuName}</span>
@@ -75,7 +75,7 @@ export default function HardwareWing(): React.JSX.Element {
                   info.cpuTempC >= 80
                     ? 'text-danger-500'
                     : info.cpuTempC >= 70
-                      ? 'text-(--color-accent-500)'
+                      ? 'text-accent-500'
                       : 'text-success-500'
                 }
               >
@@ -88,7 +88,7 @@ export default function HardwareWing(): React.JSX.Element {
 
       {/* GPU Information */}
       <Card title="GPU" className="mb-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary space-y-2">
+        <div className="font-mono text-xs text-text-secondary space-y-2">
           <div className="flex justify-between">
             <span>MODEL:</span>
             <span className="text-text-primary">{info.gpuName || 'N/A'}</span>
@@ -111,7 +111,7 @@ export default function HardwareWing(): React.JSX.Element {
                   info.gpuTempC >= 80
                     ? 'text-danger-500'
                     : info.gpuTempC >= 70
-                      ? 'text-(--color-accent-500)'
+                      ? 'text-accent-500'
                       : 'text-success-500'
                 }
               >
@@ -130,7 +130,7 @@ export default function HardwareWing(): React.JSX.Element {
 
       {/* Memory Information */}
       <Card title="MEMORY" className="mb-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary space-y-2">
+        <div className="font-mono text-xs text-text-secondary space-y-2">
           <div className="flex justify-between">
             <span>TOTAL:</span>
             <span className="text-text-primary">{info.memTotalGb.toFixed(1)} GB</span>
@@ -158,13 +158,13 @@ export default function HardwareWing(): React.JSX.Element {
 
       {/* Storage Information */}
       <Card title="STORAGE" className="mb-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary space-y-3">
+        <div className="font-mono text-xs text-text-secondary space-y-3">
           {info.disks.map((disk) => (
             <div key={disk.mount} className="border-b border-border-subtle pb-2 last:border-b-0">
               <div className="flex justify-between mb-1">
                 <span className="text-text-primary">{disk.mount}</span>
                 <span
-                  className={`text-[10px] font-(--font-mono) ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
+                  className={`text-[10px] font-mono ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
                 >
                   {disk.kind}
                 </span>
@@ -187,7 +187,7 @@ export default function HardwareWing(): React.JSX.Element {
 
       {/* System Information */}
       <Card title="SYSTEM" className="mb-4">
-        <div className="font-(--font-mono) text-xs text-text-secondary space-y-2">
+        <div className="font-mono text-xs text-text-secondary space-y-2">
           <div className="flex justify-between">
             <span>OS:</span>
             <span className="text-text-primary">

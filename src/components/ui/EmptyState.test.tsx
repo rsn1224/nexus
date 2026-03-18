@@ -46,7 +46,7 @@ describe('EmptyState', () => {
       'flex-col',
       'items-center',
       'justify-center',
-      'font-(--font-mono)',
+      'font-mono',
       'text-[11px]',
       'text-text-muted',
     );
