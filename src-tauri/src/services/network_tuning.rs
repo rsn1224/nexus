@@ -2,6 +2,7 @@
 //! レジストリベースの TCP パラメータ制御
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::registry;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
@@ -44,6 +45,7 @@ const MULTIMEDIA_KEY: &str =
 const QOS_KEY: &str = r"SOFTWARE\Policies\Microsoft\Windows\Psched";
 
 /// 現在の TCP 最適化状態を取得
+#[cfg(windows)]
 pub fn get_tcp_tuning_state() -> Result<TcpTuningState, AppError> {
     // Nagle/Delayed ACK - 最初の有効なインターフェースから取得
     let nagle_disabled = get_nagle_status()?;
@@ -75,7 +77,22 @@ pub fn get_tcp_tuning_state() -> Result<TcpTuningState, AppError> {
     })
 }
 
+#[cfg(not(windows))]
+pub fn get_tcp_tuning_state() -> Result<TcpTuningState, AppError> {
+    // デフォルト値を返す
+    Ok(TcpTuningState {
+        nagle_disabled: false,
+        delayed_ack_disabled: false,
+        network_throttling_index: 10,
+        qos_reserved_bandwidth_pct: 20,
+        tcp_auto_tuning: TcpAutoTuningLevel::Normal,
+        ecn_enabled: false,
+        rss_enabled: true,
+    })
+}
+
 /// Nagle アルゴリズムを無効化（全アクティブインターフェースに対して）
+#[cfg(windows)]
 pub fn set_nagle(disabled: bool) -> Result<(), AppError> {
     let interfaces = get_active_interfaces()?;
 
@@ -103,7 +120,13 @@ pub fn set_nagle(disabled: bool) -> Result<(), AppError> {
     Ok(())
 }
 
+#[cfg(not(windows))]
+pub fn set_nagle(_disabled: bool) -> Result<(), AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
+}
+
 /// TCP Delayed ACK を無効化
+#[cfg(windows)]
 pub fn set_delayed_ack(disabled: bool) -> Result<(), AppError> {
     let interfaces = get_active_interfaces()?;
 
@@ -121,7 +144,13 @@ pub fn set_delayed_ack(disabled: bool) -> Result<(), AppError> {
     Ok(())
 }
 
+#[cfg(not(windows))]
+pub fn set_delayed_ack(_disabled: bool) -> Result<(), AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
+}
+
 /// Network Throttling Index を設定
+#[cfg(windows)]
 pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
     if !(-1..=70).contains(&index) {
         return Err(AppError::InvalidInput(
@@ -135,7 +164,13 @@ pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
     Ok(())
 }
 
+#[cfg(not(windows))]
+pub fn set_network_throttling(_index: i32) -> Result<(), AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
+}
+
 /// QoS 予約帯域幅を設定
+#[cfg(windows)]
 pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
     if percent > 100 {
         return Err(AppError::InvalidInput(
@@ -149,7 +184,13 @@ pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
     Ok(())
 }
 
+#[cfg(not(windows))]
+pub fn set_qos_reserved_bandwidth(_percent: u32) -> Result<(), AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
+}
+
 /// TCP Auto-Tuning レベルを設定
+#[cfg(windows)]
 pub fn set_tcp_auto_tuning(level: TcpAutoTuningLevel) -> Result<(), AppError> {
     let level_str = match level {
         TcpAutoTuningLevel::Normal => "normal",
@@ -176,7 +217,13 @@ pub fn set_tcp_auto_tuning(level: TcpAutoTuningLevel) -> Result<(), AppError> {
     Ok(())
 }
 
+#[cfg(not(windows))]
+pub fn set_tcp_auto_tuning(_level: TcpAutoTuningLevel) -> Result<(), AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
+}
+
 /// ゲーミング最適化プリセットを一括適用
+#[cfg(windows)]
 pub fn apply_gaming_preset() -> Result<TcpTuningState, AppError> {
     info!("ゲーミングネットワーク最適化プリセット適用開始");
 
@@ -191,7 +238,13 @@ pub fn apply_gaming_preset() -> Result<TcpTuningState, AppError> {
     Ok(state)
 }
 
+#[cfg(not(windows))]
+pub fn apply_gaming_preset() -> Result<TcpTuningState, AppError> {
+    get_tcp_tuning_state()
+}
+
 /// デフォルト設定にリセット
+#[cfg(windows)]
 pub fn reset_to_defaults() -> Result<TcpTuningState, AppError> {
     info!("ネットワーク設定をデフォルトにリセット");
 
@@ -202,8 +255,13 @@ pub fn reset_to_defaults() -> Result<TcpTuningState, AppError> {
     set_tcp_auto_tuning(TcpAutoTuningLevel::Normal)?;
 
     let state = get_tcp_tuning_state()?;
-    info!("ネットワーク設定リセット完了");
+    info!("デフォルト設定へのリセット完了");
     Ok(state)
+}
+
+#[cfg(not(windows))]
+pub fn reset_to_defaults() -> Result<TcpTuningState, AppError> {
+    get_tcp_tuning_state()
 }
 
 // --- ヘルパー関数 ---

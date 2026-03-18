@@ -4,6 +4,7 @@
 use tracing::{info, warn};
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::timer_resolution;
 use crate::state::SharedState;
 use crate::types::game::TimerResolutionState;
@@ -12,6 +13,7 @@ use tauri::State;
 
 /// 現在のタイマーリゾリューション情報を取得する。
 /// AppState の要求値も反映して返す。
+#[cfg(windows)]
 pub fn get_timer_state(state: &State<'_, SharedState>) -> Result<TimerResolutionState, AppError> {
     let mut timer_state = timer_resolution::query_resolution()?;
 
@@ -27,8 +29,27 @@ pub fn get_timer_state(state: &State<'_, SharedState>) -> Result<TimerResolution
     Ok(timer_state)
 }
 
+#[cfg(not(windows))]
+pub fn get_timer_state(state: &State<'_, SharedState>) -> Result<TimerResolutionState, AppError> {
+    // AppState に保存されている要求値を反映
+    let requested = {
+        let s = state
+            .lock()
+            .map_err(|e| AppError::Process(format!("State ロックエラー: {}", e)))?;
+        s.timer_resolution_requested
+    };
+
+    Ok(TimerResolutionState {
+        current_resolution_ns: 15625000,
+        minimum_resolution_ns: 500000,
+        maximum_resolution_ns: 15625000,
+        nexus_requested_100ns: requested,
+    })
+}
+
 /// タイマーリゾリューションを設定する。
 /// AppState にも要求値を記録する（リバート用）。
+#[cfg(windows)]
 pub fn set_timer(
     state: &State<'_, SharedState>,
     resolution_100ns: u32,
@@ -68,8 +89,31 @@ pub fn set_timer(
     Ok(timer_state)
 }
 
+#[cfg(not(windows))]
+pub fn set_timer(
+    state: &State<'_, SharedState>,
+    resolution_100ns: u32,
+) -> Result<TimerResolutionState, AppError> {
+    // AppState に要求値を記録
+    {
+        let mut s = state
+            .lock()
+            .map_err(|e| AppError::Process(format!("State ロックエラー: {}", e)))?;
+        s.timer_resolution_requested = Some(resolution_100ns);
+    }
+
+    info!(
+        "タイマーリゾリューション設定: 要求={}({} ms) - Linux: スキップ",
+        resolution_100ns,
+        resolution_100ns as f64 / 10000.0,
+    );
+
+    get_timer_state(state)
+}
+
 /// タイマーリゾリューションをデフォルトに戻す。
 /// AppState の要求値もクリアする。
+#[cfg(windows)]
 pub fn restore_timer(state: &State<'_, SharedState>) -> Result<(), AppError> {
     timer_resolution::restore_resolution()?;
 
@@ -82,6 +126,20 @@ pub fn restore_timer(state: &State<'_, SharedState>) -> Result<(), AppError> {
     }
 
     info!("タイマーリゾリューション: デフォルトに復元");
+    Ok(())
+}
+
+#[cfg(not(windows))]
+pub fn restore_timer(state: &State<'_, SharedState>) -> Result<(), AppError> {
+    // AppState の要求値をクリア
+    {
+        let mut s = state
+            .lock()
+            .map_err(|e| AppError::Process(format!("State ロックエラー: {}", e)))?;
+        s.timer_resolution_requested = None;
+    }
+
+    info!("タイマーリゾリューション: デフォルトに復元 - Linux: スキップ");
     Ok(())
 }
 

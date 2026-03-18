@@ -1,16 +1,15 @@
 //! フレームタイム統計計算サービス（services 層）
 
 use crate::error::AppError;
+use std::time::Instant;
+
 #[cfg(windows)]
 use crate::infra::etw::{self, EtwSession, FrameEvent, FrameEventBuffer};
 #[cfg(windows)]
 use crate::types::game::FrameTimeSnapshot;
 #[cfg(windows)]
 use std::sync::{Arc, Mutex};
-use std::time::Instant;
 
-#[cfg(not(windows))]
-use crate::error::AppError;
 #[cfg(not(windows))]
 use crate::types::game::{FrameTimeMonitorState, FrameTimeSnapshot};
 

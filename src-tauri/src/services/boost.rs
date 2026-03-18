@@ -8,7 +8,9 @@ use tracing::{info, warn};
 
 use crate::constants::is_protected_process;
 use crate::error::AppError;
-use crate::infra::{cpu_affinity, power_plan, process_control};
+use crate::infra::{cpu_affinity, process_control};
+#[cfg(windows)]
+use crate::infra::power_plan;
 use crate::services::core_parking;
 use crate::state::SharedState;
 use crate::types::game::{BoostLevel, GameProfile, ProfileApplyResult, RevertSnapshot};
@@ -61,50 +63,65 @@ pub fn apply_profile_boost(
 
     // 電源プラン変更（Level 1 でも PowerPlan が指定されていれば適用）
     if let Some(_guid) = profile.power_plan.guid() {
-        match power_plan::switch_power_plan(profile.power_plan) {
-            Ok(prev) => {
-                result.prev_power_plan = prev.clone();
-                result
-                    .applied
-                    .push(format!("電源プラン変更: {:?}", profile.power_plan));
-                info!(
-                    "電源プラン変更完了: {:?} (元: {:?})",
-                    profile.power_plan, prev
-                );
+        #[cfg(windows)]
+        {
+            match power_plan::switch_power_plan(profile.power_plan) {
+                Ok(prev) => {
+                    result.prev_power_plan = prev.clone();
+                    result
+                        .applied
+                        .push(format!("電源プラン変更: {:?}", profile.power_plan));
+                    info!(
+                        "電源プラン変更完了: {:?} (元: {:?})",
+                        profile.power_plan, prev
+                    );
+                }
+                Err(e) => {
+                    let msg = format!("電源プラン変更失敗: {}", e);
+                    warn!("{}", msg);
+                    result.warnings.push(msg);
+                }
             }
-            Err(e) => {
-                let msg = format!("電源プラン変更失敗: {}", e);
-                warn!("{}", msg);
-                result.warnings.push(msg);
-            }
+        }
+        #[cfg(not(windows))]
+        {
+            let msg = "電源プラン変更: Linux ではスキップ".to_string();
+            warn!("{}", msg);
+            result.warnings.push(msg);
         }
     }
 
     // タイマーリゾリューション設定
     if let Some(resolution) = profile.timer_resolution_100ns {
-        match crate::infra::timer_resolution::set_resolution(resolution) {
-            Ok(timer_state) => {
-                // AppState に要求値を記録
-                if let Ok(mut s) = state.lock() {
-                    s.timer_resolution_requested = Some(resolution);
+        #[cfg(windows)]
+        {
+            match crate::infra::timer_resolution::set_resolution(resolution) {
+                Ok(_timer_state) => {
+                    // AppState に要求値を記録
+                    if let Ok(mut s) = state.lock() {
+                        s.timer_resolution_requested = Some(resolution);
+                    }
+                    result
+                        .applied
+                        .push(format!("タイマーリゾリューション: {} ms", resolution as f64 / 10000.0));
+                    info!("タイマーリゾリューション設定完了: {} ms", resolution as f64 / 10000.0);
                 }
-                result.applied.push(format!(
-                    "タイマーリゾリューション設定: {}({} ms), 実際={}({} ms)",
-                    resolution,
-                    resolution as f64 / 10000.0,
-                    timer_state.current_100ns,
-                    timer_state.current_100ns as f64 / 10000.0,
-                ));
-                info!(
-                    "タイマーリゾリューション設定完了: 要求={}, 実際={}",
-                    resolution, timer_state.current_100ns
-                );
+                Err(e) => {
+                    let msg = format!("タイマーリゾリューション設定失敗: {}", e);
+                    warn!("{}", msg);
+                    result.warnings.push(msg);
+                }
             }
-            Err(e) => {
-                let msg = format!("タイマーリゾリューション設定失敗: {}", e);
-                warn!("{}", msg);
-                result.warnings.push(msg);
+        }
+        #[cfg(not(windows))]
+        {
+            // AppState に要求値を記録
+            if let Ok(mut s) = state.lock() {
+                s.timer_resolution_requested = Some(resolution);
             }
+            let msg = format!("タイマーリゾリューション設定: {} ms - Linux ではスキップ", resolution as f64 / 10000.0);
+            warn!("{}", msg);
+            result.warnings.push(msg);
         }
     }
 
@@ -467,8 +484,15 @@ pub fn revert_boost(state: &State<'_, SharedState>) -> Result<(), AppError> {
 
     // 電源プランを元に戻す
     if let Some(prev_guid) = &snapshot.prev_power_plan_guid {
-        if let Err(e) = power_plan::revert_power_plan(Some(prev_guid.to_string())) {
-            warn!("電源プラン復元失敗: {}: {}", prev_guid, e);
+        #[cfg(windows)]
+        {
+            if let Err(e) = power_plan::revert_power_plan(Some(prev_guid.to_string())) {
+                warn!("電源プラン復元失敗: {}: {}", prev_guid, e);
+            }
+        }
+        #[cfg(not(windows))]
+        {
+            warn!("電源プラン復元: Linux ではスキップ");
         }
     }
 
@@ -480,10 +504,17 @@ pub fn revert_boost(state: &State<'_, SharedState>) -> Result<(), AppError> {
             .unwrap_or(false);
 
         if has_timer {
-            if let Err(e) = crate::infra::timer_resolution::restore_resolution() {
-                warn!("タイマーリゾリューション復元失敗: {}", e);
-            } else {
-                info!("タイマーリゾリューション: デフォルトに復元");
+            #[cfg(windows)]
+            {
+                if let Err(e) = crate::infra::timer_resolution::restore_resolution() {
+                    warn!("タイマーリゾリューション復元失敗: {}", e);
+                } else {
+                    info!("タイマーリゾリューション: デフォルトに復元");
+                }
+            }
+            #[cfg(not(windows))]
+            {
+                warn!("タイマーリゾリューション復元: Linux ではスキップ");
             }
             // AppState の要求値をクリア
             if let Ok(mut s) = state.lock() {

@@ -278,6 +278,12 @@ pub fn suspend_process(pid: u32) -> Result<(), AppError> {
     controller.suspend()
 }
 
+#[cfg(not(windows))]
+#[allow(dead_code)]
+pub fn suspend_process(_pid: u32) -> Result<(), AppError> {
+    Err(AppError::Win32("Windows 専用機能です".to_string()))
+}
+
 /// プロセスを再開する便利関数
 ///
 /// # 引数
@@ -291,6 +297,12 @@ pub fn suspend_process(pid: u32) -> Result<(), AppError> {
 pub fn resume_process(pid: u32) -> Result<(), AppError> {
     let controller = ProcessController::new(pid)?;
     controller.resume()
+}
+
+#[cfg(not(windows))]
+#[allow(dead_code)]
+pub fn resume_process(_pid: u32) -> Result<(), AppError> {
+    Err(AppError::Win32("Windows 専用機能です".to_string()))
 }
 
 /// プロセスを強制終了する便利関数
@@ -307,6 +319,12 @@ pub fn resume_process(pid: u32) -> Result<(), AppError> {
 pub fn terminate_process(pid: u32, exit_code: u32) -> Result<(), AppError> {
     let controller = ProcessController::new(pid)?;
     controller.terminate(exit_code)
+}
+
+#[cfg(not(windows))]
+#[allow(dead_code)]
+pub fn terminate_process(_pid: u32, _exit_code: u32) -> Result<(), AppError> {
+    Err(AppError::Win32("Windows 専用機能です".to_string()))
 }
 
 /// プロセス名から PID を検索する便利関数

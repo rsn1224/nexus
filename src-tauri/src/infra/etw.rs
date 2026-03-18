@@ -24,6 +24,10 @@ use tracing::info;
 
 #[cfg(not(windows))]
 use crate::error::AppError;
+#[cfg(not(windows))]
+use std::sync::{Arc, Mutex};
+#[cfg(not(windows))]
+use std::time::Instant;
 
 /// DXGI プロバイダー GUID
 #[cfg(windows)]

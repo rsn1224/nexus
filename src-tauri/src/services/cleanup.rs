@@ -125,16 +125,29 @@ fn revert_net_settings(items: &mut Vec<RevertItem>) {
 }
 
 fn revert_timer(state: &State<'_, SharedState>, items: &mut Vec<RevertItem>) {
-    let result = crate::services::timer::restore_timer(state);
-    items.push(RevertItem {
-        category: "タイマー".to_string(),
-        label: "タイマーリゾリューション".to_string(),
-        success: result.is_ok(),
-        detail: match result {
-            Ok(()) => "デフォルトに復元".to_string(),
-            Err(e) => format!("{}", e),
-        },
-    });
+    #[cfg(windows)]
+    {
+        let result = crate::services::timer::restore_timer(state);
+        items.push(RevertItem {
+            category: "タイマー".to_string(),
+            label: "タイマーリゾリューション".to_string(),
+            success: result.is_ok(),
+            detail: match result {
+                Ok(()) => "デフォルトに復元".to_string(),
+                Err(e) => format!("{}", e),
+            },
+        });
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = state; // unused variable 防止
+        items.push(RevertItem {
+            category: "タイマー".to_string(),
+            label: "タイマーリゾリューション".to_string(),
+            success: true,
+            detail: "Linux: スキップ".to_string(),
+        });
+    }
 }
 
 fn revert_game_profile(state: &State<'_, SharedState>, items: &mut Vec<RevertItem>) {
