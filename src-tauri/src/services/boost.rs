@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 //! ブーストロジック（services 層）
 //! 仕様: docs/specs/game-enhancement-spec.md §6
 //!

@@ -1,4 +1,5 @@
 use crate::error::AppError;
+use crate::infra::powershell::run_powershell as ps_run;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
@@ -62,39 +63,11 @@ fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppError> {
 // ─── PowerShell Helper ────────────────────────────────────────────────────────────
 
 fn run_powershell(command: &str) -> Result<String, AppError> {
-    info!("Executing PowerShell: {}", command);
-
-    let utf8_command = format!(
-        "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; {}",
-        command
+    info!(
+        "Executing PowerShell: {}",
+        &command[..command.len().min(100)]
     );
-    let output = std::process::Command::new("powershell")
-        .args([
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-Command",
-            utf8_command.as_str(),
-        ])
-        .output()
-        .map_err(|e| AppError::Command(format!("Failed to execute PowerShell: {}", e)))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        let detail = if !stderr.trim().is_empty() {
-            stderr.trim().to_string()
-        } else if !stdout.trim().is_empty() {
-            stdout.trim().to_string()
-        } else {
-            format!("exit code {}", output.status.code().unwrap_or(-1))
-        };
-        return Err(AppError::Command(format!("PowerShell failed: {}", detail)));
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    Ok(stdout.trim().to_string())
+    ps_run(command)
 }
 
 // ─── Validation Functions (Phase 1) ─────────────────────────────────────

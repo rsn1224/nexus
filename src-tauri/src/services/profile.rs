@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 //! ゲームプロファイルの CRUD 操作
 //! 保存先: `app_data_dir()/profiles.json`
 //! 仕様: docs/specs/game-enhancement-spec.md §2.1, §4
@@ -10,7 +8,9 @@ use tracing::{info, warn};
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::types::game::{BoostLevel, GameProfile, PowerPlan, ProcessPriority};
+use crate::types::game::GameProfile;
+#[cfg(test)]
+use crate::types::game::{BoostLevel, PowerPlan, ProcessPriority};
 
 /// profiles.json のファイル名
 const PROFILES_FILE: &str = "profiles.json";
@@ -107,6 +107,7 @@ pub fn delete_profile(app_data_dir: &Path, id: &str) -> Result<(), AppError> {
 }
 
 /// exe_path でプロファイルを検索する（ゲーム起動検出時に使用）
+#[allow(dead_code)] // game_monitor で使用予定
 pub fn find_profile_by_exe(
     app_data_dir: &Path,
     exe_path: &str,
@@ -168,7 +169,8 @@ fn write_profiles(app_data_dir: &Path, profiles: &[GameProfile]) -> Result<(), A
     Ok(())
 }
 
-/// デフォルトのプロファイルを生成する（テスト・FE 用）
+/// デフォルトのプロファイルを生成する（テスト用）
+#[cfg(test)]
 pub fn create_default_profile(display_name: &str, exe_path: &str) -> GameProfile {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)

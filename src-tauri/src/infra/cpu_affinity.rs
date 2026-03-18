@@ -1,6 +1,5 @@
 //! CPU アフィニティ FFI ラッパー
 //! 仕様: docs/specs/game-enhancement-spec.md §7.1
-#![allow(dead_code)] // Phase 8b-B で使用
 
 #[cfg(windows)]
 mod platform {
