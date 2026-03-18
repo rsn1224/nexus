@@ -186,60 +186,60 @@ pub fn apply_win_setting(id: &str) -> Result<(), AppError> {
         "game_mode" => {
             // Backup current game mode setting
             let current_value = run_powershell(
-                "Get-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AllowAutoGameMode"
+                "Get-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AllowAutoGameMode",
             )?;
             backup.insert("game_mode".to_string(), current_value);
 
             // Enable game mode
             run_powershell(
-                "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -Value 1 -Type DWord -Force"
+                "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\GameBar' -Name 'AllowAutoGameMode' -Value 1 -Type DWord -Force",
             )?;
         }
         "game_dvr" => {
             // Backup current game DVR setting
             let current_value = run_powershell(
-                "Get-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty GameDVR_Enabled"
+                "Get-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty GameDVR_Enabled",
             )?;
             backup.insert("game_dvr".to_string(), current_value);
 
             // Disable game DVR
             run_powershell(
-                "Set-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -Value 0 -Type DWord -Force"
+                "Set-ItemProperty -Path 'HKCU:\\System\\GameConfigStore' -Name 'GameDVR_Enabled' -Value 0 -Type DWord -Force",
             )?;
             // HKLM requires admin — best-effort, ignore failure
             let _ = run_powershell(
-                "if (-not (Test-Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR')) { New-Item -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR' -Force | Out-Null }; Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR' -Name 'AllowGameDVR' -Value 0 -Type DWord -Force"
+                "if (-not (Test-Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR')) { New-Item -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR' -Force | Out-Null }; Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\GameDVR' -Name 'AllowGameDVR' -Value 0 -Type DWord -Force",
             );
         }
         "mouse_acceleration" => {
             // Backup current mouse settings
             let current_value = run_powershell(
-                "Get-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty MouseSpeed"
+                "Get-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty MouseSpeed",
             )?;
             backup.insert("mouse_acceleration".to_string(), current_value);
 
             // Disable mouse acceleration
             run_powershell(
-                "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -Value 0 -Type String -Force; Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseThreshold1' -Value 0 -Type String -Force; Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseThreshold2' -Value 0 -Type String -Force"
+                "Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseSpeed' -Value 0 -Type String -Force; Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseThreshold1' -Value 0 -Type String -Force; Set-ItemProperty -Path 'HKCU:\\Control Panel\\Mouse' -Name 'MouseThreshold2' -Value 0 -Type String -Force",
             )?;
         }
         "visual_effects" => {
             // Backup current visual effects setting
             let current_value = run_powershell(
-                "Get-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VisualFXSetting"
+                "Get-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -ErrorAction SilentlyContinue | Select-Object -ExpandProperty VisualFXSetting",
             )?;
             backup.insert("visual_effects".to_string(), current_value);
 
             // Set performance mode
             run_powershell(
-                "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -Value 2 -Type DWord -Force"
+                "Set-ItemProperty -Path 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects' -Name 'VisualFXSetting' -Value 2 -Type DWord -Force",
             )?;
         }
         _ => {
             return Err(AppError::Command(format!(
                 "Unknown Windows setting: {}",
                 id
-            )))
+            )));
         }
     }
 
@@ -298,7 +298,7 @@ pub fn revert_win_setting(id: &str) -> Result<(), AppError> {
                 return Err(AppError::Command(format!(
                     "Unknown Windows setting: {}",
                     id
-                )))
+                )));
             }
         }
 
@@ -392,7 +392,7 @@ pub fn apply_net_setting(id: &str) -> Result<(), AppError> {
             return Err(AppError::Command(format!(
                 "Unknown network setting: {}",
                 id
-            )))
+            )));
         }
     }
 
@@ -437,7 +437,7 @@ pub fn revert_net_setting(id: &str) -> Result<(), AppError> {
                 return Err(AppError::Command(format!(
                     "Unknown network setting: {}",
                     id
-                )))
+                )));
             }
         }
 

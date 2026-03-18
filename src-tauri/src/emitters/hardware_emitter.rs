@@ -2,7 +2,7 @@ use crate::commands::hardware::HardwareInfo;
 use std::sync::Mutex;
 use sysinfo::{DiskKind, Disks, System};
 use tauri::{AppHandle, Emitter, Manager};
-use tokio::time::{interval, Duration};
+use tokio::time::{Duration, interval};
 use tracing::{debug, error, warn};
 
 /// ハードウェア情報を定期的にフロントエンドへ配信する

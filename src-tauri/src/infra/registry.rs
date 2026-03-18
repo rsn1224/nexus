@@ -1,8 +1,8 @@
 #![allow(dead_code)]
 
 use crate::error::AppError;
-use winreg::enums::*;
 use winreg::RegKey;
+use winreg::enums::*;
 
 /// HKCU レジストリキーの DWORD 値を読み取る
 pub fn read_hkcu_dword(subkey: &str, value_name: &str) -> Result<u32, AppError> {

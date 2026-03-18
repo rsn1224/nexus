@@ -2,16 +2,16 @@
 //! Win32 FFI を使ってプロセスのサスペンド・レジュームを行う
 
 #[cfg(windows)]
-use windows_sys::core::HRESULT;
-#[cfg(windows)]
 use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
 #[cfg(windows)]
 use windows_sys::Win32::System::Threading::{
-    OpenProcess, SetPriorityClass, TerminateProcess, ABOVE_NORMAL_PRIORITY_CLASS,
-    BELOW_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS, IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS,
-    PROCESS_QUERY_INFORMATION, PROCESS_SET_INFORMATION, PROCESS_SUSPEND_RESUME,
-    REALTIME_PRIORITY_CLASS,
+    ABOVE_NORMAL_PRIORITY_CLASS, BELOW_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS,
+    IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, OpenProcess, PROCESS_QUERY_INFORMATION,
+    PROCESS_SET_INFORMATION, PROCESS_SUSPEND_RESUME, REALTIME_PRIORITY_CLASS, SetPriorityClass,
+    TerminateProcess,
 };
+#[cfg(windows)]
+use windows_sys::core::HRESULT;
 
 use crate::error::AppError;
 
@@ -117,19 +117,23 @@ impl ProcessController {
     /// - 呼び出し元でプロセスハンドルの所有権を管理する
     unsafe fn nt_suspend_process(&self, handle: HANDLE) -> HRESULT {
         // ntdll.dll を動的にロード
-        let ntdll = windows_sys::Win32::System::LibraryLoader::GetModuleHandleA(
-            c"ntdll.dll".as_ptr() as *const u8,
-        );
+        let ntdll = unsafe {
+            windows_sys::Win32::System::LibraryLoader::GetModuleHandleA(
+                c"ntdll.dll".as_ptr() as *const u8
+            )
+        };
 
         if ntdll.is_null() {
             return 0x8007007Eu32 as HRESULT; // ERROR_MODULE_NOT_FOUND
         }
 
         // NtSuspendProcess 関数アドレスを取得
-        let nt_suspend = windows_sys::Win32::System::LibraryLoader::GetProcAddress(
-            ntdll,
-            c"NtSuspendProcess".as_ptr() as *const u8,
-        );
+        let nt_suspend = unsafe {
+            windows_sys::Win32::System::LibraryLoader::GetProcAddress(
+                ntdll,
+                c"NtSuspendProcess".as_ptr() as *const u8,
+            )
+        };
 
         if nt_suspend.is_none() {
             return 0x8007007Fu32 as HRESULT; // ERROR_PROC_NOT_FOUND
@@ -137,9 +141,9 @@ impl ProcessController {
 
         // 関数ポインタを呼び出し
         let nt_suspend_fn: unsafe extern "system" fn(HANDLE) -> HRESULT =
-            std::mem::transmute(nt_suspend);
+            unsafe { std::mem::transmute(nt_suspend) };
 
-        nt_suspend_fn(handle)
+        unsafe { nt_suspend_fn(handle) }
     }
 
     /// NtResumeProcess の FFI 呼び出し
@@ -150,19 +154,23 @@ impl ProcessController {
     /// - 呼び出し元でプロセスハンドルの所有権を管理する
     unsafe fn nt_resume_process(&self, handle: HANDLE) -> HRESULT {
         // ntdll.dll を動的にロード
-        let ntdll = windows_sys::Win32::System::LibraryLoader::GetModuleHandleA(
-            c"ntdll.dll".as_ptr() as *const u8,
-        );
+        let ntdll = unsafe {
+            windows_sys::Win32::System::LibraryLoader::GetModuleHandleA(
+                c"ntdll.dll".as_ptr() as *const u8
+            )
+        };
 
         if ntdll.is_null() {
             return 0x8007007Eu32 as HRESULT; // ERROR_MODULE_NOT_FOUND
         }
 
         // NtResumeProcess 関数アドレスを取得
-        let nt_resume = windows_sys::Win32::System::LibraryLoader::GetProcAddress(
-            ntdll,
-            c"NtResumeProcess".as_ptr() as *const u8,
-        );
+        let nt_resume = unsafe {
+            windows_sys::Win32::System::LibraryLoader::GetProcAddress(
+                ntdll,
+                c"NtResumeProcess".as_ptr() as *const u8,
+            )
+        };
 
         if nt_resume.is_none() {
             return 0x8007007Fu32 as HRESULT; // ERROR_PROC_NOT_FOUND
@@ -170,9 +178,9 @@ impl ProcessController {
 
         // 関数ポインタを呼び出し
         let nt_resume_fn: unsafe extern "system" fn(HANDLE) -> HRESULT =
-            std::mem::transmute(nt_resume);
+            unsafe { std::mem::transmute(nt_resume) };
 
-        nt_resume_fn(handle)
+        unsafe { nt_resume_fn(handle) }
     }
 }
 
@@ -314,7 +322,7 @@ pub fn terminate_process(pid: u32, exit_code: u32) -> Result<(), AppError> {
 pub fn find_pids_by_name(name: &str) -> Result<Vec<u32>, AppError> {
     use std::ffi::CString;
     use windows_sys::Win32::System::Diagnostics::ToolHelp::{
-        CreateToolhelp32Snapshot, Process32First, Process32Next, PROCESSENTRY32, TH32CS_SNAPPROCESS,
+        CreateToolhelp32Snapshot, PROCESSENTRY32, Process32First, Process32Next, TH32CS_SNAPPROCESS,
     };
 
     let _name_cstring =

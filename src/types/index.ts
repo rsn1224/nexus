@@ -224,13 +224,6 @@ export interface GameInfo {
 }
 
 // ─── OPS ─────────────────────────────────────────────────────────────────────
-export interface DockerContainer {
-  id: string;
-  name: string;
-  image: string;
-  status: 'running' | 'stopped' | 'paused' | 'exited';
-  ports: string[];
-}
 
 export interface SystemProcess {
   pid: number;
@@ -250,29 +243,6 @@ export interface AiSuggestion {
   actionCommand: string | null;
 }
 
-// ─── VAULT ───────────────────────────────────────────────────────────────────
-export interface VaultEntry {
-  id: string;
-  label: string;
-  category: 'password' | 'api_key' | 'note' | 'config' | 'totp';
-  username: string;
-  url: string;
-  secret: string;
-  createdAt: number;
-  updatedAt: number;
-}
-
-// ─── ARCHIVE ─────────────────────────────────────────────────────────────────
-export interface ArchiveNote {
-  id: string;
-  title: string;
-  content: string;
-  tags: string[];
-  links: string[];
-  createdAt: number;
-  updatedAt: number;
-}
-
 // ─── PULSE ───────────────────────────────────────────────────────────────────
 export interface ResourceSnapshot {
   timestamp: number;
@@ -287,24 +257,8 @@ export interface ResourceSnapshot {
 }
 
 // ─── CHRONO ───────────────────────────────────────────────────────────────────
-export interface ChronoTask {
-  id: string;
-  title: string;
-  done: boolean;
-  priority: 'low' | 'medium' | 'high';
-  dueAt?: number;
-  createdAt: number;
-  updatedAt: number;
-}
 
 // ─── LINK ────────────────────────────────────────────────────────────────────
-export interface Snippet {
-  id: string;
-  label: string;
-  content: string;
-  category: 'text' | 'code' | 'url';
-  createdAt: number;
-}
 
 // ─── WINOPT ──────────────────────────────────────────────────────────────────
 export interface WinSetting {
@@ -316,98 +270,8 @@ export interface WinSetting {
 }
 
 // ─── BEACON ───────────────────────────────────────────────────────────────────
-export interface WatchedPath {
-  id: string;
-  path: string;
-  isRecursive: boolean;
-  createdAt: number;
-  isActive: boolean;
-}
-
-export interface WatchEvent {
-  id: string;
-  pathId: string;
-  kind: 'Create' | 'Modify' | 'Remove' | 'Other';
-  path: string;
-  timestamp: number;
-}
 
 // ─── TOTP ────────────────────────────────────────────────────────────────────
-export interface TotpResult {
-  uri: string;
-  code: string;
-  remaining: number;
-}
-
-// ─── SECURITY ────────────────────────────────────────────────────────────────
-export interface NpmVulnerability {
-  name: string;
-  severity: 'critical' | 'high' | 'moderate' | 'low';
-  via: string[];
-  fixAvailable: boolean;
-}
-
-export interface CargoVulnerability {
-  package: string;
-  version: string;
-  advisoryId: string;
-  title: string;
-  severity: string;
-  url: string;
-}
-
-export interface VulnerabilitySummary {
-  critical: number;
-  high: number;
-  moderate: number;
-  low: number;
-  total: number;
-}
-
-export interface VulnerabilityReport {
-  npm: NpmVulnerability[];
-  cargo: CargoVulnerability[];
-  summary: VulnerabilitySummary;
-  scannedAt: string;
-}
-
-export interface DetectedSecret {
-  file: string;
-  line: number;
-  patternName: string;
-  preview: string;
-}
-
-export interface SecretSummary {
-  total: number;
-  filesAffected: number;
-}
-
-export interface SecretReport {
-  secrets: DetectedSecret[];
-  summary: SecretSummary;
-  scannedAt: string;
-}
-
-// ─── SIGNAL ───────────────────────────────────────────────────────────────────
-export interface SignalFeed {
-  id: string;
-  label: string;
-  url: string;
-  kind: 'rss' | 'http';
-  intervalSecs: number;
-  lastChecked: number;
-  isActive: boolean;
-  lastResult?: SignalResult;
-}
-
-export interface SignalResult {
-  title: string;
-  link?: string;
-  description?: string;
-  published: number;
-  guid?: string;
-}
 
 // ─── GAME PROFILE ────────────────────────────────────────────────────────────
 

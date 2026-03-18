@@ -258,7 +258,7 @@ pub fn export_logs(logs: Vec<LogEntry>, format: String) -> Result<String, AppErr
         _ => {
             return Err(AppError::InvalidInput(
                 "Unsupported export format".to_string(),
-            ))
+            ));
         }
     };
 

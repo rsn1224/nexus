@@ -67,7 +67,7 @@ pub fn run_boost(threshold_percent: Option<f32>) -> Result<BoostResult, AppError
                 let success = unsafe {
                     use windows_sys::Win32::Foundation::BOOL;
                     use windows_sys::Win32::System::Threading::{
-                        SetPriorityClass, IDLE_PRIORITY_CLASS, PROCESS_SET_INFORMATION,
+                        IDLE_PRIORITY_CLASS, PROCESS_SET_INFORMATION, SetPriorityClass,
                     };
                     let handle = windows_sys::Win32::System::Threading::OpenProcess(
                         PROCESS_SET_INFORMATION,
@@ -185,9 +185,11 @@ mod tests {
             // explorer.exe と svchost.exe は skipped_protected
             let protected: Vec<_> = r.actions.iter().filter(|a| a.is_protected).collect();
             assert_eq!(protected.len(), 2);
-            assert!(protected
-                .iter()
-                .all(|a| a.action_type == "skipped_protected"));
+            assert!(
+                protected
+                    .iter()
+                    .all(|a| a.action_type == "skipped_protected")
+            );
         }
     }
 

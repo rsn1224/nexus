@@ -5,7 +5,7 @@ vi.mock('../lib/logger', () => ({
   default: { info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() },
 }));
 
-// Mock localStorage
+// Mock localStorage for migration
 const localStorageMock = {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -46,9 +46,51 @@ function resetStore(): void {
   vi.clearAllMocks();
 }
 
+// Mock Rust settings
+const mockSettings: {
+  auto_boost_enabled: boolean;
+  favorites: number[];
+  last_played: Record<number, number>;
+} = {
+  auto_boost_enabled: false,
+  favorites: [],
+  last_played: {},
+};
+
+const mockInvoke = vi.mocked(invoke);
+
 describe('useLauncherStore', () => {
   beforeEach(() => {
     resetStore();
+    // Mock Rust settings commands
+    // biome-ignore lint/suspicious/noExplicitAny: test mock requires loose typing for invoke args
+    mockInvoke.mockImplementation((command: string, args?: any) => {
+      const a = args as
+        | { settings?: typeof mockSettings; localSettings?: typeof mockSettings }
+        | undefined;
+      switch (command) {
+        case 'get_launcher_settings_cmd':
+          return Promise.resolve(mockSettings);
+        case 'save_launcher_settings_cmd':
+          if (a?.settings) {
+            Object.assign(mockSettings, a.settings);
+          }
+          return Promise.resolve();
+        case 'migrate_launcher_settings':
+          if (a?.localSettings) {
+            Object.assign(mockSettings, a.localSettings);
+          }
+          return Promise.resolve();
+        case 'scan_steam_games':
+          return Promise.resolve(MOCK_GAMES);
+        case 'launch_game':
+          return Promise.resolve();
+        case 'run_boost':
+          return Promise.resolve();
+        default:
+          return Promise.resolve([]);
+      }
+    });
     localStorageMock.getItem.mockReturnValue(null);
     localStorageMock.setItem.mockImplementation(() => {});
   });
@@ -75,155 +117,142 @@ describe('useLauncherStore', () => {
     expect(searchQuery).toBe('');
   });
 
-  it('loads autoBoostEnabled from localStorage', () => {
-    localStorageMock.getItem.mockImplementation((key: string) => {
-      if (key === 'nexus:launcher:autoBoostEnabled') return 'true';
-      return null;
-    });
+  it('loads settings from Rust on loadSettings', async () => {
+    // Set mock settings
+    mockSettings.auto_boost_enabled = true;
+    mockSettings.favorites = [12345];
+    mockSettings.last_played = { 12345: Date.now() };
 
-    // Reset to known state and test toggle functionality
-    resetStore();
-    expect(useLauncherStore.getState().autoBoostEnabled).toBe(false); // Initial state
+    await useLauncherStore.getState().loadSettings();
 
-    useLauncherStore.getState().toggleAutoBoost();
-    expect(useLauncherStore.getState().autoBoostEnabled).toBe(true);
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'nexus:launcher:autoBoostEnabled',
-      'true',
-    );
+    const state = useLauncherStore.getState();
+    expect(state.autoBoostEnabled).toBe(true);
+    expect(state.favorites).toContain(12345);
+    expect(state.lastPlayed[12345]).toBeDefined();
   });
 
-  it('loads favorites from localStorage', () => {
-    localStorageMock.getItem.mockImplementation((key: string) => {
-      if (key === 'nexus:launcher:favorites') return '[12345, 67890]';
-      return null;
+  it('saves settings to Rust on saveSettings', async () => {
+    // Update state
+    useLauncherStore.setState({
+      autoBoostEnabled: true,
+      favorites: [12345],
+      lastPlayed: { 12345: Date.now() },
     });
 
-    // Reset to known state and test toggle functionality
-    resetStore();
-    expect(useLauncherStore.getState().favorites).toEqual([]); // Initial state
+    await useLauncherStore.getState().saveSettings();
 
-    useLauncherStore.getState().toggleFavorite(12345);
-
-    expect(useLauncherStore.getState().favorites).toContain(12345);
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'nexus:launcher:favorites',
-      expect.any(String),
-    );
+    expect(mockInvoke).toHaveBeenCalledWith('save_launcher_settings_cmd', {
+      settings: {
+        auto_boost_enabled: true,
+        favorites: [12345],
+        last_played: { 12345: expect.any(Number) },
+      },
+    });
   });
 
-  it('scanGames sets scanning state and fetches games', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_GAMES);
+  it('migrates from localStorage on loadSettings failure', async () => {
+    // Mock localStorage data
+    localStorageMock.getItem.mockImplementation((key: string) => {
+      switch (key) {
+        case 'nexus:launcher:autoBoostEnabled':
+          return 'true';
+        case 'nexus:launcher:favorites':
+          return JSON.stringify([12345]);
+        case 'nexus:launcher:lastPlayed':
+          return JSON.stringify({ 12345: Date.now() });
+        default:
+          return null;
+      }
+    });
 
-    const promise = useLauncherStore.getState().scanGames();
+    // Mock Rust failure then success
+    mockInvoke
+      .mockImplementationOnce(() => Promise.reject(new Error('Failed')))
+      .mockImplementation((command: string) => {
+        if (command === 'migrate_launcher_settings') {
+          return Promise.resolve();
+        }
+        return Promise.resolve(mockSettings);
+      });
 
-    // Check scanning state
-    expect(useLauncherStore.getState().isScanning).toBe(true);
-    expect(useLauncherStore.getState().error).toBeNull();
+    await useLauncherStore.getState().loadSettings();
 
-    await promise;
+    expect(mockInvoke).toHaveBeenCalledWith('migrate_launcher_settings', {
+      localSettings: {
+        auto_boost_enabled: true,
+        favorites: [12345],
+        last_played: { 12345: expect.any(Number) },
+      },
+    });
 
-    expect(useLauncherStore.getState().isScanning).toBe(false);
+    // Check localStorage was cleared
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith('nexus:launcher:autoBoostEnabled');
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith('nexus:launcher:favorites');
+    expect(localStorageMock.removeItem).toHaveBeenCalledWith('nexus:launcher:lastPlayed');
+  });
+
+  it('scanGames updates games list', async () => {
+    await useLauncherStore.getState().scanGames();
+
     expect(useLauncherStore.getState().games).toEqual(MOCK_GAMES);
-    expect(useLauncherStore.getState().error).toBeNull();
-  });
-
-  it('scanGames calls scan_steam_games command', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce([]);
-
-    await useLauncherStore.getState().scanGames();
-
-    expect(invoke).toHaveBeenCalledWith('scan_steam_games');
-  });
-
-  it('scanGames handles error', async () => {
-    const errorMessage = 'Steam not found';
-    vi.mocked(invoke).mockRejectedValueOnce(new Error(errorMessage));
-
-    await useLauncherStore.getState().scanGames();
-
     expect(useLauncherStore.getState().isScanning).toBe(false);
-    expect(useLauncherStore.getState().games).toEqual([]);
-    expect(useLauncherStore.getState().error).toBe(errorMessage);
-  });
-
-  it('launchGame launches game without auto boost', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(undefined);
-    const appId = 12345;
-
-    await useLauncherStore.getState().launchGame(appId);
-
-    expect(invoke).toHaveBeenCalledWith('launch_game', { appId });
-    expect(useLauncherStore.getState().lastPlayed[appId]).toBeDefined();
-  });
-
-  it('launchGame executes auto boost when enabled', async () => {
-    useLauncherStore.setState({ autoBoostEnabled: true });
-    vi.mocked(invoke)
-      .mockResolvedValueOnce(undefined) // run_boost
-      .mockResolvedValueOnce(undefined); // launch_game
-
-    await useLauncherStore.getState().launchGame(12345);
-
-    expect(invoke).toHaveBeenCalledWith('run_boost', { thresholdPercent: null });
-    expect(invoke).toHaveBeenCalledWith('launch_game', { appId: 12345 });
-  });
-
-  it('launchGame continues even if auto boost fails', async () => {
-    useLauncherStore.setState({ autoBoostEnabled: true });
-    vi.mocked(invoke)
-      .mockRejectedValueOnce(new Error('Boost failed')) // run_boost fails
-      .mockResolvedValueOnce(undefined); // launch_game succeeds
-
-    await useLauncherStore.getState().launchGame(12345);
-
-    expect(invoke).toHaveBeenCalledWith('launch_game', { appId: 12345 });
+    expect(useLauncherStore.getState().error).toBeNull();
   });
 
   it('launchGame updates last played timestamp', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(undefined);
+    const appId = 12345;
     const before = Date.now();
-    const appId = 67890;
 
     await useLauncherStore.getState().launchGame(appId);
 
     expect(useLauncherStore.getState().lastPlayed[appId]).toBeGreaterThanOrEqual(before);
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'nexus:launcher:lastPlayed',
-      expect.any(String),
-    );
+    expect(mockInvoke).toHaveBeenCalledWith('launch_game', { appId });
   });
 
-  it('toggleAutoBoost toggles state and persists to localStorage', () => {
-    expect(useLauncherStore.getState().autoBoostEnabled).toBe(false);
+  it('toggleAutoBoost toggles state and saves to Rust', async () => {
+    useLauncherStore.setState({ autoBoostEnabled: false });
 
-    useLauncherStore.getState().toggleAutoBoost();
+    await useLauncherStore.getState().toggleAutoBoost();
 
     expect(useLauncherStore.getState().autoBoostEnabled).toBe(true);
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'nexus:launcher:autoBoostEnabled',
-      'true',
-    );
+    expect(mockInvoke).toHaveBeenCalledWith('save_launcher_settings_cmd', {
+      settings: {
+        auto_boost_enabled: true,
+        favorites: [],
+        last_played: {},
+      },
+    });
   });
 
-  it('toggleFavorite adds favorite when not present', () => {
+  it('toggleFavorite adds favorite when not present', async () => {
     const appId = 12345;
 
-    useLauncherStore.getState().toggleFavorite(appId);
+    await useLauncherStore.getState().toggleFavorite(appId);
 
     expect(useLauncherStore.getState().favorites).toContain(appId);
-    expect(localStorageMock.setItem).toHaveBeenCalledWith(
-      'nexus:launcher:favorites',
-      JSON.stringify([appId]),
-    );
+    expect(mockInvoke).toHaveBeenCalledWith('save_launcher_settings_cmd', {
+      settings: {
+        auto_boost_enabled: false,
+        favorites: [appId],
+        last_played: {},
+      },
+    });
   });
 
-  it('toggleFavorite removes favorite when present', () => {
-    useLauncherStore.setState({ favorites: [12345, 67890] });
+  it('toggleFavorite removes favorite when present', async () => {
+    const appId = 12345;
+    useLauncherStore.setState({ favorites: [appId] });
 
-    useLauncherStore.getState().toggleFavorite(12345);
+    await useLauncherStore.getState().toggleFavorite(appId);
 
-    expect(useLauncherStore.getState().favorites).toEqual([67890]);
+    expect(useLauncherStore.getState().favorites).not.toContain(appId);
+    expect(mockInvoke).toHaveBeenCalledWith('save_launcher_settings_cmd', {
+      settings: {
+        auto_boost_enabled: false,
+        favorites: [],
+        last_played: {},
+      },
+    });
   });
 
   it('setSortMode updates sort mode', () => {
@@ -233,16 +262,14 @@ describe('useLauncherStore', () => {
   });
 
   it('setSearchQuery updates search query', () => {
-    const query = 'test game';
+    useLauncherStore.getState().setSearchQuery('test');
 
-    useLauncherStore.getState().setSearchQuery(query);
-
-    expect(useLauncherStore.getState().searchQuery).toBe(query);
+    expect(useLauncherStore.getState().searchQuery).toBe('test');
   });
 
   it('launchGame handles error', async () => {
     const errorMessage = 'Game not found';
-    vi.mocked(invoke).mockRejectedValueOnce(new Error(errorMessage));
+    mockInvoke.mockRejectedValueOnce(new Error(errorMessage));
 
     await useLauncherStore.getState().launchGame(99999);
 

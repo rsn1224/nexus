@@ -1,7 +1,7 @@
 import { FileText, Gamepad2, HardDrive, Home, Monitor, Network, Settings, Zap } from 'lucide-react';
 import type React from 'react';
 import { memo, useMemo, useState } from 'react';
-import { calcScore, getScoreRank } from '../../lib/score';
+import { calcReadiness, getRankStyle } from '../../lib/gameReadiness';
 import { useHardwareData } from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import type { WingId } from '../../types';
@@ -83,18 +83,29 @@ const Shell = memo(function Shell({
     s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
   );
 
-  // Calculate game score
-  const gameScore = useMemo(
-    () =>
-      calcScore({
-        cpuPercent,
-        memUsedGb: latestSnapshot?.memUsedMb ?? null,
-        memTotalGb: latestSnapshot?.memTotalMb ?? null,
-        diskUsagePercent,
-        gpuUsagePercent: gpuUsage,
-      }),
-    [cpuPercent, latestSnapshot?.memUsedMb, latestSnapshot?.memTotalMb, diskUsagePercent, gpuUsage],
-  );
+  // Calculate game readiness
+  const gameScore = useMemo(() => {
+    const readiness = calcReadiness({
+      cpuPercent,
+      memUsedMb:
+        latestSnapshot && latestSnapshot.memUsedMb !== null
+          ? latestSnapshot.memUsedMb / 1024
+          : null,
+      memTotalMb:
+        latestSnapshot && latestSnapshot.memTotalMb !== null
+          ? latestSnapshot.memTotalMb / 1024
+          : null,
+      gpuUsagePercent: gpuUsage,
+      gpuTempC: null,
+      diskUsagePercent,
+      isProfileApplied: false,
+      boostLevel: 'none',
+      timerState: null,
+      affinityConfigured: false,
+      frameTime: null,
+    });
+    return readiness.total;
+  }, [cpuPercent, latestSnapshot, diskUsagePercent, gpuUsage]);
 
   return (
     <div className="flex h-screen bg-[var(--color-base-900)] overflow-hidden">
@@ -187,12 +198,31 @@ const Shell = memo(function Shell({
               gameScore !== null
                 ? (
                     () => {
-                      const rank = getScoreRank(gameScore);
-                      return rank.color === 'var(--color-success-500)'
+                      const readiness = calcReadiness({
+                        cpuPercent,
+                        memUsedMb:
+                          latestSnapshot && latestSnapshot.memUsedMb !== null
+                            ? latestSnapshot.memUsedMb / 1024
+                            : null,
+                        memTotalMb:
+                          latestSnapshot && latestSnapshot.memTotalMb !== null
+                            ? latestSnapshot.memTotalMb / 1024
+                            : null,
+                        gpuUsagePercent: gpuUsage,
+                        gpuTempC: null,
+                        diskUsagePercent,
+                        isProfileApplied: false,
+                        boostLevel: 'none',
+                        timerState: null,
+                        affinityConfigured: false,
+                        frameTime: null,
+                      });
+                      const style = getRankStyle(readiness.rank);
+                      return style.color === 'var(--color-success-500)'
                         ? 'text-[var(--color-success-500)]'
-                        : rank.color === 'var(--color-cyan-500)'
+                        : style.color === 'var(--color-cyan-500)'
                           ? 'text-[var(--color-cyan-500)]'
-                          : rank.color === 'var(--color-accent-400)'
+                          : style.color === 'var(--color-accent-400)'
                             ? 'text-[var(--color-accent-400)]'
                             : 'text-[var(--color-danger-500)]';
                     }

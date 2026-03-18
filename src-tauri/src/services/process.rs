@@ -128,7 +128,7 @@ pub fn set_priority(pid: u32, priority: &str) -> Result<(), AppError> {
             return Err(AppError::Validation(format!(
                 "不正な優先度: '{}'. 'high', 'normal', 'idle' のいずれかを指定してください",
                 priority
-            )))
+            )));
         }
     };
 

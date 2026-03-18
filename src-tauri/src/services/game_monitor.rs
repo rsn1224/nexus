@@ -8,7 +8,7 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 
 use tauri::{AppHandle, Emitter, Manager};
-use tokio::time::{interval, Duration};
+use tokio::time::{Duration, interval};
 use tracing::{error, info, warn};
 
 use crate::error::AppError;

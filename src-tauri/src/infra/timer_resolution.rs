@@ -13,7 +13,7 @@ type NtStatus = i32;
 const STATUS_SUCCESS: NtStatus = 0;
 
 // ntdll.dll の FFI 宣言
-extern "system" {
+unsafe extern "system" {
     /// タイマーリゾリューションを設定する。
     /// desired_resolution: 要求する分解能（100 ns 単位）
     /// set_resolution: 1 = 設定, 0 = リバート

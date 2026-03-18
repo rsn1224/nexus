@@ -1,3 +1,9 @@
+// edition 2024 では collapsible_if が既存の可読性パターンに対しても警告するため許可
+#![allow(
+    clippy::collapsible_if,
+    clippy::collapsible_match,
+    clippy::collapsible_else_if
+)]
 mod commands;
 mod constants;
 mod emitters;
@@ -9,8 +15,8 @@ mod state;
 mod types;
 
 use crate::commands::{
-    app_settings, boost, cleanup, frame_time, hardware, launcher, log, netopt, ops, profile, pulse,
-    storage, timer, windows_settings, winopt,
+    app_settings, boost, cleanup, frame_time, hardware, launcher, launcher_settings, log, netopt,
+    ops, profile, pulse, storage, timer, windows_settings, winopt,
 };
 use tracing::info;
 
@@ -51,6 +57,10 @@ pub fn run() {
             // LAUNCHER
             launcher::scan_steam_games,
             launcher::launch_game,
+            // LAUNCHER SETTINGS
+            launcher_settings::get_launcher_settings_cmd,
+            launcher_settings::save_launcher_settings_cmd,
+            launcher_settings::migrate_launcher_settings,
             // OPS
             ops::list_processes,
             ops::kill_process,

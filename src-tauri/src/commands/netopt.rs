@@ -72,7 +72,8 @@ fn validate_ping_target(target: &str) -> Result<(), AppError> {
         return Ok(());
     }
     Err(AppError::InvalidInput(format!(
-        "Invalid ping target: {}. Only IP addresses or hostnames (alphanumeric, '-', '.') are allowed", target
+        "Invalid ping target: {}. Only IP addresses or hostnames (alphanumeric, '-', '.') are allowed",
+        target
     )))
 }
 

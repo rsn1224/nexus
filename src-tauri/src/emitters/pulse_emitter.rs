@@ -1,6 +1,6 @@
 use std::sync::Mutex;
 use tauri::{AppHandle, Emitter, Manager};
-use tokio::time::{interval, Duration};
+use tokio::time::{Duration, interval};
 use tracing::{debug, error};
 
 /// Pulse（リソーススナップショット）を定期的にフロントエンドへ配信する

@@ -3,7 +3,7 @@ use crate::constants::is_protected_process;
 use std::sync::Mutex;
 use sysinfo::{Process, ProcessesToUpdate};
 use tauri::{AppHandle, Emitter, Manager};
-use tokio::time::{interval, Duration};
+use tokio::time::{Duration, interval};
 use tracing::{debug, error};
 
 /// プロセス一覧を定期的にフロントエンドへ配信する

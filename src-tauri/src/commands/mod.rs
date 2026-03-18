@@ -4,6 +4,7 @@ pub mod cleanup;
 pub mod frame_time;
 pub mod hardware;
 pub mod launcher;
+pub mod launcher_settings;
 pub mod log;
 pub mod netopt;
 pub mod ops;

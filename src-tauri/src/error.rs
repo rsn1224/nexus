@@ -1,53 +1,64 @@
 use serde::Serialize;
+use std::fmt;
 use thiserror::Error;
 
 #[derive(Debug, Error, Serialize)]
 #[serde(tag = "kind", content = "message")]
 pub enum AppError {
-    #[error("IOエラー: {0}")]
     Io(String),
 
-    #[error("シリアライズエラー: {0}")]
     Serialization(String),
 
-    #[error("コマンドエラー: {0}")]
     Command(String),
 
-    #[error("未検出: {0}")]
     NotFound(String),
 
-    #[error("不正な入力: {0}")]
     InvalidInput(String),
 
-    #[error("検証エラー: {0}")]
     Validation(String),
 
-    #[error("PowerShell実行エラー: {0}")]
     PowerShell(String),
 
-    #[error("レジストリ操作エラー: {0}")]
     Registry(String),
 
-    #[error("プロセス操作エラー: {0}")]
     Process(String),
 
-    #[error("資格情報エラー: {0}")]
     Keyring(String),
 
-    #[error("プロファイルエラー: {0}")]
     Profile(String),
 
-    #[error("ゲーム監視エラー: {0}")]
     GameMonitor(String),
 
-    #[error("フレームタイムエラー: {0}")]
+    LauncherError(String),
+
     FrameTime(String),
 
-    #[error("Win32 API エラー: {0}")]
     Win32(String),
 
-    #[error("内部エラー: {0}")]
     Internal(String),
+}
+
+impl fmt::Display for AppError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Io(msg) => write!(f, "IOエラー: {}", msg),
+            Self::Serialization(msg) => write!(f, "シリアライズエラー: {}", msg),
+            Self::Command(msg) => write!(f, "コマンドエラー: {}", msg),
+            Self::NotFound(msg) => write!(f, "未検出: {}", msg),
+            Self::InvalidInput(msg) => write!(f, "不正な入力: {}", msg),
+            Self::Validation(msg) => write!(f, "検証エラー: {}", msg),
+            Self::PowerShell(msg) => write!(f, "PowerShell実行エラー: {}", msg),
+            Self::Registry(msg) => write!(f, "レジストリ操作エラー: {}", msg),
+            Self::Process(msg) => write!(f, "プロセス操作エラー: {}", msg),
+            Self::Keyring(msg) => write!(f, "資格情報エラー: {}", msg),
+            Self::Profile(msg) => write!(f, "プロファイルエラー: {}", msg),
+            Self::GameMonitor(msg) => write!(f, "ゲーム監視エラー: {}", msg),
+            Self::LauncherError(msg) => write!(f, "ランチャー設定エラー: {}", msg),
+            Self::FrameTime(msg) => write!(f, "フレームタイムエラー: {}", msg),
+            Self::Win32(msg) => write!(f, "Win32 API エラー: {}", msg),
+            Self::Internal(msg) => write!(f, "内部エラー: {}", msg),
+        }
+    }
 }
 
 impl From<std::io::Error> for AppError {

@@ -5,6 +5,14 @@ import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { GameInfo } from '../types';
 
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+interface LauncherSettings {
+  auto_boost_enabled: boolean;
+  favorites: number[];
+  last_played: Record<number, number>; // app_id -> timestamp (ms)
+}
+
 const AUTO_BOOST_KEY = 'nexus:launcher:autoBoostEnabled';
 const FAVORITES_KEY = 'nexus:launcher:favorites'; // number[] JSON
 const LAST_PLAYED_KEY = 'nexus:launcher:lastPlayed'; // Record<number, number> JSON
@@ -27,17 +35,85 @@ interface LauncherStore {
   toggleFavorite: (appId: number) => void;
   setSortMode: (mode: SortMode) => void;
   setSearchQuery: (query: string) => void;
+
+  // Internal methods
+  loadSettings: () => Promise<void>;
+  saveSettings: () => Promise<void>;
+  migrateFromLocalStorage: () => Promise<void>;
 }
 
+// Initialize with defaults, load from Rust on mount
 export const useLauncherStore = create<LauncherStore>((set, get) => ({
   games: [],
   isScanning: false,
-  autoBoostEnabled: localStorage.getItem(AUTO_BOOST_KEY) === 'true',
+  autoBoostEnabled: false,
   error: null,
-  favorites: JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? '[]') as number[],
-  lastPlayed: JSON.parse(localStorage.getItem(LAST_PLAYED_KEY) ?? '{}') as Record<number, number>,
+  favorites: [],
+  lastPlayed: {},
   sortMode: 'name' as SortMode,
   searchQuery: '',
+
+  loadSettings: async () => {
+    try {
+      const settings = await invoke<LauncherSettings>('get_launcher_settings_cmd');
+      set({
+        autoBoostEnabled: settings.auto_boost_enabled,
+        favorites: settings.favorites,
+        lastPlayed: Object.fromEntries(Object.entries(settings.last_played)),
+      });
+      log.info('launcher: settings loaded from Rust');
+    } catch (err) {
+      log.error({ err }, 'launcher: failed to load settings');
+      // Try migration from localStorage
+      await get().migrateFromLocalStorage();
+    }
+  },
+
+  saveSettings: async () => {
+    try {
+      const { autoBoostEnabled, favorites, lastPlayed } = get();
+      const settings: LauncherSettings = {
+        auto_boost_enabled: autoBoostEnabled,
+        favorites,
+        last_played: lastPlayed,
+      };
+      await invoke('save_launcher_settings_cmd', { settings });
+      log.info('launcher: settings saved to Rust');
+    } catch (err) {
+      log.error({ err }, 'launcher: failed to save settings');
+    }
+  },
+
+  migrateFromLocalStorage: async () => {
+    try {
+      const localSettings: LauncherSettings = {
+        auto_boost_enabled: localStorage.getItem(AUTO_BOOST_KEY) === 'true',
+        favorites: JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? '[]') as number[],
+        last_played: JSON.parse(localStorage.getItem(LAST_PLAYED_KEY) ?? '{}') as Record<
+          number,
+          number
+        >,
+      };
+
+      await invoke('migrate_launcher_settings', { localSettings });
+
+      // Update state with migrated settings
+      set({
+        autoBoostEnabled: localSettings.auto_boost_enabled,
+        favorites: localSettings.favorites,
+        lastPlayed: localSettings.last_played,
+      });
+
+      // Clear localStorage
+      localStorage.removeItem(AUTO_BOOST_KEY);
+      localStorage.removeItem(FAVORITES_KEY);
+      localStorage.removeItem(LAST_PLAYED_KEY);
+
+      log.info('launcher: migrated settings from localStorage');
+    } catch (err) {
+      log.error({ err }, 'launcher: migration failed, using defaults');
+    }
+  },
 
   scanGames: async () => {
     set({ isScanning: true, error: null });
@@ -72,8 +148,8 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
 
       // Record last played timestamp
       const nextLastPlayed = { ...get().lastPlayed, [appId]: Date.now() };
-      localStorage.setItem(LAST_PLAYED_KEY, JSON.stringify(nextLastPlayed));
       set({ lastPlayed: nextLastPlayed });
+      await get().saveSettings();
     } catch (err) {
       log.error({ err, appId }, 'launcher: launch game failed');
       const errorMessage = extractErrorMessage(err);
@@ -81,18 +157,18 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
     }
   },
 
-  toggleAutoBoost: () => {
+  toggleAutoBoost: async () => {
     const newValue = !get().autoBoostEnabled;
     set({ autoBoostEnabled: newValue });
-    localStorage.setItem(AUTO_BOOST_KEY, newValue.toString());
+    await get().saveSettings();
     log.info({ autoBoostEnabled: newValue }, 'launcher: auto boost toggled');
   },
 
-  toggleFavorite: (appId) => {
+  toggleFavorite: async (appId) => {
     const favs = get().favorites;
     const next = favs.includes(appId) ? favs.filter((id) => id !== appId) : [...favs, appId];
-    localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
     set({ favorites: next });
+    await get().saveSettings();
     log.info({ appId }, 'launcher: favorite toggled');
   },
 

@@ -5,12 +5,16 @@ vi.mock('../lib/logger', () => ({
 }));
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
 
+import { invoke } from '@tauri-apps/api/core';
 import { useLauncherStore } from '../stores/useLauncherStore';
 import { usePulseStore } from '../stores/usePulseStore';
 
+const mockInvoke = vi.mocked(invoke);
+
 describe('useLauncherStore', () => {
   beforeEach(() => {
-    localStorage.clear();
+    vi.clearAllMocks();
+    mockInvoke.mockResolvedValue(undefined);
     // Zustand ストアを初期状態にリセット
     useLauncherStore.setState({
       autoBoostEnabled: false,
@@ -24,7 +28,7 @@ describe('useLauncherStore', () => {
     });
   });
 
-  it('autoBoostEnabled の初期値は false（localStorage が空の場合）', () => {
+  it('autoBoostEnabled の初期値は false', () => {
     expect(useLauncherStore.getState().autoBoostEnabled).toBe(false);
   });
 
@@ -39,9 +43,9 @@ describe('useLauncherStore', () => {
     expect(useLauncherStore.getState().autoBoostEnabled).toBe(false);
   });
 
-  it('toggleAutoBoost で localStorage に保存される', () => {
+  it('toggleAutoBoost で Rust 永続化コマンドが呼ばれる', () => {
     useLauncherStore.getState().toggleAutoBoost();
-    expect(localStorage.getItem('nexus:launcher:autoBoostEnabled')).toBe('true');
+    expect(mockInvoke).toHaveBeenCalledWith('save_launcher_settings_cmd', expect.anything());
   });
 });
 

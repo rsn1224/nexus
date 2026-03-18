@@ -14,7 +14,21 @@
       "Write(**/*.key)"
     ]
   },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "hooks": {
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"if (Test-Path 'C:/Users/rsn12/dev/nexus/HANDOFF.md') { Write-Output '=== HANDOFF.md (top 50) ==='; Get-Content 'C:/Users/rsn12/dev/nexus/HANDOFF.md' -TotalCount 50 }; if (Test-Path 'C:/Users/rsn12/dev/nexus/ROADMAP.md') { Write-Output '=== ROADMAP.md (top 30) ==='; Get-Content 'C:/Users/rsn12/dev/nexus/ROADMAP.md' -TotalCount 30 }\""
+          }
+        ]
+      }
+    ],
     "SubagentStop": [
       {
         "matcher": "",
@@ -22,6 +36,32 @@
           {
             "type": "command",
             "command": "echo [SUBAGENT DONE] >> C:/Users/rsn12/dev/nexus/.claude/subagent.log 2>nul || true"
+          },
+          {
+            "type": "command",
+            "command": "powershell -Command \"if (Test-Path 'C:/Users/rsn12/dev/nexus/HANDOFF.md') { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; Add-Content 'C:/Users/rsn12/dev/nexus/HANDOFF.md' \\\"`n## [Subagent Completed] $ts\\\"\" }\""
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"if (Test-Path 'C:/Users/rsn12/dev/nexus/HANDOFF.md') { Get-Content 'C:/Users/rsn12/dev/nexus/HANDOFF.md' -TotalCount 20 }; exit 0\""
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -Command \"Set-Location 'C:/Users/rsn12/dev/nexus'; $f=$false; if (Test-Path 'package.json') { npm run check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; npm run typecheck 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if (Test-Path 'Cargo.toml') { cargo check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; cargo clippy -- -D warnings 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if ($f) { Write-Output 'Quality checks failed. Fix issues before completing this task.'; exit 2 } else { exit 0 }\""
           }
         ]
       }

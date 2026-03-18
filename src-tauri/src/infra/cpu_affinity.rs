@@ -7,8 +7,8 @@ mod platform {
     use tracing::info;
     use windows_sys::Win32::Foundation::{CloseHandle, INVALID_HANDLE_VALUE};
     use windows_sys::Win32::System::Threading::{
-        GetProcessAffinityMask, OpenProcess, SetProcessAffinityMask, PROCESS_QUERY_INFORMATION,
-        PROCESS_SET_INFORMATION,
+        GetProcessAffinityMask, OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_SET_INFORMATION,
+        SetProcessAffinityMask,
     };
 
     /// プロセスのアフィニティマスクを設定する。
