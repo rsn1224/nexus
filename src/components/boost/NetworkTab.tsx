@@ -1,6 +1,8 @@
 import React from 'react';
 import { useWinoptStore } from '../../stores/useWinoptStore';
 import { Button, LoadingState } from '../ui';
+import NetworkQualityCard from './NetworkQualityCard';
+import TcpTuningCard from './TcpTuningCard';
 
 interface NetworkTabProps {
   className?: string;
@@ -103,6 +105,10 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
           ))}
         </div>
       )}
+      <div className="flex flex-col gap-3 mt-3">
+        <TcpTuningCard />
+        <NetworkQualityCard />
+      </div>
     </div>
   );
 }

@@ -293,6 +293,8 @@ export interface GameProfile {
   autoSuspendEnabled: boolean;
   timerResolution100ns: number | null;
   boostLevel: BoostLevel;
+  /** ゲーム中にコアパーキングを無効化するか（全コア稼働 = パフォーマンス優先） */
+  coreParkingDisabled: boolean;
   lastPlayed: number | null;
   totalPlaySecs: number;
   createdAt: number;
@@ -306,6 +308,7 @@ export interface ProfileApplyResult {
   appliedAt: number;
   prevPowerPlan: string | null;
   suspendedPids: number[];
+  prevCoreParking: number | null;
 }
 
 export interface GameLaunchEvent {
@@ -558,5 +561,44 @@ export interface SharedProfile {
   autoSuspendEnabled: boolean;
   timerResolution100ns: number | null;
   boostLevel: BoostLevel;
+  coreParkingDisabled: boolean;
   exportedAt: number;
+}
+
+// ─── NETWORK TUNING (δ-2) ────────────────────────────────────────────────────
+
+export type TcpAutoTuningLevel =
+  | 'normal'
+  | 'disabled'
+  | 'highlyRestricted'
+  | 'restricted'
+  | 'experimental';
+
+export interface TcpTuningState {
+  nagleDisabled: boolean;
+  delayedAckDisabled: boolean;
+  /** -1 = 無制限, 10 = デフォルト */
+  networkThrottlingIndex: number;
+  /** 0–100% */
+  qosReservedBandwidthPct: number;
+  tcpAutoTuning: TcpAutoTuningLevel;
+  ecnEnabled: boolean;
+  rssEnabled: boolean;
+}
+
+export interface NetworkQualitySnapshot {
+  target: string;
+  avgLatencyMs: number;
+  jitterMs: number;
+  packetLossPct: number;
+  sampleCount: number;
+  timestamp: number;
+}
+
+/** コアパーキング現在状態（Rust CoreParkingState から） */
+export interface CoreParkingState {
+  /** AC 電源時のコアパーキング最小コア率（0=パーキング有効, 100=無効） */
+  minCoresPercentAc: number;
+  /** DC（バッテリー）時のコアパーキング最小コア率 */
+  minCoresPercentDc: number;
 }
