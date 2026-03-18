@@ -58,6 +58,9 @@ pub enum AppError {
     #[allow(dead_code)]
     #[error("Win32 API エラー: {0}")]
     Win32(String),
+
+    #[error("内部エラー: {0}")]
+    Internal(String),
 }
 
 impl From<std::io::Error> for AppError {

@@ -54,6 +54,41 @@ pub fn get_gpu_info() -> (Option<String>, Option<u64>) {
     (None, None)
 }
 
+/// GPU 情報の統合構造体
+#[derive(Debug, Clone)]
+pub struct GpuFullInfo {
+    pub name: Option<String>,
+    pub vram_total_mb: Option<u64>,
+    pub vram_used_mb: Option<u64>,
+    pub usage_percent: Option<f32>,
+    pub temperature_c: Option<f32>,
+}
+
+/// GPU の全情報を取得する。
+/// 優先順位: NVML（リアルタイム） → PowerShell（静的情報のみ）
+pub fn get_gpu_full_info() -> GpuFullInfo {
+    // 1. NVML を試す
+    if let Ok(Some(data)) = crate::infra::gpu::query_nvml_gpu() {
+        return GpuFullInfo {
+            name: Some(data.name),
+            vram_total_mb: Some(data.vram_total_mb),
+            vram_used_mb: Some(data.vram_used_mb),
+            usage_percent: Some(data.usage_percent as f32),
+            temperature_c: Some(data.temperature_c as f32),
+        };
+    }
+
+    // 2. NVML 不可 → PowerShell フォールバック（名前 + VRAM 総量のみ）
+    let (name, vram_total) = get_gpu_info();
+    GpuFullInfo {
+        name,
+        vram_total_mb: vram_total,
+        vram_used_mb: None,
+        usage_percent: None,
+        temperature_c: None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     // get_cpu_temperature() はハードウェアアクセスが必要なため
@@ -89,5 +124,56 @@ mod tests {
             Some(temps.iter().sum::<f32>() / temps.len() as f32)
         };
         assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_get_gpu_full_info_smoke() {
+        // NVIDIA GPU があるかどうかに関わらず、パニックしないことを確認
+        let result = get_gpu_full_info();
+
+        // 少なくとも構造体が生成されることを確認
+        // NVML が使える場合は詳細な情報、使えない場合は PowerShell フォールバック
+        match (
+            result.name,
+            result.vram_total_mb,
+            result.vram_used_mb,
+            result.usage_percent,
+            result.temperature_c,
+        ) {
+            (Some(_), Some(_), Some(_), Some(_), Some(_)) => {
+                // NVML 経由で全情報取得
+                println!("NVML 経由で GPU 情報取得完了");
+            }
+            (Some(_), Some(_), None, None, None) => {
+                // PowerShell フォールバック
+                println!("PowerShell フォールバックで GPU 情報取得完了");
+            }
+            (None, None, None, None, None) => {
+                // GPU 未検出
+                println!("GPU 未検出");
+            }
+            _ => {
+                // その他の組み合わせも許容
+                println!("部分的な GPU 情報取得");
+            }
+        }
+    }
+
+    #[test]
+    fn test_gpu_full_info_creation() {
+        // GpuFullInfo 構造体の生成テスト
+        let info = GpuFullInfo {
+            name: Some("Test GPU".to_string()),
+            vram_total_mb: Some(8192),
+            vram_used_mb: Some(4096),
+            usage_percent: Some(75.0),
+            temperature_c: Some(65.0),
+        };
+
+        assert_eq!(info.name.unwrap(), "Test GPU");
+        assert_eq!(info.vram_total_mb.unwrap(), 8192);
+        assert_eq!(info.vram_used_mb.unwrap(), 4096);
+        assert_eq!(info.usage_percent.unwrap(), 75.0);
+        assert_eq!(info.temperature_c.unwrap(), 65.0);
     }
 }

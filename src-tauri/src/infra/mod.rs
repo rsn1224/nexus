@@ -1,6 +1,7 @@
 pub mod command_runner;
 pub mod cpu_affinity;
 pub mod etw;
+pub mod gpu;
 pub mod power_plan;
 pub mod powershell;
 pub mod process_control;

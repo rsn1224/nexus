@@ -23,7 +23,8 @@ export default function SystemStatusCard(): React.ReactElement {
   const netRecv = latestSnapshot?.netRecvKb ?? null;
   const netSent = latestSnapshot?.netSentKb ?? null;
 
-  const { diskUsagePercent } = useHardwareData();
+  const hardwareData = useHardwareData();
+  const gpuUsagePercent = hardwareData.info?.gpuUsagePercent ?? null;
 
   return (
     <Card title="システムステータス" className="mt-4">
@@ -71,7 +72,15 @@ export default function SystemStatusCard(): React.ReactElement {
         <div>
           DISK {'   '}
           <span className="text-[var(--color-accent-500)]">
-            {diskUsagePercent !== null ? `${diskUsagePercent.toFixed(0)}%` : '--'}
+            {hardwareData.diskUsagePercent !== null
+              ? `${hardwareData.diskUsagePercent.toFixed(0)}%`
+              : '--'}
+          </span>
+        </div>
+        <div>
+          GPU%{'    '}
+          <span className="text-[var(--color-accent-500)]">
+            {gpuUsagePercent !== null ? `${gpuUsagePercent.toFixed(1)}%` : '--'}
           </span>
         </div>
       </div>

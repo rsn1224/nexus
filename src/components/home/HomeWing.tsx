@@ -189,9 +189,35 @@ const HomeWing = function HomeWing(): React.ReactElement {
                       : 'text-[var(--color-text-muted)]'
                   }
                 >
-                  {hwInfo.gpuVramTotalMb != null ? `${hwInfo.gpuVramTotalMb} MB` : 'N/A'}
+                  {hwInfo.gpuVramTotalMb != null && hwInfo.gpuVramUsedMb != null
+                    ? `${hwInfo.gpuVramUsedMb} / ${hwInfo.gpuVramTotalMb} MB (${((hwInfo.gpuVramUsedMb / hwInfo.gpuVramTotalMb) * 100).toFixed(1)}%)`
+                    : hwInfo.gpuVramTotalMb != null
+                      ? `${hwInfo.gpuVramTotalMb} MB`
+                      : 'N/A'}
                 </span>
               </div>
+              {hwInfo.gpuUsagePercent !== null && (
+                <div>
+                  GPU%{'    '}
+                  <span className="text-[var(--color-accent-500)]">
+                    {hwInfo.gpuUsagePercent.toFixed(1)}%
+                  </span>
+                </div>
+              )}
+              {hwInfo.gpuTempC !== null && (
+                <div>
+                  TEMP{'    '}
+                  <span
+                    className={
+                      hwInfo.gpuTempC >= 80
+                        ? 'text-[var(--color-danger-500)]'
+                        : 'text-[var(--color-accent-500)]'
+                    }
+                  >
+                    {hwInfo.gpuTempC.toFixed(1)}°C
+                  </span>
+                </div>
+              )}
             </>
           ) : (
             <div className="text-[var(--color-text-muted)]">情報がありません</div>

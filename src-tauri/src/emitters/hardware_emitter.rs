@@ -117,10 +117,10 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
     }
     disks.sort_by(|a, b| a.mount.cmp(&b.mount));
 
-    // GPU情報（PowerShell 経由 — 時間がかかるため Mutex の外で実行）
-    let (gpu_name, gpu_vram_total_mb) = crate::services::hardware::get_gpu_info();
+    // GPU情報（NVML → PowerShell フォールバック — 時間がかかるため Mutex の外で実行）
+    let gpu = crate::services::hardware::get_gpu_full_info();
 
-    if gpu_name.is_none() {
+    if gpu.name.is_none() {
         warn!("hardware_emitter: GPU情報の取得に失敗しました");
     }
 
@@ -138,10 +138,10 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
         uptime_secs,
         boot_time_unix,
         disks,
-        gpu_name,
-        gpu_vram_total_mb,
-        gpu_vram_used_mb: None,
-        gpu_temp_c: None,
-        gpu_usage_percent: None,
+        gpu_name: gpu.name,
+        gpu_vram_total_mb: gpu.vram_total_mb,
+        gpu_vram_used_mb: gpu.vram_used_mb,
+        gpu_temp_c: gpu.temperature_c,
+        gpu_usage_percent: gpu.usage_percent,
     })
 }
