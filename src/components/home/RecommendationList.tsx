@@ -49,7 +49,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
               type="button"
               onClick={() => {
                 const wingId = actionToWing[rec.action as keyof typeof actionToWing];
-                if (wingId) navigate?.(wingId);
+                if (wingId) navigate(wingId);
               }}
               className="shrink-0 text-[var(--color-cyan-500)] hover:underline"
             >

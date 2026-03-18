@@ -5,6 +5,7 @@ import { useInitialData } from '../../hooks/useInitialData';
 import { useLogActions, useLogState } from '../../stores/useLogStore';
 import { Card, EmptyState, ErrorBanner } from '../ui';
 import LogActions from './LogActions';
+import { LogAnalysisPanel } from './LogAnalysisPanel';
 import LogEntries from './LogEntries';
 import LogFilters from './LogFilters';
 import LogStats from './LogStats';
@@ -193,10 +194,7 @@ export default function LogWing(): React.ReactElement {
       {/* Analysis Results */}
       {analysis && (
         <Card className="mt-4">
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)]">
-            <div className="mb-2 font-bold text-[var(--color-accent-500)]">Log Analysis</div>
-            <div className="whitespace-pre-wrap">{JSON.stringify(analysis, null, 2)}</div>
-          </div>
+          <LogAnalysisPanel analysis={analysis} />
         </Card>
       )}
     </div>

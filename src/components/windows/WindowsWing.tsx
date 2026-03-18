@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import { PowerPlan, VisualEffects } from '../../types';
-import { Button } from '../ui';
+import { Button, ErrorBanner, LoadingState } from '../ui';
 
 export default function WindowsWing(): React.ReactElement {
   const {
@@ -35,13 +35,6 @@ export default function WindowsWing(): React.ReactElement {
   // 初回データフェッチ
   useInitialData(() => fetchSettings(), [fetchSettings]);
 
-  // エラーバナー（インライン展開）
-  const errorBanner = error ? (
-    <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
-      ERROR: {error}
-    </div>
-  ) : null;
-
   // ローディング表示
   if (isLoading && !settings) {
     return (
@@ -55,9 +48,7 @@ export default function WindowsWing(): React.ReactElement {
           </Button>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <div className="font-[var(--font-mono)] text-[12px] text-[var(--color-text-muted)]">
-            読み込み中...
-          </div>
+          <LoadingState message="LOADING..." />
         </div>
       </div>
     );
@@ -65,6 +56,9 @@ export default function WindowsWing(): React.ReactElement {
 
   return (
     <div className="p-4 h-full flex flex-col">
+      {/* Error Banner */}
+      {error && <ErrorBanner message={error} />}
+
       {/* Header */}
       <div className="mb-4 flex justify-between items-center">
         <div className="font-[var(--font-mono)] text-xs font-bold text-[var(--color-cyan-500)] tracking-[0.15em] shrink-0 pb-2 border-b border-[var(--color-border-subtle)]">
@@ -80,9 +74,6 @@ export default function WindowsWing(): React.ReactElement {
           ↻ REFRESH
         </Button>
       </div>
-
-      {/* Error Banner */}
-      {errorBanner}
 
       {/* Content */}
       <div className="flex-1 space-y-4 overflow-y-auto">

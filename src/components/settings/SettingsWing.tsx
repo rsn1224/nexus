@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import type React from 'react';
 import { useState } from 'react';
 import { useInitialData, useStateSync } from '../../hooks/useInitialData';
+import log from '../../lib/logger';
 import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
 import type { RevertAllResult, RevertItem } from '../../types';
@@ -89,7 +90,7 @@ export default function SettingsWing(): React.ReactElement {
       const result = await invoke<RevertAllResult>('revert_all_settings');
       setRevertResult(result);
     } catch (err) {
-      console.error('Revert failed:', err);
+      log.error({ err }, 'settings: revert failed');
     } finally {
       setIsReverting(false);
     }
@@ -115,7 +116,7 @@ export default function SettingsWing(): React.ReactElement {
         failCount: revertRes.failCount + cleanupItems.filter((i) => !i.success).length,
       });
     } catch (err) {
-      console.error('Cleanup failed:', err);
+      log.error({ err }, 'settings: cleanup failed');
     } finally {
       setIsCleaning(false);
     }

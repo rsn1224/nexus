@@ -20,7 +20,7 @@ export default function QuickActionsCard(): React.ReactElement {
         >
           {isListening ? '■ 監視中' : '▶ 監視開始'}
         </Button>
-        <Button variant="primary" size="sm" onClick={() => navigate?.('boost')}>
+        <Button variant="primary" size="sm" onClick={() => navigate('boost')}>
           ⚡ 今すぐ最適化
         </Button>
       </div>

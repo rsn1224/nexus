@@ -2,7 +2,7 @@ import type React from 'react';
 import { useState } from 'react';
 import { useInitialData } from '../../hooks/useInitialData';
 import { formatBytes, getUsagePercentage, useStorage } from '../../stores/useStorageStore';
-import { Button } from '../ui';
+import { Button, ErrorBanner } from '../ui';
 
 export default function StorageWing(): React.ReactElement {
   const {
@@ -36,13 +36,6 @@ export default function StorageWing(): React.ReactElement {
     await analyzeDiskUsage(driveName);
   };
 
-  // Error banner (inline)
-  const errorBanner = error ? (
-    <div className="px-4 py-2 mb-4 bg-red-500/10 border-b border-red-600 text-red-500 font-[var(--font-mono)] text-[10px] rounded">
-      ERROR: {error}
-    </div>
-  ) : null;
-
   return (
     <div className="flex flex-col h-full p-4">
       {/* Header */}
@@ -56,7 +49,7 @@ export default function StorageWing(): React.ReactElement {
       </div>
 
       {/* Error Banner */}
-      {errorBanner}
+      {error && <ErrorBanner message={error} onDismiss={clearError} />}
 
       {/* Storage Overview */}
       {storageInfo && (
