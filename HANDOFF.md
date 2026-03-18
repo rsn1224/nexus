@@ -193,6 +193,32 @@ services/cleanup.rs（revert_all/cleanup_app_data）/ credentials.rs delete_api_
 
 ---
 
+---
+
+### OH-B6: テストカバレッジ拡張（v1.0 品質基盤）
+
+**ステータス:** ✅ 完了（2026-05-18）
+
+**Zustand ストアテスト新規追加（7 ファイル）:**
+- `useSessionStore.test.ts` — セッション CRUD・比較・ノート更新
+- `useEcoModeStore.test.ts` — エコモード設定・電力/コスト推定
+- `useWatchdogStore.test.ts` — ルール CRUD・イベント・プリセット
+- `useWinoptStore.test.ts` — Windows/Net 設定 apply/revert・DNS フラッシュ
+- `useScriptStore.test.ts` — スクリプト追加/削除/実行・ログ管理
+- `useAppSettingsStore.test.ts` — 設定取得/保存/部分更新・エラー
+- `useNavStore.test.ts` — ナビゲーション関数の登録と呼び出し
+
+**Wing コンポーネントテスト新規追加（5 ファイル）:**
+- `StorageWing.test.tsx` — ローディング/エラー/データ表示・クリーンアップ UI
+- `NetoptWing.test.tsx` — アダプタ/DNS/Ping 表示・ユーザー操作
+- `WindowsWing.test.tsx` — ローディング/POWER/GAMING/VISUAL セクション
+- `LogWing.test.tsx` — フィルタ/アクション/ログ一覧/分析パネル
+- `HardwareWing.test.tsx` — ローディング/エラー/ハードウェア情報/EcoMode パネル
+
+**品質ゲート:** 53 テストファイル / 480 テスト全通過、typecheck クリーン、Biome クリーン
+
+---
+
 ## 完了済みタスク（履歴）
 
 > 詳細は git log で確認可能。以下は概要のみ。
