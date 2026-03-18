@@ -139,12 +139,43 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
     }
     disks.sort_by(|a, b| a.mount.cmp(&b.mount));
 
-    // GPU情報（NVML → PowerShell フォールバック — 時間がかかるため Mutex の外で実行）
-    let gpu = crate::services::hardware::get_gpu_full_info();
+    // GPU情報（静的情報はキャッシュ、動的情報は毎回取得）
+    let gpu_static = {
+        let state = app.state::<Mutex<crate::state::AppState>>();
+        let mut s = state
+            .lock()
+            .map_err(|e| format!("Stateロックエラー: {}", e))?;
 
-    if gpu.name.is_none() {
-        warn!("hardware_emitter: GPU情報の取得に失敗しました");
-    }
+        // キャッシュがあれば使用、なければ取得してキャッシュ
+        if let Some(ref cached) = s.gpu_static {
+            cached.clone()
+        } else {
+            let info = crate::services::hardware::get_gpu_static_info();
+            s.gpu_static = Some(info.clone());
+            info
+        }
+    };
+
+    // GPU名がNoneの場合は再取得を試みる
+    let gpu_static = if gpu_static.name.is_none() {
+        warn!("hardware_emitter: GPU名がNoneのため再取得を試みます");
+        let info = crate::services::hardware::get_gpu_static_info();
+
+        // 再取得した結果をキャッシュに保存
+        let state = app.state::<Mutex<crate::state::AppState>>();
+        if let Ok(mut s) = state.lock() {
+            s.gpu_static = Some(info.clone());
+        }
+
+        if info.name.is_none() {
+            warn!("hardware_emitter: GPU情報の取得に失敗しました");
+        }
+        info
+    } else {
+        gpu_static
+    };
+
+    let gpu_dynamic = crate::services::hardware::get_gpu_dynamic_info();
 
     Ok(HardwareInfo {
         cpu_name,
@@ -160,10 +191,10 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
         uptime_secs,
         boot_time_unix,
         disks,
-        gpu_name: gpu.name,
-        gpu_vram_total_mb: gpu.vram_total_mb,
-        gpu_vram_used_mb: gpu.vram_used_mb,
-        gpu_temp_c: gpu.temperature_c,
-        gpu_usage_percent: gpu.usage_percent,
+        gpu_name: gpu_static.name,
+        gpu_vram_total_mb: gpu_static.vram_total_mb,
+        gpu_vram_used_mb: gpu_dynamic.vram_used_mb,
+        gpu_temp_c: gpu_dynamic.temperature_c,
+        gpu_usage_percent: gpu_dynamic.usage_percent,
     })
 }

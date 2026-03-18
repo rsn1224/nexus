@@ -20,39 +20,48 @@ impl PowerPlanController {
         Self
     }
 
+    const GUID_PATTERNS: &[&str] = &[
+        "Power Scheme GUID:", // 英語
+        "電源設定 GUID:",     // 日本語
+        "電源スキーム GUID:", // 日本語（別バージョン）
+    ];
+
+    /// 行からGUIDを抽出する（日英対応）
+    fn extract_guid_from_line(line: &str) -> Option<&str> {
+        for pattern in Self::GUID_PATTERNS {
+            if let Some(rest) = line.split(pattern).nth(1) {
+                return rest.split_whitespace().next();
+            }
+        }
+        None
+    }
+
     /// 現在アクティブな電源プランの GUID を取得する
     ///
     /// # 戻り値
-    /// - `Ok(Some(String))`: 現在の電源プラン GUID
-    /// - `Ok(None)`: 取得失敗（powercfg が利用不可）
+    /// - `Ok(Some(guid))`: GUID 文字列
+    /// - `Ok(None)`: 取得失敗
     /// - `Err(AppError)`: コマンド実行エラー
     pub fn get_active_plan_guid(&self) -> Result<Option<String>, AppError> {
         let output = Command::new("powercfg")
             .args(["/getactivescheme"])
             .output()
-            .map_err(|e| AppError::GameMonitor(format!("powercfg 実行失敗: {}", e)))?;
+            .map_err(|e| AppError::GameMonitor(format!("powercfg getactivescheme 失敗: {}", e)))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             return Err(AppError::GameMonitor(format!(
-                "powercfg getactivescheme 失敗: {}",
+                "電源プラン取得失敗: {}",
                 stderr
             )));
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
 
-        // 出力から GUID を抽出
-        // 例: "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)"
+        // 出力から GUID を抽出（日英対応）
         for line in stdout.lines() {
-            if line.contains("Power Scheme GUID:") {
-                if let Some(guid_part) = line.split("Power Scheme GUID:").nth(1) {
-                    let guid_part = guid_part.trim();
-                    // 最初のスペースまでを GUID として抽出
-                    if let Some(guid) = guid_part.split_whitespace().next() {
-                        return Ok(Some(guid.trim_matches('(').to_string()));
-                    }
-                }
+            if let Some(guid) = Self::extract_guid_from_line(line) {
+                return Ok(Some(guid.trim_matches('(').to_string()));
             }
         }
 
@@ -154,26 +163,24 @@ impl PowerPlanController {
         let stdout = String::from_utf8_lossy(&output.stdout);
         let mut plans = Vec::new();
 
-        // 出力行を解析
+        // 出力行を解析（日英対応）
         // 例: "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)"
         for line in stdout.lines() {
-            if line.contains("Power Scheme GUID:") {
-                if let Some(guid_part) = line.split("Power Scheme GUID:").nth(1) {
-                    let guid_part = guid_part.trim();
+            if let Some(guid) = Self::extract_guid_from_line(line) {
+                let guid_str = guid.to_string();
+                let guid_part = line.split(&guid_str).nth(1).unwrap_or("").trim();
 
-                    // GUID と表示名を分離
-                    let parts: Vec<&str> = guid_part.split_whitespace().collect();
-                    if parts.len() >= 2 {
-                        let guid = parts[0].to_string();
-                        // 表示名は括弧で囲まれている
-                        let display_name = parts[1..]
-                            .join(" ")
-                            .trim_matches('(')
-                            .trim_matches(')')
-                            .to_string();
+                // GUID と表示名を分離
+                let parts: Vec<&str> = guid_part.split_whitespace().collect();
+                if parts.len() >= 2 {
+                    // 表示名は括弧で囲まれている
+                    let display_name = parts[1..]
+                        .join(" ")
+                        .trim_matches('(')
+                        .trim_matches(')')
+                        .to_string();
 
-                        plans.push((guid, display_name));
-                    }
+                    plans.push((guid_str, display_name));
                 }
             }
         }
@@ -262,6 +269,39 @@ mod tests {
     fn test_power_plan_controller_new() {
         let _unused_controller = PowerPlanController::new();
         // 新規作成が成功すれば OK
+    }
+
+    #[test]
+    fn test_extract_guid_english() {
+        let line = "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)";
+        assert_eq!(
+            PowerPlanController::extract_guid_from_line(line),
+            Some("381b4222-f694-41f0-9685-ff5bb260df2e")
+        );
+    }
+
+    #[test]
+    fn test_extract_guid_japanese() {
+        let line = "電源設定 GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (バランス)";
+        assert_eq!(
+            PowerPlanController::extract_guid_from_line(line),
+            Some("381b4222-f694-41f0-9685-ff5bb260df2e")
+        );
+    }
+
+    #[test]
+    fn test_extract_guid_japanese_alt() {
+        let line = "電源スキーム GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (バランス)";
+        assert_eq!(
+            PowerPlanController::extract_guid_from_line(line),
+            Some("381b4222-f694-41f0-9685-ff5bb260df2e")
+        );
+    }
+
+    #[test]
+    fn test_extract_guid_no_match() {
+        let line = "Some other line without GUID";
+        assert_eq!(PowerPlanController::extract_guid_from_line(line), None);
     }
 
     #[test]

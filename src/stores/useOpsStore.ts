@@ -62,7 +62,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
         log.error({ err }, 'ops: listen failed: %s', errorMessage);
         set({
           isListening: false,
-          error: errorMessage,
+          error: `プロセス監視の開始に失敗しました: ${errorMessage}`,
         });
       });
   },
@@ -93,7 +93,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
       log.error({ err }, 'ops: fetch suggestions failed: %s', errorMessage);
       set({
         isSuggestionsLoading: false,
-        error: errorMessage,
+        error: `提案取得に失敗しました: ${errorMessage}`,
       });
     } finally {
       set({ isSuggestionsLoading: false });
@@ -109,7 +109,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     } catch (err) {
       const errorMessage = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: kill process failed: %s', errorMessage);
-      set({ error: errorMessage });
+      set({ error: `プロセス終了に失敗しました: ${errorMessage}` });
     }
   },
 
@@ -122,7 +122,7 @@ export const useOpsStore = create<OpsStore>((set, get) => ({
     } catch (err) {
       const message = extractErrorMessage(err);
       log.error({ err, pid }, 'ops: set priority failed');
-      set({ error: message });
+      set({ error: `優先度設定に失敗しました: ${message}` });
     }
   },
 

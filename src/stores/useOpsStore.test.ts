@@ -96,7 +96,7 @@ describe('useOpsStore', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     const { error, isListening } = useOpsStore.getState();
-    expect(error).toBe('Subscription failed');
+    expect(error).toBe('プロセス監視の開始に失敗しました: Subscription failed');
     expect(isListening).toBe(false);
   });
 
@@ -218,7 +218,7 @@ describe('useOpsStore', () => {
     const { processes, error, lastUpdated } = useOpsStore.getState();
     expect(processes).toEqual(MOCK_PROCESSES); // Should be preserved
     expect(lastUpdated).toBe(12345); // Should be preserved
-    expect(error).toBe('Process not found'); // Error should be set
+    expect(error).toBe('プロセス終了に失敗しました: Process not found'); // Error should be set
   });
 
   it('preserves processes data when fetchSuggestions fails', async () => {
@@ -232,7 +232,7 @@ describe('useOpsStore', () => {
     const { processes, error, lastUpdated, isSuggestionsLoading } = useOpsStore.getState();
     expect(processes).toEqual(MOCK_PROCESSES); // Should be preserved
     expect(lastUpdated).toBe(12345); // Should be preserved
-    expect(error).toBe('API error'); // Error should be set
+    expect(error).toBe('提案取得に失敗しました: API error'); // Error should be set
     expect(isSuggestionsLoading).toBe(false); // Loading state should be reset
   });
 
@@ -257,7 +257,7 @@ describe('useOpsStore', () => {
     expect(processes).toEqual(MOCK_PROCESSES); // Should be preserved
     expect(lastUpdated).toBe(12345); // Should be preserved
     expect(suggestions).toEqual(['existing suggestion']); // Should be preserved
-    expect(error).toBe('Subscription failed'); // Error should be set
+    expect(error).toBe('プロセス監視の開始に失敗しました: Subscription failed'); // Error should be set
     expect(isListening).toBe(false); // Listening state should be reset
   });
 });

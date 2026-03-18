@@ -33,7 +33,8 @@ impl FrameTimeSession {
     pub fn start(pid: u32, process_name: String) -> Result<Self, AppError> {
         #[cfg(windows)]
         {
-            let buffer: FrameEventBuffer = Arc::new(Mutex::new(Vec::with_capacity(18000)));
+            let buffer: FrameEventBuffer =
+                Arc::new(Mutex::new(std::collections::VecDeque::with_capacity(18000)));
             let etw_session = etw::start_trace(Some(pid), Arc::clone(&buffer))?;
 
             Ok(Self {
@@ -94,24 +95,24 @@ impl FrameTimeSession {
     pub fn snapshot(&self) -> FrameTimeSnapshot {
         #[cfg(windows)]
         {
-            let events = {
+            let now = Instant::now();
+            let one_sec_ago = now - std::time::Duration::from_secs(1);
+
+            // ロック中は直近1秒分のフィルタリングのみ実行
+            let recent_events: Vec<FrameEvent> = {
                 let buf = self
                     .buffer
                     .lock()
                     .unwrap_or_else(|e: std::sync::PoisonError<_>| e.into_inner());
-                buf.clone()
+                buf.iter()
+                    .filter(|e| e.timestamp >= one_sec_ago && e.pid == self.target_pid)
+                    .cloned()
+                    .collect()
             };
 
-            // 直近1秒分のイベントを抽出
-            let now = Instant::now();
-            let one_sec_ago = now - std::time::Duration::from_secs(1);
-            let recent: Vec<&FrameEvent> = events
-                .iter()
-                .filter(|e| e.timestamp >= one_sec_ago && e.pid == self.target_pid)
-                .collect();
-
+            // ロック解放後に統計計算
             // フレームタイム計算
-            let frame_times: Vec<f64> = recent
+            let frame_times: Vec<f64> = recent_events
                 .windows(2)
                 .map(|pair| {
                     let dt = pair[1].timestamp.duration_since(pair[0].timestamp);

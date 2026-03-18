@@ -54,6 +54,21 @@ pub fn get_gpu_info() -> (Option<String>, Option<u64>) {
     (None, None)
 }
 
+/// GPU 静的情報（キャッシュ対象）
+#[derive(Debug, Clone)]
+pub struct GpuStaticInfo {
+    pub name: Option<String>,
+    pub vram_total_mb: Option<u64>,
+}
+
+/// GPU 動的情報（毎回取得）
+#[derive(Debug, Clone)]
+pub struct GpuDynamicInfo {
+    pub vram_used_mb: Option<u64>,
+    pub usage_percent: Option<f32>,
+    pub temperature_c: Option<f32>,
+}
+
 /// GPU 情報の統合構造体
 #[derive(Debug, Clone)]
 pub struct GpuFullInfo {
@@ -62,6 +77,43 @@ pub struct GpuFullInfo {
     pub vram_used_mb: Option<u64>,
     pub usage_percent: Option<f32>,
     pub temperature_c: Option<f32>,
+}
+
+/// GPU 静的情報を取得する（キャッシュ用）
+pub fn get_gpu_static_info() -> GpuStaticInfo {
+    // 1. NVML を試す
+    if let Ok(Some(data)) = crate::infra::gpu::query_nvml_gpu() {
+        return GpuStaticInfo {
+            name: Some(data.name),
+            vram_total_mb: Some(data.vram_total_mb),
+        };
+    }
+
+    // 2. NVML 不可 → PowerShell フォールバック（名前 + VRAM 総量のみ）
+    let (name, vram_total) = get_gpu_info();
+    GpuStaticInfo {
+        name,
+        vram_total_mb: vram_total,
+    }
+}
+
+/// GPU 動的情報を取得する（毎回実行）
+pub fn get_gpu_dynamic_info() -> GpuDynamicInfo {
+    // NVML のみ動的情報を提供
+    if let Ok(Some(data)) = crate::infra::gpu::query_nvml_gpu() {
+        return GpuDynamicInfo {
+            vram_used_mb: Some(data.vram_used_mb),
+            usage_percent: Some(data.usage_percent as f32),
+            temperature_c: Some(data.temperature_c as f32),
+        };
+    }
+
+    // PowerShell フォールバックでは動的情報は取得不可
+    GpuDynamicInfo {
+        vram_used_mb: None,
+        usage_percent: None,
+        temperature_c: None,
+    }
 }
 
 /// GPU の全情報を取得する。

@@ -54,7 +54,7 @@ pub struct EtwSession {
 
 /// フレームイベントの受信バッファ（スレッド間共有）
 #[cfg(windows)]
-pub type FrameEventBuffer = Arc<Mutex<Vec<FrameEvent>>>;
+pub type FrameEventBuffer = Arc<Mutex<std::collections::VecDeque<FrameEvent>>>;
 
 /// ETW トレースセッションを開始し、Present::Start イベントを受信する。
 ///
@@ -157,14 +157,13 @@ fn handle_present_event(
 
     // フレームイベントをバッファに追加
     if let Ok(mut buf) = buffer.lock() {
-        buf.push(FrameEvent {
+        buf.push_back(FrameEvent {
             pid,
             timestamp: Instant::now(),
         });
         // バッファサイズを制限（直最近18000イベントを保持）
-        if buf.len() > 18000 {
-            let drain_count = buf.len() - 18000;
-            buf.drain(0..drain_count);
+        while buf.len() > 18000 {
+            buf.pop_front();
         }
     }
 }
@@ -191,7 +190,7 @@ impl EtwSession {
 }
 
 #[cfg(not(windows))]
-pub type FrameEventBuffer = Arc<Mutex<Vec<FrameEvent>>>;
+pub type FrameEventBuffer = Arc<Mutex<std::collections::VecDeque<FrameEvent>>>;
 
 // ─── テスト ──────────────────────────────────────────────────────────────────
 
