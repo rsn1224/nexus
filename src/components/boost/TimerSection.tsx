@@ -55,7 +55,7 @@ export default function TimerSection(): React.ReactElement {
       {/* ヘッダー */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className={isActive ? 'text-cyan-500' : 'text-text-muted'}>
+          <span className={isActive ? 'text-accent-500' : 'text-text-muted'}>
             {isActive ? '●' : '○'}
           </span>
           <span className="font-mono text-[11px] font-semibold text-text-primary">
@@ -92,7 +92,7 @@ export default function TimerSection(): React.ReactElement {
             </span>
             <span
               className={`font-mono text-[12px] font-bold ${
-                isActive ? 'text-cyan-500' : 'text-text-muted'
+                isActive ? 'text-accent-500' : 'text-text-muted'
               }`}
             >
               {timerState.nexusRequested100ns != null
@@ -129,8 +129,8 @@ export default function TimerSection(): React.ReactElement {
             disabled={isApplying}
             className={`px-2 py-1 rounded font-mono text-[10px] border transition-colors ${
               timerState?.nexusRequested100ns === preset.value
-                ? 'bg-cyan-500/20 border-cyan-500 text-cyan-500'
-                : 'bg-base-900 border-border-subtle text-text-secondary hover:border-cyan-500 hover:text-text-primary'
+                ? 'bg-accent-500/20 border-accent-500 text-accent-500'
+                : 'bg-base-900 border-border-subtle text-text-secondary hover:border-accent-500 hover:text-text-primary'
             }`}
           >
             {preset.label}
@@ -148,7 +148,7 @@ export default function TimerSection(): React.ReactElement {
           min={0.5}
           max={15.625}
           step={0.1}
-          className="flex-1 bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-cyan-500"
+          className="flex-1 bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-accent-500"
         />
         <Button
           variant="primary"

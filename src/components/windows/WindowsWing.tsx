@@ -41,7 +41,7 @@ export default function WindowsWing(): React.ReactElement {
     return (
       <div className="p-4 h-full flex flex-col">
         <div className="mb-4 flex justify-between items-center">
-          <div className="font-mono text-xs font-bold text-cyan-500 tracking-[0.15em] shrink-0 pb-2 border-b border-border-subtle">
+          <div className="font-mono text-xs font-bold text-accent-500 tracking-[0.15em] shrink-0 pb-2 border-b border-border-subtle">
             ▶ WINDOWS / SETTINGS
           </div>
           <Button variant="ghost" size="sm" disabled loading>
@@ -62,7 +62,7 @@ export default function WindowsWing(): React.ReactElement {
 
       {/* Header */}
       <div className="mb-4 flex justify-between items-center">
-        <div className="font-mono text-xs font-bold text-cyan-500 tracking-[0.15em] shrink-0 pb-2 border-b border-border-subtle">
+        <div className="font-mono text-xs font-bold text-accent-500 tracking-[0.15em] shrink-0 pb-2 border-b border-border-subtle">
           ▶ WINDOWS / SETTINGS
         </div>
         <Button

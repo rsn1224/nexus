@@ -65,7 +65,7 @@ export default function NetoptWing(): React.ReactElement {
     <div className="flex flex-col h-full p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="font-mono text-[11px] text-cyan-500 font-bold tracking-widest">
+        <div className="font-mono text-[11px] text-accent-500 font-bold tracking-widest">
           ▶ NETOPT / NETWORK
         </div>
         <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isLoading}>

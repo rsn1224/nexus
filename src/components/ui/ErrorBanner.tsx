@@ -14,7 +14,7 @@ export default function ErrorBanner({
   const variantClasses = {
     error: 'bg-base-800 border-b border-danger-600 text-danger-500',
     warning: 'bg-base-800 border-b border-accent-500 text-accent-500',
-    info: 'bg-base-800 border-b border-cyan-500 text-cyan-500',
+    info: 'bg-base-800 border-b border-accent-500 text-accent-500',
     success: 'bg-base-800 border-b border-success-500 text-success-500',
   };
 

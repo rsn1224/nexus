@@ -51,7 +51,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
                 const wingId = actionToWing[rec.action as keyof typeof actionToWing];
                 if (wingId) navigate(wingId);
               }}
-              className="shrink-0 text-cyan-500 hover:underline"
+              className="shrink-0 text-accent-500 hover:underline"
             >
               →
             </button>

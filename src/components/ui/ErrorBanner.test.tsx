@@ -18,7 +18,7 @@ describe('ErrorBanner', () => {
     expect(screen.getByRole('alert')).toHaveClass('border-accent-500', 'text-accent-500');
 
     rerender(<ErrorBanner message="Test" variant="info" />);
-    expect(screen.getByRole('alert')).toHaveClass('border-cyan-500', 'text-cyan-500');
+    expect(screen.getByRole('alert')).toHaveClass('border-accent-500', 'text-accent-500');
 
     rerender(<ErrorBanner message="Test" variant="success" />);
     expect(screen.getByRole('alert')).toHaveClass('border-success-500', 'text-success-500');

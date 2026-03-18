@@ -18,7 +18,7 @@ export default function LogStats({
       case 'Warn':
         return 'text-accent-500';
       case 'Info':
-        return 'text-cyan-500';
+        return 'text-accent-500';
       default:
         return 'text-text-muted';
     }

@@ -246,7 +246,7 @@ export function getRankStyle(rank: ReadinessRank): { label: string; color: strin
     case 'READY':
       return { label: 'GAME READY', color: 'var(--color-success-500)' };
     case 'GOOD':
-      return { label: 'GOOD', color: 'var(--color-cyan-500)' };
+      return { label: 'GOOD', color: 'var(--color-accent-500)' };
     case 'FAIR':
       return { label: 'FAIR', color: 'var(--color-accent-400)' };
     case 'NOT_READY':

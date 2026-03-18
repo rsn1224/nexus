@@ -62,7 +62,7 @@ const getConfidenceBorder = (confidence: BottleneckConfidence): string => {
 const getScoreBarColor = (score: number): string => {
   if (score >= 0.8) return 'bg-danger-500';
   if (score >= 0.6) return 'bg-accent-500';
-  if (score >= 0.4) return 'bg-cyan-500';
+  if (score >= 0.4) return 'bg-accent-500';
   return 'bg-success-500';
 };
 
@@ -103,8 +103,10 @@ const BottleneckCard: React.FC = () => {
       {/* ヘッダー右側: 分析中インジケーター */}
       {isAnalyzing && (
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-1.5 h-1.5 bg-cyan-500 animate-pulse" />
-          <span className="font-mono text-[10px] text-cyan-500 tracking-[0.1em]">ANALYZING...</span>
+          <div className="w-1.5 h-1.5 bg-accent-500 animate-pulse" />
+          <span className="font-mono text-[10px] text-accent-500 tracking-[0.1em]">
+            ANALYZING...
+          </span>
         </div>
       )}
 

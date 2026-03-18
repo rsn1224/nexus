@@ -72,7 +72,7 @@ export default function Input({
 
   const stateClasses = {
     default:
-      'border-border-subtle bg-base-800 text-text-primary focus:border-cyan-500 focus:ring-cyan-500 focus:ring-opacity-50',
+      'border-border-subtle bg-base-800 text-text-primary focus:border-accent-500 focus:ring-accent-500 focus:ring-opacity-50',
     error:
       'border-danger-500 bg-base-800 text-text-primary focus:border-danger-500 focus:ring-danger-500 focus:ring-opacity-50',
     disabled: 'border-border-subtle bg-base-700 text-text-muted cursor-not-allowed',

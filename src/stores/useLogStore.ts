@@ -192,7 +192,7 @@ export const getLogLevelColor = (level: LogLevel): string => {
     case 'Warn':
       return 'var(--color-accent-500)';
     case 'Info':
-      return 'var(--color-cyan-500)';
+      return 'var(--color-accent-500)';
     case 'Debug':
       return 'var(--color-text-muted)';
     default:
@@ -207,7 +207,7 @@ export const getLogLevelBgColor = (level: LogLevel): string => {
     case 'Warn':
       return 'var(--color-accent-500)';
     case 'Info':
-      return 'var(--color-cyan-500)';
+      return 'var(--color-accent-500)';
     case 'Debug':
       return 'var(--color-base-600)';
     default:

@@ -25,7 +25,7 @@ function QualityBadge({
   danger: number;
 }): React.ReactElement {
   const color =
-    value >= danger ? 'text-red-400' : value >= warn ? 'text-yellow-400' : 'text-cyan-500';
+    value >= danger ? 'text-red-400' : value >= warn ? 'text-yellow-400' : 'text-accent-500';
 
   return (
     <div className="flex flex-col items-center gap-0.5">
@@ -71,7 +71,7 @@ export default function NetworkQualityCard(): React.ReactElement {
               }
             }}
             disabled={isMeasuring}
-            className="bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-cyan-500"
+            className="bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-accent-500"
             aria-label="Ping ターゲット"
           >
             {PRESET_TARGETS.map((t) => (
@@ -89,7 +89,7 @@ export default function NetworkQualityCard(): React.ReactElement {
               onChange={(e) => setCustomTarget(e.target.value)}
               placeholder="IP アドレス / ドメイン"
               disabled={isMeasuring}
-              className="flex-1 bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-cyan-500"
+              className="flex-1 bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-accent-500"
               aria-label="カスタム Ping ターゲット"
             />
           )}

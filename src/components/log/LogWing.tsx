@@ -101,7 +101,7 @@ export default function LogWing(): React.ReactElement {
       case 'Warn':
         return 'text-accent-500';
       case 'Info':
-        return 'text-cyan-500';
+        return 'text-accent-500';
       default:
         return 'text-text-muted';
     }
@@ -114,7 +114,7 @@ export default function LogWing(): React.ReactElement {
       case 'Warn':
         return 'bg-accent-500';
       case 'Info':
-        return 'bg-cyan-500';
+        return 'bg-accent-500';
       default:
         return 'bg-text-muted';
     }

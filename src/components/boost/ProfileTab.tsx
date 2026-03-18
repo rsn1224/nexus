@@ -110,7 +110,7 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
 
       {/* 適用中インジケーター */}
       {isApplying && (
-        <div className="font-mono text-[10px] text-cyan-500 text-center py-2">
+        <div className="font-mono text-[10px] text-accent-500 text-center py-2">
           プロファイル適用中...
         </div>
       )}

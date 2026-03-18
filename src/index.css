@@ -1,24 +1,24 @@
 @import "tailwindcss";
+@import "@fontsource/b612/400.css";
+@import "@fontsource/b612/700.css";
+@import "@fontsource/b612-mono/400.css";
+@import "@fontsource/b612-mono/700.css";
 
 @theme {
-  /* ─── NEXUS Color System ─────────────────────────────── */
-  --color-base-950: #05050a;
-  --color-base-900: #0a0a0f;
-  --color-base-800: #12121a;
-  --color-base-700: #1a1a2e;
-  --color-base-600: #1e2040;
-  --color-base-500: #2a2d4a;
+  /* ─── NEXUS Color System (Cyan Mono-Accent) ─────────── */
+  --color-base-950: #08080c;
+  --color-base-900: #0c0c10;
+  --color-base-800: #13131a;
+  --color-base-700: #1a1a24;
+  --color-base-600: #22222e;
+  --color-base-500: #2c2c3a;
 
-  --color-accent-600: #c2580a;
-  --color-accent-500: #f97316;
-  --color-accent-400: #fb923c;
-  --color-accent-200: #fed7aa;
+  --color-accent-600: #0891b2;
+  --color-accent-500: #06b6d4;
+  --color-accent-400: #22d3ee;
+  --color-accent-300: #67e8f9;
 
-  --color-cyan-700: #0e7490;
-  --color-cyan-500: #06b6d4;
-  --color-cyan-300: #67e8f9;
-
-  --color-danger-600: #b91c1c;
+  --color-danger-600: #dc2626;
   --color-danger-500: #ef4444;
   --color-danger-200: #fecaca;
 
@@ -26,20 +26,20 @@
   --color-warning-500: #f59e0b;
   --color-warning-200: #fde68a;
 
-  --color-success-600: #15803d;
+  --color-success-600: #16a34a;
   --color-success-500: #22c55e;
   --color-success-200: #bbf7d0;
 
-  --color-text-primary: #e2e8f0;
-  --color-text-secondary: #94a3b8;
-  --color-text-muted: #475569;
+  --color-text-primary: #d4d4e0;
+  --color-text-secondary: #8888a0;
+  --color-text-muted: #4a4a5e;
 
-  --color-border-subtle: #1e293b;
-  --color-border-active: #f97316;
+  --color-border-subtle: #1e1e2a;
+  --color-border-active: #06b6d4;
 
   /* ─── Typography ─────────────────────────────────────── */
-  --font-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
-  --font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "B612 Mono", "JetBrains Mono", ui-monospace, monospace;
+  --font-sans: "B612", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -62,84 +62,15 @@ body,
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Tactical corner brackets ───────────────────────── */
-.bracket-tl::before,
-.bracket-tl::after,
-.bracket-br::before,
-.bracket-br::after {
-  content: "";
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  border-color: var(--color-accent-500);
-  border-style: solid;
+/* ─── Glow utilities ──────────────────────────────────── */
+.card-glow {
+  border-color: rgba(6, 182, 212, 0.15);
+  box-shadow: 0 0 16px rgba(6, 182, 212, 0.06);
 }
 
-.bracket-tl::before {
-  top: 0;
-  left: 0;
-  border-width: 2px 0 0 2px;
-}
-.bracket-tl::after {
-  top: 0;
-  right: 0;
-  border-width: 2px 2px 0 0;
-}
-.bracket-br::before {
-  bottom: 0;
-  left: 0;
-  border-width: 0 0 2px 2px;
-}
-.bracket-br::after {
-  bottom: 0;
-  right: 0;
-  border-width: 0 2px 2px 0;
-}
-
-/* ─── Data flash animation ────────────────────────────── */
-@keyframes data-flash {
-  0% {
-    opacity: 1;
-  }
-  25% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0.6;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
-.data-flash {
-  animation: data-flash 0.15s ease-out;
-}
-
-/* ─── Scan line effect ────────────────────────────────── */
-@keyframes scan-line {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100vh);
-  }
-}
-
-.scan-line {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-cyan-500), transparent);
-  opacity: 0.15;
-  pointer-events: none;
-  animation: scan-line 8s linear infinite;
-  z-index: 9999;
+.card-glow-hover:hover {
+  border-color: rgba(6, 182, 212, 0.25);
+  transition: border-color 200ms ease;
 }
 
 /* ─── Scrollbar ───────────────────────────────────────── */
@@ -160,6 +91,6 @@ body,
 
 /* ─── Selection ───────────────────────────────────────── */
 ::selection {
-  background: rgba(249, 115, 22, 0.3);
+  background: rgba(6, 182, 212, 0.25);
   color: var(--color-text-primary);
 }

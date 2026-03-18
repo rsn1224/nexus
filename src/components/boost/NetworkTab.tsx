@@ -57,7 +57,7 @@ export default function NetworkTab({ className = '' }: NetworkTabProps): React.R
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className={setting.isOptimized ? 'text-cyan-500' : 'text-text-muted'}>
+                  <span className={setting.isOptimized ? 'text-accent-500' : 'text-text-muted'}>
                     {setting.isOptimized ? '●' : '○'}
                   </span>
                   <div className="font-mono text-[11px] font-semibold text-text-primary">

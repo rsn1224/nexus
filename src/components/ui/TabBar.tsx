@@ -22,7 +22,7 @@ export default function TabBar({
           type="button"
           className={`font-mono text-[10px] font-semibold px-4 py-2 transition-all duration-150 ${
             active === tab.id
-              ? 'border-b-2 border-cyan-500 text-cyan-500 -mb-px'
+              ? 'border-b-2 border-accent-500 text-accent-500 -mb-px'
               : 'text-text-muted hover:text-text-secondary'
           }`}
           onClick={() => onChange(tab.id)}

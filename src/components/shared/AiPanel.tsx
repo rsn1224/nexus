@@ -5,7 +5,7 @@ import type { LocalSuggestion, SuggestionLevel } from '../../lib/localAi';
 const LEVEL_COLOR: Record<SuggestionLevel, string> = {
   critical: 'text-danger-500',
   warn: 'text-accent-500',
-  info: 'text-cyan-500',
+  info: 'text-accent-500',
   ok: 'text-text-muted',
 };
 

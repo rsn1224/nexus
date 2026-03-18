@@ -19,11 +19,11 @@ describe('ProfileBadge', () => {
     expect(badge.textContent).toContain('● PROFILE: テストゲーム');
   });
 
-  it('アクティブ時に cyan カラークラスが適用される', () => {
+  it('アクティブ時に accent カラークラスが適用される', () => {
     render(<ProfileBadge profileName="テスト" isActive={true} />);
 
     const badge = screen.getByTestId('profile-badge-active');
-    expect(badge.className).toContain('cyan');
+    expect(badge.className).toContain('accent');
   });
 
   it('非アクティブ時に muted カラークラスが適用される', () => {

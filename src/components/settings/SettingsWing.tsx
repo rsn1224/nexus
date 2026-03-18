@@ -142,7 +142,7 @@ export default function SettingsWing(): React.ReactElement {
     <div className="flex flex-col h-full p-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
-        <div className="font-mono text-[11px] text-cyan-500 font-bold tracking-widest">
+        <div className="font-mono text-[11px] text-accent-500 font-bold tracking-widest">
           ▶ SETTINGS / CONFIG
         </div>
         <Button variant="primary" size="sm" onClick={handleSaveAll} disabled={isLoading}>

@@ -36,7 +36,7 @@ export default function CoreParkingCard(): React.ReactElement {
             <div className="flex items-center justify-between">
               <span className="font-mono text-[10px] text-text-muted">現在の状態</span>
               <span
-                className={`font-mono text-[11px] font-semibold ${isParkingDisabled ? 'text-cyan-500' : 'text-text-muted'}`}
+                className={`font-mono text-[11px] font-semibold ${isParkingDisabled ? 'text-accent-500' : 'text-text-muted'}`}
               >
                 {isParkingDisabled ? '● 無効（全コア稼働）' : '○ 有効（パーキング中）'}
               </span>

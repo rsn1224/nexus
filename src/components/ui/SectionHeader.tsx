@@ -13,7 +13,7 @@ export default function SectionHeader({
 }: SectionHeaderProps): React.ReactElement {
   const colorClasses = {
     accent: 'text-accent-500',
-    cyan: 'text-cyan-500',
+    cyan: 'text-accent-500',
     muted: 'text-text-muted',
   };
 

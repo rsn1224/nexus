@@ -69,7 +69,7 @@ export default function ProfileCard({
   return (
     <div
       className={`p-3 bg-base-800 border rounded flex flex-col gap-2 transition-all duration-200 hover:border-accent-500 ${
-        isActive ? 'border-cyan-500' : 'border-border-subtle'
+        isActive ? 'border-accent-500' : 'border-border-subtle'
       }`}
     >
       {/* ヘッダー */}
@@ -78,7 +78,7 @@ export default function ProfileCard({
           {profile.displayName}
         </div>
         {isActive && (
-          <span className="font-mono text-[9px] text-cyan-500 tracking-[0.1em]">● 適用中</span>
+          <span className="font-mono text-[9px] text-accent-500 tracking-[0.1em]">● 適用中</span>
         )}
       </div>
 
@@ -129,7 +129,7 @@ export default function ProfileCard({
           className={`flex-1 font-mono text-[9px] py-1 border-none rounded-[2px] tracking-[0.05em] ${
             isActive
               ? 'bg-base-600 text-text-muted cursor-default opacity-50'
-              : 'bg-cyan-500 text-base-900 cursor-pointer'
+              : 'bg-accent-500 text-base-900 cursor-pointer'
           }`}
         >
           {isActive ? '適用中' : '▶ 適用'}

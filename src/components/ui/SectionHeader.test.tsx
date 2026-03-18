@@ -15,7 +15,7 @@ describe('SectionHeader', () => {
     render(<SectionHeader title="▶ SETTINGS" color="cyan" />);
 
     const title = screen.getByText('▶ SETTINGS');
-    expect(title).toHaveClass('text-cyan-500');
+    expect(title).toHaveClass('text-accent-500');
   });
 
   it('renders title with muted color', () => {

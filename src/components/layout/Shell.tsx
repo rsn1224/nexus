@@ -133,7 +133,7 @@ const Shell = memo(function Shell({
     // Map style.color to Tailwind class
     const colorMap: Record<string, string> = {
       'var(--color-success-500)': 'text-success-500',
-      'var(--color-cyan-500)': 'text-cyan-500',
+      'var(--color-accent-500)': 'text-accent-500',
       'var(--color-accent-400)': 'text-accent-400',
     };
     return colorMap[style.color] ?? 'text-danger-500';
@@ -141,9 +141,6 @@ const Shell = memo(function Shell({
 
   return (
     <div className="flex h-screen bg-base-900 overflow-hidden">
-      {/* Scan line */}
-      <div className="scan-line fixed top-0 left-0 right-0 z-[1000]" />
-
       {/* Sidebar */}
       <div
         className="w-40 flex-shrink-0 bg-base-950 border-r border-border-subtle flex flex-col"
@@ -178,7 +175,7 @@ const Shell = memo(function Shell({
                     data-testid={`nav-${wing.id}`}
                     className={`w-full h-7 px-4 pl-4 font-mono text-xs tracking-[0.08em] transition-all duration-150 text-left border-l-2 ${
                       isActive
-                        ? 'bg-base-800 text-cyan-500 border-cyan-500'
+                        ? 'bg-base-800 text-accent-500 border-accent-500'
                         : hoveredWing === wing.id
                           ? 'bg-base-800 text-text-secondary border-transparent'
                           : 'bg-transparent text-text-secondary border-transparent hover:bg-base-800'

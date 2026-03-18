@@ -52,7 +52,7 @@ export default function PerplexityPanel({
         title={processNames.length === 0 ? '先に RUN BOOST を実行してください' : undefined}
       >
         <div className="flex items-center gap-[6px]">
-          <span className="font-mono text-[10px] font-bold text-cyan-500 tracking-widest">
+          <span className="font-mono text-[10px] font-bold text-accent-500 tracking-widest">
             AI に聞く
           </span>
         </div>
@@ -80,7 +80,7 @@ export default function PerplexityPanel({
               className="flex items-start gap-2 py-1 font-mono text-[10px] leading-normal"
               key={suggestion}
             >
-              <span className="text-cyan-500 shrink-0 font-semibold">{i + 1}.</span>
+              <span className="text-accent-500 shrink-0 font-semibold">{i + 1}.</span>
               <span className="text-text-secondary">{suggestion}</span>
             </div>
           ))}

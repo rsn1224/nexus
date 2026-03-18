@@ -14,7 +14,7 @@ interface CoreCellProps {
 function CoreCell({ index, type, selected, onToggle }: CoreCellProps): React.ReactElement {
   const bgColor = useMemo(() => {
     if (selected) {
-      return type === 'p-core' ? 'bg-cyan-500' : 'bg-accent-500';
+      return type === 'p-core' ? 'bg-accent-500' : 'bg-accent-500';
     }
     return 'bg-base-700';
   }, [selected, type]);
@@ -146,7 +146,7 @@ export default function AffinityPanel({
             <button
               type="button"
               onClick={handleSelectPCores}
-              className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-cyan-500 border-none rounded-[2px] cursor-pointer"
+              className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
             >
               P-Core のみ
             </button>
@@ -181,7 +181,7 @@ export default function AffinityPanel({
       {cpuTopology.eCores.length > 0 && (
         <div className="flex gap-3 font-mono text-[9px] text-text-muted">
           <span className="flex items-center gap-1">
-            <span className="w-2 h-2 bg-cyan-500 rounded-[1px] inline-block" />
+            <span className="w-2 h-2 bg-accent-500 rounded-[1px] inline-block" />
             P-Core
           </span>
           <span className="flex items-center gap-1">

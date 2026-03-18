@@ -25,7 +25,7 @@ export default function ProfileBadge({
   return (
     <span
       data-testid="profile-badge-active"
-      className={`font-mono text-[8px] text-cyan-500 tracking-[0.05em] ${className}`}
+      className={`font-mono text-[8px] text-accent-500 tracking-[0.05em] ${className}`}
     >
       ● PROFILE: {profileName}
     </span>
