@@ -191,6 +191,7 @@ pub struct EtwSession;
 
 #[cfg(not(windows))]
 impl EtwSession {
+    #[allow(dead_code)]
     pub fn stop(self) {
         // No-op on non-Windows
     }
