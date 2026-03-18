@@ -6,6 +6,7 @@ import {
   useHardwareStore,
 } from '../../stores/useHardwareStore';
 import { Card, EmptyState, ErrorBanner, LoadingState } from '../ui';
+import EcoModePanel from './EcoModePanel';
 
 export default function HardwareWing(): React.JSX.Element {
   const { subscribe } = useHardwareStore();
@@ -218,6 +219,9 @@ export default function HardwareWing(): React.JSX.Element {
           </div>
         </div>
       </Card>
+
+      {/* Eco Mode Section */}
+      <EcoModePanel />
     </div>
   );
 }

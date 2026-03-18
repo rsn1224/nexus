@@ -1,10 +1,11 @@
 // Hardware Wing — ハードウェア情報取得機能
 
 use crate::error::AppError;
-use crate::state::SharedState;
+use crate::services::power_estimator::{estimate_power, estimate_monthly_cost, EcoModeConfig};
+use crate::SharedState;
 use serde::{Deserialize, Serialize};
 use sysinfo::{Components, DiskKind, Disks, System};
-use tauri::State;
+use tauri::{AppHandle, Manager, State};
 use tracing::{info, warn};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -54,7 +55,7 @@ pub fn get_hardware_info(state: State<'_, SharedState>) -> Result<HardwareInfo, 
         .sys
         .cpus()
         .first()
-        .map(|cpu| cpu.brand().to_string())
+        .map(|cpu: &sysinfo::Cpu| cpu.brand().to_string())
         .unwrap_or_else(|| "Unknown CPU".to_string());
 
     let cpu_cores = s.sys.cpus().len() as u32;
@@ -63,7 +64,7 @@ pub fn get_hardware_info(state: State<'_, SharedState>) -> Result<HardwareInfo, 
         .sys
         .cpus()
         .first()
-        .map(|cpu| cpu.frequency() as f32 / 1000.0)
+        .map(|cpu: &sysinfo::Cpu| cpu.frequency() as f32 / 1000.0)
         .unwrap_or(0.0);
 
     // CPU温度取得
@@ -201,4 +202,98 @@ mod tests {
         assert!(info.gpu_temp_c.is_none());
         assert!(info.gpu_usage_percent.is_none());
     }
+}
+
+// ─── Power Estimation Commands ─────────────────────────────────────
+
+#[tauri::command]
+pub fn get_power_estimate(state: State<'_, SharedState>) -> Result<crate::services::power_estimator::PowerEstimate, AppError> {
+    info!("get_power_estimate: estimating current power consumption");
+    
+    let mut s = state
+        .lock()
+        .map_err(|e| AppError::Command(format!("Stateロックエラー: {}", e)))?;
+    
+    // Get current CPU and GPU usage
+    s.sys.refresh_cpu_all();
+    let cpu_percent = s.sys.global_cpu_usage();
+    
+    // Get hardware info for names
+    let hw_info = get_hardware_info(state.clone())?;
+    
+    let estimate = estimate_power(
+        &hw_info.cpu_name,
+        hw_info.gpu_name.as_deref(),
+        cpu_percent,
+        hw_info.gpu_usage_percent,
+    );
+    
+    Ok(estimate)
+}
+
+#[tauri::command]
+pub fn get_monthly_cost_estimate(
+    config: EcoModeConfig,
+    hours_per_day: f32,
+) -> Result<crate::services::power_estimator::MonthlyCostEstimate, AppError> {
+    info!("get_monthly_cost_estimate: calculating monthly cost estimate");
+    
+    // Use typical power values for estimation
+    let normal_power_w = 400.0; // Typical gaming PC under load
+    let eco_power_w = 250.0;    // Eco mode reduced power
+    
+    let estimate = estimate_monthly_cost(normal_power_w, eco_power_w, &config, hours_per_day);
+    Ok(estimate)
+}
+
+#[tauri::command]
+pub fn set_eco_mode(enabled: bool, config: EcoModeConfig) -> Result<(), AppError> {
+    info!("set_eco_mode: {} eco mode", if enabled { "enabling" } else { "disabling" });
+    
+    // TODO: Implement actual eco mode settings
+    // - Change power plan to config.eco_power_plan
+    // - Set FPS limit via GPU driver or game overlay
+    // - Enable NVML power limits if available
+    
+    if enabled {
+        info!("Eco mode enabled: target FPS={}, power plan={}", config.target_fps, config.eco_power_plan);
+    } else {
+        info!("Eco mode disabled");
+    }
+    
+    Ok(())
+}
+
+#[tauri::command]
+pub fn get_eco_mode_config(_app: AppHandle) -> Result<EcoModeConfig, AppError> {
+    info!("get_eco_mode_config: loading saved eco mode configuration");
+    
+    // TODO: Load from app data directory
+    // For now, return default config
+    Ok(EcoModeConfig::default())
+}
+
+#[tauri::command]
+pub fn save_eco_mode_config(app: AppHandle, config: EcoModeConfig) -> Result<(), AppError> {
+    info!("save_eco_mode_config: saving eco mode configuration");
+    
+    // TODO: Save to app data directory
+    let app_data_dir = app.path().resolve("app_data", tauri::path::BaseDirectory::AppData)
+        .map_err(|_| AppError::Command("Failed to get app data directory".to_string()))?;
+    
+    let config_path = app_data_dir.join("eco_config.json");
+    
+    // Ensure directory exists
+    std::fs::create_dir_all(&app_data_dir)
+        .map_err(|e| AppError::Command(format!("Failed to create app data directory: {}", e)))?;
+    
+    // Save config as JSON
+    let config_json = serde_json::to_string_pretty(&config)
+        .map_err(|e| AppError::Command(format!("Failed to serialize config: {}", e)))?;
+    
+    std::fs::write(&config_path, config_json)
+        .map_err(|e| AppError::Command(format!("Failed to save config: {}", e)))?;
+    
+    info!("Eco mode configuration saved to: {:?}", config_path);
+    Ok(())
 }

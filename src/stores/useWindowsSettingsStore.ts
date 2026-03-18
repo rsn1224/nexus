@@ -2,13 +2,16 @@ import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
-import type { WindowsSettings } from '../types';
+import type { AdvisorResult, WindowsSettings } from '../types';
 import { PowerPlan, VisualEffects } from '../types';
 
 interface WindowsSettingsStore {
   settings: WindowsSettings | null;
+  advisorResult: AdvisorResult | null;
   isLoading: boolean;
+  advisorLoading: boolean;
   error: string | null;
+  advisorError: string | null;
   lastUpdated: number | null;
   fetchSettings: () => Promise<void>;
   setPowerPlan: (plan: PowerPlan) => Promise<void>;
@@ -16,7 +19,11 @@ interface WindowsSettingsStore {
   toggleFullscreenOptimization: () => Promise<void>;
   toggleHardwareGpuScheduling: () => Promise<void>;
   setVisualEffects: (effect: VisualEffects) => Promise<void>;
+  fetchAdvisorResult: () => Promise<void>;
+  applyRecommendation: (settingId: string) => Promise<void>;
+  applyAllSafeRecommendations: () => Promise<void>;
   clearError: () => void;
+  clearAdvisorError: () => void;
 }
 
 // デフォルト設定
@@ -30,8 +37,11 @@ const defaultSettings: WindowsSettings = {
 
 export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) => ({
   settings: null,
+  advisorResult: null,
   isLoading: false,
+  advisorLoading: false,
   error: null,
+  advisorError: null,
   lastUpdated: null,
 
   fetchSettings: async () => {
@@ -145,34 +155,100 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
     }
   },
 
-  clearError: () => {
-    set({ error: null });
+  clearError: () => set({ error: null }),
+
+  fetchAdvisorResult: async () => {
+    set({ advisorLoading: true, advisorError: null });
+    try {
+      const result = await invoke<AdvisorResult>('get_settings_advice');
+      set({
+        advisorResult: result,
+        advisorLoading: false,
+      });
+    } catch (err) {
+      const errorMessage = extractErrorMessage(err);
+      log.error({ err }, 'advisor result fetch failed: %s', errorMessage);
+      set({
+        advisorError: errorMessage,
+        advisorLoading: false,
+      });
+    }
   },
+
+  applyRecommendation: async (settingId: string) => {
+    set({ advisorLoading: true, advisorError: null });
+    try {
+      await invoke('apply_recommendation', { settingId });
+      // Refresh settings and advisor result
+      await get().fetchSettings();
+      await get().fetchAdvisorResult();
+      set({ advisorLoading: false });
+    } catch (err) {
+      const errorMessage = extractErrorMessage(err);
+      log.error({ err }, 'apply recommendation failed: %s', errorMessage);
+      set({
+        advisorError: errorMessage,
+        advisorLoading: false,
+      });
+    }
+  },
+
+  applyAllSafeRecommendations: async () => {
+    set({ advisorLoading: true, advisorError: null });
+    try {
+      await invoke('apply_all_safe_recommendations');
+      // Refresh settings and advisor result
+      await get().fetchSettings();
+      await get().fetchAdvisorResult();
+      set({ advisorLoading: false });
+    } catch (err) {
+      const errorMessage = extractErrorMessage(err);
+      log.error({ err }, 'apply all safe recommendations failed: %s', errorMessage);
+      set({
+        advisorError: errorMessage,
+        advisorLoading: false,
+      });
+    }
+  },
+
+  clearAdvisorError: () => set({ advisorError: null }),
 }));
 
 // セレクター関数
 export const useWindowsSettings = () => {
   const {
     settings,
+    advisorResult,
     isLoading,
+    advisorLoading,
     error,
+    advisorError,
     fetchSettings,
     setPowerPlan,
     toggleGameMode,
     toggleFullscreenOptimization,
     toggleHardwareGpuScheduling,
     setVisualEffects,
+    fetchAdvisorResult,
+    applyRecommendation,
+    applyAllSafeRecommendations,
   } = useWindowsSettingsStore();
 
   return {
     settings,
+    advisorResult,
     isLoading,
+    advisorLoading,
     error,
+    advisorError,
     fetchSettings,
     setPowerPlan,
     toggleGameMode,
     toggleFullscreenOptimization,
     toggleHardwareGpuScheduling,
     setVisualEffects,
+    fetchAdvisorResult,
+    applyRecommendation,
+    applyAllSafeRecommendations,
   };
 };

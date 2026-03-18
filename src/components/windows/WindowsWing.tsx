@@ -4,6 +4,7 @@ import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import { PowerPlan, VisualEffects } from '../../types';
 import { Button, ErrorBanner, LoadingState } from '../ui';
+import SettingsAdvisorPanel from './SettingsAdvisorPanel';
 
 export default function WindowsWing(): React.ReactElement {
   const {
@@ -221,6 +222,9 @@ export default function WindowsWing(): React.ReactElement {
             </div>
           </div>
         </div>
+
+        {/* Settings Advisor Section */}
+        <SettingsAdvisorPanel />
       </div>
     </div>
   );

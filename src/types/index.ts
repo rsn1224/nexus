@@ -138,6 +138,63 @@ export interface PingResult {
   success: boolean;
 }
 
+// ─── SETTINGS ADVISOR (ε-1) ───────────────────────────────────────────────────
+
+export interface SettingRecommendation {
+  settingId: string;
+  label: string;
+  recommendedValue: RecommendedValue;
+  currentValue: string;
+  reason: string;
+  importance: 'high' | 'medium' | 'low';
+  safetyLevel: 'safe' | 'moderate' | 'advanced';
+  isOptimal: boolean;
+}
+
+export type RecommendedValue = { boolean: boolean } | { string: string } | { enum: string };
+
+export interface AdvisorResult {
+  recommendations: SettingRecommendation[];
+  optimizationScore: number;
+  hardwareSummary: string;
+  warnings: string[];
+}
+
+export interface WindowsSettingsSnapshot {
+  gameMode: boolean;
+  hags: boolean;
+  fullscreenOptimization: boolean;
+  visualEffects: string;
+  powerPlan: string;
+  memoryIntegrity: boolean;
+}
+
+// ─── POWER ESTIMATOR (ε-2) ───────────────────────────────────────────────────
+
+export interface PowerEstimate {
+  cpuPowerW: number;
+  gpuPowerW: number;
+  gpuActualPowerW: number | null;
+  totalEstimatedW: number;
+  cpuTdpW: number;
+  gpuTdpW: number;
+  timestamp: number;
+}
+
+export interface EcoModeConfig {
+  enabled: boolean;
+  targetFps: number;
+  ecoPowerPlan: string;
+  electricityRateYen: number;
+}
+
+export interface MonthlyCostEstimate {
+  normalMonthlyYen: number;
+  ecoMonthlyYen: number;
+  savingsYen: number;
+  assumedHoursPerDay: number;
+}
+
 // ─── STORAGE ────────────────────────────────────────────────────────────────
 export interface DiskDrive {
   name: string;
