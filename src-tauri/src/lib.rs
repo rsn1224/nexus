@@ -60,6 +60,12 @@ pub fn run() {
             pulse::get_resource_snapshot,
             // HARDWARE
             hardware::get_hardware_info,
+            // POWER ESTIMATOR
+            hardware::get_power_estimate,
+            hardware::get_monthly_cost_estimate,
+            hardware::set_eco_mode,
+            hardware::get_eco_mode_config,
+            hardware::save_eco_mode_config,
             // BOOST
             boost::run_boost,
             // LAUNCHER
@@ -89,6 +95,9 @@ pub fn run() {
             windows_settings::toggle_fullscreen_optimization,
             windows_settings::toggle_hardware_gpu_scheduling,
             windows_settings::set_visual_effects,
+            // SETTINGS ADVISOR
+            windows_settings::get_settings_advice,
+            windows_settings::apply_recommendation,
             // NETOPT
             netopt::get_network_adapters,
             netopt::get_current_dns,
