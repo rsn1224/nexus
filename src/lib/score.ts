@@ -1,3 +1,17 @@
+/**
+ * @deprecated
+ *
+ * このスコア計算ライブラリは非推奨です。
+ * 代わりに src/lib/gameReadiness.ts の calcReadiness を使用してください。
+ *
+ * 新しい GameReadiness スコアは以下の3軸で評価します：
+ * - リソース（CPU/MEM/GPU/DISK使用率）
+ * - 最適化状態（プロファイル/ブースト/タイマー/アフィニティ）
+ * - フレームタイム（FPS/1%Low/スタッター）
+ *
+ * 3軸評価により、ゲーム実行に特化したより正確なレディネス評価が可能です。
+ */
+
 // ゲームパフォーマンススコア計算ライブラリ
 
 export const SCORE_WEIGHTS = {

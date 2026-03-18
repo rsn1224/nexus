@@ -12,7 +12,7 @@ import type { SystemProcess } from '../../types';
 import AiPanel from '../shared/AiPanel';
 import { Button, Card } from '../ui';
 import FrameTimeCard from './FrameTimeCard';
-import GameScoreCard from './GameScoreCard';
+import GameReadinessPanel from './GameReadinessPanel';
 import LauncherCard from './LauncherCard';
 import OpsCard from './OpsCard';
 import PulseCard from './PulseCard';
@@ -128,8 +128,8 @@ const HomeWing = function HomeWing(): React.ReactElement {
       {/* System Status Card */}
       <SystemStatusCard />
 
-      {/* Game Score Card */}
-      <GameScoreCard />
+      {/* Game Readiness Panel */}
+      <GameReadinessPanel />
 
       {/* Storage Card */}
       <Card title="ストレージ" className="mt-4">
