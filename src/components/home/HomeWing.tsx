@@ -16,6 +16,7 @@ import FrameTimeCard from './FrameTimeCard';
 import GameReadinessPanel from './GameReadinessPanel';
 import LauncherCard from './LauncherCard';
 import OpsCard from './OpsCard';
+import PerformanceTimelineCard from './PerformanceTimelineCard';
 import PulseCard from './PulseCard';
 import QuickActionsCard from './QuickActionsCard';
 import SystemStatusCard from './SystemStatusCard';
@@ -134,6 +135,9 @@ const HomeWing = function HomeWing(): React.ReactElement {
 
       {/* Game Readiness Panel */}
       <GameReadinessPanel />
+
+      {/* Performance Timeline Card */}
+      <PerformanceTimelineCard />
 
       {/* Storage Card */}
       <Card title="ストレージ" className="mt-4">
