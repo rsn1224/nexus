@@ -17,10 +17,10 @@ use crate::state::SharedState;
 use crate::types::game::{GameExitEvent, GameLaunchEvent};
 
 /// 監視中のゲームの状態
-#[allow(dead_code)]
 struct ActiveGame {
     profile_id: String,
     exe_path: String,
+    #[allow(dead_code)] // map のキーと重複するが、将来のシリアライズ用に保持
     pid: u32,
     started_at: u64,
 }
@@ -189,6 +189,11 @@ pub async fn start_polling(app: AppHandle) {
                     profile_id: Some(game.profile_id),
                     play_secs,
                     revert_success,
+                    // フレームタイム統計（設計準備：FrameTimeSession からの取得は次フェーズで実装）
+                    avg_fps: None,
+                    percentile_1_low: None,
+                    percentile_01_low: None,
+                    stutter_count: None,
                 };
                 let _ = app.emit("nexus://game-exited", &event);
 

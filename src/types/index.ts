@@ -319,6 +319,11 @@ export interface GameExitEvent {
   profileId: string | null;
   playSecs: number;
   revertSuccess: boolean;
+  // フレームタイム統計（FrameTimeSession から取得）
+  avgFps?: number;
+  percentile1Low?: number;
+  percentile01Low?: number;
+  stutterCount?: number;
 }
 
 export interface CpuTopology {

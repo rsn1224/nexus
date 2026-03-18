@@ -1,7 +1,7 @@
-#![allow(dead_code)]
-
 //! Valve VDF (KeyValues) 形式のパーサー
 //! Steam の libraryfolders.vdf 等のファイルを解析する
+// launcher.rs が独自の parse_vdf_pair を持つため現在未使用（将来の拡張用）
+#![allow(dead_code)]
 use std::collections::HashMap;
 
 /// VDF テキストを key-value マップに変換する

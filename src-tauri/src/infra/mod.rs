@@ -1,4 +1,3 @@
-pub mod command_runner;
 pub mod cpu_affinity;
 pub mod etw;
 pub mod gpu;

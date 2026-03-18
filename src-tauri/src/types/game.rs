@@ -189,6 +189,11 @@ pub struct GameExitEvent {
     pub play_secs: u64,
     /// リバート成功可否
     pub revert_success: bool,
+    /// フレームタイム統計（FrameTimeSession から取得）
+    pub avg_fps: Option<f64>,
+    pub percentile_1_low: Option<f64>,
+    pub percentile_01_low: Option<f64>,
+    pub stutter_count: Option<u32>,
 }
 
 // ─── ProfileApplyResult ──────────────────────────────────────────────────────

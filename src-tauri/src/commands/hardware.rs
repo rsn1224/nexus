@@ -46,7 +46,8 @@ pub fn get_hardware_info(state: State<'_, SharedState>) -> Result<HardwareInfo, 
     let mut s = state
         .lock()
         .map_err(|e| AppError::Command(format!("Stateロックエラー: {}", e)))?;
-    s.sys.refresh_all();
+    s.sys.refresh_cpu_all();
+    s.sys.refresh_memory();
 
     // CPU情報
     let cpu_name = s

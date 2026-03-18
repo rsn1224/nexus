@@ -4,7 +4,6 @@
 //! Intel 12世代以降: P-Core（HTあり）/ E-Core（HTなし）を判別
 //! AMD Ryzen: CCD（Core Chiplet Die）ごとにグルーピング
 //! その他: 全コアを P-Core として扱うフォールバック
-#![allow(dead_code)] // Phase 8b-B で使用
 
 use crate::error::AppError;
 use crate::types::game::CpuTopology;

@@ -1,6 +1,4 @@
-use crate::infra::powershell;
 use sysinfo::Components;
-use tracing::warn;
 
 // 型定義は commands/hardware.rs に残すか、ここに移動する
 // （循環依存を避けるため、型定義の場所は実装時に判断）
@@ -22,36 +20,6 @@ pub fn get_cpu_temperature() -> Option<f32> {
     } else {
         Some(temps.iter().sum::<f32>() / temps.len() as f32)
     }
-}
-
-/// GPU 情報を PowerShell 経由で取得する
-#[allow(dead_code)]
-pub fn get_gpu_info() -> (Option<String>, Option<u64>) {
-    let gpu_json = powershell::run_powershell(
-        "Get-CimInstance Win32_VideoController | Select-Object -First 1 Name, AdapterRAM | ConvertTo-Json -Compress"
-    ).ok();
-
-    if let Some(json_str) = gpu_json {
-        if let Ok(value) = serde_json::from_str::<serde_json::Value>(&json_str) {
-            let name = value
-                .get("Name")
-                .and_then(|v| v.as_str())
-                .map(|s| s.to_string());
-            let vram_bytes = value
-                .get("AdapterRAM")
-                .and_then(|v| v.as_u64())
-                .unwrap_or(0);
-            let vram_mb = if vram_bytes > 0 {
-                Some(vram_bytes / 1024 / 1024)
-            } else {
-                None
-            };
-            return (name, vram_mb);
-        }
-    }
-
-    warn!("GPU情報の取得に失敗しました");
-    (None, None)
 }
 
 /// GPU 静的情報（キャッシュ対象）
@@ -89,11 +57,10 @@ pub fn get_gpu_static_info() -> GpuStaticInfo {
         };
     }
 
-    // 2. NVML 不可 → PowerShell フォールバック（名前 + VRAM 総量のみ）
-    let (name, vram_total) = get_gpu_info();
+    // NVML が利用できない場合は None を返す
     GpuStaticInfo {
-        name,
-        vram_total_mb: vram_total,
+        name: None,
+        vram_total_mb: None,
     }
 }
 
@@ -130,11 +97,10 @@ pub fn get_gpu_full_info() -> GpuFullInfo {
         };
     }
 
-    // 2. NVML 不可 → PowerShell フォールバック（名前 + VRAM 総量のみ）
-    let (name, vram_total) = get_gpu_info();
+    // NVML が利用できない場合は None を返す
     GpuFullInfo {
-        name,
-        vram_total_mb: vram_total,
+        name: None,
+        vram_total_mb: None,
         vram_used_mb: None,
         usage_percent: None,
         temperature_c: None,

@@ -9,11 +9,9 @@ use crate::types::game::PowerPlan;
 /// Windows 電源プラン制御インフラ
 /// Win32 API を使って電源プランの切り替えを行う
 #[cfg(windows)]
-#[allow(dead_code)]
 pub struct PowerPlanController;
 
 #[cfg(windows)]
-#[allow(dead_code)]
 impl PowerPlanController {
     /// 新しい電源プランコントローラを作成
     pub fn new() -> Self {
@@ -146,6 +144,7 @@ impl PowerPlanController {
     /// # 戻り値
     /// - `Ok(Vec<(String, String)>)`: (GUID, 表示名) のタプルリスト
     /// - `Err(AppError)`: 失敗
+    #[allow(dead_code)] // game_monitor でのプラン一覧取得用に予約
     pub fn list_available_plans(&self) -> Result<Vec<(String, String)>, AppError> {
         let output = Command::new("powercfg")
             .args(["/list"])
@@ -196,6 +195,7 @@ impl PowerPlanController {
     /// # 戻り値
     /// - `Ok(bool)`: 存在する場合は true
     /// - `Err(AppError)`: 確認中のエラー
+    #[allow(dead_code)] // list_available_plans とともに将来使用予定
     pub fn plan_exists(&self, guid: &str) -> Result<bool, AppError> {
         let plans = self.list_available_plans()?;
         Ok(plans.iter().any(|(plan_guid, _)| plan_guid == guid))
@@ -217,7 +217,6 @@ impl Default for PowerPlanController {
 /// - `Ok(Option<String>)`: 切り替え前の電源プラン GUID
 /// - `Err(AppError)`: 失敗
 #[cfg(windows)]
-#[allow(dead_code)]
 pub fn switch_power_plan(plan: PowerPlan) -> Result<Option<String>, AppError> {
     let controller = PowerPlanController::new();
     controller.switch_with_revert(plan)
@@ -232,7 +231,6 @@ pub fn switch_power_plan(plan: PowerPlan) -> Result<Option<String>, AppError> {
 /// - `Ok(())`: 成功
 /// - `Err(AppError)`: 失敗
 #[cfg(windows)]
-#[allow(dead_code)]
 pub fn revert_power_plan(guid: Option<String>) -> Result<(), AppError> {
     if let Some(guid) = guid {
         let controller = PowerPlanController::new();
@@ -247,7 +245,7 @@ pub fn revert_power_plan(guid: Option<String>) -> Result<(), AppError> {
 /// - `Ok(Option<String>)`: 現在の電源プラン名
 /// - `Err(AppError)`: 失敗
 #[cfg(windows)]
-#[allow(dead_code)]
+#[allow(dead_code)] // windows_settings が独自実装を持つため現在未使用
 pub fn get_current_power_plan() -> Result<Option<String>, AppError> {
     let controller = PowerPlanController::new();
     controller.get_active_plan_guid()

@@ -54,6 +54,9 @@ pub async fn start(app: AppHandle) {
             let available_memory = s.sys.available_memory();
             let used_memory = total_memory.saturating_sub(available_memory);
 
+            // Disk I/O 集計: 全プロセスの read/write bytes を合計し、前回値との差分で算出
+            // sysinfo の Disks はディスク別の統計しか提供しないため、プロセス別から集計
+            // refresh_processes() でプロセス情報は更新済みなので、追加コストは最小限
             let current_read: u64 = s
                 .sys
                 .processes()

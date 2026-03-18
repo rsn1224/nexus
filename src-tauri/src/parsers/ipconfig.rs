@@ -1,5 +1,5 @@
+// netopt コマンドから直接 PowerShell で取得するため現在未使用（将来の拡張用）
 #![allow(dead_code)]
-
 use crate::commands::netopt::NetworkAdapter;
 
 /// アダプター名の検出パターン（英語 + 日本語）

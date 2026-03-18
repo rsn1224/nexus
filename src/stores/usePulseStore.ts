@@ -57,11 +57,11 @@ export const usePulseStore = create<PulseStore>((set, get) => ({
       void checkAndNotify(snapshot);
 
       set((state) => {
-        const newSnapshots = [...state.snapshots, snapshot];
-        if (newSnapshots.length > MAX_SNAPSHOTS) {
-          newSnapshots.splice(0, newSnapshots.length - MAX_SNAPSHOTS);
-        }
-        return { snapshots: newSnapshots, error: null };
+        const snapshots =
+          state.snapshots.length >= MAX_SNAPSHOTS
+            ? [...state.snapshots.slice(1), snapshot]
+            : [...state.snapshots, snapshot];
+        return { snapshots, error: null };
       });
     })
       .then((fn) => {
