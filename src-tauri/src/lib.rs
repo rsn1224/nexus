@@ -15,8 +15,9 @@ mod state;
 mod types;
 
 use crate::commands::{
-    ai, app_settings, boost, bottleneck, cleanup, frame_time, hardware, health_check, launcher, launcher_settings, log,
-    memory, netopt, ops, profile, pulse, script, storage, timer, windows_settings, winopt,
+    ai, app_settings, boost, bottleneck, cleanup, frame_time, hardware, health_check, launcher,
+    launcher_settings, log, memory, netopt, ops, profile, pulse, script, session, storage, timer,
+    windows_settings, winopt,
 };
 use tracing::info;
 
@@ -131,6 +132,12 @@ pub fn run() {
             frame_time::start_frame_time_monitor,
             frame_time::stop_frame_time_monitor,
             frame_time::get_frame_time_status,
+            // SESSION
+            session::list_sessions,
+            session::get_session,
+            session::delete_session,
+            session::compare_sessions,
+            session::update_session_note,
             // CLEANUP
             cleanup::revert_all_settings,
             cleanup::cleanup_app_data,

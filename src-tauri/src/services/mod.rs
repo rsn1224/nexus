@@ -1,5 +1,5 @@
-pub mod bottleneck;
 pub mod boost;
+pub mod bottleneck;
 pub mod cleanup;
 pub mod cpu_topology;
 pub mod credentials;
@@ -10,6 +10,7 @@ pub mod health_check;
 pub mod memory_cleaner;
 pub mod process;
 pub mod profile;
+pub mod session_store;
 pub mod system_monitor;
 pub mod thermal_monitor;
 pub mod timer;

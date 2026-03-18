@@ -15,6 +15,7 @@ pub mod ops;
 pub mod profile;
 pub mod pulse;
 pub mod script;
+pub mod session;
 pub mod storage;
 pub mod timer;
 pub mod windows_settings;
