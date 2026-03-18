@@ -8,9 +8,9 @@ use tracing::{info, warn};
 
 use crate::constants::is_protected_process;
 use crate::error::AppError;
-use crate::infra::{cpu_affinity, process_control};
 #[cfg(windows)]
 use crate::infra::power_plan;
+use crate::infra::{cpu_affinity, process_control};
 use crate::services::core_parking;
 use crate::state::SharedState;
 use crate::types::game::{BoostLevel, GameProfile, ProfileApplyResult, RevertSnapshot};
@@ -101,10 +101,14 @@ pub fn apply_profile_boost(
                     if let Ok(mut s) = state.lock() {
                         s.timer_resolution_requested = Some(resolution);
                     }
-                    result
-                        .applied
-                        .push(format!("タイマーリゾリューション: {} ms", resolution as f64 / 10000.0));
-                    info!("タイマーリゾリューション設定完了: {} ms", resolution as f64 / 10000.0);
+                    result.applied.push(format!(
+                        "タイマーリゾリューション: {} ms",
+                        resolution as f64 / 10000.0
+                    ));
+                    info!(
+                        "タイマーリゾリューション設定完了: {} ms",
+                        resolution as f64 / 10000.0
+                    );
                 }
                 Err(e) => {
                     let msg = format!("タイマーリゾリューション設定失敗: {}", e);
@@ -119,7 +123,10 @@ pub fn apply_profile_boost(
             if let Ok(mut s) = state.lock() {
                 s.timer_resolution_requested = Some(resolution);
             }
-            let msg = format!("タイマーリゾリューション設定: {} ms - Linux ではスキップ", resolution as f64 / 10000.0);
+            let msg = format!(
+                "タイマーリゾリューション設定: {} ms - Linux ではスキップ",
+                resolution as f64 / 10000.0
+            );
             warn!("{}", msg);
             result.warnings.push(msg);
         }
