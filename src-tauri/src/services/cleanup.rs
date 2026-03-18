@@ -164,7 +164,7 @@ pub fn cleanup_app_data(app: tauri::AppHandle) -> Vec<RevertItem> {
     }
 
     // 4. keyring からAPI キー削除
-    match crate::services::credentials::delete_api_key() {
+    match crate::services::credentials::delete_api_key("perplexity_api_key") {
         Ok(()) => items.push(RevertItem {
             category: "認証".to_string(),
             label: "API キー".to_string(),

@@ -1,7 +1,7 @@
 use std::sync::Mutex;
 use sysinfo::{Networks, ProcessesToUpdate, System};
 
-use crate::types::game::RevertSnapshot;
+use crate::types::game::{CpuTopology, RevertSnapshot};
 
 /// アプリケーション全体で共有するシステム情報ステート
 pub struct AppState {
@@ -17,6 +17,8 @@ pub struct AppState {
     pub timer_resolution_requested: Option<u32>,
     /// フレームタイム監視セッション
     pub frame_time_session: Option<crate::services::frame_time::FrameTimeSession>,
+    /// CPU トポロジー情報（キャッシュ）
+    pub cpu_topology: Option<CpuTopology>,
 }
 
 impl Default for AppState {
@@ -54,6 +56,7 @@ impl AppState {
             game_monitor_active: false,
             timer_resolution_requested: None,
             frame_time_session: None,
+            cpu_topology: None,
         }
     }
 }

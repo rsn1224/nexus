@@ -1,9 +1,9 @@
 // Storage Wing — ドライブ情報取得機能
 
 use crate::error::AppError;
+use crate::infra::powershell;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
-use std::process::Command;
 use sysinfo::Disks;
 use tracing::{info, warn};
 
@@ -49,6 +49,13 @@ pub struct StorageInfo {
     pub total_size_bytes: u64,
     pub total_used_bytes: u64,
     pub total_available_bytes: u64,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CleanupCandidate {
+    pub path: String,
+    pub size_bytes: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -129,12 +136,12 @@ pub fn get_storage_info() -> Result<StorageInfo, AppError> {
 }
 
 #[tauri::command]
-pub fn cleanup_temp_files() -> Result<u64, AppError> {
-    info!("cleanup_temp_files: scanning reclaimable temporary files");
+pub fn scan_temp_files() -> Result<Vec<CleanupCandidate>, AppError> {
+    info!("scan_temp_files: scanning temporary files for cleanup candidates");
 
-    let mut total_freed = 0u64;
+    let mut candidates = Vec::new();
 
-    // Windowsの一時フォルダの削除可能サイズを計算
+    // Windowsの一時フォルダーの候補をスキャン
     let username = std::env::var("USERNAME").unwrap_or_else(|_| "Default".to_string());
     let temp_user_dir = format!(r"C:\Users\{}\AppData\Local\Temp", username);
     let temp_dirs = vec![
@@ -146,16 +153,16 @@ pub fn cleanup_temp_files() -> Result<u64, AppError> {
     for temp_dir in temp_dirs {
         if let Ok(metadata) = std::fs::metadata(temp_dir) {
             if metadata.is_dir() {
-                // 簡易的なクリーンアップ（実際の実装ではより安全な方法が必要）
                 match std::fs::read_dir(temp_dir) {
                     Ok(entries) => {
                         for entry in entries.flatten() {
                             let path = entry.path();
                             if path.is_file() {
-                                if let Ok(metadata) = std::fs::metadata(&path) {
-                                    total_freed += metadata.len();
-                                    // 削除可能サイズを計算（実際の削除は安全のためコメントアウト）
-                                    // let _ = std::fs::remove_file(&path);
+                                if let Ok(file_metadata) = std::fs::metadata(&path) {
+                                    candidates.push(CleanupCandidate {
+                                        path: path.to_string_lossy().to_string(),
+                                        size_bytes: file_metadata.len(),
+                                    });
                                 }
                             }
                         }
@@ -168,7 +175,45 @@ pub fn cleanup_temp_files() -> Result<u64, AppError> {
         }
     }
 
-    info!("cleanup_temp_files: reclaimable {} bytes", total_freed);
+    info!(
+        "scan_temp_files: found {} cleanup candidates",
+        candidates.len()
+    );
+    Ok(candidates)
+}
+
+#[tauri::command]
+pub fn cleanup_temp_files(confirmed: bool) -> Result<u64, AppError> {
+    info!("cleanup_temp_files: confirmed={}", confirmed);
+
+    if !confirmed {
+        // ドライランモード - 候補をスキャンして合計サイズを返す
+        let candidates = scan_temp_files()?;
+        let total_size: u64 = candidates.iter().map(|c| c.size_bytes).sum();
+        info!(
+            "cleanup_temp_files: dry run - {} bytes available",
+            total_size
+        );
+        return Ok(total_size);
+    }
+
+    // 実行モード - 実際にファイルを削除
+    let mut total_freed = 0u64;
+    let candidates = scan_temp_files()?;
+
+    for candidate in candidates {
+        match std::fs::remove_file(&candidate.path) {
+            Ok(_) => {
+                total_freed += candidate.size_bytes;
+                info!("Deleted: {}", candidate.path);
+            }
+            Err(e) => {
+                warn!("Failed to delete {}: {}", candidate.path, e);
+            }
+        }
+    }
+
+    info!("cleanup_temp_files: freed {} bytes", total_freed);
     Ok(total_freed)
 }
 
@@ -177,31 +222,22 @@ pub fn cleanup_recycle_bin() -> Result<u64, AppError> {
     info!("cleanup_recycle_bin: scanning reclaimable recycle bin");
 
     // Windowsのゴミ箱をクリーンアップ
-    let output = Command::new("powershell")
-        .args([
-            "-Command",
-            "Clear-RecycleBin -Force -ErrorAction SilentlyContinue; Get-ChildItem -Path 'C:\\$Recycle.Bin' -Recurse -Force | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum"
-        ])
-        .output()
-        .map_err(|e| {
-            warn!("Failed to execute recycle bin cleanup: {}", e);
-            AppError::Command(format!("Failed to execute recycle bin cleanup: {}", e))
-        })?;
+    let command = "Clear-RecycleBin -Force -ErrorAction SilentlyContinue; Get-ChildItem -Path 'C:\\$Recycle.Bin' -Recurse -Force | Measure-Object -Property Length -Sum | Select-Object -ExpandProperty Sum";
+    let output = powershell::run_powershell(command)?;
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let total_freed = stdout.trim().parse::<u64>().unwrap_or(0);
+    let total_freed = output.trim().parse::<u64>().unwrap_or(0);
 
     info!("cleanup_recycle_bin: reclaimable {} bytes", total_freed);
     Ok(total_freed)
 }
 
 #[tauri::command]
-pub fn cleanup_system_cache() -> Result<u64, AppError> {
-    info!("cleanup_system_cache: scanning reclaimable system cache");
+pub fn scan_system_cache() -> Result<Vec<CleanupCandidate>, AppError> {
+    info!("scan_system_cache: scanning system cache for cleanup candidates");
 
-    let mut total_freed = 0u64;
+    let mut candidates = Vec::new();
 
-    // Windowsシステムキャッシュの削除可能サイズを計算
+    // Windowsシステムキャッシュの候補をスキャン
     let cache_dirs = vec![
         r"C:\Windows\SoftwareDistribution\Download",
         r"C:\Windows\Prefetch",
@@ -216,10 +252,11 @@ pub fn cleanup_system_cache() -> Result<u64, AppError> {
                         for entry in entries.flatten() {
                             let path = entry.path();
                             if path.is_file() {
-                                if let Ok(metadata) = std::fs::metadata(&path) {
-                                    total_freed += metadata.len();
-                                    // 削除可能サイズを計算（実際の削除は安全のためコメントアウト）
-                                    // let _ = std::fs::remove_file(&path);
+                                if let Ok(file_metadata) = std::fs::metadata(&path) {
+                                    candidates.push(CleanupCandidate {
+                                        path: path.to_string_lossy().to_string(),
+                                        size_bytes: file_metadata.len(),
+                                    });
                                 }
                             }
                         }
@@ -232,7 +269,45 @@ pub fn cleanup_system_cache() -> Result<u64, AppError> {
         }
     }
 
-    info!("cleanup_system_cache: reclaimable {} bytes", total_freed);
+    info!(
+        "scan_system_cache: found {} cleanup candidates",
+        candidates.len()
+    );
+    Ok(candidates)
+}
+
+#[tauri::command]
+pub fn cleanup_system_cache(confirmed: bool) -> Result<u64, AppError> {
+    info!("cleanup_system_cache: confirmed={}", confirmed);
+
+    if !confirmed {
+        // ドライランモード - 候補をスキャンして合計サイズを返す
+        let candidates = scan_system_cache()?;
+        let total_size: u64 = candidates.iter().map(|c| c.size_bytes).sum();
+        info!(
+            "cleanup_system_cache: dry run - {} bytes available",
+            total_size
+        );
+        return Ok(total_size);
+    }
+
+    // 実行モード - 実際にファイルを削除
+    let mut total_freed = 0u64;
+    let candidates = scan_system_cache()?;
+
+    for candidate in candidates {
+        match std::fs::remove_file(&candidate.path) {
+            Ok(_) => {
+                total_freed += candidate.size_bytes;
+                info!("Deleted: {}", candidate.path);
+            }
+            Err(e) => {
+                warn!("Failed to delete {}: {}", candidate.path, e);
+            }
+        }
+    }
+
+    info!("cleanup_system_cache: freed {} bytes", total_freed);
     Ok(total_freed)
 }
 
@@ -240,9 +315,10 @@ pub fn cleanup_system_cache() -> Result<u64, AppError> {
 pub fn run_full_cleanup() -> Result<CleanupResult, AppError> {
     info!("run_full_cleanup: scanning total reclaimable space");
 
-    let temp_freed = cleanup_temp_files().unwrap_or(0);
+    // ドライランモードで各クリーンアップ関数を呼び出し
+    let temp_freed = cleanup_temp_files(false).unwrap_or(0);
     let recycle_freed = cleanup_recycle_bin().unwrap_or(0);
-    let cache_freed = cleanup_system_cache().unwrap_or(0);
+    let cache_freed = cleanup_system_cache(false).unwrap_or(0);
 
     let result = CleanupResult {
         temp_files_cleaned: temp_freed,

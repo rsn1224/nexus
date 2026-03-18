@@ -1,9 +1,9 @@
 // Log Wing — ログ管理機能
 
 use crate::error::AppError;
+use crate::infra::powershell;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use std::process::Command;
 use tracing::{info, warn};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -51,18 +51,8 @@ pub fn get_system_logs(
     let mut logs = Vec::new();
 
     // Windowsイベントログから取得（PowerShell使用）
-    let output = Command::new("powershell")
-        .args([
-            "-Command",
-            "Get-WinEvent -LogName Application -MaxEvents 1000 | Where-Object {$_.TimeCreated -gt (Get-Date).AddHours(-24)} | Select-Object TimeCreated, LevelDisplayName, Message, ProviderName | ConvertTo-Json -Depth 1"
-        ])
-        .output()
-        .map_err(|e| {
-            warn!("Failed to execute PowerShell command: {}", e);
-            AppError::Command(format!("Failed to execute PowerShell command: {}", e))
-        })?;
-
-    let stdout_output = String::from_utf8_lossy(&output.stdout);
+    let command = "Get-WinEvent -LogName Application -MaxEvents 1000 | Where-Object {$_.TimeCreated -gt (Get-Date).AddHours(-24)} | Select-Object TimeCreated, LevelDisplayName, Message, ProviderName | ConvertTo-Json -Depth 1";
+    let stdout_output = powershell::run_powershell(command)?;
     let stdout_str = stdout_output.trim();
     if !stdout_str.is_empty() {
         match serde_json::from_str::<Vec<serde_json::Value>>(stdout_str) {
@@ -98,11 +88,21 @@ pub fn get_system_logs(
     Ok(logs)
 }
 
+// RFC 4180 準拠のCSVフィールドエスケープ関数
+fn escape_csv_field(field: &str) -> String {
+    if field.contains(',') || field.contains('"') || field.contains('\n') || field.contains('\r') {
+        format!("\"{}\"", field.replace('"', "\"\""))
+    } else {
+        field.to_string()
+    }
+}
+
 #[tauri::command]
 pub fn get_application_logs(
-    app_name: String,
+    app_name: Option<String>,
     limit: Option<usize>,
 ) -> Result<Vec<LogEntry>, AppError> {
+    let app_name = app_name.unwrap_or_else(|| "nexus".to_string());
     info!(
         "get_application_logs: fetching logs for app: {}, limit: {:?}",
         app_name, limit
@@ -121,8 +121,12 @@ pub fn get_application_logs(
         format!(r"C:\Program Files\{}\logs\*.log", app_name),
     ];
 
-    for _log_path in log_paths {
-        if let Ok(entries) = std::fs::read_dir(r"C:\ProgramData") {
+    for log_pattern in &log_paths {
+        // glob パターンからディレクトリ部分を抽出
+        let dir = std::path::Path::new(log_pattern)
+            .parent()
+            .unwrap_or(std::path::Path::new("."));
+        if let Ok(entries) = std::fs::read_dir(dir) {
             for entry in entries.flatten() {
                 let path = entry.path();
                 if path.is_file() && path.extension().is_some_and(|ext| ext == "log") {
@@ -236,17 +240,17 @@ pub fn export_logs(logs: Vec<LogEntry>, format: String) -> Result<String, AppErr
             for entry in logs {
                 csv_content.push_str(&format!(
                     "{},{},{},{},{},{}\n",
-                    entry.timestamp,
-                    match entry.level {
+                    escape_csv_field(&entry.timestamp),
+                    escape_csv_field(match entry.level {
                         LogLevel::Debug => "Debug",
                         LogLevel::Info => "Info",
                         LogLevel::Warn => "Warn",
                         LogLevel::Error => "Error",
-                    },
-                    entry.message.replace(',', ";"),
-                    entry.source,
-                    entry.process_id.unwrap_or(0),
-                    entry.thread_id.unwrap_or(0)
+                    }),
+                    escape_csv_field(&entry.message),
+                    escape_csv_field(&entry.source),
+                    escape_csv_field(&entry.process_id.unwrap_or(0).to_string()),
+                    escape_csv_field(&entry.thread_id.unwrap_or(0).to_string())
                 ));
             }
             csv_content

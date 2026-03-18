@@ -52,8 +52,30 @@ fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
             .first()
             .map(|cpu: &sysinfo::Cpu| cpu.brand().to_string())
             .unwrap_or_else(|| "Unknown CPU".to_string());
-        let cpu_cores = s.sys.cpus().len() as u32;
-        let cpu_threads = cpu_cores;
+
+        // CPU トポロジーをキャッシュから取得、なければ検出してキャッシュ
+        let (cpu_cores, cpu_threads) = if let Some(ref topology) = s.cpu_topology {
+            (
+                topology.physical_cores as u32,
+                topology.logical_cores as u32,
+            )
+        } else {
+            // CPU トポロジーを検出してキャッシュ
+            match crate::services::cpu_topology::detect_topology() {
+                Ok(topology) => {
+                    let cores = topology.physical_cores as u32;
+                    let threads = topology.logical_cores as u32;
+                    s.cpu_topology = Some(topology);
+                    (cores, threads)
+                }
+                Err(_) => {
+                    // フォールバック: sysinfo の論理コア数を使用
+                    let logical = s.sys.cpus().len() as u32;
+                    (logical, logical)
+                }
+            }
+        };
+
         let cpu_base_ghz = s
             .sys
             .cpus()
