@@ -29,6 +29,9 @@ on:
   schedule:
     - cron: '0 0 * * 1'  # 毎週月曜 00:00 UTC（日本時間 09:00）
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node.js 20 deprecation対応 (2026-06-02 強制移行)
+
 jobs:
   frontend:
     name: Frontend
