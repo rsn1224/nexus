@@ -77,7 +77,9 @@ pub fn analyze_settings(
         label: "Game Mode".into(),
         recommended_value: RecommendedValue::Boolean(true),
         current_value: format!("{}", current_settings.game_mode),
-        reason: "Game Mode はバックグラウンドの Windows Update や通知を抑制します。安全に有効化可能です".into(),
+        reason:
+            "Game Mode はバックグラウンドの Windows Update や通知を抑制します。安全に有効化可能です"
+                .into(),
         importance: "high".into(),
         safety_level: "safe".into(),
         is_optimal: current_settings.game_mode,
@@ -86,8 +88,13 @@ pub fn analyze_settings(
     // ─── HAGS（Hardware Accelerated GPU Scheduling）──────────────
     // NVIDIA RTX 30/40 シリーズでは有効推奨。それ以外は無効推奨。
     let hags_recommended = gpu_name
-        .map(|n| n.contains("RTX 30") || n.contains("RTX 40") || n.contains("RTX 50")
-            || n.contains("RX 7") || n.contains("RX 9"))
+        .map(|n| {
+            n.contains("RTX 30")
+                || n.contains("RTX 40")
+                || n.contains("RTX 50")
+                || n.contains("RX 7")
+                || n.contains("RX 9")
+        })
         .unwrap_or(false);
     recommendations.push(SettingRecommendation {
         setting_id: "hags".into(),
@@ -133,7 +140,7 @@ pub fn analyze_settings(
 
     // ─── Power Plan ─────────────────────────────────────────────
     let power_plan_recommended = if topology.vendor_id.contains("AMD") {
-        "AMD Ryzen Balanced"  // AMD は専用プランが最適
+        "AMD Ryzen Balanced" // AMD は専用プランが最適
     } else {
         "High Performance"
     };
@@ -149,7 +156,7 @@ pub fn analyze_settings(
         },
         importance: "high".into(),
         safety_level: "safe".into(),
-        is_optimal: current_settings.power_plan.contains(power_plan_recommended) 
+        is_optimal: current_settings.power_plan.contains(power_plan_recommended)
             || (topology.vendor_id.contains("AMD") && current_settings.power_plan.contains("Balanced")),
     });
 
@@ -169,7 +176,11 @@ pub fn analyze_settings(
     // ─── スコア計算 ─────────────────────────────────────────────
     let optimal_count = recommendations.iter().filter(|r| r.is_optimal).count();
     let total = recommendations.len();
-    let score = if total > 0 { (optimal_count * 100 / total) as u32 } else { 100 };
+    let score = if total > 0 {
+        (optimal_count * 100 / total) as u32
+    } else {
+        100
+    };
 
     let hardware_summary = format!(
         "{} ({} cores / {} threads) + {}{}",
@@ -177,7 +188,11 @@ pub fn analyze_settings(
         topology.physical_cores,
         topology.logical_cores,
         gpu_name.unwrap_or("GPU 不明"),
-        if mem_total_gb > 0.0 { format!(", {:.0}GB RAM", mem_total_gb) } else { String::new() },
+        if mem_total_gb > 0.0 {
+            format!(", {:.0}GB RAM", mem_total_gb)
+        } else {
+            String::new()
+        },
     );
 
     AdvisorResult {
@@ -232,14 +247,21 @@ mod tests {
         };
 
         let result = analyze_settings(&topology, Some("NVIDIA RTX 4070"), 32.0, &current);
-        
+
         assert_eq!(result.optimization_score, 100);
         assert!(result.hardware_summary.contains("Intel"));
         assert!(result.hardware_summary.contains("RTX 4070"));
-        
+
         // HAGS should be recommended for RTX 40 series
-        let hags_rec = result.recommendations.iter().find(|r| r.setting_id == "hags").unwrap();
-        assert!(matches!(hags_rec.recommended_value, RecommendedValue::Boolean(true)));
+        let hags_rec = result
+            .recommendations
+            .iter()
+            .find(|r| r.setting_id == "hags")
+            .unwrap();
+        assert!(matches!(
+            hags_rec.recommended_value,
+            RecommendedValue::Boolean(true)
+        ));
     }
 
     #[test]
@@ -255,14 +277,27 @@ mod tests {
         };
 
         let result = analyze_settings(&topology, Some("AMD RX 7900 XTX"), 64.0, &current);
-        
+
         // Power plan should recommend AMD Balanced
-        let power_rec = result.recommendations.iter().find(|r| r.setting_id == "power_plan").unwrap();
-        assert!(matches!(&power_rec.recommended_value, RecommendedValue::String(s) if s.contains("AMD Ryzen Balanced")));
-        
+        let power_rec = result
+            .recommendations
+            .iter()
+            .find(|r| r.setting_id == "power_plan")
+            .unwrap();
+        assert!(
+            matches!(&power_rec.recommended_value, RecommendedValue::String(s) if s.contains("AMD Ryzen Balanced"))
+        );
+
         // HAGS should be recommended for RX 7 series
-        let hags_rec = result.recommendations.iter().find(|r| r.setting_id == "hags").unwrap();
-        assert!(matches!(hags_rec.recommended_value, RecommendedValue::Boolean(true)));
+        let hags_rec = result
+            .recommendations
+            .iter()
+            .find(|r| r.setting_id == "hags")
+            .unwrap();
+        assert!(matches!(
+            hags_rec.recommended_value,
+            RecommendedValue::Boolean(true)
+        ));
     }
 
     #[test]
@@ -270,7 +305,7 @@ mod tests {
         let topology = create_test_topology("GenuineIntel", "Intel Core i5-10400", 6, 12);
         let current = WindowsSettingsSnapshot {
             game_mode: false,
-            hags: true,  // Currently enabled but not recommended
+            hags: true, // Currently enabled but not recommended
             fullscreen_optimization: false,
             visual_effects: "LetWindowsChoose".to_string(),
             power_plan: "Balanced".to_string(),
@@ -278,10 +313,17 @@ mod tests {
         };
 
         let result = analyze_settings(&topology, Some("NVIDIA GTX 1660"), 16.0, &current);
-        
+
         // HAGS should NOT be recommended for GTX series
-        let hags_rec = result.recommendations.iter().find(|r| r.setting_id == "hags").unwrap();
-        assert!(matches!(hags_rec.recommended_value, RecommendedValue::Boolean(false)));
-        assert!(!hags_rec.is_optimal);  // Currently enabled but not recommended
+        let hags_rec = result
+            .recommendations
+            .iter()
+            .find(|r| r.setting_id == "hags")
+            .unwrap();
+        assert!(matches!(
+            hags_rec.recommended_value,
+            RecommendedValue::Boolean(false)
+        ));
+        assert!(!hags_rec.is_optimal); // Currently enabled but not recommended
     }
 }

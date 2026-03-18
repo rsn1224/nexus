@@ -107,11 +107,11 @@ pub fn enumerate_subkeys(subkey: &str) -> Result<Vec<String>, AppError> {
             subkey, e
         ))
     })?;
-    
+
     let mut subkeys = Vec::new();
     for subkey_name in key.enum_keys().flatten() {
         subkeys.push(subkey_name);
     }
-    
+
     Ok(subkeys)
 }

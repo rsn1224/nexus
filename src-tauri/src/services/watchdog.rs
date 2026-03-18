@@ -40,9 +40,10 @@ impl WatchdogEngine {
     pub fn add_rule(&mut self, rule: WatchdogRule) -> Result<(), AppError> {
         // ID 重複チェック
         if self.rules.iter().any(|r| r.id == rule.id) {
-            return Err(AppError::InvalidInput(
-                format!("Rule ID '{}' already exists", rule.id),
-            ));
+            return Err(AppError::InvalidInput(format!(
+                "Rule ID '{}' already exists",
+                rule.id
+            )));
         }
         self.rules.push(rule);
         Ok(())
@@ -53,9 +54,7 @@ impl WatchdogEngine {
             .rules
             .iter()
             .position(|r| r.id == rule.id)
-            .ok_or_else(|| {
-                AppError::InvalidInput(format!("Rule ID '{}' not found", rule.id))
-            })?;
+            .ok_or_else(|| AppError::InvalidInput(format!("Rule ID '{}' not found", rule.id)))?;
         self.rules[index] = rule;
         Ok(())
     }
@@ -65,9 +64,7 @@ impl WatchdogEngine {
             .rules
             .iter()
             .position(|r| r.id == rule_id)
-            .ok_or_else(|| {
-                AppError::InvalidInput(format!("Rule ID '{}' not found", rule_id))
-            })?;
+            .ok_or_else(|| AppError::InvalidInput(format!("Rule ID '{}' not found", rule_id)))?;
         self.rules.remove(index);
         Ok(())
     }
@@ -133,23 +130,26 @@ impl WatchdogEngine {
     /// プロセスフィルタのマッチング
     fn matches_filter(&self, filter: &ProcessFilter, process_name: &str) -> bool {
         let name_lower = process_name.to_lowercase();
-        
+
         // 除外リストチェック
-        if filter.exclude_names.iter().any(|exclude| {
-            name_lower.contains(&exclude.to_lowercase())
-        }) {
+        if filter
+            .exclude_names
+            .iter()
+            .any(|exclude| name_lower.contains(&exclude.to_lowercase()))
+        {
             return false;
         }
-        
+
         // 包含リストが空の場合は全プロセス対象
         if filter.include_names.is_empty() {
             return true;
         }
-        
+
         // 包含リストチェック
-        filter.include_names.iter().any(|include| {
-            name_lower.contains(&include.to_lowercase())
-        })
+        filter
+            .include_names
+            .iter()
+            .any(|include| name_lower.contains(&include.to_lowercase()))
     }
 
     /// クールダウンチェック
@@ -163,7 +163,11 @@ impl WatchdogEngine {
     }
 
     /// 条件評価
-    fn evaluate_conditions(&self, conditions: &[WatchdogCondition], process: &SystemProcess) -> bool {
+    fn evaluate_conditions(
+        &self,
+        conditions: &[WatchdogCondition],
+        process: &SystemProcess,
+    ) -> bool {
         conditions.iter().all(|condition| {
             let metric_value = match condition.metric {
                 WatchdogMetric::CpuPercent => process.cpu_percent as f64,
@@ -171,7 +175,7 @@ impl WatchdogEngine {
                 WatchdogMetric::DiskReadKb => process.disk_read_kb,
                 WatchdogMetric::DiskWriteKb => process.disk_write_kb,
             };
-            
+
             match condition.operator {
                 WatchdogOperator::GreaterThan => metric_value > condition.threshold,
                 WatchdogOperator::LessThan => metric_value < condition.threshold,
@@ -181,7 +185,12 @@ impl WatchdogEngine {
     }
 
     /// アクション実行
-    fn execute_action(&mut self, rule: &WatchdogRule, process: &SystemProcess, now: u64) -> WatchdogEvent {
+    fn execute_action(
+        &mut self,
+        rule: &WatchdogRule,
+        process: &SystemProcess,
+        now: u64,
+    ) -> WatchdogEvent {
         let mut event = WatchdogEvent {
             timestamp: now,
             rule_id: rule.id.clone(),
@@ -268,20 +277,17 @@ impl WatchdogEngine {
             .path()
             .app_data_dir()
             .map_err(|e| AppError::Io(format!("Failed to get app data dir: {}", e)))?;
-        
-        std::fs::create_dir_all(&app_data_dir).map_err(|e| {
-            AppError::Io(format!("Failed to create app data dir: {}", e))
-        })?;
-        
+
+        std::fs::create_dir_all(&app_data_dir)
+            .map_err(|e| AppError::Io(format!("Failed to create app data dir: {}", e)))?;
+
         let rules_path = app_data_dir.join("watchdog_rules.json");
-        let json = serde_json::to_string_pretty(&self.rules).map_err(|e| {
-            AppError::Io(format!("Failed to serialize rules: {}", e))
-        })?;
-        
-        std::fs::write(&rules_path, json).map_err(|e| {
-            AppError::Io(format!("Failed to write rules file: {}", e))
-        })?;
-        
+        let json = serde_json::to_string_pretty(&self.rules)
+            .map_err(|e| AppError::Io(format!("Failed to serialize rules: {}", e)))?;
+
+        std::fs::write(&rules_path, json)
+            .map_err(|e| AppError::Io(format!("Failed to write rules file: {}", e)))?;
+
         info!("Watchdog rules saved to {:?}", rules_path);
         Ok(())
     }
@@ -292,21 +298,19 @@ impl WatchdogEngine {
             .path()
             .app_data_dir()
             .map_err(|e| AppError::Io(format!("Failed to get app data dir: {}", e)))?;
-        
+
         let rules_path = app_data_dir.join("watchdog_rules.json");
-        
+
         if !rules_path.exists() {
             return Ok(Vec::new());
         }
-        
-        let json = std::fs::read_to_string(&rules_path).map_err(|e| {
-            AppError::Io(format!("Failed to read rules file: {}", e))
-        })?;
-        
-        let rules: Vec<WatchdogRule> = serde_json::from_str(&json).map_err(|e| {
-            AppError::Io(format!("Failed to deserialize rules: {}", e))
-        })?;
-        
+
+        let json = std::fs::read_to_string(&rules_path)
+            .map_err(|e| AppError::Io(format!("Failed to read rules file: {}", e)))?;
+
+        let rules: Vec<WatchdogRule> = serde_json::from_str(&json)
+            .map_err(|e| AppError::Io(format!("Failed to deserialize rules: {}", e)))?;
+
         info!("Watchdog rules loaded from {:?}", rules_path);
         Ok(rules)
     }
@@ -324,9 +328,15 @@ pub fn default_presets() -> Vec<WatchdogRule> {
                 operator: WatchdogOperator::GreaterThan,
                 threshold: 10.0,
             }],
-            action: WatchdogAction::SetPriority { level: "low".to_string() },
+            action: WatchdogAction::SetPriority {
+                level: "low".to_string(),
+            },
             process_filter: ProcessFilter {
-                include_names: vec!["wuauserv".to_string(), "tiworker".to_string(), "trustedinstaller".to_string()],
+                include_names: vec![
+                    "wuauserv".to_string(),
+                    "tiworker".to_string(),
+                    "trustedinstaller".to_string(),
+                ],
                 exclude_names: vec![],
             },
             profile_id: None,
@@ -342,9 +352,15 @@ pub fn default_presets() -> Vec<WatchdogRule> {
                 operator: WatchdogOperator::GreaterThan,
                 threshold: 15.0,
             }],
-            action: WatchdogAction::SetPriority { level: "belowNormal".to_string() },
+            action: WatchdogAction::SetPriority {
+                level: "belowNormal".to_string(),
+            },
             process_filter: ProcessFilter {
-                include_names: vec!["chrome".to_string(), "firefox".to_string(), "msedge".to_string()],
+                include_names: vec![
+                    "chrome".to_string(),
+                    "firefox".to_string(),
+                    "msedge".to_string(),
+                ],
                 exclude_names: vec![],
             },
             profile_id: None,
@@ -391,7 +407,7 @@ mod tests {
 
         assert!(engine.add_rule(rule.clone()).is_ok());
         assert_eq!(engine.get_rules().len(), 1);
-        
+
         // 重複テスト
         assert!(engine.add_rule(rule).is_err());
     }
@@ -415,13 +431,13 @@ mod tests {
         };
 
         engine.add_rule(rule).unwrap();
-        
+
         let mut updated_rule = engine.get_rules()[0].clone();
         updated_rule.name = "Updated Rule".to_string();
-        
+
         assert!(engine.update_rule(updated_rule.clone()).is_ok());
         assert_eq!(engine.get_rules()[0].name, "Updated Rule");
-        
+
         // 存在しないルール
         let nonexistent_rule = WatchdogRule {
             id: "nonexistent".to_string(),
@@ -460,10 +476,10 @@ mod tests {
 
         engine.add_rule(rule).unwrap();
         assert_eq!(engine.get_rules().len(), 1);
-        
+
         assert!(engine.remove_rule("test-rule").is_ok());
         assert_eq!(engine.get_rules().len(), 0);
-        
+
         // 存在しないルール
         assert!(engine.remove_rule("nonexistent").is_err());
     }
@@ -471,20 +487,20 @@ mod tests {
     #[test]
     fn test_matches_filter() {
         let engine = WatchdogEngine::new();
-        
+
         let filter_all = ProcessFilter {
             include_names: vec![],
             exclude_names: vec![],
         };
         assert!(engine.matches_filter(&filter_all, "chrome.exe"));
-        
+
         let filter_include = ProcessFilter {
             include_names: vec!["chrome".to_string()],
             exclude_names: vec![],
         };
         assert!(engine.matches_filter(&filter_include, "chrome.exe"));
         assert!(!engine.matches_filter(&filter_include, "firefox.exe"));
-        
+
         let filter_exclude = ProcessFilter {
             include_names: vec![],
             exclude_names: vec!["chrome".to_string()],
@@ -497,13 +513,17 @@ mod tests {
     fn test_cooldown() {
         let mut engine = WatchdogEngine::new();
         let now = current_timestamp_ms();
-        
+
         // クールダウン期間内
-        engine.cooldowns.insert(("test".to_string(), 1234).into(), now - 1000);
+        engine
+            .cooldowns
+            .insert(("test".to_string(), 1234).into(), now - 1000);
         assert!(engine.is_in_cooldown("test", 1234, 2, now)); // 2秒クールダウン
-        
+
         // クールダウン期間外
-        engine.cooldowns.insert(("test".to_string(), 1234).into(), now - 5000);
+        engine
+            .cooldowns
+            .insert(("test".to_string(), 1234).into(), now - 5000);
         assert!(!engine.is_in_cooldown("test", 1234, 2, now));
     }
 
@@ -511,7 +531,7 @@ mod tests {
     fn test_evaluate_conditions() {
         let engine = WatchdogEngine::new();
         let process = create_test_process(1234, "test.exe", 80.0, 1024.0);
-        
+
         let conditions = vec![
             WatchdogCondition {
                 metric: WatchdogMetric::CpuPercent,
@@ -524,27 +544,23 @@ mod tests {
                 threshold: 500.0,
             },
         ];
-        
+
         assert!(engine.evaluate_conditions(&conditions, &process));
-        
-        let conditions_fail = vec![
-            WatchdogCondition {
-                metric: WatchdogMetric::CpuPercent,
-                operator: WatchdogOperator::LessThan,
-                threshold: 50.0,
-            },
-        ];
-        
+
+        let conditions_fail = vec![WatchdogCondition {
+            metric: WatchdogMetric::CpuPercent,
+            operator: WatchdogOperator::LessThan,
+            threshold: 50.0,
+        }];
+
         assert!(!engine.evaluate_conditions(&conditions_fail, &process));
     }
 
     #[test]
     fn test_evaluate_no_match() {
         let mut engine = WatchdogEngine::new();
-        let processes = vec![
-            create_test_process(1234, "chrome.exe", 5.0, 512.0),
-        ];
-        
+        let processes = vec![create_test_process(1234, "chrome.exe", 5.0, 512.0)];
+
         let rule = WatchdogRule {
             id: "test-rule".to_string(),
             name: "Test Rule".to_string(),
@@ -563,7 +579,7 @@ mod tests {
             cooldown_secs: 0,
             last_triggered_at: None,
         };
-        
+
         engine.add_rule(rule).unwrap();
         let events = engine.evaluate(&processes, None);
         assert_eq!(events.len(), 0);
@@ -575,7 +591,7 @@ mod tests {
         let processes = vec![
             create_test_process(1234, "svchost.exe", 80.0, 512.0), // 保護プロセス
         ];
-        
+
         let rule = WatchdogRule {
             id: "test-rule".to_string(),
             name: "Test Rule".to_string(),
@@ -594,7 +610,7 @@ mod tests {
             cooldown_secs: 0,
             last_triggered_at: None,
         };
-        
+
         engine.add_rule(rule).unwrap();
         let events = engine.evaluate(&processes, None);
         assert_eq!(events.len(), 0); // 保護プロセスはスキップされる
@@ -603,7 +619,7 @@ mod tests {
     #[test]
     fn test_event_log_limit() {
         let mut engine = WatchdogEngine::new();
-        
+
         // 500件以上のイベントを追加
         for i in 0..600 {
             engine.event_log.push(WatchdogEvent {
@@ -619,11 +635,11 @@ mod tests {
                 detail: "Test".to_string(),
             });
         }
-        
+
         // evaluate を呼ぶとログが制限される
         let processes = vec![];
         let events = engine.evaluate(&processes, None);
-        
+
         assert!(engine.event_log.len() <= 500);
     }
 }

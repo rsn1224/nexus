@@ -1,8 +1,13 @@
 pub mod cpu_affinity;
 pub mod etw;
 pub mod gpu;
-pub mod power_plan;
-pub mod powershell;
 pub mod process_control;
+
+#[cfg(windows)]
+pub mod power_plan;
+#[cfg(windows)]
+pub mod powershell;
+#[cfg(windows)]
 pub mod registry;
+#[cfg(windows)]
 pub mod timer_resolution;

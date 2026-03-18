@@ -1,5 +1,5 @@
 use crate::error::AppError;
-use crate::services::watchdog::{default_presets, WatchdogEngine};
+use crate::services::watchdog::{WatchdogEngine, default_presets};
 use crate::types::game::WatchdogRule;
 use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, State};
@@ -62,7 +62,9 @@ pub fn remove_watchdog_rule(
 }
 
 #[tauri::command]
-pub fn get_watchdog_events(state: State<'_, WatchdogState>) -> Result<Vec<crate::types::game::WatchdogEvent>, AppError> {
+pub fn get_watchdog_events(
+    state: State<'_, WatchdogState>,
+) -> Result<Vec<crate::types::game::WatchdogEvent>, AppError> {
     info!("get_watchdog_events: fetching event log");
     let watchdog = state
         .lock()
@@ -79,9 +81,13 @@ pub fn get_watchdog_presets() -> Result<Vec<WatchdogRule>, AppError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::commands::ops::SystemProcess;
     use crate::services::watchdog::WatchdogEngine;
-    use crate::types::game::{WatchdogAction, WatchdogCondition, WatchdogMetric, WatchdogOperator, ProcessFilter};
+    use crate::types::game::{
+        ProcessFilter, WatchdogAction, WatchdogCondition, WatchdogMetric, WatchdogOperator,
+    };
     use std::sync::{Arc, Mutex};
+    use tauri::State;
 
     fn create_test_rule(id: &str, enabled: bool) -> WatchdogRule {
         WatchdogRule {
@@ -109,7 +115,7 @@ mod tests {
             pid,
             name: name.to_string(),
             cpu_percent: cpu,
-            memory_mb: mem,
+            mem_mb: mem,
             disk_read_kb: 0.0,
             disk_write_kb: 0.0,
             can_terminate: true,
@@ -120,8 +126,12 @@ mod tests {
     fn test_get_watchdog_rules_empty() {
         let engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
-        let rules = get_watchdog_rules(&state).unwrap();
+
+        // Direct testing without State wrapper
+        let rules = {
+            let watchdog = state.lock().unwrap();
+            watchdog.get_rules().to_vec()
+        };
         assert_eq!(rules.len(), 0);
     }
 
@@ -129,19 +139,23 @@ mod tests {
     fn test_add_watchdog_rule() {
         let mut engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
+
         let rule = create_test_rule("test-rule", true);
-        
+
         // Note: このテストでは永続化部分をスキップ（AppHandle が必要なため）
         // 実際のアプリケーションでは永続化も行われる
         let result = {
             let mut watchdog = state.lock().unwrap();
             watchdog.add_rule(rule.clone())
         };
-        
+
         assert!(result.is_ok());
-        
-        let rules = get_watchdog_rules(&state).unwrap();
+
+        // Direct testing without State wrapper
+        let rules = {
+            let watchdog = state.lock().unwrap();
+            watchdog.get_rules().to_vec()
+        };
         assert_eq!(rules.len(), 1);
         assert_eq!(rules[0].id, "test-rule");
     }
@@ -150,24 +164,28 @@ mod tests {
     fn test_update_watchdog_rule() {
         let mut engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
+
         let rule = create_test_rule("test-rule", true);
         {
             let mut watchdog = state.lock().unwrap();
             watchdog.add_rule(rule).unwrap();
         }
-        
+
         let mut updated_rule = create_test_rule("test-rule", false);
         updated_rule.name = "Updated Rule".to_string();
-        
+
         let result = {
             let mut watchdog = state.lock().unwrap();
             watchdog.update_rule(updated_rule.clone())
         };
-        
+
         assert!(result.is_ok());
-        
-        let rules = get_watchdog_rules(&state).unwrap();
+
+        // Direct testing without State wrapper
+        let rules = {
+            let watchdog = state.lock().unwrap();
+            watchdog.get_rules().to_vec()
+        };
         assert_eq!(rules.len(), 1);
         assert_eq!(rules[0].name, "Updated Rule");
         assert!(!rules[0].enabled);
@@ -177,30 +195,45 @@ mod tests {
     fn test_remove_watchdog_rule() {
         let mut engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
+
         let rule = create_test_rule("test-rule", true);
         {
             let mut watchdog = state.lock().unwrap();
             watchdog.add_rule(rule).unwrap();
         }
-        
-        assert_eq!(get_watchdog_rules(&state).unwrap().len(), 1);
-        
+
+        assert_eq!(
+            {
+                let watchdog = state.lock().unwrap();
+                watchdog.get_rules().to_vec().len()
+            },
+            1
+        );
+
         let result = {
             let mut watchdog = state.lock().unwrap();
             watchdog.remove_rule("test-rule")
         };
-        
+
         assert!(result.is_ok());
-        assert_eq!(get_watchdog_rules(&state).unwrap().len(), 0);
+        assert_eq!(
+            {
+                let watchdog = state.lock().unwrap();
+                watchdog.get_rules().to_vec().len()
+            },
+            0
+        );
     }
 
     #[test]
     fn test_get_watchdog_events_empty() {
         let engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
-        let events = get_watchdog_events(&state).unwrap();
+
+        let events = {
+            let watchdog = state.lock().unwrap();
+            watchdog.get_events().to_vec()
+        };
         assert_eq!(events.len(), 0);
     }
 
@@ -208,7 +241,7 @@ mod tests {
     fn test_get_watchdog_presets() {
         let presets = get_watchdog_presets().unwrap();
         assert!(!presets.is_empty());
-        
+
         // プリセットルールの検証
         for preset in &presets {
             assert!(!preset.id.is_empty());
@@ -225,21 +258,21 @@ mod tests {
     fn test_add_duplicate_rule() {
         let mut engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
+
         let rule = create_test_rule("test-rule", true);
-        
+
         // 最初の追加
         {
             let mut watchdog = state.lock().unwrap();
             assert!(watchdog.add_rule(rule.clone()).is_ok());
         }
-        
+
         // 重複追加
         let result = {
             let mut watchdog = state.lock().unwrap();
             watchdog.add_rule(rule)
         };
-        
+
         assert!(result.is_err());
     }
 
@@ -247,14 +280,14 @@ mod tests {
     fn test_update_nonexistent_rule() {
         let engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
+
         let rule = create_test_rule("nonexistent", true);
-        
+
         let result = {
             let mut watchdog = state.lock().unwrap();
             watchdog.update_rule(rule)
         };
-        
+
         assert!(result.is_err());
     }
 
@@ -262,12 +295,12 @@ mod tests {
     fn test_remove_nonexistent_rule() {
         let engine = WatchdogEngine::new();
         let state = WatchdogState::new(Mutex::new(engine));
-        
+
         let result = {
             let mut watchdog = state.lock().unwrap();
             watchdog.remove_rule("nonexistent")
         };
-        
+
         assert!(result.is_err());
     }
 }

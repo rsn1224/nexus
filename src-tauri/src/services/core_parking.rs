@@ -121,13 +121,19 @@ pub fn set_core_parking(min_cores_percent: u32) -> Result<(), AppError> {
     // AC（電源接続時）を設定
     powershell::run_powershell(&format!(
         "powercfg /setacvalueindex {} {} {} {}",
-        &plan_guid, PROCESSOR_SETTINGS_SUBGROUP, CORE_PARKING_MIN_CORES, &min_cores_percent.to_string()
+        &plan_guid,
+        PROCESSOR_SETTINGS_SUBGROUP,
+        CORE_PARKING_MIN_CORES,
+        &min_cores_percent.to_string()
     ))?;
 
     // DC（バッテリー時）を設定
     powershell::run_powershell(&format!(
         "powercfg /setdcvalueindex {} {} {} {}",
-        &plan_guid, PROCESSOR_SETTINGS_SUBGROUP, CORE_PARKING_MIN_CORES, &min_cores_percent.to_string()
+        &plan_guid,
+        PROCESSOR_SETTINGS_SUBGROUP,
+        CORE_PARKING_MIN_CORES,
+        &min_cores_percent.to_string()
     ))?;
 
     // 設定を即時反映

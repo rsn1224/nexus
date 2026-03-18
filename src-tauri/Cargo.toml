@@ -26,8 +26,7 @@ sysinfo = "0.32"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 thiserror = "2"
-winreg = "0.55"
-keyring = { version = "3", features = ["windows-native"] }
+keyring = "3"
 uuid = { version = "1", features = ["v4"] }
 reqwest = { version = "0.12", features = ["json"] }
 
@@ -40,6 +39,7 @@ windows-sys = { version = "0.59", features = [
 ] }
 ferrisetw = "1.2"
 nvml-wrapper = "0.10"
+winreg = "0.55"
 
 [dev-dependencies]
 tempfile = "3"

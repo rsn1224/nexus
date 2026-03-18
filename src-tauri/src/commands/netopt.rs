@@ -4,7 +4,7 @@ use std::process::Command;
 use tracing::{info, warn};
 
 use crate::error::AppError;
-use crate::services::{network_tuning, network_monitor};
+use crate::services::{network_monitor, network_tuning};
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -363,9 +363,11 @@ pub fn set_tcp_auto_tuning(level: String) -> Result<(), AppError> {
         "highlyRestricted" => network_tuning::TcpAutoTuningLevel::HighlyRestricted,
         "restricted" => network_tuning::TcpAutoTuningLevel::Restricted,
         "experimental" => network_tuning::TcpAutoTuningLevel::Experimental,
-        _ => return Err(AppError::InvalidInput(
-            "Invalid TCP auto-tuning level".into(),
-        )),
+        _ => {
+            return Err(AppError::InvalidInput(
+                "Invalid TCP auto-tuning level".into(),
+            ));
+        }
     };
     network_tuning::set_tcp_auto_tuning(tuning_level)
 }
@@ -385,8 +387,14 @@ pub fn reset_network_defaults() -> Result<network_tuning::TcpTuningState, AppErr
 // ─── Network Quality Commands (Phase δ-2) ─────────────────────────────
 
 #[tauri::command]
-pub fn measure_network_quality(target: String, count: u32) -> Result<network_monitor::NetworkQualitySnapshot, AppError> {
-    info!("measure_network_quality: target={}, count={}", target, count);
+pub fn measure_network_quality(
+    target: String,
+    count: u32,
+) -> Result<network_monitor::NetworkQualitySnapshot, AppError> {
+    info!(
+        "measure_network_quality: target={}, count={}",
+        target, count
+    );
     network_monitor::measure_network_quality(&target, count)
 }
 
@@ -497,7 +505,7 @@ mod tests {
     fn test_measure_network_quality_validation() {
         // 有効な値
         assert!(measure_network_quality("8.8.8.8".to_string(), 10).is_ok()); // 環境依存
-        
+
         // 無効な値
         assert!(measure_network_quality("".to_string(), 10).is_err());
         assert!(measure_network_quality("8.8.8.8".to_string(), 0).is_err());

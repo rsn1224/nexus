@@ -1,8 +1,8 @@
 // Windows Wing — Windows設定最適化機能
 
-use crate::services::{settings_advisor::{analyze_settings, get_current_settings_snapshot}};
-use crate::types::game::CpuTopology;
 use crate::error::AppError;
+use crate::services::settings_advisor::{analyze_settings, get_current_settings_snapshot};
+use crate::types::game::CpuTopology;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
 use tracing::{info, warn};
@@ -464,7 +464,7 @@ mod tests {
 #[tauri::command]
 pub fn get_settings_advice() -> Result<crate::services::settings_advisor::AdvisorResult, AppError> {
     info!("get_settings_advice: generating settings recommendations");
-    
+
     // Get CPU topology
     let topology = CpuTopology {
         physical_cores: 0,
@@ -476,15 +476,15 @@ pub fn get_settings_advice() -> Result<crate::services::settings_advisor::Adviso
         vendor_id: String::new(),
         brand: String::new(),
     };
-    
+
     // Get hardware info for GPU and memory
     let gpu_name = None; // TODO: Get from hardware service
     let mem_total_gb = 0.0; // TODO: Get from hardware service
-    
+
     // Get current settings
     let current_settings = get_current_settings_snapshot()
         .map_err(|e| AppError::Internal(format!("Failed to get current settings: {}", e)))?;
-    
+
     // Convert to snapshot format expected by analyzer
     let snapshot = crate::services::settings_advisor::WindowsSettingsSnapshot {
         game_mode: current_settings.game_mode,
@@ -494,7 +494,7 @@ pub fn get_settings_advice() -> Result<crate::services::settings_advisor::Adviso
         power_plan: current_settings.power_plan.to_string(),
         memory_integrity: false, // TODO: Implement memory integrity check
     };
-    
+
     let result = analyze_settings(&topology, gpu_name, mem_total_gb, &snapshot);
     Ok(result)
 }
@@ -502,17 +502,11 @@ pub fn get_settings_advice() -> Result<crate::services::settings_advisor::Adviso
 #[tauri::command]
 pub fn apply_recommendation(setting_id: String) -> Result<(), AppError> {
     info!("apply_recommendation: applying setting {}", setting_id);
-    
+
     match setting_id.as_str() {
-        "game_mode" => {
-            toggle_game_mode().map(|_| ())
-        }
-        "hags" => {
-            toggle_hardware_gpu_scheduling().map(|_| ())
-        }
-        "fullscreen_optimization" => {
-            toggle_fullscreen_optimization().map(|_| ())
-        }
+        "game_mode" => toggle_game_mode().map(|_| ()),
+        "hags" => toggle_hardware_gpu_scheduling().map(|_| ()),
+        "fullscreen_optimization" => toggle_fullscreen_optimization().map(|_| ()),
         "visual_effects" => set_visual_effects(VisualEffects::BestPerformance),
         "power_plan" => set_power_plan(PowerPlan::HighPerformance),
         "memory_integrity" => {
@@ -520,6 +514,9 @@ pub fn apply_recommendation(setting_id: String) -> Result<(), AppError> {
             warn!("Memory integrity setting not yet implemented");
             Ok(())
         }
-        _ => Err(AppError::InvalidInput(format!("Unknown setting ID: {}", setting_id))),
+        _ => Err(AppError::InvalidInput(format!(
+            "Unknown setting ID: {}",
+            setting_id
+        ))),
     }
 }

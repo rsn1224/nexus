@@ -39,7 +39,8 @@ pub enum TcpAutoTuningLevel {
 
 /// 各設定のレジストリパス
 const INTERFACES_KEY: &str = r"SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces";
-const MULTIMEDIA_KEY: &str = r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile";
+const MULTIMEDIA_KEY: &str =
+    r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile";
 const QOS_KEY: &str = r"SOFTWARE\Policies\Microsoft\Windows\Psched";
 
 /// 現在の TCP 最適化状態を取得
@@ -49,16 +50,12 @@ pub fn get_tcp_tuning_state() -> Result<TcpTuningState, AppError> {
     let delayed_ack_disabled = get_delayed_ack_status()?;
 
     // Network Throttling Index
-    let network_throttling_index = registry::get_dword_value(
-        MULTIMEDIA_KEY,
-        "NetworkThrottlingIndex",
-    ).unwrap_or(10);
+    let network_throttling_index =
+        registry::get_dword_value(MULTIMEDIA_KEY, "NetworkThrottlingIndex").unwrap_or(10);
 
     // QoS 予約帯域幅
-    let qos_reserved_bandwidth_pct = registry::get_dword_value(
-        QOS_KEY,
-        "NonBestEffortLimit",
-    ).unwrap_or(20);
+    let qos_reserved_bandwidth_pct =
+        registry::get_dword_value(QOS_KEY, "NonBestEffortLimit").unwrap_or(20);
 
     // TCP Auto-Tuning レベル
     let tcp_auto_tuning = get_tcp_auto_tuning_level()?;
@@ -81,17 +78,17 @@ pub fn get_tcp_tuning_state() -> Result<TcpTuningState, AppError> {
 /// Nagle アルゴリズムを無効化（全アクティブインターフェースに対して）
 pub fn set_nagle(disabled: bool) -> Result<(), AppError> {
     let interfaces = get_active_interfaces()?;
-    
+
     for interface in &interfaces {
         let value = if disabled { 1u32 } else { 0u32 };
-        
+
         // TcpNoDelay を設定
         registry::set_dword_value(
             &format!("{}\\{}", INTERFACES_KEY, interface),
             "TcpNoDelay",
             value,
         )?;
-        
+
         // TcpAckFrequency を設定（Nagle無効時は最適化）
         if disabled {
             registry::set_dword_value(
@@ -101,7 +98,7 @@ pub fn set_nagle(disabled: bool) -> Result<(), AppError> {
             )?;
         }
     }
-    
+
     info!("Nagle アルゴリズム設定: disabled={}", disabled);
     Ok(())
 }
@@ -109,17 +106,17 @@ pub fn set_nagle(disabled: bool) -> Result<(), AppError> {
 /// TCP Delayed ACK を無効化
 pub fn set_delayed_ack(disabled: bool) -> Result<(), AppError> {
     let interfaces = get_active_interfaces()?;
-    
+
     for interface in &interfaces {
         let value = if disabled { 1u32 } else { 0u32 };
-        
+
         registry::set_dword_value(
             &format!("{}\\{}", INTERFACES_KEY, interface),
             "TcpDelAckTicks",
             value,
         )?;
     }
-    
+
     info!("TCP Delayed ACK 設定: disabled={}", disabled);
     Ok(())
 }
@@ -131,13 +128,9 @@ pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
             "Network Throttling Index must be -1 to 70".into(),
         ));
     }
-    
-    registry::set_dword_value(
-        MULTIMEDIA_KEY,
-        "NetworkThrottlingIndex",
-        index as u32,
-    )?;
-    
+
+    registry::set_dword_value(MULTIMEDIA_KEY, "NetworkThrottlingIndex", index as u32)?;
+
     info!("Network Throttling Index 設定: {}", index);
     Ok(())
 }
@@ -149,13 +142,9 @@ pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
             "QoS bandwidth must be 0-100%".into(),
         ));
     }
-    
-    registry::set_dword_value(
-        QOS_KEY,
-        "NonBestEffortLimit",
-        percent,
-    )?;
-    
+
+    registry::set_dword_value(QOS_KEY, "NonBestEffortLimit", percent)?;
+
     info!("QoS 予約帯域幅設定: {}%", percent);
     Ok(())
 }
@@ -169,19 +158,20 @@ pub fn set_tcp_auto_tuning(level: TcpAutoTuningLevel) -> Result<(), AppError> {
         TcpAutoTuningLevel::Restricted => "restricted",
         TcpAutoTuningLevel::Experimental => "experimental",
     };
-    
+
     let output = Command::new("netsh")
         .args(["int", "tcp", "set", "global", "autotuninglevel=", level_str])
         .output()
         .map_err(|e| AppError::Command(format!("netsh command failed: {}", e)))?;
-    
+
     if !output.status.success() {
         let error = String::from_utf8_lossy(&output.stderr);
         return Err(AppError::Command(format!(
-            "netsh autotuninglevel failed: {}", error
+            "netsh autotuninglevel failed: {}",
+            error
         )));
     }
-    
+
     info!("TCP Auto-Tuning 設定: {:?}", level);
     Ok(())
 }
@@ -189,13 +179,13 @@ pub fn set_tcp_auto_tuning(level: TcpAutoTuningLevel) -> Result<(), AppError> {
 /// ゲーミング最適化プリセットを一括適用
 pub fn apply_gaming_preset() -> Result<TcpTuningState, AppError> {
     info!("ゲーミングネットワーク最適化プリセット適用開始");
-    
-    set_nagle(true)?;  // Nagle 無効化
-    set_delayed_ack(true)?;  // Delayed ACK 無効化
-    set_network_throttling(-1)?;  // スロットリング無制限
-    set_qos_reserved_bandwidth(0)?;  // 予約帯域解放
-    set_tcp_auto_tuning(TcpAutoTuningLevel::Normal)?;  // Auto-Tuning は Normal 推奨
-    
+
+    set_nagle(true)?; // Nagle 無効化
+    set_delayed_ack(true)?; // Delayed ACK 無効化
+    set_network_throttling(-1)?; // スロットリング無制限
+    set_qos_reserved_bandwidth(0)?; // 予約帯域解放
+    set_tcp_auto_tuning(TcpAutoTuningLevel::Normal)?; // Auto-Tuning は Normal 推奨
+
     let state = get_tcp_tuning_state()?;
     info!("ゲーミングプリセット適用完了");
     Ok(state)
@@ -204,13 +194,13 @@ pub fn apply_gaming_preset() -> Result<TcpTuningState, AppError> {
 /// デフォルト設定にリセット
 pub fn reset_to_defaults() -> Result<TcpTuningState, AppError> {
     info!("ネットワーク設定をデフォルトにリセット");
-    
+
     set_nagle(false)?;
     set_delayed_ack(false)?;
     set_network_throttling(10)?;
     set_qos_reserved_bandwidth(20)?;
     set_tcp_auto_tuning(TcpAutoTuningLevel::Normal)?;
-    
+
     let state = get_tcp_tuning_state()?;
     info!("ネットワーク設定リセット完了");
     Ok(state)
@@ -229,23 +219,22 @@ fn get_active_interfaces() -> Result<Vec<String>, AppError> {
 /// Nagle の現在状態を取得
 fn get_nagle_status() -> Result<bool, AppError> {
     let interfaces = get_active_interfaces()?;
-    
+
     for interface in &interfaces {
-        if let Some(value) = registry::get_dword_value(
-            &format!("{}\\{}", INTERFACES_KEY, interface),
-            "TcpNoDelay",
-        ) {
+        if let Some(value) =
+            registry::get_dword_value(&format!("{}\\{}", INTERFACES_KEY, interface), "TcpNoDelay")
+        {
             return Ok(value != 0);
         }
     }
-    
+
     Ok(false) // デフォルトは有効
 }
 
 /// Delayed ACK の現在状態を取得
 fn get_delayed_ack_status() -> Result<bool, AppError> {
     let interfaces = get_active_interfaces()?;
-    
+
     for interface in &interfaces {
         if let Some(value) = registry::get_dword_value(
             &format!("{}\\{}", INTERFACES_KEY, interface),
@@ -254,7 +243,7 @@ fn get_delayed_ack_status() -> Result<bool, AppError> {
             return Ok(value != 0);
         }
     }
-    
+
     Ok(false) // デフォルトは有効
 }
 
@@ -264,9 +253,9 @@ fn get_tcp_auto_tuning_level() -> Result<TcpAutoTuningLevel, AppError> {
         .args(["int", "tcp", "show", "global"])
         .output()
         .map_err(|e| AppError::Command(format!("netsh command failed: {}", e)))?;
-    
+
     let output_str = String::from_utf8_lossy(&output.stdout);
-    
+
     // 出力から "Receive Side Scaling State" や "Autotuning Level" を解析
     // 簡易実装: デフォルトを返す
     if output_str.contains("disabled") {
