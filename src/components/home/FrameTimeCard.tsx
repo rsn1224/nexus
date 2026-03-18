@@ -1,12 +1,22 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useFrameTimeActions, useFrameTimeState } from '../../stores/useFrameTimeStore';
+import { useOpsStore } from '../../stores/useOpsStore';
+import type { SystemProcess } from '../../types';
 import { ErrorBanner, LoadingState } from '../ui';
 import FrameTimeGraph from './FrameTimeGraph';
 
 export default function FrameTimeCard() {
   const { monitorState, snapshot, isLoading, error } = useFrameTimeState();
   const { startMonitor, stopMonitor, getStatus, setupListeners } = useFrameTimeActions();
+  const processes = useOpsStore((s) => s.processes);
   const unlistenRef = useRef<(() => void) | null>(null);
+  const [selectedProcessId, setSelectedProcessId] = useState<string>('');
+
+  // CPU使用率があるプロセスにフィルタリング
+  const availableProcesses = processes.filter((p: SystemProcess) => p.cpuPercent > 0);
+  const selectedProcess = availableProcesses.find(
+    (p: SystemProcess) => p.pid.toString() === selectedProcessId,
+  );
 
   useEffect(() => {
     // 初期化: 現在の状態を取得
@@ -27,9 +37,9 @@ export default function FrameTimeCard() {
   }, [getStatus, setupListeners]);
 
   const handleStart = () => {
-    // TODO: 実際のゲームPIDを取得するロジックが必要
-    // ここでは仮に 1234 を使用
-    startMonitor(1234, 'game.exe');
+    if (selectedProcess) {
+      startMonitor(selectedProcess.pid, selectedProcess.name);
+    }
   };
 
   const handleStop = () => {
@@ -63,6 +73,25 @@ export default function FrameTimeCard() {
         <div className="mb-3 text-[10px] text-text-secondary">
           <div>PID: {monitorState.pid}</div>
           <div>PROCESS: {monitorState.processName}</div>
+        </div>
+      )}
+
+      {/* プロセス選択 */}
+      {monitorState.type === 'stopped' && (
+        <div className="mb-3">
+          <div className="text-[9px] text-text-muted mb-1">監視対象プロセス:</div>
+          <select
+            value={selectedProcessId}
+            onChange={(e) => setSelectedProcessId(e.target.value)}
+            className="w-full px-2 py-1 text-[10px] bg-base-700 border border-border-subtle rounded text-text-primary font-(--font-mono)"
+          >
+            <option value="">プロセスを選択...</option>
+            {availableProcesses.map((process: SystemProcess) => (
+              <option key={process.pid} value={process.pid.toString()}>
+                {process.name} (PID: {process.pid}, CPU: {process.cpuPercent.toFixed(1)}%)
+              </option>
+            ))}
+          </select>
         </div>
       )}
 
@@ -114,9 +143,9 @@ export default function FrameTimeCard() {
           <button
             type="button"
             onClick={handleStart}
-            disabled={isLoading}
-            className={`flex-1 px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-bold border ${
-              isLoading
+            disabled={isLoading || !selectedProcess}
+            className={`flex-1 px-3 py-[6px] font-(--font-mono) text-[10px] font-bold border ${
+              isLoading || !selectedProcess
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-(--color-accent-500) text-base-900 cursor-pointer border-(--color-accent-500) hover:bg-(--color-accent-600)'
             }`}

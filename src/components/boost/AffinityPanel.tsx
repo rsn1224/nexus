@@ -132,14 +132,14 @@ export default function AffinityPanel({
         <button
           type="button"
           onClick={handleSelectAll}
-          className="font-[var(--font-mono)] text-[8px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
+          className="font-[var(--font-mono)] text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
         >
           全選択
         </button>
         <button
           type="button"
           onClick={handleClearAll}
-          className="font-[var(--font-mono)] text-[8px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
+          className="font-[var(--font-mono)] text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
         >
           全解除
         </button>
@@ -148,14 +148,14 @@ export default function AffinityPanel({
             <button
               type="button"
               onClick={handleSelectPCores}
-              className="font-[var(--font-mono)] text-[8px] px-2 py-0.5 bg-base-700 text-[var(--color-cyan-500)] border-none rounded-[2px] cursor-pointer"
+              className="font-[var(--font-mono)] text-[9px] px-2 py-0.5 bg-base-700 text-[var(--color-cyan-500)] border-none rounded-[2px] cursor-pointer"
             >
               P-Core のみ
             </button>
             <button
               type="button"
               onClick={handleSelectECores}
-              className="font-[var(--font-mono)] text-[8px] px-2 py-0.5 bg-base-700 text-[var(--color-accent-500)] border-none rounded-[2px] cursor-pointer"
+              className="font-[var(--font-mono)] text-[9px] px-2 py-0.5 bg-base-700 text-[var(--color-accent-500)] border-none rounded-[2px] cursor-pointer"
             >
               E-Core のみ
             </button>
@@ -181,7 +181,7 @@ export default function AffinityPanel({
 
       {/* 凡例 */}
       {cpuTopology.eCores.length > 0 && (
-        <div className="flex gap-3 font-[var(--font-mono)] text-[8px] text-text-muted">
+        <div className="flex gap-3 font-[var(--font-mono)] text-[9px] text-text-muted">
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 bg-[var(--color-cyan-500)] rounded-[1px] inline-block" />
             P-Core

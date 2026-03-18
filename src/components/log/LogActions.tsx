@@ -43,26 +43,26 @@ export default function LogActions({
     <div className="space-y-4">
       <div className="flex gap-2">
         <Button variant="primary" size="sm" onClick={onRefresh} disabled={isLoading}>
-          🔄 Refresh
+          ↻ 更新
         </Button>
         <Button variant="secondary" size="sm" onClick={onClear}>
-          🗑️ Clear
+          ✕ クリア
         </Button>
         <Button variant="secondary" size="sm" onClick={onAnalyze} disabled={isLoading}>
-          📊 Analyze
+          ▶ 解析
         </Button>
       </div>
 
       <div className="flex gap-2">
         <Input
           type="text"
-          placeholder="App name..."
+          placeholder="アプリ名..."
           value={appName}
           onChange={setAppName}
           size="sm"
         />
         <Button variant="primary" size="sm" onClick={handleAppLogs} disabled={!appName.trim()}>
-          📱 Get App Logs
+          ▶ アプリログ取得
         </Button>
       </div>
 
@@ -76,13 +76,13 @@ export default function LogActions({
           <option value="csv">CSV</option>
         </select>
         <Button variant="secondary" size="sm" onClick={handleExport} disabled={isLoading}>
-          📤 Export
+          ▶ エクスポート
         </Button>
       </div>
 
       {exportResult && (
         <div className="font-[var(--font-mono)] text-xs text-[var(--color-success-500)]">
-          Exported to: {exportResult}
+          出力先: {exportResult}
         </div>
       )}
     </div>

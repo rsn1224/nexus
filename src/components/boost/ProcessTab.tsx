@@ -35,11 +35,6 @@ function formatDiskIO(kb: number): string {
   return kb >= 1024 ? `${(kb / 1024).toFixed(1)}MB/s` : `${kb.toFixed(1)}KB/s`;
 }
 
-function formatTime(timestamp: number | null): string {
-  if (!timestamp) return '';
-  return new Date(timestamp).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
-}
-
 interface ProcessTabProps {
   className?: string;
 }
@@ -149,8 +144,15 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
     // BOOST実行後は nexus://ops イベントで自動更新される
   };
 
-  const handleRefresh = () => {
-    // 手動更新は不要（nexus://ops イベントで自動更新）
+  // 時間フォーマット関数
+  const formatTime = (timestamp: number | null) => {
+    if (timestamp == null) return '--';
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('ja-JP', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
   };
 
   const formatDuration = (durationMs: number): string => {
@@ -190,14 +192,9 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
           >
             ▶ RUN BOOST
           </Button>
-          <Button variant="secondary" size="md" onClick={handleRefresh} disabled={isLoading}>
-            ↺ REFRESH
-          </Button>
-          {lastUpdated && (
-            <span className="font-(--font-mono) text-[10px] text-text-muted">
-              LAST: {formatTime(lastUpdated)}
-            </span>
-          )}
+          <span className="font-(--font-mono) text-[10px] text-text-muted">
+            AUTO-UPDATING · LAST: {formatTime(lastUpdated)}
+          </span>
         </div>
 
         {/* Threshold Row */}

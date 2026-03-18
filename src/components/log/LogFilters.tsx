@@ -28,11 +28,11 @@ export default function LogFilters({
         onChange={onLevelChange}
         className="font-[var(--font-mono)] text-xs bg-[var(--color-base-800)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] px-2 py-1 rounded"
       >
-        <option value="All">All Levels</option>
-        <option value="Error">Error</option>
-        <option value="Warn">Warn</option>
-        <option value="Info">Info</option>
-        <option value="Debug">Debug</option>
+        <option value="All">全レベル</option>
+        <option value="Error">エラー</option>
+        <option value="Warn">警告</option>
+        <option value="Info">情報</option>
+        <option value="Debug">デバッグ</option>
       </select>
 
       <select
@@ -40,7 +40,7 @@ export default function LogFilters({
         onChange={onSourceChange}
         className="font-[var(--font-mono)] text-xs bg-[var(--color-base-800)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] px-2 py-1 rounded"
       >
-        <option value="">All Sources</option>
+        <option value="">全ソース</option>
         {uniqueSources.map((source) => (
           <option key={source} value={source}>
             {source}
@@ -50,7 +50,7 @@ export default function LogFilters({
 
       <Input
         type="text"
-        placeholder="Search logs..."
+        placeholder="ログ検索..."
         value={searchQuery}
         onChange={(value) => onSearchChange({ target: { value } } as ChangeEvent<HTMLInputElement>)}
         size="sm"

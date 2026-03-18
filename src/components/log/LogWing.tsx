@@ -3,7 +3,7 @@ import type { ChangeEvent } from 'react';
 import { useMemo } from 'react';
 import { useInitialData } from '../../hooks/useInitialData';
 import { useLogActions, useLogState } from '../../stores/useLogStore';
-import { Button, Card } from '../ui';
+import { Card, EmptyState, ErrorBanner } from '../ui';
 import LogActions from './LogActions';
 import LogEntries from './LogEntries';
 import LogFilters from './LogFilters';
@@ -171,16 +171,7 @@ export default function LogWing(): React.ReactElement {
       </Card>
 
       {/* Error Display */}
-      {error && (
-        <Card className="mb-4 border-[var(--color-danger-500)]">
-          <div className="font-[var(--font-mono)] text-xs text-[var(--color-danger-500)]">
-            Error: {error}
-            <Button variant="secondary" size="sm" onClick={clearError} className="ml-2">
-              Dismiss
-            </Button>
-          </div>
-        </Card>
-      )}
+      {error && <ErrorBanner message={`Error: ${error}`} onDismiss={clearError} />}
 
       {/* Logs Display */}
       <Card>
@@ -193,13 +184,9 @@ export default function LogWing(): React.ReactElement {
             />
           </div>
         ) : hasLogs ? (
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center py-8">
-            No logs match current filters
-          </div>
+          <EmptyState message="No logs match current filters" />
         ) : (
-          <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)] text-center py-8">
-            No logs available
-          </div>
+          <EmptyState message="No logs available" />
         )}
       </Card>
 

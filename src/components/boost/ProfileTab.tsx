@@ -213,23 +213,6 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
       {/* === Level 2/3 追加フィールド === */}
       {(boostLevel === 'medium' || boostLevel === 'hard') && (
         <>
-          {/* 電源プラン */}
-          <label className="flex flex-col gap-1">
-            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
-              電源プラン
-            </span>
-            <select
-              value={powerPlan}
-              onChange={(e) => setPowerPlan(e.target.value as PowerPlanType)}
-              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
-            >
-              <option value="unchanged">変更なし</option>
-              <option value="high_performance">高パフォーマンス</option>
-              <option value="balanced">バランス</option>
-              <option value="power_saver">省電力</option>
-            </select>
-          </label>
-
           {/* タイマーリゾリューション */}
           <label className="flex flex-col gap-1">
             <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
@@ -245,7 +228,7 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
               step={0.1}
               className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
             />
-            <span className="font-[var(--font-mono)] text-[8px] text-text-secondary">
+            <span className="font-[var(--font-mono)] text-[9px] text-text-secondary">
               低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
             </span>
           </label>
@@ -265,7 +248,7 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
             placeholder="例: wallpaper_engine.exe, obs64.exe"
             className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
           />
-          <span className="font-[var(--font-mono)] text-[8px] text-[var(--color-danger-500)]">
+          <span className="font-[var(--font-mono)] text-[9px] text-[var(--color-danger-500)]">
             ⚠️ 強制終了は不可逆です。保存していないデータが失われる可能性があります。
           </span>
         </label>
