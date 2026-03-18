@@ -1,6 +1,11 @@
 import type React from 'react';
-import { useHardwareData } from '../../stores/useHardwareStore';
+import {
+  useHardwareData,
+  useThermalActions,
+  useThermalAlerts,
+} from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
+import type { ThermalAlert } from '../../types';
 import { Card } from '../ui';
 
 function formatNetSpeed(kb: number): string {
@@ -10,10 +15,62 @@ function formatNetSpeed(kb: number): string {
   return `${kb.toFixed(0)} KB/s`;
 }
 
+// Thermal Alert Banner component
+function ThermalAlertBanner({
+  alerts,
+  onClear,
+}: {
+  alerts: ThermalAlert[];
+  onClear: (component: string) => void;
+}) {
+  if (alerts.length === 0) return null;
+
+  return (
+    <div className="mb-3 flex flex-col gap-2">
+      {alerts.map((alert) => (
+        <div
+          key={`${alert.component}-${alert.timestamp}`}
+          className={`flex items-center justify-between p-2 rounded ${
+            alert.level === 'Critical'
+              ? 'bg-red-500/10 border border-red-500/30'
+              : 'bg-yellow-500/10 border border-yellow-500/30'
+          }`}
+        >
+          <div className="flex items-center gap-2">
+            <span
+              className={`text-xs font-bold ${
+                alert.level === 'Critical' ? 'text-red-400' : 'text-yellow-400'
+              }`}
+            >
+              {alert.level === 'Critical' ? '🔥' : '⚠️'}
+            </span>
+            <span className="text-xs text-[var(--color-text)]">
+              {alert.component}{' '}
+              {alert.level === 'Critical' ? 'サーマルスロットリング検知' : '温度警告'} (
+              {alert.currentTempC}℃)
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => onClear(alert.component)}
+            className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function SystemStatusCard(): React.ReactElement {
   const latestSnapshot = usePulseStore((s) =>
     s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
   );
+
+  const thermalAlerts = useThermalAlerts();
+  const { clearThermalAlert } = useThermalActions();
 
   const cpuPercent = latestSnapshot?.cpuPercent ?? null;
   const memUsed = latestSnapshot?.memUsedMb ?? null;
@@ -28,6 +85,9 @@ export default function SystemStatusCard(): React.ReactElement {
 
   return (
     <Card title="システムステータス" className="mt-4">
+      {/* サーマルアラートバナー */}
+      <ThermalAlertBanner alerts={thermalAlerts} onClear={clearThermalAlert} />
+
       <div className="font-[var(--font-mono)] text-xs text-[var(--color-text-secondary)] flex flex-col gap-1">
         <div>
           CPU{'     '}

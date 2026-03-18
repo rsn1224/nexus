@@ -29,7 +29,7 @@ describe('useFrameTimeStore', () => {
 
   it('startMonitor が正常に呼び出せる', async () => {
     const { invoke } = await import('@tauri-apps/api/core');
-    vi.mocked(invoke).mockResolvedValue({ type: 'monitoring', pid: 1234, processName: 'test.exe' });
+    vi.mocked(invoke).mockResolvedValue({ type: 'running', pid: 1234, processName: 'test.exe' });
 
     const { result } = renderHook(() => useFrameTimeActions());
 
@@ -41,7 +41,7 @@ describe('useFrameTimeStore', () => {
     });
 
     expect(useFrameTimeStore.getState().monitorState).toEqual({
-      type: 'monitoring',
+      type: 'running',
       pid: 1234,
       processName: 'test.exe',
     });
@@ -53,7 +53,7 @@ describe('useFrameTimeStore', () => {
 
     // 最初に監視中状態に設定
     useFrameTimeStore.setState({
-      monitorState: { type: 'monitoring', pid: 1234, processName: 'test.exe' },
+      monitorState: { type: 'running', pid: 1234, processName: 'test.exe' },
       snapshot: {
         pid: 1234,
         processName: 'test.exe',
@@ -185,7 +185,7 @@ describe('useFrameTimeStore', () => {
 
   it('useFrameTimeState セレクターが正しく状態を取得する', () => {
     const testState: FrameTimeMonitorState = {
-      type: 'monitoring',
+      type: 'running',
       pid: 1234,
       processName: 'test.exe',
     };

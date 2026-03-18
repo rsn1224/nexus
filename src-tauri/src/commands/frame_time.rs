@@ -4,6 +4,7 @@ use crate::error::AppError;
 use crate::state::SharedState;
 use crate::types::game::{FrameTimeMonitorState, FrameTimeSnapshot};
 use tauri::{AppHandle, Emitter, Manager, State};
+use tracing::warn;
 
 /// フレームタイム監視を開始する。
 /// ゲームプロセスの PID を指定して監視を開始する。
@@ -46,7 +47,10 @@ pub async fn start_frame_time_monitor(
 
             let snap: FrameTimeSnapshot = {
                 let state = handle_clone.state::<SharedState>();
-                let mut s = state.lock().unwrap();
+                let Ok(mut s) = state.lock() else {
+                    warn!("frame_time: state ロック取得失敗、スキップ");
+                    continue;
+                };
                 if let Some(ref mut session) = s.frame_time_session {
                     session.snapshot()
                 } else {

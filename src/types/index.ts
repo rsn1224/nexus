@@ -290,6 +290,7 @@ export interface GameProfile {
   powerPlan: PowerPlanType;
   processesToSuspend: string[];
   processesToKill: string[];
+  autoSuspendEnabled: boolean;
   timerResolution100ns: number | null;
   boostLevel: BoostLevel;
   lastPlayed: number | null;
@@ -367,8 +368,26 @@ export interface FrameTimeSnapshot {
 
 export type FrameTimeMonitorState =
   | { type: 'stopped' }
-  | { type: 'monitoring'; pid: number; processName: string }
+  | { type: 'running'; pid: number; processName: string }
   | { type: 'error'; message: string };
+
+// ─── THERMAL ALERT ────────────────────────────────────────────────────────────
+
+export type ThermalAlertLevel = 'Warning' | 'Critical' | 'Normal';
+
+export interface ThermalAlert {
+  component: string; // "CPU" or "GPU"
+  level: ThermalAlertLevel;
+  currentTempC: number;
+  thresholdC: number;
+  message: string;
+  timestamp: number;
+}
+
+export interface CurrentPowerPlan {
+  name: string;
+  guid: string;
+}
 
 // ─── CLEANUP ──────────────────────────────────────────────────────────────
 export interface RevertItem {

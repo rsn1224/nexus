@@ -1,4 +1,17 @@
 import type { DiskDrive, HardwareInfo, ResourceSnapshot, WinSetting } from '../types';
+import {
+  CPU_TEMP_CRITICAL_C,
+  CPU_TEMP_WARN_C,
+  CPU_USAGE_BOOST_WARN_PCT,
+  CPU_USAGE_CRITICAL_PCT,
+  CPU_USAGE_WARN_PCT,
+  DISK_USAGE_CRITICAL_PCT,
+  DISK_USAGE_WARN_PCT,
+  GPU_TEMP_CRITICAL_C,
+  GPU_TEMP_WARN_C,
+  MEM_USAGE_CRITICAL_PCT,
+  MEM_USAGE_WARN_PCT,
+} from './constants';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -35,13 +48,13 @@ export function homePageSuggestions(
   }
 
   if (snapshot) {
-    if (snapshot.cpuPercent >= 90) {
+    if (snapshot.cpuPercent >= CPU_USAGE_CRITICAL_PCT) {
       suggestions.push({
         id: 'cpu_usage_critical',
         level: 'critical',
         message: `CPU 使用率が ${snapshot.cpuPercent.toFixed(0)}% です。最適化タブでプロセスを整理してください。`,
       });
-    } else if (snapshot.cpuPercent >= 70) {
+    } else if (snapshot.cpuPercent >= CPU_USAGE_WARN_PCT) {
       suggestions.push({
         id: 'cpu_usage_warn',
         level: 'warn',
@@ -51,13 +64,13 @@ export function homePageSuggestions(
 
     if (snapshot.memTotalMb > 0) {
       const memPercent = (snapshot.memUsedMb / snapshot.memTotalMb) * 100;
-      if (memPercent >= 90) {
+      if (memPercent >= MEM_USAGE_CRITICAL_PCT) {
         suggestions.push({
           id: 'mem_critical',
           level: 'critical',
           message: `メモリ使用率が ${memPercent.toFixed(0)}% です。不要なアプリを閉じてください。`,
         });
-      } else if (memPercent >= 75) {
+      } else if (memPercent >= MEM_USAGE_WARN_PCT) {
         suggestions.push({
           id: 'mem_warn',
           level: 'warn',
@@ -71,13 +84,13 @@ export function homePageSuggestions(
     const usedPercent = (drive.usedBytes / drive.sizeBytes) * 100;
     const freeGb = drive.availableBytes / (1024 * 1024 * 1024);
 
-    if (usedPercent >= 95) {
+    if (usedPercent >= DISK_USAGE_CRITICAL_PCT) {
       suggestions.push({
         id: `disk_critical_${drive.name}`,
         level: 'critical',
         message: `ドライブ ${drive.name} の使用率が ${usedPercent.toFixed(0)}% です。空き容量を確保してください。`,
       });
-    } else if (usedPercent >= 85) {
+    } else if (usedPercent >= DISK_USAGE_WARN_PCT) {
       suggestions.push({
         id: `disk_warn_${drive.name}`,
         level: 'warn',
@@ -87,13 +100,13 @@ export function homePageSuggestions(
   }
 
   if (hwInfo?.cpuTempC != null) {
-    if (hwInfo.cpuTempC >= 90) {
+    if (hwInfo.cpuTempC >= CPU_TEMP_CRITICAL_C) {
       suggestions.push({
         id: 'temp_critical',
         level: 'critical',
         message: `CPU 温度が ${hwInfo.cpuTempC.toFixed(0)}\u00b0C です。冷却環境を確認してください。`,
       });
-    } else if (hwInfo.cpuTempC >= 75) {
+    } else if (hwInfo.cpuTempC >= CPU_TEMP_WARN_C) {
       suggestions.push({
         id: 'temp_warn',
         level: 'warn',
@@ -104,13 +117,13 @@ export function homePageSuggestions(
 
   // ── GPU 温度チェック ──────────────────────────────────────────────────────
   if (hwInfo?.gpuTempC != null) {
-    if (hwInfo.gpuTempC >= 95) {
+    if (hwInfo.gpuTempC >= GPU_TEMP_CRITICAL_C) {
       suggestions.push({
         id: 'gpu_temp_critical',
         level: 'critical',
         message: `GPU 温度が ${hwInfo.gpuTempC.toFixed(0)}°C です。冷却環境を確認してください。`,
       });
-    } else if (hwInfo.gpuTempC >= 85) {
+    } else if (hwInfo.gpuTempC >= GPU_TEMP_WARN_C) {
       suggestions.push({
         id: 'gpu_temp_warn',
         level: 'warn',
@@ -171,7 +184,7 @@ export function boostPageSuggestions(
     });
   }
 
-  if (cpuPercent !== null && cpuPercent >= 80) {
+  if (cpuPercent !== null && cpuPercent >= CPU_USAGE_BOOST_WARN_PCT) {
     suggestions.push({
       id: 'boost_cpu',
       level: 'warn',

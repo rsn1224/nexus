@@ -34,6 +34,7 @@ const MOCK_PROFILES: GameProfile[] = [
     processesToKill: [],
     timerResolution100ns: null,
     boostLevel: 'soft',
+    autoSuspendEnabled: false,
     lastPlayed: 1710000000000,
     totalPlaySecs: 7200,
     createdAt: 1709000000000,
@@ -52,6 +53,7 @@ const MOCK_PROFILES: GameProfile[] = [
     processesToKill: [],
     timerResolution100ns: null,
     boostLevel: 'medium',
+    autoSuspendEnabled: false,
     lastPlayed: null,
     totalPlaySecs: 0,
     createdAt: 1709000000000,
@@ -80,8 +82,11 @@ function resetStore(): void {
 describe('ProfileTab', () => {
   beforeEach(() => {
     resetStore();
-    // デフォルトで空のプロファイル一覧を返す
-    vi.mocked(invoke).mockResolvedValue([]);
+    // コマンド名で振り分け（CurrentPowerPlanDisplay が get_current_power_plan を呼ぶため）
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve([]);
+    });
   });
 
   it('プロファイルがないとき空状態メッセージが表示される', async () => {
@@ -93,7 +98,10 @@ describe('ProfileTab', () => {
   });
 
   it('プロファイル一覧が表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
 
     render(<ProfileTab />);
 
@@ -104,7 +112,10 @@ describe('ProfileTab', () => {
   });
 
   it('プロファイル件数が表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
 
     render(<ProfileTab />);
 
@@ -114,7 +125,10 @@ describe('ProfileTab', () => {
   });
 
   it('ブーストレベルが日本語ラベルで表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
 
     render(<ProfileTab />);
 
@@ -125,7 +139,10 @@ describe('ProfileTab', () => {
   });
 
   it('一時停止プロセスが表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
 
     render(<ProfileTab />);
 
@@ -135,7 +152,10 @@ describe('ProfileTab', () => {
   });
 
   it('プレイ時間が「X時間Y分」で表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
 
     render(<ProfileTab />);
 
@@ -196,7 +216,10 @@ describe('ProfileTab', () => {
   });
 
   it('適用中のプロファイルに「適用中」が表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
     useGameProfileStore.setState({ activeProfileId: 'profile-1' });
 
     render(<ProfileTab />);
@@ -207,7 +230,10 @@ describe('ProfileTab', () => {
   });
 
   it('アクティブなプロファイルの「適用」ボタンは disabled', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
     useGameProfileStore.setState({ activeProfileId: 'profile-1' });
 
     render(<ProfileTab />);
@@ -222,7 +248,10 @@ describe('ProfileTab', () => {
   });
 
   it('activeProfileId が存在するときリバートボタンが表示される', async () => {
-    vi.mocked(invoke).mockResolvedValueOnce(MOCK_PROFILES);
+    vi.mocked(invoke).mockImplementation((cmd: string) => {
+      if (cmd === 'get_current_power_plan') return Promise.resolve(null);
+      return Promise.resolve(MOCK_PROFILES);
+    });
     useGameProfileStore.setState({ activeProfileId: 'profile-1' });
 
     render(<ProfileTab />);

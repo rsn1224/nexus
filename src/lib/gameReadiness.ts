@@ -3,6 +3,13 @@
 //! リソース使用率 + 最適化状態 + フレームタイムの3軸で「ゲームレディネス」を評価する。
 
 import type { FrameTimeSnapshot, TimerResolutionState } from '../types';
+import {
+  CPU_USAGE_BOOST_WARN_PCT,
+  GPU_TEMP_SCORE_CRITICAL_C,
+  GPU_TEMP_SCORE_GOOD_C,
+  GPU_TEMP_SCORE_WARN_C,
+  TIMER_100NS_PER_MS,
+} from './constants';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -132,7 +139,13 @@ function calcResourceScore(input: ReadinessInput): number {
   // GPU温度: 80℃以上でペナルティ
   if (input.gpuTempC !== null) {
     const tempScore =
-      input.gpuTempC < 70 ? 100 : input.gpuTempC < 80 ? 80 : input.gpuTempC < 90 ? 50 : 20;
+      input.gpuTempC < GPU_TEMP_SCORE_GOOD_C
+        ? 100
+        : input.gpuTempC < GPU_TEMP_SCORE_WARN_C
+          ? 80
+          : input.gpuTempC < GPU_TEMP_SCORE_CRITICAL_C
+            ? 50
+            : 20;
     sum += tempScore;
     factors++;
   }
@@ -174,7 +187,7 @@ function calcOptimizationScore(input: ReadinessInput): number {
 
   // タイマーリゾリューション（0〜20）
   if (input.timerState?.nexusRequested100ns != null) {
-    const ms = input.timerState.nexusRequested100ns / 10000;
+    const ms = input.timerState.nexusRequested100ns / TIMER_100NS_PER_MS;
     if (ms <= 0.5) score += 20;
     else if (ms <= 1.0) score += 15;
     else if (ms <= 2.0) score += 10;
@@ -252,7 +265,7 @@ function generateRecommendations(
   const recs: Recommendation[] = [];
 
   // リソース系
-  if (input.cpuPercent !== null && input.cpuPercent >= 80) {
+  if (input.cpuPercent !== null && input.cpuPercent >= CPU_USAGE_BOOST_WARN_PCT) {
     recs.push({
       id: 'cpu-high',
       priority: 'high',

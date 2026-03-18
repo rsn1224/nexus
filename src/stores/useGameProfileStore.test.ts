@@ -28,6 +28,7 @@ const MOCK_PROFILE: GameProfile = {
   processesToKill: [],
   timerResolution100ns: null,
   boostLevel: 'none',
+  autoSuspendEnabled: false,
   lastPlayed: null,
   totalPlaySecs: 0,
   createdAt: 1710000000000,

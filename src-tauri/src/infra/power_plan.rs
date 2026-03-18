@@ -251,6 +251,38 @@ pub fn get_current_power_plan() -> Result<Option<String>, AppError> {
     controller.get_active_plan_guid()
 }
 
+impl PowerPlanController {
+    /// 電源プランのGUIDから名前を取得
+    pub fn get_plan_name(&self, guid: &str) -> Result<String, AppError> {
+        // Windows APIで電源プラン名を取得
+        let output = std::process::Command::new("powercfg")
+            .args(["/query", guid])
+            .output()
+            .map_err(|e| AppError::Power(format!("powercfg実行エラー: {}", e)))?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(AppError::Power(format!("電源プラン名取得失敗: {}", stderr)));
+        }
+
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        
+        // 出力から電源プラン名を抽出
+        // 例: "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)"
+        for line in stdout.lines() {
+            if line.contains("Power Scheme GUID:") {
+                if let Some(start) = line.find('(') {
+                    if let Some(end) = line.find(')') {
+                        return Ok(line[start + 1..end].to_string());
+                    }
+                }
+            }
+        }
+
+        Err(AppError::Power("電源プラン名の解析に失敗".to_string()))
+    }
+}
+
 // ─── テスト ──────────────────────────────────────────────────────────────────
 
 #[cfg(test)]

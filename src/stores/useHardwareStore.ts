@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
-import type { HardwareInfo } from '../types';
+import type { HardwareInfo, ThermalAlert } from '../types';
 
 interface HardwareStore {
   info: HardwareInfo | null;
@@ -11,10 +11,13 @@ interface HardwareStore {
   error: string | null;
   lastUpdated: number | null;
   unlisten: (() => void) | null;
+  thermalAlerts: ThermalAlert[];
+  unlistenThermal: (() => void) | null;
 
   subscribe: () => void;
   unsubscribe: () => void;
   clearError: () => void;
+  clearThermalAlert: (component: string) => void;
 }
 
 // Default hardware info for fallback
@@ -47,6 +50,8 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   error: null,
   lastUpdated: null,
   unlisten: null,
+  thermalAlerts: [],
+  unlistenThermal: null,
 
   subscribe: () => {
     if (get().isListening) {
@@ -67,6 +72,35 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
     })
       .then((fn) => {
         set({ unlisten: fn });
+
+        // サーマルアラートリスナーを開始
+        listen<ThermalAlert>('nexus://thermal-alert', (event) => {
+          const alert = event.payload;
+          set((state) => {
+            // Normalアラートは該当コンポーネントのアラートをクリア
+            if (alert.level === 'Normal') {
+              const filteredAlerts = state.thermalAlerts.filter(
+                (a) => a.component !== alert.component,
+              );
+              return { thermalAlerts: filteredAlerts };
+            } else {
+              // Warning/Criticalアラートは追加（重複チェック）
+              const exists = state.thermalAlerts.some(
+                (a) => a.component === alert.component && a.level === alert.level,
+              );
+              if (!exists) {
+                return { thermalAlerts: [...state.thermalAlerts, alert] };
+              }
+            }
+            return state;
+          });
+        })
+          .then((thermalFn) => {
+            set({ unlistenThermal: thermalFn });
+          })
+          .catch((err) => {
+            log.error({ err }, 'thermal: listen failed: %s', extractErrorMessage(err));
+          });
       })
       .catch((err) => {
         const errorMessage = extractErrorMessage(err);
@@ -80,17 +114,28 @@ export const useHardwareStore = create<HardwareStore>((set, get) => ({
   },
 
   unsubscribe: () => {
-    const { unlisten } = get();
+    const { unlisten, unlistenThermal } = get();
     if (unlisten) {
       unlisten();
       set({ unlisten: null });
       log.info('hardware: unsubscribed');
     }
-    set({ isListening: false });
+    if (unlistenThermal) {
+      unlistenThermal();
+      set({ unlistenThermal: null });
+      log.info('thermal: unsubscribed');
+    }
+    set({ isListening: false, thermalAlerts: [] });
   },
 
   clearError: () => {
     set({ error: null });
+  },
+
+  clearThermalAlert: (component: string) => {
+    set((state) => ({
+      thermalAlerts: state.thermalAlerts.filter((a) => a.component !== component),
+    }));
   },
 }));
 
@@ -105,6 +150,17 @@ export const useHardwareListeningControl = () =>
     useShallow((s) => ({
       subscribe: s.subscribe,
       unsubscribe: s.unsubscribe,
+    })),
+  );
+
+// Thermal selectors
+export const useThermalAlerts = () => useHardwareStore((s) => s.thermalAlerts);
+export const useThermalAlertsByLevel = (level: 'Warning' | 'Critical') =>
+  useHardwareStore((s) => s.thermalAlerts.filter((a) => a.level === level));
+export const useThermalActions = () =>
+  useHardwareStore(
+    useShallow((s) => ({
+      clearThermalAlert: s.clearThermalAlert,
     })),
   );
 

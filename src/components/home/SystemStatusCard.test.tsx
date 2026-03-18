@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { useHardwareData } from '../../stores/useHardwareStore';
+import {
+  useHardwareData,
+  useThermalActions,
+  useThermalAlerts,
+} from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import SystemStatusCard from './SystemStatusCard';
 
@@ -9,6 +13,8 @@ vi.mock('../../stores/useHardwareStore');
 vi.mock('../../stores/usePulseStore');
 
 const mockUseHardwareData = vi.mocked(useHardwareData);
+const mockUseThermalAlerts = vi.mocked(useThermalAlerts);
+const mockUseThermalActions = vi.mocked(useThermalActions);
 const mockUsePulseStore = vi.mocked(usePulseStore);
 
 const mockPulseData = {
@@ -70,6 +76,8 @@ describe('SystemStatusCard', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockUsePulseStore.mockReturnValue(mockPulseData);
+    mockUseThermalAlerts.mockReturnValue([]);
+    mockUseThermalActions.mockReturnValue({ clearThermalAlert: vi.fn() });
   });
 
   it('GPU% 行が表示されること', () => {

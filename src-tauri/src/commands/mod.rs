@@ -7,6 +7,7 @@ pub mod hardware;
 pub mod launcher;
 pub mod launcher_settings;
 pub mod log;
+pub mod memory;
 pub mod netopt;
 pub mod ops;
 pub mod profile;

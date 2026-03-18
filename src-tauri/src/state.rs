@@ -2,6 +2,7 @@ use std::sync::Mutex;
 use sysinfo::{Networks, ProcessesToUpdate, System};
 
 use crate::services::hardware::GpuStaticInfo;
+use crate::services::memory_cleaner::MemoryCleaner;
 use crate::types::game::{CpuTopology, RevertSnapshot};
 
 /// アプリケーション全体で共有するシステム情報ステート
@@ -22,6 +23,8 @@ pub struct AppState {
     pub cpu_topology: Option<CpuTopology>,
     /// GPU 静的情報（キャッシュ）
     pub gpu_static: Option<GpuStaticInfo>,
+    /// メモリクリーナー
+    pub memory_cleaner: MemoryCleaner,
 }
 
 impl Default for AppState {
@@ -61,6 +64,7 @@ impl AppState {
             frame_time_session: None,
             cpu_topology: None,
             gpu_static: None,
+            memory_cleaner: MemoryCleaner::new(crate::services::memory_cleaner::MemoryCleanerConfig::default()),
         }
     }
 }

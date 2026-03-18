@@ -10,6 +10,22 @@ pub const PROTECTED_PROCESSES: &[&str] = &[
     "nexus",   // 自アプリ
 ];
 
+/// デフォルトのサスペンド候補プロセスリスト
+/// ゲーム起動時に自動でサスペンドが推奨されるバックグラウンドプロセス
+/// 拡張子なしの正規化名で管理（比較時に .exe を除去して小文字化）
+pub const DEFAULT_SUSPEND_CANDIDATES: &[&str] = &[
+    // Webブラウザ
+    "chrome", "firefox", "msedge", "opera", "brave",
+    // コーディング/開発ツール
+    "code", "devenv", "sublime_text", "notepad++",
+    // 通信ソフト
+    "discord", "slack", "teams", "zoom", "skype",
+    // メディアプレイヤー
+    "spotify", "vlc", "wmplayer", "itunes",
+    // その他
+    "onedrive", "dropbox", "googledrive", "acrobat", "winword", "excel", "powerpnt",
+];
+
 /// プロセス名が保護リストに含まれるか判定
 /// `.exe` を除去（大文字小文字を区別せず）、小文字化してから比較
 pub fn is_protected_process(name: &str) -> bool {

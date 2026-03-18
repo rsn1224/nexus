@@ -5,6 +5,7 @@ use tauri::{AppHandle, Emitter, Manager, State};
 use tracing::info;
 
 use crate::error::AppError;
+use crate::infra::power_plan::PowerPlanController;
 use crate::services;
 use crate::state::SharedState;
 use crate::types::game::{GameProfile, ProfileApplyResult};
@@ -137,4 +138,23 @@ pub fn set_process_affinity(pid: u32, cores: Vec<usize>) -> Result<(), AppError>
 #[tauri::command]
 pub fn get_process_affinity(pid: u32) -> Result<Vec<usize>, AppError> {
     crate::infra::cpu_affinity::get_affinity(pid)
+}
+
+/// 現在のアクティブな電源プランを取得
+#[tauri::command]
+pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
+    let controller = PowerPlanController::new();
+    let guid = controller.get_active_plan_guid()?
+        .ok_or_else(|| AppError::Power("現在の電源プランが取得できません".to_string()))?;
+    let name = controller.get_plan_name(&guid)?;
+    Ok(crate::types::game::CurrentPowerPlan { name, guid })
+}
+
+/// デフォルトのサスペンド候補プロセスリストを取得
+#[tauri::command]
+pub fn get_suspend_candidates() -> Vec<String> {
+    crate::constants::DEFAULT_SUSPEND_CANDIDATES
+        .iter()
+        .map(|s| s.to_string())
+        .collect()
 }

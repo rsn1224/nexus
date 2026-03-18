@@ -61,15 +61,15 @@ export default function FrameTimeCard() {
         <div className="font-bold text-[11px] text-(--color-accent-500)">FRAME TIME</div>
         <div
           className={`text-[9px] ${
-            monitorState.type === 'monitoring' ? 'text-success-500' : 'text-text-muted'
+            monitorState.type === 'running' ? 'text-success-500' : 'text-text-muted'
           }`}
         >
-          {monitorState.type === 'monitoring' ? 'MONITORING' : 'STOPPED'}
+          {monitorState.type === 'running' ? 'MONITORING' : 'STOPPED'}
         </div>
       </div>
 
       {/* プロセス情報 */}
-      {monitorState.type === 'monitoring' && (
+      {monitorState.type === 'running' && (
         <div className="mb-3 text-[10px] text-text-secondary">
           <div>PID: {monitorState.pid}</div>
           <div>PROCESS: {monitorState.processName}</div>

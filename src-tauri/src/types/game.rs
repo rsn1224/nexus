@@ -39,10 +39,16 @@ pub struct GameProfile {
     pub power_plan: PowerPlan,
 
     /// ゲーム起動時に一時停止するプロセス名リスト（Level 1 ブースト）
+    #[serde(default)]
     pub processes_to_suspend: Vec<String>,
 
     /// ゲーム起動時に終了するプロセス名リスト（Level 2 ブースト）
+    #[serde(default)]
     pub processes_to_kill: Vec<String>,
+
+    /// バックグラウンドプロセスの自動サスペンドを有効化するか
+    #[serde(default)]
+    pub auto_suspend_enabled: bool,
 
     /// タイマーリゾリューション設定（単位: 100ns, 5000 = 0.5ms）
     /// None の場合は変更なし
@@ -194,6 +200,13 @@ pub struct GameExitEvent {
     pub percentile_1_low: Option<f64>,
     pub percentile_01_low: Option<f64>,
     pub stutter_count: Option<u32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CurrentPowerPlan {
+    pub name: String,
+    pub guid: String,
 }
 
 // ─── ProfileApplyResult ──────────────────────────────────────────────────────

@@ -16,7 +16,7 @@ mod types;
 
 use crate::commands::{
     ai, app_settings, boost, cleanup, frame_time, hardware, launcher, launcher_settings, log,
-    netopt, ops, profile, pulse, script, storage, timer, windows_settings, winopt,
+    memory, netopt, ops, profile, pulse, script, storage, timer, windows_settings, winopt,
 };
 use tracing::info;
 
@@ -116,6 +116,8 @@ pub fn run() {
             profile::get_cpu_topology,
             profile::set_process_affinity,
             profile::get_process_affinity,
+            profile::get_current_power_plan,
+            profile::get_suspend_candidates,
             // TIMER RESOLUTION
             timer::get_timer_resolution,
             timer::set_timer_resolution,
@@ -127,6 +129,12 @@ pub fn run() {
             // CLEANUP
             cleanup::revert_all_settings,
             cleanup::cleanup_app_data,
+            // MEMORY CLEANER
+            memory::get_memory_cleaner_config,
+            memory::update_memory_cleaner_config,
+            memory::manual_memory_cleanup,
+            memory::start_auto_memory_cleanup,
+            memory::stop_auto_memory_cleanup,
             // SCRIPT
             script::list_scripts,
             script::add_script,

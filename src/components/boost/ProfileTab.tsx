@@ -1,11 +1,20 @@
+import { invoke } from '@tauri-apps/api/core';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+import { TIMER_100NS_PER_MS } from '../../lib/constants';
+import log from '../../lib/logger';
 import {
   createDefaultProfile,
   useGameProfileActions,
   useGameProfileState,
 } from '../../stores/useGameProfileStore';
-import type { BoostLevel, GameProfile, PowerPlanType, ProcessPriorityLevel } from '../../types';
+import type {
+  BoostLevel,
+  CurrentPowerPlan,
+  GameProfile,
+  PowerPlanType,
+  ProcessPriorityLevel,
+} from '../../types';
 import { Button, EmptyState, ErrorBanner, LoadingState } from '../ui';
 import AffinityPanel from './AffinityPanel';
 
@@ -60,8 +69,11 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
   );
   const [timerResolutionMs, setTimerResolutionMs] = useState(() => {
     const val = initial?.timerResolution100ns;
-    return val != null ? (val / 10000).toFixed(3) : '';
+    return val != null ? (val / TIMER_100NS_PER_MS).toFixed(3) : '';
   });
+  const [autoSuspendEnabled, setAutoSuspendEnabled] = useState(
+    initial?.autoSuspendEnabled ?? false,
+  );
 
   const handleSubmit = useCallback(() => {
     if (!displayName.trim() || !exePath.trim()) return;
@@ -84,8 +96,9 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
         .map((s) => s.trim())
         .filter(Boolean),
       timerResolution100ns: timerResolutionMs
-        ? Math.round(parseFloat(timerResolutionMs) * 10000)
+        ? Math.round(parseFloat(timerResolutionMs) * TIMER_100NS_PER_MS)
         : null,
+      autoSuspendEnabled,
       boostLevel,
       lastPlayed: initial?.lastPlayed ?? null,
       totalPlaySecs: initial?.totalPlaySecs ?? 0,
@@ -105,6 +118,7 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
     cpuAffinityBackground,
     processesToKill,
     timerResolutionMs,
+    autoSuspendEnabled,
     initial,
     onSave,
   ]);
@@ -156,6 +170,38 @@ function ProfileForm({ initial, onSave, onCancel }: ProfileFormProps): React.Rea
           ))}
         </select>
       </label>
+
+      {/* === Level 1+ 追加フィールド === */}
+      {boostLevel !== 'none' && (
+        <>
+          {/* サスペンドプロセス */}
+          <label className="flex flex-col gap-1">
+            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+              サスペンドプロセス（カンマ区切り）
+            </span>
+            <input
+              type="text"
+              value={processesToSuspend}
+              onChange={(e) => setProcessesToSuspend(e.target.value)}
+              placeholder="例: chrome.exe, discord.exe"
+              className="bg-base-900 border border-border-subtle rounded px-2 py-1 font-[var(--font-mono)] text-[11px] text-text-primary outline-none focus:border-[var(--color-cyan-500)]"
+            />
+          </label>
+
+          {/* 自動サスペンド有効化 */}
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={autoSuspendEnabled}
+              onChange={(e) => setAutoSuspendEnabled(e.target.checked)}
+              className="w-3 h-3 rounded border-border-subtle bg-base-900 text-[var(--color-cyan-500)] focus:ring-[var(--color-cyan-500)] focus:ring-offset-0"
+            />
+            <span className="font-[var(--font-mono)] text-[9px] text-text-muted tracking-[0.1em]">
+              バックグラウンドプロセスを自動でサスペンドする
+            </span>
+          </label>
+        </>
+      )}
 
       {/* === Level 2+ 追加フィールド === */}
       {(boostLevel === 'medium' || boostLevel === 'hard') && (
@@ -345,7 +391,7 @@ function ProfileCard({
         {/* タイマーリゾリューション */}
         {profile.timerResolution100ns != null && (
           <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
-            タイマー: {(profile.timerResolution100ns / 10000).toFixed(3)} ms
+            タイマー: {(profile.timerResolution100ns / TIMER_100NS_PER_MS).toFixed(3)} ms
           </div>
         )}
         {/* 強制終了プロセス（Level 3） */}
@@ -393,6 +439,57 @@ function ProfileCard({
           削除
         </button>
       </div>
+    </div>
+  );
+}
+
+// ─── 電源プラン表示コンポーネント ────────────────────────────────────────────────
+
+function CurrentPowerPlanDisplay() {
+  const [currentPlan, setCurrentPlan] = useState<CurrentPowerPlan | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchCurrentPlan = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const plan = await invoke<CurrentPowerPlan>('get_current_power_plan');
+        setCurrentPlan(plan);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : '取得失敗');
+        log.error({ err }, '電源プラン取得エラー');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCurrentPlan();
+    // 30秒ごとに更新
+    const interval = setInterval(fetchCurrentPlan, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
+        電源プラン: 読み込み中...
+      </div>
+    );
+  }
+
+  if (error || !currentPlan) {
+    return (
+      <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-danger-500)]">
+        電源プラン: {error || '不明'}
+      </div>
+    );
+  }
+
+  return (
+    <div className="font-[var(--font-mono)] text-[9px] text-text-muted">
+      現在の電源: {currentPlan.name}
     </div>
   );
 }
@@ -466,9 +563,12 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
 
       {/* ヘッダー + リバートボタン + 新規ボタン */}
       <div className="flex items-center justify-between">
-        <span className="font-[var(--font-mono)] text-[10px] text-text-muted">
-          {profiles.length} 件のプロファイル
-        </span>
+        <div className="flex flex-col gap-1">
+          <span className="font-[var(--font-mono)] text-[10px] text-text-muted">
+            {profiles.length} 件のプロファイル
+          </span>
+          <CurrentPowerPlanDisplay />
+        </div>
         <div className="flex gap-2">
           {activeProfileId && (
             <Button variant="secondary" onClick={() => void revertProfile()} className="text-[9px]">
