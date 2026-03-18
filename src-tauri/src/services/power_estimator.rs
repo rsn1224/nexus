@@ -230,7 +230,7 @@ pub fn estimate_power(
 }
 
 /// NVIDIA GPU の実電力取得 (NVML 使用)
-/// TODO: NVML feature を実装
+/// NOTE: v2 予定 — NVML feature の実装
 #[cfg(windows)]
 fn get_nvidia_power() -> Option<f32> {
     // NVML が有効な場合のみ実装

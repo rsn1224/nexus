@@ -187,7 +187,7 @@ pub fn compare_sessions(
     let stutter_delta =
         session_b.summary.total_stutter_count as i32 - session_a.summary.total_stutter_count as i32;
 
-    // TODO: AI による自動サマリ生成（Perplexity API 連携）
+    // NOTE: v2 予定 — AI による自動サマリ生成（Perplexity API 連携）
     let auto_summary = String::new();
 
     Ok(crate::types::game::SessionComparisonResult {

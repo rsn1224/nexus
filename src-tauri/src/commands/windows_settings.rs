@@ -478,8 +478,8 @@ pub fn get_settings_advice() -> Result<crate::services::settings_advisor::Adviso
     };
 
     // Get hardware info for GPU and memory
-    let gpu_name = None; // TODO: Get from hardware service
-    let mem_total_gb = 0.0; // TODO: Get from hardware service
+    let gpu_name = None; // NOTE: v2 予定 — hardware service から取得
+    let mem_total_gb = 0.0; // NOTE: v2 予定 — hardware service から取得
 
     // Get current settings
     let current_settings = get_current_settings_snapshot()
@@ -492,7 +492,7 @@ pub fn get_settings_advice() -> Result<crate::services::settings_advisor::Adviso
         fullscreen_optimization: current_settings.fullscreen_optimization,
         visual_effects: current_settings.visual_effects.to_string(),
         power_plan: current_settings.power_plan.to_string(),
-        memory_integrity: false, // TODO: Implement memory integrity check
+        memory_integrity: false, // NOTE: v2 予定 — メモリ整合性チェック
     };
 
     let result = analyze_settings(&topology, gpu_name, mem_total_gb, &snapshot);
@@ -510,7 +510,7 @@ pub fn apply_recommendation(setting_id: String) -> Result<(), AppError> {
         "visual_effects" => set_visual_effects(VisualEffects::BestPerformance),
         "power_plan" => set_power_plan(PowerPlan::HighPerformance),
         "memory_integrity" => {
-            // TODO: Implement memory integrity setting
+            // NOTE: v2 予定 — メモリ整合性設定
             warn!("Memory integrity setting not yet implemented");
             Ok(())
         }

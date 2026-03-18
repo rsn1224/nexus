@@ -1,8 +1,8 @@
 [package]
 name = "nexus"
-version = "0.1.0"
+version = "1.0.0"
 description = "NEXUS — Personal Base of Operations"
-authors = ["you"]
+authors = ["rsn1224"]
 edition = "2024"
 
 [lib]

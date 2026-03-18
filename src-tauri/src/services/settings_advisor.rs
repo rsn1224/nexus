@@ -212,7 +212,7 @@ pub fn analyze_settings(
 #[cfg_attr(not(windows), allow(dead_code))]
 pub fn get_current_settings_snapshot() -> Result<WindowsSettingsSnapshot, AppError> {
     // 各レジストリ値・powercfg から現在値を収集
-    // TODO: 実装 - いったんダミー値を返す
+    // NOTE: v2 予定 — 実装（現在はダミー値）
     Ok(WindowsSettingsSnapshot {
         game_mode: false,
         hags: false,

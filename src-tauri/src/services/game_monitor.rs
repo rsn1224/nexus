@@ -142,7 +142,7 @@ pub async fn start_polling(app: AppHandle) {
                                 existing.stop();
                             }
                             // 新しいセッションを保存（unsafe transmute が必要だが、ここでは一時的に）
-                            // TODO: State 構造を修正してセッションを保持できるようにする
+                            // NOTE: v2 予定 — State 構造を修正してセッションを保持できるようにする
                         }
                         info!("フレームタイム監視を開始: PID {}", pid);
                     }

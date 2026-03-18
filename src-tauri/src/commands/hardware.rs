@@ -255,7 +255,7 @@ pub fn set_eco_mode(enabled: bool, config: EcoModeConfig) -> Result<(), AppError
         if enabled { "enabling" } else { "disabling" }
     );
 
-    // TODO: Implement actual eco mode settings
+    // NOTE: v2 予定 — エコモード設定の実装
     // - Change power plan to config.eco_power_plan
     // - Set FPS limit via GPU driver or game overlay
     // - Enable NVML power limits if available
@@ -276,7 +276,7 @@ pub fn set_eco_mode(enabled: bool, config: EcoModeConfig) -> Result<(), AppError
 pub fn get_eco_mode_config(_app: AppHandle) -> Result<EcoModeConfig, AppError> {
     info!("get_eco_mode_config: loading saved eco mode configuration");
 
-    // TODO: Load from app data directory
+    // NOTE: v2 予定 — app data からの読み込み
     // For now, return default config
     Ok(EcoModeConfig::default())
 }
@@ -285,7 +285,7 @@ pub fn get_eco_mode_config(_app: AppHandle) -> Result<EcoModeConfig, AppError> {
 pub fn save_eco_mode_config(app: AppHandle, config: EcoModeConfig) -> Result<(), AppError> {
     info!("save_eco_mode_config: saving eco mode configuration");
 
-    // TODO: Save to app data directory
+    // NOTE: v2 予定 — app data への保存
     let app_data_dir = app
         .path()
         .resolve("app_data", tauri::path::BaseDirectory::AppData)
