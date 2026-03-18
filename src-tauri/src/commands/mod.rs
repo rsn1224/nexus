@@ -19,4 +19,5 @@ pub mod session;
 pub mod storage;
 pub mod timer;
 pub mod windows_settings;
+pub mod winopt;
 pub mod watchdog;

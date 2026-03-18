@@ -19,7 +19,6 @@ use crate::commands::{
     launcher_settings, log, memory, netopt, ops, profile, pulse, script, session, storage, timer,
     windows_settings, winopt, watchdog,
 };
-use crate::emitters;
 use tracing::info;
 
 // Manager トレイトをインポート

@@ -12,9 +12,9 @@ import WatchdogTab from './WatchdogTab';
 import WinoptTab from './WinoptTab';
 
 export default function BoostWing(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<'process' | 'windows' | 'network' | 'profiles' | 'watchdog'>(
-    'process',
-  );
+  const [activeTab, setActiveTab] = useState<
+    'process' | 'windows' | 'network' | 'profiles' | 'watchdog'
+  >('process');
 
   // Winopt store for error handling
   const { error: winoptError } = useWinoptStore();

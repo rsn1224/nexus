@@ -646,8 +646,8 @@ pub struct ProcessFilter {
     pub include_names: Vec<String>,
     /// プロセス名の除外リスト
     pub exclude_names: Vec<String>,
-    /// 保護プロセスは常に除外（constants::PROTECTED_PROCESSES）
-    /// この設定はコード側で強制。ユーザーが上書き不可
+    // 保護プロセスは常に除外（constants::PROTECTED_PROCESSES）
+    // この設定はコード側で強制。ユーザーが上書き不可
 }
 
 /// Watchdog イベントログ

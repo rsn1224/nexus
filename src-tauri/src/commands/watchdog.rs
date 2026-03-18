@@ -2,7 +2,7 @@ use crate::error::AppError;
 use crate::services::watchdog::{default_presets, WatchdogEngine};
 use crate::types::game::WatchdogRule;
 use std::sync::{Arc, Mutex};
-use tauri::{State, Manager};
+use tauri::{AppHandle, State};
 use tracing::info;
 
 pub type WatchdogState = Arc<Mutex<WatchdogEngine>>;
@@ -12,67 +12,52 @@ pub fn get_watchdog_rules(state: State<'_, WatchdogState>) -> Result<Vec<Watchdo
     info!("get_watchdog_rules: fetching current rules");
     let watchdog = state
         .lock()
-        .map_err(|e| AppError::State(format!("Failed to lock watchdog state: {}", e)))?;
+        .map_err(|e| AppError::Internal(format!("Failed to lock watchdog state: {}", e)))?;
     Ok(watchdog.get_rules().to_vec())
 }
 
 #[tauri::command]
 pub fn add_watchdog_rule(
+    app: AppHandle,
     state: State<'_, WatchdogState>,
     rule: WatchdogRule,
 ) -> Result<(), AppError> {
     info!("add_watchdog_rule: adding rule '{}'", rule.id);
     let mut watchdog = state
         .lock()
-        .map_err(|e| AppError::State(format!("Failed to lock watchdog state: {}", e)))?;
-    
-    // ルールを保存
+        .map_err(|e| AppError::Internal(format!("Failed to lock watchdog state: {}", e)))?;
     watchdog.add_rule(rule)?;
-    
-    // 永続化
-    let app = state
-        .lock()
-        .map_err(|e| AppError::State(format!("Failed to lock watchdog state: {}", e)))?
-        .save_rules(state.app_handle())?;
-    
+    watchdog.save_rules(&app)?;
     Ok(())
 }
 
 #[tauri::command]
 pub fn update_watchdog_rule(
+    app: AppHandle,
     state: State<'_, WatchdogState>,
     rule: WatchdogRule,
 ) -> Result<(), AppError> {
     info!("update_watchdog_rule: updating rule '{}'", rule.id);
     let mut watchdog = state
         .lock()
-        .map_err(|e| AppError::State(format!("Failed to lock watchdog state: {}", e)))?;
-    
-    // ルールを更新
+        .map_err(|e| AppError::Internal(format!("Failed to lock watchdog state: {}", e)))?;
     watchdog.update_rule(rule)?;
-    
-    // 永続化
-    watchdog.save_rules(state.app_handle())?;
-    
+    watchdog.save_rules(&app)?;
     Ok(())
 }
 
 #[tauri::command]
 pub fn remove_watchdog_rule(
+    app: AppHandle,
     state: State<'_, WatchdogState>,
     rule_id: String,
 ) -> Result<(), AppError> {
     info!("remove_watchdog_rule: removing rule '{}'", rule_id);
     let mut watchdog = state
         .lock()
-        .map_err(|e| AppError::State(format!("Failed to lock watchdog state: {}", e)))?;
-    
-    // ルールを削除
+        .map_err(|e| AppError::Internal(format!("Failed to lock watchdog state: {}", e)))?;
     watchdog.remove_rule(&rule_id)?;
-    
-    // 永続化
-    watchdog.save_rules(state.app_handle())?;
-    
+    watchdog.save_rules(&app)?;
     Ok(())
 }
 
@@ -81,7 +66,7 @@ pub fn get_watchdog_events(state: State<'_, WatchdogState>) -> Result<Vec<crate:
     info!("get_watchdog_events: fetching event log");
     let watchdog = state
         .lock()
-        .map_err(|e| AppError::State(format!("Failed to lock watchdog state: {}", e)))?;
+        .map_err(|e| AppError::Internal(format!("Failed to lock watchdog state: {}", e)))?;
     Ok(watchdog.get_events().to_vec())
 }
 
@@ -94,10 +79,9 @@ pub fn get_watchdog_presets() -> Result<Vec<WatchdogRule>, AppError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::services::watchdog::{WatchdogEngine, WatchdogEvent};
-    use crate::types::game::{SystemProcess, WatchdogAction, WatchdogCondition, WatchdogMetric, WatchdogOperator, ProcessFilter};
+    use crate::services::watchdog::WatchdogEngine;
+    use crate::types::game::{WatchdogAction, WatchdogCondition, WatchdogMetric, WatchdogOperator, ProcessFilter};
     use std::sync::{Arc, Mutex};
-    use tauri::Manager;
 
     fn create_test_rule(id: &str, enabled: bool) -> WatchdogRule {
         WatchdogRule {
@@ -230,7 +214,10 @@ mod tests {
             assert!(!preset.id.is_empty());
             assert!(!preset.name.is_empty());
             assert!(!preset.conditions.is_empty());
-            assert!(!preset.include_names.is_empty() || !preset.exclude_names.is_empty());
+            assert!(
+                !preset.process_filter.include_names.is_empty()
+                    || !preset.process_filter.exclude_names.is_empty()
+            );
         }
     }
 

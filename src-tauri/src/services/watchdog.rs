@@ -2,13 +2,12 @@
 //! ops_emitter の出力を入力として、ルール条件に合致するプロセスにアクションを適用。
 //! 3秒ごとの ops_emitter サイクルと同期して実行。
 
+use crate::commands::ops::SystemProcess;
 use crate::constants::is_protected_process;
 use crate::error::AppError;
 use crate::infra::process_control;
 use crate::types::game::*;
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Manager};
 use tracing::info;
@@ -42,7 +41,7 @@ impl WatchdogEngine {
         // ID 重複チェック
         if self.rules.iter().any(|r| r.id == rule.id) {
             return Err(AppError::InvalidInput(
-                format!("Rule ID '{}' already exists", rule.id).into(),
+                format!("Rule ID '{}' already exists", rule.id),
             ));
         }
         self.rules.push(rule);
@@ -55,7 +54,7 @@ impl WatchdogEngine {
             .iter()
             .position(|r| r.id == rule.id)
             .ok_or_else(|| {
-                AppError::InvalidInput(format!("Rule ID '{}' not found", rule.id).into())
+                AppError::InvalidInput(format!("Rule ID '{}' not found", rule.id))
             })?;
         self.rules[index] = rule;
         Ok(())
@@ -67,7 +66,7 @@ impl WatchdogEngine {
             .iter()
             .position(|r| r.id == rule_id)
             .ok_or_else(|| {
-                AppError::InvalidInput(format!("Rule ID '{}' not found", rule_id).into())
+                AppError::InvalidInput(format!("Rule ID '{}' not found", rule_id))
             })?;
         self.rules.remove(index);
         Ok(())
@@ -83,13 +82,14 @@ impl WatchdogEngine {
     /// 戻り値: 実行されたアクションのイベントログ
     pub fn evaluate(
         &mut self,
-        processes: &[crate::types::game::SystemProcess],
+        processes: &[SystemProcess],
         active_profile_id: Option<&str>,
     ) -> Vec<WatchdogEvent> {
         let mut events = Vec::new();
         let now = current_timestamp_ms();
 
-        for rule in &self.rules {
+        for i in 0..self.rules.len() {
+            let rule = self.rules[i].clone();
             if !rule.enabled {
                 continue;
             }
@@ -163,11 +163,11 @@ impl WatchdogEngine {
     }
 
     /// 条件評価
-    fn evaluate_conditions(&self, conditions: &[WatchdogCondition], process: &crate::types::game::SystemProcess) -> bool {
+    fn evaluate_conditions(&self, conditions: &[WatchdogCondition], process: &SystemProcess) -> bool {
         conditions.iter().all(|condition| {
             let metric_value = match condition.metric {
                 WatchdogMetric::CpuPercent => process.cpu_percent as f64,
-                WatchdogMetric::MemoryMb => process.memory_mb,
+                WatchdogMetric::MemoryMb => process.mem_mb,
                 WatchdogMetric::DiskReadKb => process.disk_read_kb,
                 WatchdogMetric::DiskWriteKb => process.disk_write_kb,
             };
@@ -181,7 +181,7 @@ impl WatchdogEngine {
     }
 
     /// アクション実行
-    fn execute_action(&mut self, rule: &WatchdogRule, process: &crate::types::game::SystemProcess, now: u64) -> WatchdogEvent {
+    fn execute_action(&mut self, rule: &WatchdogRule, process: &SystemProcess, now: u64) -> WatchdogEvent {
         let mut event = WatchdogEvent {
             timestamp: now,
             rule_id: rule.id.clone(),
@@ -199,7 +199,7 @@ impl WatchdogEngine {
         if let Some(condition) = rule.conditions.first() {
             event.metric_value = match condition.metric {
                 WatchdogMetric::CpuPercent => process.cpu_percent as f64,
-                WatchdogMetric::MemoryMb => process.memory_mb,
+                WatchdogMetric::MemoryMb => process.mem_mb,
                 WatchdogMetric::DiskReadKb => process.disk_read_kb,
                 WatchdogMetric::DiskWriteKb => process.disk_write_kb,
             };
@@ -208,12 +208,20 @@ impl WatchdogEngine {
 
         let result = match &rule.action {
             WatchdogAction::SetPriority { level } => {
+                let priority = match level.as_str() {
+                    "idle" | "low" => crate::types::game::ProcessPriority::Idle,
+                    "belowNormal" => crate::types::game::ProcessPriority::BelowNormal,
+                    "high" => crate::types::game::ProcessPriority::High,
+                    "realtime" => crate::types::game::ProcessPriority::Realtime,
+                    _ => crate::types::game::ProcessPriority::Normal,
+                };
                 event.action_taken = format!("SetPriority({})", level);
-                process_control::set_process_priority(process.pid, level)
+                process_control::set_process_priority_class(process.pid, priority)
             }
             WatchdogAction::SetAffinity { cores } => {
+                let usize_cores: Vec<usize> = cores.iter().map(|&c| c as usize).collect();
                 event.action_taken = format!("SetAffinity({:?})", cores);
-                process_control::set_process_affinity(process.pid, cores)
+                crate::infra::cpu_affinity::set_affinity(process.pid, &usize_cores)
             }
             WatchdogAction::Suspend => {
                 event.action_taken = "Suspend".to_string();
@@ -221,7 +229,7 @@ impl WatchdogEngine {
             }
             WatchdogAction::Terminate => {
                 event.action_taken = "Terminate".to_string();
-                process_control::terminate_process(process.pid)
+                process_control::terminate_process(process.pid, 1)
             }
         };
 
@@ -349,14 +357,14 @@ pub fn default_presets() -> Vec<WatchdogRule> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::game::SystemProcess;
+    use crate::commands::ops::SystemProcess;
 
     fn create_test_process(pid: u32, name: &str, cpu: f32, mem: f64) -> SystemProcess {
         SystemProcess {
             pid,
             name: name.to_string(),
             cpu_percent: cpu,
-            memory_mb: mem,
+            mem_mb: mem,
             disk_read_kb: 0.0,
             disk_write_kb: 0.0,
             can_terminate: true,
