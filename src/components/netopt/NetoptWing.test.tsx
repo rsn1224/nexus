@@ -42,7 +42,7 @@ describe('NetoptWing', () => {
 
   it('renders header', () => {
     render(<NetoptWing />);
-    expect(screen.getByText(/NETOPT.*NETWORK/i)).toBeTruthy();
+    expect(screen.getByText(/▶ NETWORK/i)).toBeTruthy();
   });
 
   it('renders refresh button', () => {
@@ -75,7 +75,7 @@ describe('NetoptWing', () => {
 
   it('renders DNS section with preset selector', () => {
     render(<NetoptWing />);
-    expect(screen.getByText(/DNS/)).toBeTruthy();
+    expect(screen.getAllByText(/DNS/).length).toBeGreaterThan(0);
     expect(screen.getByDisplayValue('Cloudflare')).toBeTruthy();
   });
 

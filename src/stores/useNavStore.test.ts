@@ -20,8 +20,8 @@ describe('useNavStore', () => {
   it('setNavigate replaces the navigate function', () => {
     const mockNavigate = vi.fn();
     useNavStore.getState().setNavigate(mockNavigate);
-    useNavStore.getState().navigate('boost');
-    expect(mockNavigate).toHaveBeenCalledWith('boost');
+    useNavStore.getState().navigate('performance');
+    expect(mockNavigate).toHaveBeenCalledWith('performance');
   });
 
   it('navigate calls the registered function with the correct wing id', () => {

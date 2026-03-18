@@ -38,13 +38,12 @@ export interface ExecutionLog {
 // ─── WING IDs ────────────────────────────────────────────────────────────────
 export type WingId =
   | 'home'
-  | 'boost'
-  | 'launcher'
+  | 'performance' // 旧 'boost'
+  | 'games' // 旧 'launcher'
   | 'settings'
-  | 'windows'
   | 'hardware'
   | 'log'
-  | 'netopt'
+  | 'network' // 旧 'netopt'
   | 'storage';
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────

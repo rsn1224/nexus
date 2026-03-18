@@ -6,24 +6,22 @@ import type { WingId } from './types';
 
 // ─── Lazy Wing imports ──────────────────────────────────────────────────────
 const HomeWing = lazy(() => import('./components/home/HomeWing'));
-const BoostWing = lazy(() => import('./components/boost/BoostWing'));
-const LauncherWing = lazy(() => import('./components/launcher/LauncherWing'));
+const PerformanceWing = lazy(() => import('./components/boost/BoostWing'));
+const GamesWing = lazy(() => import('./components/launcher/LauncherWing'));
 const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
-const WindowsWing = lazy(() => import('./components/windows/WindowsWing'));
 const HardwareWing = lazy(() => import('./components/hardware/HardwareWing'));
 const LogWing = lazy(() => import('./components/log/LogWing'));
-const NetoptWing = lazy(() => import('./components/netopt/NetoptWing'));
+const NetworkWing = lazy(() => import('./components/netopt/NetoptWing'));
 const StorageWing = lazy(() => import('./components/storage/StorageWing'));
 
 const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
   home: HomeWing,
-  boost: BoostWing,
-  launcher: LauncherWing,
+  performance: PerformanceWing,
+  games: GamesWing,
   settings: SettingsWing,
-  windows: WindowsWing,
   hardware: HardwareWing,
   log: LogWing,
-  netopt: NetoptWing,
+  network: NetworkWing,
   storage: StorageWing,
 };
 

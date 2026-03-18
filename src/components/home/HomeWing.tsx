@@ -245,7 +245,7 @@ const HomeWing = function HomeWing(): React.ReactElement {
                 <span>
                   ⚠ CPU HIGH ({process.cpuPercent.toFixed(1)}%) — {process.name}
                 </span>
-                <Button variant="secondary" size="sm" onClick={() => navigate('boost')}>
+                <Button variant="secondary" size="sm" onClick={() => navigate('performance')}>
                   → BOOST
                 </Button>
               </div>

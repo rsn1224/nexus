@@ -24,18 +24,6 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: 'settings', label: '設定', icon: Settings },
 ];
 
-// 一時マッピング（Phase 3 で正式リネーム）
-const WING_MAP: Record<string, WingId> = {
-  home: 'home',
-  performance: 'boost',
-  games: 'launcher',
-  hardware: 'hardware',
-  network: 'netopt',
-  storage: 'storage',
-  log: 'log',
-  settings: 'settings',
-};
-
 // ─── Shell ───────────────────────────────────────────────────────────────────
 
 interface ShellProps {
@@ -64,7 +52,7 @@ const Shell = memo(function Shell({
             if (!('label' in item)) {
               return <div key={item.id} className="w-6 h-px bg-border-subtle my-1" />;
             }
-            const wingId = WING_MAP[item.id];
+            const wingId = item.id as WingId;
             const isActive = wingId === activeWing;
             const Icon = item.icon;
             return (

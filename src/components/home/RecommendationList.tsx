@@ -20,9 +20,9 @@ const PRIORITY_ICONS: Record<string, string> = {
 
 // action 文字列を WingId に変換
 const actionToWing: Record<string, WingId> = {
-  boost: 'boost',
-  profiles: 'boost', // プロファイルは boost wing 内
-  winopt: 'windows',
+  boost: 'performance',
+  profiles: 'performance', // プロファイルは performance wing 内
+  winopt: 'settings',
 };
 
 export default function RecommendationList({ recommendations }: RecommendationListProps) {
