@@ -4,23 +4,26 @@ import { useBottleneckStore } from '../../stores/useBottleneckStore';
 import { useFrameTimeState } from '../../stores/useFrameTimeStore';
 import { useNavStore } from '../../stores/useNavStore';
 import type { BottleneckConfidence, BottleneckType, WingId } from '../../types';
+import { Card } from '../ui';
+
+// ─── ヘルパー ─────────────────────────────────────────────────────────────────
 
 const getBottleneckColor = (type: BottleneckType): string => {
   switch (type) {
     case 'cpu':
-      return 'text-red-500';
+      return 'text-danger-500';
     case 'gpu':
-      return 'text-orange-500';
+      return 'text-(--color-accent-500)';
     case 'memory':
-      return 'text-yellow-500';
+      return 'text-(--color-accent-500)';
     case 'storage':
-      return 'text-purple-500';
+      return 'text-text-secondary';
     case 'balanced':
-      return 'text-green-500';
+      return 'text-[var(--color-success-500)]';
     case 'unknown':
-      return 'text-gray-500';
+      return 'text-text-muted';
     default:
-      return 'text-gray-500';
+      return 'text-text-muted';
   }
 };
 
@@ -43,27 +46,27 @@ const getBottleneckLabel = (type: BottleneckType): string => {
   }
 };
 
-const getConfidenceColor = (confidence: BottleneckConfidence): string => {
+const getConfidenceBorder = (confidence: BottleneckConfidence): string => {
   switch (confidence) {
     case 'high':
-      return 'bg-green-500';
+      return 'border-[var(--color-success-500)] text-[var(--color-success-500)]';
     case 'medium':
-      return 'bg-yellow-500';
+      return 'border-(--color-accent-500) text-(--color-accent-500)';
     case 'low':
-      return 'bg-red-500';
+      return 'border-danger-600 text-danger-500';
     default:
-      return 'bg-gray-500';
+      return 'border-border-subtle text-text-muted';
   }
 };
 
-const getScoreColor = (score: number): string => {
-  if (score >= 0.8) return 'bg-red-500';
-  if (score >= 0.6) return 'bg-orange-500';
-  if (score >= 0.4) return 'bg-yellow-500';
-  return 'bg-green-500';
+const getScoreBarColor = (score: number): string => {
+  if (score >= 0.8) return 'bg-[var(--color-danger-500)]';
+  if (score >= 0.6) return 'bg-[var(--color-accent-500)]';
+  if (score >= 0.4) return 'bg-cyan-500';
+  return 'bg-[var(--color-success-500)]';
 };
 
-const getScoreWidthClass = (score: number): string => `w-[${Math.round(score * 100)}%]`;
+// ─── コンポーネント ───────────────────────────────────────────────────────────
 
 const BottleneckCard: React.FC = () => {
   const { bottleneck, isAnalyzing, error, startAutoAnalysis, stopAutoAnalysis } =
@@ -96,41 +99,42 @@ const BottleneckCard: React.FC = () => {
   };
 
   return (
-    <div className="bg-(--color-surface) border border-(--color-border) rounded-lg p-4 mb-4">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-[11px] font-(--font-mono) text-(--color-text) uppercase tracking-wider">
-          Bottleneck Analysis
-        </h3>
-        {isAnalyzing && (
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-            <span className="text-xs text-text-muted">Analyzing...</span>
-          </div>
-        )}
-      </div>
+    <Card title="BOTTLENECK ANALYSIS" className="mt-4">
+      {/* ヘッダー右側: 分析中インジケーター */}
+      {isAnalyzing && (
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-1.5 h-1.5 bg-cyan-500 animate-pulse" />
+          <span className="font-[var(--font-mono)] text-[10px] text-cyan-500 tracking-[0.1em]">
+            ANALYZING...
+          </span>
+        </div>
+      )}
 
+      {/* エラー表示 */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500 rounded p-2 mb-3">
-          <p className="text-xs text-red-500">{error}</p>
+        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 font-[var(--font-mono)] text-[11px] text-danger-500 mb-3">
+          ERROR: {error}
         </div>
       )}
 
       {bottleneck ? (
-        <div className="space-y-3">
+        <div className="flex flex-col gap-3">
           {/* 主要ボトルネック表示 */}
           <div className="flex items-center gap-3">
-            <div className={`text-lg font-bold ${getBottleneckColor(bottleneck.primary)}`}>
+            <span
+              className={`font-[var(--font-mono)] text-[14px] font-bold tracking-[0.1em] ${getBottleneckColor(bottleneck.primary)}`}
+            >
               {getBottleneckLabel(bottleneck.primary)}
-            </div>
-            <div
-              className={`px-2 py-1 rounded text-xs text-white ${getConfidenceColor(bottleneck.confidence)}`}
+            </span>
+            <span
+              className={`font-[var(--font-mono)] text-[9px] px-[5px] py-[1px] border tracking-[0.08em] ${getConfidenceBorder(bottleneck.confidence)}`}
             >
               {bottleneck.confidence.toUpperCase()}
-            </div>
+            </span>
           </div>
 
           {/* 負荷スコアバー */}
-          <div className="space-y-2">
+          <div className="flex flex-col gap-2">
             {(
               [
                 { key: 'cpu', label: 'CPU', score: bottleneck.scores.cpu },
@@ -140,13 +144,16 @@ const BottleneckCard: React.FC = () => {
               ] as const
             ).map(({ key, label, score }) => (
               <div key={key} className="flex items-center gap-2">
-                <span className="text-xs text-text-muted w-12">{label}</span>
-                <div className="flex-1 bg-(--color-background) rounded-full h-2 overflow-hidden">
+                <span className="font-[var(--font-mono)] text-[10px] text-text-muted tracking-[0.1em] w-10">
+                  {label}
+                </span>
+                <div className="flex-1 h-2 bg-base-800 overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-300 ${getScoreColor(score)} ${getScoreWidthClass(score)}`}
+                    className={`h-full transition-all duration-300 ${getScoreBarColor(score)}`}
+                    style={{ width: `${Math.round(score * 100)}%` }}
                   />
                 </div>
-                <span className="text-xs text-text-muted w-8 text-right">
+                <span className="font-[var(--font-mono)] text-[10px] text-text-muted w-8 text-right">
                   {Math.round(score * 100)}%
                 </span>
               </div>
@@ -155,20 +162,22 @@ const BottleneckCard: React.FC = () => {
 
           {/* 改善提案 */}
           {bottleneck.suggestions.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-xs text-(--color-text) font-(--font-mono) uppercase">
-                Suggestions
-              </h4>
+            <div className="flex flex-col gap-2 pt-2 border-t border-border-subtle">
+              <span className="font-[var(--font-mono)] text-[10px] font-semibold text-text-muted tracking-[0.12em]">
+                SUGGESTIONS
+              </span>
               {bottleneck.suggestions.map((suggestion) => (
                 <div key={suggestion.id} className="flex items-center justify-between">
-                  <p className="text-xs text-text-secondary flex-1">{suggestion.message}</p>
+                  <span className="font-[var(--font-mono)] text-[11px] text-text-secondary flex-1">
+                    {suggestion.message}
+                  </span>
                   {suggestion.action && (
                     <button
                       type="button"
                       onClick={() => handleActionClick(suggestion.action)}
-                      className="ml-2 px-2 py-1 bg-(--color-accent-500) text-white text-xs rounded hover:bg-accent-600 transition-colors"
+                      className="ml-2 font-[var(--font-mono)] text-[9px] px-[10px] py-[2px] border border-(--color-accent-500) text-(--color-accent-500) tracking-[0.1em] transition-all duration-100 hover:bg-(--color-accent-500) hover:text-base-900"
                     >
-                      Apply
+                      APPLY
                     </button>
                   )}
                 </div>
@@ -177,11 +186,11 @@ const BottleneckCard: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="text-center py-4">
-          <p className="text-xs text-text-muted">Waiting for analysis data...</p>
+        <div className="flex items-center justify-center h-[80px] font-[var(--font-mono)] text-[11px] text-text-muted tracking-[0.1em]">
+          WAITING FOR ANALYSIS DATA...
         </div>
       )}
-    </div>
+    </Card>
   );
 };
 

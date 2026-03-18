@@ -44,7 +44,7 @@ function ThermalAlertBanner({
             >
               {alert.level === 'Critical' ? '🔥' : '⚠️'}
             </span>
-            <span className="text-xs text-[var(--color-text)]">
+            <span className="text-xs text-text-primary">
               {alert.component}{' '}
               {alert.level === 'Critical' ? 'サーマルスロットリング検知' : '温度警告'} (
               {alert.currentTempC}℃)
