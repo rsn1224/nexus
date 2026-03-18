@@ -5,6 +5,7 @@ use tauri::{AppHandle, Emitter, Manager, State};
 use tracing::info;
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::power_plan::PowerPlanController;
 use crate::services;
 use crate::state::SharedState;
@@ -141,6 +142,7 @@ pub fn get_process_affinity(pid: u32) -> Result<Vec<usize>, AppError> {
 }
 
 /// 現在のアクティブな電源プランを取得
+#[cfg(windows)]
 #[tauri::command]
 pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
     let controller = PowerPlanController::new();
@@ -149,6 +151,12 @@ pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, 
         .ok_or_else(|| AppError::Power("現在の電源プランが取得できません".to_string()))?;
     let name = controller.get_plan_name(&guid)?;
     Ok(crate::types::game::CurrentPowerPlan { name, guid })
+}
+
+#[cfg(not(windows))]
+#[tauri::command]
+pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
 }
 
 /// デフォルトのサスペンド候補プロセスリストを取得

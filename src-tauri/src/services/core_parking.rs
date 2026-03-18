@@ -89,6 +89,7 @@ fn get_plan_name(guid: &str) -> Result<String, AppError> {
 }
 
 /// 現在のコアパーキング状態を取得
+#[cfg(windows)]
 pub fn get_core_parking_state() -> Result<CoreParkingState, AppError> {
     let plan_guid = get_active_plan_guid()?;
     let plan_name = get_plan_name(&plan_guid)?;
@@ -117,8 +118,14 @@ pub fn get_core_parking_state() -> Result<CoreParkingState, AppError> {
     })
 }
 
+#[cfg(not(windows))]
+pub fn get_core_parking_state() -> Result<CoreParkingState, AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
+}
+
 /// コアパーキングを設定
 /// percent: 0 = OS 任せ（パーキング有効）、100 = 全コア稼働（パーキング無効）
+#[cfg(windows)]
 pub fn set_core_parking(min_cores_percent: u32) -> Result<(), AppError> {
     if min_cores_percent > 100 {
         return Err(AppError::InvalidInput(
@@ -150,6 +157,11 @@ pub fn set_core_parking(min_cores_percent: u32) -> Result<(), AppError> {
     powershell::run_powershell(&format!("powercfg /setactive {}", &plan_guid))?;
 
     Ok(())
+}
+
+#[cfg(not(windows))]
+pub fn set_core_parking(min_cores_percent: u32) -> Result<(), AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
 }
 
 /// ゲームプロファイル用: パーキング無効化（100%）→ 元に戻す

@@ -63,58 +63,64 @@ pub fn revert_all(state: &State<'_, SharedState>) -> RevertAllResult {
 
 fn revert_win_settings(items: &mut Vec<RevertItem>) {
     // winopt_backup.json を読み込み、全キーをリバート
-    let settings = match crate::commands::winopt::get_win_settings() {
-        Ok(s) => s,
-        Err(e) => {
+    #[cfg(windows)]
+    {
+        let settings = match crate::commands::winopt::get_win_settings() {
+            Ok(s) => s,
+            Err(e) => {
+                items.push(RevertItem {
+                    category: "Windows設定".to_string(),
+                    label: "バックアップ読込".to_string(),
+                    success: false,
+                    detail: format!("バックアップ読込失敗: {}", e),
+                });
+                return;
+            }
+        };
+
+        for setting in settings.iter().filter(|s| s.can_revert) {
+            let result = crate::commands::winopt::revert_win_setting(&setting.id);
             items.push(RevertItem {
                 category: "Windows設定".to_string(),
-                label: "バックアップ読込".to_string(),
-                success: false,
-                detail: format!("バックアップ読込失敗: {}", e),
+                label: setting.label.clone(),
+                success: result.is_ok(),
+                detail: match result {
+                    Ok(()) => "リバート完了".to_string(),
+                    Err(e) => format!("{}", e),
+                },
             });
-            return;
         }
-    };
-
-    for setting in settings.iter().filter(|s| s.can_revert) {
-        let result = crate::commands::winopt::revert_win_setting(&setting.id);
-        items.push(RevertItem {
-            category: "Windows設定".to_string(),
-            label: setting.label.clone(),
-            success: result.is_ok(),
-            detail: match result {
-                Ok(()) => "リバート完了".to_string(),
-                Err(e) => format!("{}", e),
-            },
-        });
     }
 }
 
 fn revert_net_settings(items: &mut Vec<RevertItem>) {
-    let settings = match crate::commands::winopt::get_net_settings() {
-        Ok(s) => s,
-        Err(e) => {
+    #[cfg(windows)]
+    {
+        let settings = match crate::commands::winopt::get_net_settings() {
+            Ok(s) => s,
+            Err(e) => {
+                items.push(RevertItem {
+                    category: "ネットワーク設定".to_string(),
+                    label: "バックアップ読込".to_string(),
+                    success: false,
+                    detail: format!("バックアップ読込失敗: {}", e),
+                });
+                return;
+            }
+        };
+
+        for setting in settings.iter().filter(|s| s.can_revert) {
+            let result = crate::commands::winopt::revert_net_setting(&setting.id);
             items.push(RevertItem {
                 category: "ネットワーク設定".to_string(),
-                label: "バックアップ読込".to_string(),
-                success: false,
-                detail: format!("バックアップ読込失敗: {}", e),
+                label: setting.label.clone(),
+                success: result.is_ok(),
+                detail: match result {
+                    Ok(()) => "リバート完了".to_string(),
+                    Err(e) => format!("{}", e),
+                },
             });
-            return;
         }
-    };
-
-    for setting in settings.iter().filter(|s| s.can_revert) {
-        let result = crate::commands::winopt::revert_net_setting(&setting.id);
-        items.push(RevertItem {
-            category: "ネットワーク設定".to_string(),
-            label: setting.label.clone(),
-            success: result.is_ok(),
-            detail: match result {
-                Ok(()) => "リバート完了".to_string(),
-                Err(e) => format!("{}", e),
-            },
-        });
     }
 }
 

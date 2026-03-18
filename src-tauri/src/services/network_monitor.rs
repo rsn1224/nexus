@@ -1,6 +1,7 @@
 //! リアルタイム Jitter / パケットロス監視
 
 use crate::error::AppError;
+#[cfg(windows)]
 use crate::infra::powershell;
 use serde::{Deserialize, Serialize};
 use std::process::Command;
@@ -176,6 +177,7 @@ fn parse_rtt_from_line(line: &str) -> Option<f64> {
 }
 
 /// PowerShell 版の ping 測定（より詳細な統計用）
+#[cfg(windows)]
 #[allow(dead_code)]
 pub fn measure_network_quality_powershell(
     target: &str,
@@ -228,6 +230,15 @@ pub fn measure_network_quality_powershell(
         sample_count: count,
         timestamp,
     })
+}
+
+#[cfg(not(windows))]
+#[allow(dead_code)]
+pub fn measure_network_quality_powershell(
+    target: &str,
+    count: u32,
+) -> Result<NetworkQualitySnapshot, AppError> {
+    Err(AppError::Command("Windows 専用機能です".into()))
 }
 
 #[cfg(test)]
