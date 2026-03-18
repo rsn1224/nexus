@@ -1,6 +1,7 @@
 pub mod ai;
 pub mod app_settings;
 pub mod boost;
+pub mod bottleneck;
 pub mod cleanup;
 pub mod frame_time;
 pub mod hardware;

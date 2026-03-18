@@ -397,6 +397,32 @@ export interface RevertItem {
   detail: string;
 }
 
+// ─── BOTTLENECK ──────────────────────────────────────────────────────────────
+
+export type BottleneckType = 'cpu' | 'gpu' | 'memory' | 'storage' | 'unknown' | 'balanced';
+export type BottleneckConfidence = 'high' | 'medium' | 'low';
+
+export interface BottleneckScores {
+  cpu: number;
+  gpu: number;
+  memory: number;
+  storage: number;
+}
+
+export interface BottleneckSuggestion {
+  id: string;
+  message: string;
+  action: string | null;
+}
+
+export interface BottleneckResult {
+  primary: BottleneckType;
+  confidence: BottleneckConfidence;
+  scores: BottleneckScores;
+  suggestions: BottleneckSuggestion[];
+  timestamp: number;
+}
+
 export interface RevertAllResult {
   items: RevertItem[];
   total: number;

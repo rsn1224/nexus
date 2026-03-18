@@ -337,6 +337,7 @@ mod tests {
             processes_to_kill: vec![],
             timer_resolution_100ns: None,
             boost_level: BoostLevel::default(),
+            auto_suspend_enabled: true,
             last_played: None,
             total_play_secs: 0,
             created_at: 1000,

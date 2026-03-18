@@ -11,6 +11,7 @@ import { useStorageStore } from '../../stores/useStorageStore';
 import type { SystemProcess } from '../../types';
 import AiPanel from '../shared/AiPanel';
 import { Button, Card } from '../ui';
+import BottleneckCard from './BottleneckCard';
 import FrameTimeCard from './FrameTimeCard';
 import GameReadinessPanel from './GameReadinessPanel';
 import LauncherCard from './LauncherCard';
@@ -124,6 +125,9 @@ const HomeWing = function HomeWing(): React.ReactElement {
         {/* Quick Actions Card */}
         <QuickActionsCard />
       </div>
+
+      {/* Bottleneck Analysis Card - Full Width */}
+      <BottleneckCard />
 
       {/* System Status Card */}
       <SystemStatusCard />

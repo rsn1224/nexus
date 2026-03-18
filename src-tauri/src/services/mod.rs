@@ -1,3 +1,4 @@
+pub mod bottleneck;
 pub mod boost;
 pub mod cleanup;
 pub mod cpu_topology;
