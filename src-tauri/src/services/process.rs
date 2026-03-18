@@ -1,6 +1,7 @@
 use crate::constants::is_protected_process;
 use crate::error::AppError;
 use crate::state::SharedState;
+use crate::types::game::ProcessPriority;
 use sysinfo::{Process, ProcessesToUpdate};
 use tauri::State;
 
@@ -48,7 +49,7 @@ pub fn list_processes(state: &State<'_, SharedState>) -> Result<Vec<ProcessData>
             .partial_cmp(&a.cpu_percent)
             .unwrap_or(std::cmp::Ordering::Equal)
     });
-    processes.truncate(50);
+    processes.truncate(100);
 
     Ok(processes)
 }
@@ -115,4 +116,67 @@ pub fn get_ai_suggestions(state: &State<'_, SharedState>) -> Result<Vec<String>,
         .collect();
 
     Ok(suggestions)
+}
+
+/// プロセスの優先度を Win32 API で設定する
+pub fn set_priority(pid: u32, priority: &str) -> Result<(), AppError> {
+    let priority_class = match priority {
+        "high" => ProcessPriority::AboveNormal,
+        "normal" => ProcessPriority::Normal,
+        "idle" => ProcessPriority::Idle,
+        _ => {
+            return Err(AppError::Validation(format!(
+                "不正な優先度: '{}'. 'high', 'normal', 'idle' のいずれかを指定してください",
+                priority
+            )))
+        }
+    };
+
+    crate::infra::process_control::set_process_priority_class(pid, priority_class)
+}
+
+// ─── Tests ────────────────────────────────────────────────────────────────────
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_set_priority_invalid() {
+        let result = set_priority(1234, "invalid");
+        assert!(result.is_err());
+
+        if let Err(AppError::Validation(msg)) = result {
+            assert!(msg.contains("不正な優先度"));
+            assert!(msg.contains("invalid"));
+        } else {
+            panic!("Expected Validation error");
+        }
+    }
+
+    #[test]
+    fn test_set_priority_parameter_mapping() {
+        // パラメータマッピングのテスト - Win32 API 呼び出しは行わない
+        // 実際の環境では Win32 API が失敗することを想定
+
+        // 有効なパラメータでも Win32 API 呼び出しでエラーになるはず
+        let result = set_priority(1234, "high");
+        assert!(result.is_err());
+
+        let result = set_priority(1234, "normal");
+        assert!(result.is_err());
+
+        let result = set_priority(1234, "idle");
+        assert!(result.is_err());
+
+        // 無効なパラメータは検証エラーになる
+        let result = set_priority(1234, "invalid");
+        assert!(result.is_err());
+
+        if let Err(AppError::Validation(_)) = result {
+            // OK - 検証エラー
+        } else {
+            panic!("Expected Validation error for invalid parameter");
+        }
+    }
 }

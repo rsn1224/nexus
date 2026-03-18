@@ -50,7 +50,7 @@ pub async fn start(app: AppHandle) {
                     .partial_cmp(&a.cpu_percent)
                     .unwrap_or(std::cmp::Ordering::Equal)
             });
-            list.truncate(50);
+            list.truncate(100);
             list
         };
 

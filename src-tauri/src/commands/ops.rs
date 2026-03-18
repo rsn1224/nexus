@@ -51,43 +51,11 @@ pub fn kill_process(
 
 #[tauri::command]
 pub fn set_process_priority(pid: u32, priority: &str) -> Result<String, AppError> {
-    let priority_class = match priority {
-        "high" => "AboveNormal",
-        "normal" => "Normal",
-        "idle" => "Idle",
-        _ => {
-            return Err(AppError::Command(
-                "Invalid priority. Use 'high', 'normal', or 'idle'".to_string(),
-            ))
-        }
-    };
-
-    let command = format!(
-        "$p = Get-Process -Id {}; $p.PriorityClass = '{}'",
-        pid, priority_class
-    );
-
-    let output = std::process::Command::new("powershell")
-        .args([
-            "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
-            "-Command",
-            &command,
-        ])
-        .output()
-        .map_err(|e| AppError::Command(format!("Failed to execute PowerShell: {}", e)))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        Err(AppError::Command(format!(
-            "Failed to set process priority: {}",
-            stderr.trim()
-        )))
-    } else {
-        Ok(format!("Process {} priority set to {}", pid, priority))
-    }
+    crate::services::process::set_priority(pid, priority)?;
+    Ok(format!(
+        "プロセス {} の優先度を {} に設定しました",
+        pid, priority
+    ))
 }
 
 #[tauri::command]

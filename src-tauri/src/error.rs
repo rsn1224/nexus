@@ -20,6 +20,9 @@ pub enum AppError {
     #[error("不正な入力: {0}")]
     InvalidInput(String),
 
+    #[error("検証エラー: {0}")]
+    Validation(String),
+
     #[allow(dead_code)]
     #[error("権限不足: {0}")]
     Unauthorized(String),

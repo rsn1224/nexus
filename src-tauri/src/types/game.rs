@@ -81,6 +81,10 @@ pub enum ProcessPriority {
     Realtime,
     /// 通常以上（ABOVE_NORMAL_PRIORITY_CLASS = 0x8000）
     AboveNormal,
+    /// 低優先度（BELOW_NORMAL_PRIORITY_CLASS = 0x4000）
+    BelowNormal,
+    /// アイドル優先度（IDLE_PRIORITY_CLASS = 0x40）
+    Idle,
 }
 
 // ─── PowerPlan ───────────────────────────────────────────────────────────────

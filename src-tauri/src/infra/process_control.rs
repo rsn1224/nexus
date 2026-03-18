@@ -8,8 +8,9 @@ use windows_sys::Win32::Foundation::{CloseHandle, HANDLE};
 #[cfg(windows)]
 use windows_sys::Win32::System::Threading::{
     OpenProcess, SetPriorityClass, TerminateProcess, ABOVE_NORMAL_PRIORITY_CLASS,
-    HIGH_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, PROCESS_QUERY_INFORMATION, PROCESS_SET_INFORMATION,
-    PROCESS_SUSPEND_RESUME, REALTIME_PRIORITY_CLASS,
+    BELOW_NORMAL_PRIORITY_CLASS, HIGH_PRIORITY_CLASS, IDLE_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS,
+    PROCESS_QUERY_INFORMATION, PROCESS_SET_INFORMATION, PROCESS_SUSPEND_RESUME,
+    REALTIME_PRIORITY_CLASS,
 };
 
 use crate::error::AppError;
@@ -199,6 +200,8 @@ pub fn set_process_priority_class(
         crate::types::game::ProcessPriority::High => HIGH_PRIORITY_CLASS,
         crate::types::game::ProcessPriority::Realtime => REALTIME_PRIORITY_CLASS,
         crate::types::game::ProcessPriority::AboveNormal => ABOVE_NORMAL_PRIORITY_CLASS,
+        crate::types::game::ProcessPriority::BelowNormal => BELOW_NORMAL_PRIORITY_CLASS,
+        crate::types::game::ProcessPriority::Idle => IDLE_PRIORITY_CLASS,
     };
 
     unsafe {
