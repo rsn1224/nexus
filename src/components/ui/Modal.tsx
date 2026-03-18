@@ -84,15 +84,15 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
-        className={`relative bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded-lg shadow-xl w-full ${sizeClasses[size]} ${className}`}
+        className={`relative bg-base-800 border border-border-subtle rounded-lg shadow-xl w-full ${sizeClasses[size]} ${className}`}
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-subtle)]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle">
             {title && (
               <h2
                 id="modal-title"
-                className="font-[var(--font-mono)] text-[12px] font-semibold text-[var(--color-text-primary)] uppercase"
+                className="font-(--font-mono) text-[12px] font-semibold text-text-primary uppercase"
               >
                 {title}
               </h2>
@@ -102,7 +102,7 @@ export default function Modal({
                 variant="ghost"
                 size="sm"
                 onClick={onClose}
-                className="text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)]"
+                className="text-text-muted hover:text-text-primary"
               >
                 ✕
               </Button>
@@ -115,7 +115,7 @@ export default function Modal({
 
         {/* Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-[var(--color-border-subtle)]">
+          <div className="flex items-center justify-end gap-2 px-4 py-3 border-t border-border-subtle">
             {footer}
           </div>
         )}

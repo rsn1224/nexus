@@ -62,5 +62,7 @@ export default function ReadinessGauge({ score, rank, size = 120 }: ReadinessGau
     ctx.fillText(rankStyle.label, cx, cy + size * 0.18);
   }, [score, size, rankStyle.color, rankStyle.label]);
 
-  return <canvas ref={canvasRef} className="block" style={{ width: size, height: size }} />;
+  return (
+    <canvas ref={canvasRef} className="block" style={{ width: `${size}px`, height: `${size}px` }} />
+  );
 }

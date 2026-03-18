@@ -14,19 +14,16 @@ export default function TabBar({
   className = '',
 }: TabBarProps): React.ReactElement {
   return (
-    <div
-      data-testid="ui-tab-bar"
-      className={`flex border-b border-[var(--color-border-subtle)] ${className}`}
-    >
+    <div data-testid="ui-tab-bar" className={`flex border-b border-border-subtle ${className}`}>
       {tabs.map((tab) => (
         <button
           key={tab.id}
           data-testid={`ui-tab-${tab.id}`}
           type="button"
-          className={`font-[var(--font-mono)] text-[10px] font-semibold px-4 py-2 transition-all duration-150 ${
+          className={`font-(--font-mono) text-[10px] font-semibold px-4 py-2 transition-all duration-150 ${
             active === tab.id
-              ? 'border-b-2 border-[var(--color-cyan-500)] text-[var(--color-cyan-500)] -mb-px'
-              : 'text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)]'
+              ? 'border-b-2 border-cyan-500 text-cyan-500 -mb-px'
+              : 'text-text-muted hover:text-text-secondary'
           }`}
           onClick={() => onChange(tab.id)}
         >

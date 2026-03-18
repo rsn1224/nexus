@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import type { LocalSuggestion, SuggestionLevel } from '../../lib/localAi';
 
 const LEVEL_COLOR: Record<SuggestionLevel, string> = {
-  critical: 'var(--color-danger-500)',
-  warn: 'var(--color-accent-500)',
-  info: 'var(--color-cyan-500)',
-  ok: 'var(--color-text-muted)',
+  critical: 'text-danger-500',
+  warn: 'text-(--color-accent-500)',
+  info: 'text-cyan-500',
+  ok: 'text-text-muted',
 };
 
 // Unicode エスケープで Biome no-literal-unicode 対策
@@ -37,75 +37,32 @@ export default function AiPanel({
   const topLevel: SuggestionLevel = suggestions[0]?.level ?? 'ok';
 
   return (
-    <div
-      style={{
-        marginTop: '16px',
-        border: '1px solid var(--color-border-subtle)',
-        borderRadius: '4px',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="mt-4 border border-border-subtle rounded-sm overflow-hidden">
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        style={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '8px 12px',
-          background: 'var(--color-base-800)',
-          border: 'none',
-          cursor: 'pointer',
-        }}
+        className="w-full flex items-center justify-between px-3 py-2 bg-base-800 border-none cursor-pointer hover:bg-base-700 transition-colors"
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <span style={{ color: LEVEL_COLOR[topLevel], fontSize: '10px' }}>
-            {LEVEL_ICON[topLevel]}
-          </span>
-          <span
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              fontWeight: 600,
-              color: 'var(--color-text-muted)',
-              letterSpacing: '0.1em',
-            }}
-          >
+        <div className="flex items-center gap-[6px]">
+          <span className={`text-[10px] ${LEVEL_COLOR[topLevel]}`}>{LEVEL_ICON[topLevel]}</span>
+          <span className="font-[var(--font-mono)] text-[10px] font-semibold text-text-muted tracking-wider">
             {title}
           </span>
         </div>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--color-text-muted)',
-          }}
-        >
+        <span className="font-[var(--font-mono)] text-[9px] text-text-muted">
           {expanded ? '\u25b2' : '\u25bc'}
         </span>
       </button>
 
       {expanded && (
-        <div style={{ padding: '8px 12px', background: 'var(--color-base-900)' }}>
+        <div className="px-3 py-2 bg-base-900">
           {suggestions.map((s) => (
             <div
               key={s.id}
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: '8px',
-                padding: '4px 0',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-              }}
+              className="flex items-start gap-2 py-1 font-[var(--font-mono)] text-[10px]"
             >
-              <span style={{ color: LEVEL_COLOR[s.level], flexShrink: 0 }}>
-                {LEVEL_ICON[s.level]}
-              </span>
-              <span style={{ color: 'var(--color-text-secondary)', lineHeight: '1.5' }}>
-                {s.message}
-              </span>
+              <span className={`${LEVEL_COLOR[s.level]} shrink-0`}>{LEVEL_ICON[s.level]}</span>
+              <span className="text-text-secondary leading-6">{s.message}</span>
             </div>
           ))}
         </div>

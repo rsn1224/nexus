@@ -162,7 +162,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
     <div className={className}>
       {/* Error Banner */}
       {error && (
-        <div className="px-4 py-2 mb-4 bg-[var(--color-base-800)] border-b border-[var(--color-danger-600)] text-[var(--color-danger-500)] font-[var(--font-mono)] text-[10px] rounded">
+        <div className="px-4 py-2 mb-4 bg-base-800 border-b border-danger-600 text-danger-500 font-(--font-mono) text-[10px] rounded">
           {error}
         </div>
       )}
@@ -194,7 +194,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
             ↺ REFRESH
           </Button>
           {lastUpdated && (
-            <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+            <span className="font-(--font-mono) text-[10px] text-text-muted">
               LAST: {formatTime(lastUpdated)}
             </span>
           )}
@@ -204,7 +204,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         <div className="flex items-center gap-2">
           <label
             htmlFor="threshold-input"
-            className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]"
+            className="font-(--font-mono) text-[11px] text-text-secondary"
           >
             CPU閾値:
           </label>
@@ -215,65 +215,63 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
             max="100"
             value={threshold}
             onChange={(e) => setThreshold(Number(e.target.value))}
-            className="w-12 px-2 py-1 bg-[var(--color-base-800)] text-[var(--color-text-primary)] border border-[var(--color-border-subtle)] rounded font-[var(--font-mono)] text-[11px]"
+            className="w-12 px-2 py-1 bg-base-800 text-text-primary border border-border-subtle rounded font-(--font-mono) text-[11px]"
           />
-          <span className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-secondary)]">
-            %
-          </span>
+          <span className="font-(--font-mono) text-[11px] text-text-secondary">%</span>
         </div>
       </div>
 
       {/* Live Processes Panel */}
       <div className="mb-6">
-        <div className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)] mb-2 tracking-[0.12em]">
+        <div className="font-(--font-mono) text-[10px] text-text-muted mb-2 tracking-[0.12em]">
           {filterText
             ? `LIVE PROCESSES (表示 ${filteredProcesses.length} / 全 ${processes.length} 件 / BOOST対象: ${targetCount}件)`
             : `LIVE PROCESSES (${processes.length}件 / BOOST対象: ${targetCount}件)`}
         </div>
-        <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded overflow-hidden">
+        <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
           {isLoading ? (
-            <div className="p-4 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]">
+            <div className="p-4 text-center font-(--font-mono) text-[11px] text-text-muted">
               LOADING PROCESSES...
             </div>
           ) : processes.length === 0 ? (
-            <div className="p-4 text-center font-[var(--font-mono)] text-[11px] text-[var(--color-text-muted)]">
+            <div className="p-4 text-center font-(--font-mono) text-[11px] text-text-muted">
               NO DATA — PRESS REFRESH TO LOAD
             </div>
           ) : (
-            <table className="w-full border-collapse font-[var(--font-mono)] text-[10px]">
-              <thead className="sticky top-0 bg-[var(--color-base-800)] border-b border-[var(--color-border-subtle)]">
+            <table className="w-full border-collapse font-(--font-mono) text-[10px]">
+              <thead className="sticky top-0 bg-base-800 border-b border-border-subtle">
                 <tr>
                   <th
-                    className="px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] tracking-[0.12em] text-left cursor-pointer select-none"
+                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none"
                     onClick={() => handleSort('name')}
                   >
                     NAME {sortKey === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
                   </th>
                   <th
-                    className="px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] tracking-[0.12em] text-left cursor-pointer select-none w-16"
+                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
                     onClick={() => handleSort('cpu')}
                   >
                     CPU% {sortKey === 'cpu' && (sortDirection === 'asc' ? '▲' : '▼')}
                   </th>
                   <th
-                    className="px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] tracking-[0.12em] text-left cursor-pointer select-none w-16"
+                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-16"
                     onClick={() => handleSort('mem')}
                   >
                     MEM {sortKey === 'mem' && (sortDirection === 'asc' ? '▲' : '▼')}
                   </th>
                   <th
-                    className="px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] tracking-[0.12em] text-left cursor-pointer select-none w-20"
+                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
                     onClick={() => handleSort('diskRead')}
                   >
                     DISK R {sortKey === 'diskRead' && (sortDirection === 'asc' ? '▲' : '▼')}
                   </th>
                   <th
-                    className="px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] tracking-[0.12em] text-left cursor-pointer select-none w-20"
+                    className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left cursor-pointer select-none w-20"
                     onClick={() => handleSort('diskWrite')}
                   >
                     DISK W {sortKey === 'diskWrite' && (sortDirection === 'asc' ? '▲' : '▼')}
                   </th>
-                  <th className="px-3 py-[6px] font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-muted)] tracking-[0.12em] text-left w-20">
+                  <th className="px-3 py-[6px] font-(--font-mono) text-[10px] font-semibold text-text-muted tracking-[0.12em] text-left w-20">
                     STATUS
                   </th>
                 </tr>
@@ -283,51 +281,49 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
                   const status = getProcessStatus(process, threshold);
                   const cpuColor =
                     process.cpuPercent >= 50
-                      ? 'text-[var(--color-danger-500)]'
+                      ? 'text-danger-500'
                       : process.cpuPercent >= 20
-                        ? 'text-[var(--color-accent-400)]'
-                        : 'text-[var(--color-text-secondary)]';
+                        ? 'text-accent-400'
+                        : 'text-text-secondary';
                   const isSelected = selectedPid === process.pid;
                   const canTerminate = process.canTerminate;
 
                   return (
                     <React.Fragment key={process.pid}>
                       <tr
-                        className={`cursor-pointer hover:bg-[var(--color-base-700)] ${
-                          isSelected
-                            ? 'bg-[var(--color-accent-500)]/10 border-l-2 border-[var(--color-accent-500)]'
-                            : ''
+                        className={`cursor-pointer hover:bg-base-700 ${
+                          isSelected ? 'bg-base-900/10 border-l-2 border-accent-500' : ''
                         } ${index % 2 === 0 ? 'bg-white/[0.02]' : ''}`}
                         onClick={() => handleRowClick(process.pid)}
                       >
-                        <td className="px-3 py-[5px] font-[var(--font-mono)] text-[12px] text-[var(--color-text-primary)]">
+                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-text-primary">
                           {process.name}
                         </td>
                         <td
-                          className={`px-3 py-[5px] font-[var(--font-mono)] text-[12px] text-right ${cpuColor}`}
+                          className={`px-3 py-[5px] font-(--font-mono) text-[12px] text-right ${cpuColor}`}
                         >
                           {process.cpuPercent.toFixed(1)}%
                         </td>
-                        <td className="px-3 py-[5px] font-[var(--font-mono)] text-[12px] text-right text-[var(--color-text-primary)]">
+                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
                           {formatMemory(process.memMb)}
                         </td>
-                        <td className="px-3 py-[5px] font-[var(--font-mono)] text-[12px] text-right text-[var(--color-text-primary)]">
+                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
                           {formatDiskIO(process.diskReadKb)}
                         </td>
-                        <td className="px-3 py-[5px] font-[var(--font-mono)] text-[12px] text-right text-[var(--color-text-primary)]">
+                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px] text-right text-text-primary">
                           {formatDiskIO(process.diskWriteKb)}
                         </td>
-                        <td className="px-3 py-[5px] font-[var(--font-mono)] text-[12px]">
+                        <td className="px-3 py-[5px] font-(--font-mono) text-[12px]">
                           {status === 'target' ? (
-                            <span className="inline-block px-1 py-0.5 border border-[var(--color-accent-500)] text-[var(--color-accent-500)] text-[9px] font-[var(--font-mono)]">
+                            <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px] font-(--font-mono)">
                               [TARGET]
                             </span>
                           ) : status === 'protected' ? (
-                            <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-[var(--color-text-muted)] text-[9px] font-[var(--font-mono)]">
+                            <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-text-muted text-[9px] font-(--font-mono)">
                               [PROT]
                             </span>
                           ) : (
-                            <span className="text-[var(--color-text-muted)]">─</span>
+                            <span className="text-text-muted">─</span>
                           )}
                         </td>
                       </tr>
@@ -335,9 +331,9 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
                       {/* アクションパネル */}
                       {isSelected && (
                         <tr>
-                          <td colSpan={6} className="px-3 py-2 bg-[var(--color-base-700)]">
+                          <td colSpan={6} className="px-3 py-2 bg-base-700">
                             <div className="flex items-center gap-2">
-                              <span className="font-[var(--font-mono)] text-[10px] text-[var(--color-text-muted)]">
+                              <span className="font-(--font-mono) text-[10px] text-text-muted">
                                 PRIORITY:
                               </span>
                               <Button
@@ -387,25 +383,25 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
         <div>
           {/* Simulation Mode Warning */}
           {lastResult.isSimulation && (
-            <div className="font-[var(--font-mono)] text-[9px] text-[var(--color-text-muted)] bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded-[3px] px-2 py-1 mb-2">
+            <div className="font-(--font-mono) text-[9px] text-text-muted bg-base-800 border border-border-subtle rounded-[3px] px-2 py-1 mb-2">
               ⚠ シミュレーションモード — 実際のプロセス最適化は未実装です
             </div>
           )}
-          <div className="font-[var(--font-mono)] text-[10px] font-semibold text-[var(--color-text-secondary)] mb-2">
+          <div className="font-(--font-mono) text-[10px] font-semibold text-text-secondary mb-2">
             BOOST COMPLETE · {lastResult.actions.length} ACTIONS ·{' '}
             {formatDuration(lastResult.durationMs)}
           </div>
-          <div className="bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] rounded overflow-hidden">
-            <table className="w-full border-collapse font-[var(--font-mono)] text-[10px]">
+          <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
+            <table className="w-full border-collapse font-(--font-mono) text-[10px]">
               <thead>
-                <tr className="bg-[var(--color-base-700)]">
-                  <th className="p-2 text-left text-[var(--color-text-secondary)] border-b border-[var(--color-border-subtle)]">
+                <tr className="bg-base-700">
+                  <th className="p-2 text-left text-text-secondary border-b border-border-subtle">
                     PROCESS
                   </th>
-                  <th className="p-2 text-left text-[var(--color-text-secondary)] border-b border-[var(--color-border-subtle)]">
+                  <th className="p-2 text-left text-text-secondary border-b border-border-subtle">
                     ACTION
                   </th>
-                  <th className="p-2 text-left text-[var(--color-text-secondary)] border-b border-[var(--color-border-subtle)]">
+                  <th className="p-2 text-left text-text-secondary border-b border-border-subtle">
                     STATUS
                   </th>
                 </tr>
@@ -413,14 +409,14 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
               <tbody>
                 {lastResult.actions.map((action) => (
                   <tr key={action.label}>
-                    <td className="p-2 text-[var(--color-text-primary)] border-b border-[var(--color-border-subtle)]">
+                    <td className="p-2 text-text-primary border-b border-border-subtle">
                       {action.label}
                     </td>
-                    <td className="p-2 text-[var(--color-text-primary)] border-b border-[var(--color-border-subtle)]">
+                    <td className="p-2 text-text-primary border-b border-border-subtle">
                       {action.isProtected ? (
                         <span className="flex items-center gap-1">
                           SKIPPED
-                          <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-[var(--color-text-muted)] text-[9px] font-[var(--font-mono)]">
+                          <span className="inline-block px-1 py-0.5 border border-[var(--color-text-muted)] text-text-muted text-[9px] font-(--font-mono)">
                             [PROT]
                           </span>
                         </span>
@@ -428,14 +424,8 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
                         action.actionType
                       )}
                     </td>
-                    <td className="p-2 flex items-center gap-1.5 border-b border-[var(--color-border-subtle)]">
-                      <span
-                        className={
-                          action.success
-                            ? 'text-[var(--color-success-500)]'
-                            : 'text-[var(--color-danger-500)]'
-                        }
-                      >
+                    <td className="p-2 flex items-center gap-1.5 border-b border-border-subtle">
+                      <span className={action.success ? 'text-success-500' : 'text-danger-500'}>
                         {action.success ? '✓ OK' : `✗ ${action.detail}`}
                       </span>
                     </td>
@@ -462,7 +452,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
           </>
         }
       >
-        <div className="font-[var(--font-mono)] text-[11px] text-[var(--color-text-primary)]">
+        <div className="font-(--font-mono) text-[11px] text-text-primary">
           {killTarget && (
             <>
               「{killTarget.name}」(PID: {killTarget.pid}) を終了しますか？

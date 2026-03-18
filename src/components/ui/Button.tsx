@@ -34,17 +34,17 @@ export default function Button({
   tooltip,
 }: ButtonProps): React.ReactElement {
   const baseClasses =
-    'font-[var(--font-mono)] transition-all duration-150 cursor-pointer border inline-flex items-center justify-center gap-1';
+    'font-(--font-mono) transition-all duration-150 cursor-pointer border inline-flex items-center justify-center gap-1';
 
   const variantClasses = {
     primary:
-      'bg-[var(--color-accent-500)] text-white border-[var(--color-accent-500)] hover:bg-[var(--color-accent-600)] focus:ring-2 focus:ring-[var(--color-accent-500)] focus:ring-opacity-50',
+      'bg-(--color-accent-500) text-base-900 border-(--color-accent-500) hover:bg-(--color-accent-600) focus:ring-2 focus:ring-(--color-accent-500) focus:ring-opacity-50',
     ghost:
-      'border border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:bg-[var(--color-base-700)] focus:ring-2 focus:ring-[var(--color-border-subtle)] focus:ring-opacity-50',
+      'border border-border-subtle text-text-secondary hover:bg-base-700 focus:ring-2 focus:ring-border-subtle focus:ring-opacity-50',
     danger:
-      'bg-[var(--color-danger-500)] text-white border-[var(--color-danger-500)] hover:bg-[var(--color-danger-600)] focus:ring-2 focus:ring-[var(--color-danger-500)] focus:ring-opacity-50',
+      'bg-danger-500 text-base-900 border-danger-500 hover:bg-danger-600 focus:ring-2 focus:ring-danger-500 focus:ring-opacity-50',
     secondary:
-      'border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] bg-[var(--color-base-700)] hover:bg-[var(--color-base-600)] focus:ring-2 focus:ring-[var(--color-border-subtle)] focus:ring-opacity-50',
+      'border border-border-subtle text-text-primary bg-base-700 hover:bg-base-600 focus:ring-2 focus:ring-border-subtle focus:ring-opacity-50',
   };
 
   const sizeClasses = {

@@ -108,20 +108,20 @@ export default function Table<T>({
     if (!column.sortable) return null;
 
     if (sortKey !== column.key) {
-      return <span className="text-[var(--color-text-muted)]">▼</span>;
+      return <span className="text-text-muted">▼</span>;
     }
 
     return sortDirection === 'asc' ? (
-      <span className="text-[var(--color-accent-500)]">▲</span>
+      <span className="text-(--color-accent-500)">▲</span>
     ) : (
-      <span className="text-[var(--color-accent-500)]">▼</span>
+      <span className="text-(--color-accent-500)">▼</span>
     );
   };
 
   if (loading) {
     return (
       <div className={`flex items-center justify-center py-8 ${className}`}>
-        <div className="text-[var(--color-text-muted)]">読み込み中...</div>
+        <div className="text-text-muted">読み込み中...</div>
       </div>
     );
   }
@@ -129,7 +129,7 @@ export default function Table<T>({
   if (data.length === 0) {
     return (
       <div className={`flex items-center justify-center py-8 ${className}`}>
-        <div className="text-[var(--color-text-muted)]">{empty}</div>
+        <div className="text-text-muted">{empty}</div>
       </div>
     );
   }
@@ -138,35 +138,33 @@ export default function Table<T>({
     <div className={`overflow-x-auto ${maxHeight ? 'overflow-y-auto' : ''}`} style={{ maxHeight }}>
       <table
         data-testid="ui-table"
-        className={`w-full border-collapse font-[var(--font-mono)] ${sizeClasses[size]} ${className}`}
+        className={`w-full border-collapse font-(--font-mono) ${sizeClasses[size]} ${className}`}
         aria-label={ariaLabel}
         aria-busy={loading ? 'true' : undefined}
       >
         {caption && <caption className="sr-only">{caption}</caption>}
         <thead>
-          <tr className="border-b border-[var(--color-border-subtle)]">
+          <tr className="border-b border-border-subtle">
             {selectable && (
               <th className="px-3 py-2 text-left">
                 <input
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="rounded border-[var(--color-border-subtle)] bg-[var(--color-base-700)] text-[var(--color-accent-500)] focus:ring-[var(--color-accent-500)] focus:ring-opacity-50"
+                  className="rounded border-border-subtle bg-base-700 text-(--color-accent-500) focus:ring-(--color-accent-500) focus:ring-opacity-50"
                 />
               </th>
             )}
             {columns.map((column) => (
               <th
                 key={String(column.key)}
-                className={`px-3 py-2 font-semibold text-[var(--color-text-primary)] uppercase ${
+                className={`px-3 py-2 font-semibold text-text-primary uppercase ${
                   column.align === 'center'
                     ? 'text-center'
                     : column.align === 'right'
                       ? 'text-right'
                       : 'text-left'
-                } ${
-                  column.sortable && onSort ? 'cursor-pointer hover:bg-[var(--color-base-700)]' : ''
-                }`}
+                } ${column.sortable && onSort ? 'cursor-pointer hover:bg-base-700' : ''}`}
                 style={{ width: column.width }}
                 onClick={() => handleSort(column)}
               >
@@ -182,11 +180,9 @@ export default function Table<T>({
           {data.map((row, index) => (
             <tr
               key={rowKey ? rowKey(row, index) : String(index)}
-              className={`border-b border-[var(--color-border-subtle)] ${
-                striped && index % 2 === 1 ? 'bg-[var(--color-base-800)]' : ''
-              } ${hoverable ? 'hover:bg-[var(--color-base-700)]' : ''} ${
-                onRowClick ? 'cursor-pointer' : ''
-              }`}
+              className={`border-b border-border-subtle ${
+                striped && index % 2 === 1 ? 'bg-base-800' : ''
+              } ${hoverable ? 'hover:bg-base-700' : ''} ${onRowClick ? 'cursor-pointer' : ''}`}
               onClick={() => onRowClick?.(row)}
             >
               {selectable && (
@@ -195,14 +191,14 @@ export default function Table<T>({
                     type="checkbox"
                     checked={isRowSelected(row)}
                     onChange={(e) => handleSelectRow(row, e.target.checked)}
-                    className="rounded border-[var(--color-border-subtle)] bg-[var(--color-base-700)] text-[var(--color-accent-500)] focus:ring-[var(--color-accent-500)] focus:ring-opacity-50"
+                    className="rounded border-border-subtle bg-base-700 text-(--color-accent-500) focus:ring-(--color-accent-500) focus:ring-opacity-50"
                   />
                 </td>
               )}
               {columns.map((column) => (
                 <td
                   key={String(column.key)}
-                  className={`px-3 py-2 text-[var(--color-text-secondary)] ${
+                  className={`px-3 py-2 text-text-secondary ${
                     column.align === 'center'
                       ? 'text-center'
                       : column.align === 'right'

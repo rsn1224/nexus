@@ -29,9 +29,9 @@ const Card = memo(function Card({
   tabIndex,
 }: CardProps): React.ReactElement {
   const variantClasses = {
-    default: 'bg-[var(--color-base-800)] border border-[var(--color-border-subtle)]',
-    elevated: 'bg-[var(--color-base-800)] border border-[var(--color-border-subtle)] shadow-lg',
-    outlined: 'bg-transparent border border-[var(--color-border-subtle)]',
+    default: 'bg-base-800 border border-border-subtle',
+    elevated: 'bg-base-800 border border-border-subtle shadow-lg',
+    outlined: 'bg-transparent border border-border-subtle',
   };
 
   const paddingClasses = {
@@ -42,7 +42,7 @@ const Card = memo(function Card({
   };
 
   const interactionClasses = `
-    ${hoverable ? 'transition-all duration-200 hover:shadow-md hover:border-[var(--color-accent-500)]' : ''}
+    ${hoverable ? 'transition-all duration-200 hover:shadow-md hover:border-(--color-accent-500)' : ''}
     ${clickable ? 'cursor-pointer' : ''}
   `;
 
@@ -57,8 +57,8 @@ const Card = memo(function Card({
   const inner = (
     <>
       {title && (
-        <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--color-border-subtle)]">
-          <div className="text-[var(--color-text-secondary)] text-[10px] tracking-widest uppercase font-[var(--font-mono)]">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
+          <div className="text-text-secondary text-[10px] tracking-widest uppercase font-(--font-mono)">
             {title}
           </div>
           {action && <div>{action}</div>}

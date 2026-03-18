@@ -38,7 +38,10 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
     const yScale = graphHeight / maxFrameTime;
 
     // 背景グリッド（16.6ms = 60fps のライン）
-    ctx.strokeStyle = 'var(--color-border)';
+    const borderColor =
+      getComputedStyle(document.documentElement).getPropertyValue('--color-border-subtle').trim() ||
+      '#1e293b';
+    ctx.strokeStyle = borderColor;
     ctx.lineWidth = 0.5;
     ctx.setLineDash([2, 2]);
 
@@ -63,9 +66,12 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
       const step = graphWidth / (frameTimes.length - 1);
 
       // グラデーションを作成
+      const accentColor =
+        getComputedStyle(document.documentElement).getPropertyValue('--color-accent-500').trim() ||
+        '#3b82f6';
       const gradient = ctx.createLinearGradient(0, 0, 0, height);
-      gradient.addColorStop(0, 'var(--color-accent-500)');
-      gradient.addColorStop(1, 'var(--color-accent-500)');
+      gradient.addColorStop(0, accentColor);
+      gradient.addColorStop(1, accentColor);
 
       ctx.strokeStyle = gradient;
       ctx.lineWidth = 1.5;
@@ -85,7 +91,10 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
       ctx.stroke();
 
       // スタッター（33ms以上）をハイライト
-      ctx.strokeStyle = 'var(--color-danger-500)';
+      const dangerColor =
+        getComputedStyle(document.documentElement).getPropertyValue('--color-danger-500').trim() ||
+        '#ef4444';
+      ctx.strokeStyle = dangerColor;
       ctx.lineWidth = 2;
 
       frameTimes.forEach((frameTime, index) => {
@@ -101,8 +110,14 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
     }
 
     // Y 軸ラベル
-    ctx.fillStyle = 'var(--color-text-muted)';
-    ctx.font = '9px var(--font-mono)';
+    const textMutedColor =
+      getComputedStyle(document.documentElement).getPropertyValue('--color-text-muted').trim() ||
+      '#6b7280';
+    const fontMono =
+      getComputedStyle(document.documentElement).getPropertyValue('--font-mono').trim() ||
+      'monospace';
+    ctx.fillStyle = textMutedColor;
+    ctx.font = `9px ${fontMono}`;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'middle';
 
@@ -115,27 +130,10 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
   }, [frameTimes]);
 
   return (
-    <div style={{ position: 'relative' }}>
-      <canvas
-        ref={canvasRef}
-        style={{
-          width: '100%',
-          height: `${height}px`,
-          display: 'block',
-        }}
-      />
+    <div className="relative">
+      <canvas ref={canvasRef} className="w-full h-[60px] block" />
       {/* オーバーレイ情報 */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '4px',
-          right: '4px',
-          fontSize: '9px',
-          color: 'var(--color-text-muted)',
-          fontFamily: 'var(--font-mono)',
-          pointerEvents: 'none',
-        }}
-      >
+      <div className="absolute top-1 right-1 text-[9px] text-text-muted font-[var(--font-mono)] pointer-events-none">
         {frameTimes.length > 0 && <div>{frameTimes[frameTimes.length - 1]?.toFixed(1)} ms</div>}
       </div>
     </div>
