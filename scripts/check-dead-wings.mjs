@@ -27,10 +27,7 @@ function findWingFiles(dir) {
 }
 
 // ─── v2 で廃止した Wing（意図的に App.tsx 未登録） ───────────────────────────
-const DECOMMISSIONED = new Set([
-  'HardwareWing',
-  'NetoptWing',
-]);
+const DECOMMISSIONED = new Set(['HardwareWing', 'NetoptWing']);
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
