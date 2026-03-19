@@ -83,10 +83,14 @@ pub async fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
     info!("get_network_adapters: fetching network adapters");
 
     tokio::task::spawn_blocking(|| {
-        let output = Command::new("ipconfig").arg("/all").output().map_err(|e| {
-            warn!("Failed to execute ipconfig: {}", e);
-            AppError::Command(format!("Failed to execute ipconfig: {}", e))
-        })?;
+        // chcp 65001 で UTF-8 出力を強制（日本語 Windows の cp932 文字化け対策）
+        let output = Command::new("cmd")
+            .args(["/c", "chcp 65001 >nul && ipconfig /all"])
+            .output()
+            .map_err(|e| {
+                warn!("Failed to execute ipconfig: {}", e);
+                AppError::Command(format!("Failed to execute ipconfig: {}", e))
+            })?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
