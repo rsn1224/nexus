@@ -1,23 +1,16 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import {
+  type LauncherSettings,
+  migrateFromLocalStorage,
+  type SortMode,
+} from '../lib/gameDetection';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { GameInfo } from '../types';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
-
-interface LauncherSettings {
-  auto_boost_enabled: boolean;
-  favorites: number[];
-  last_played: Record<number, number>; // app_id -> timestamp (ms)
-}
-
-const AUTO_BOOST_KEY = 'nexus:launcher:autoBoostEnabled';
-const FAVORITES_KEY = 'nexus:launcher:favorites'; // number[] JSON
-const LAST_PLAYED_KEY = 'nexus:launcher:lastPlayed'; // Record<number, number> JSON
-
-type SortMode = 'name' | 'size' | 'lastPlayed';
 
 interface LauncherStore {
   games: GameInfo[];
@@ -86,30 +79,12 @@ export const useLauncherStore = create<LauncherStore>((set, get) => ({
 
   migrateFromLocalStorage: async () => {
     try {
-      const localSettings: LauncherSettings = {
-        auto_boost_enabled: localStorage.getItem(AUTO_BOOST_KEY) === 'true',
-        favorites: JSON.parse(localStorage.getItem(FAVORITES_KEY) ?? '[]') as number[],
-        last_played: JSON.parse(localStorage.getItem(LAST_PLAYED_KEY) ?? '{}') as Record<
-          number,
-          number
-        >,
-      };
-
-      await invoke('migrate_launcher_settings', { localSettings });
-
-      // Update state with migrated settings
+      const localSettings = await migrateFromLocalStorage();
       set({
         autoBoostEnabled: localSettings.auto_boost_enabled,
         favorites: localSettings.favorites,
         lastPlayed: localSettings.last_played,
       });
-
-      // Clear localStorage
-      localStorage.removeItem(AUTO_BOOST_KEY);
-      localStorage.removeItem(FAVORITES_KEY);
-      localStorage.removeItem(LAST_PLAYED_KEY);
-
-      log.info('launcher: migrated settings from localStorage');
     } catch (err) {
       log.error({ err }, 'launcher: migration failed, using defaults');
     }

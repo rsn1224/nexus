@@ -2,8 +2,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
-import type { AdvisorResult, WindowsSettings } from '../types';
-import { PowerPlan, VisualEffects } from '../types';
+import { defaultWindowsSettings } from '../lib/windowsSettings';
+import type { AdvisorResult, PowerPlan, VisualEffects, WindowsSettings } from '../types';
 
 interface WindowsSettingsStore {
   settings: WindowsSettings | null;
@@ -25,15 +25,6 @@ interface WindowsSettingsStore {
   clearError: () => void;
   clearAdvisorError: () => void;
 }
-
-// デフォルト設定
-const defaultSettings: WindowsSettings = {
-  powerPlan: PowerPlan.Balanced,
-  gameMode: true,
-  fullscreenOptimization: true,
-  hardwareGpuScheduling: false,
-  visualEffects: VisualEffects.Balanced,
-};
 
 export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) => ({
   settings: null,
@@ -57,7 +48,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
       const errorMessage = extractErrorMessage(err);
       log.error({ err }, 'windows settings fetch failed: %s', errorMessage);
       set({
-        settings: defaultSettings,
+        settings: defaultWindowsSettings,
         error: errorMessage,
         isLoading: false,
         lastUpdated: Date.now(),

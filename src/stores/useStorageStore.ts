@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
+import { formatBytes, getHealthColor, getUsagePercentage } from '../lib/storage';
 import { extractErrorMessage } from '../lib/tauri';
 import type { CleanupResult, StorageInfo } from '../types';
 
@@ -227,31 +228,4 @@ export const useStorage = () => {
   };
 };
 
-// ユーティリティ関数
-export const formatBytes = (bytes: number): string => {
-  if (bytes === 0) return '0 B';
-
-  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-  const k = 1024;
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return `${(bytes / k ** i).toFixed(1)} ${units[i]}`;
-};
-
-export const getHealthColor = (status: string): string => {
-  switch (status) {
-    case 'Good':
-      return 'var(--color-success-500)';
-    case 'Warning':
-      return 'var(--color-accent-500)';
-    case 'Critical':
-      return 'var(--color-danger-500)';
-    default:
-      return 'var(--color-text-muted)';
-  }
-};
-
-export const getUsagePercentage = (used: number, total: number): number => {
-  if (total === 0) return 0;
-  return (used / total) * 100;
-};
+export { formatBytes, getHealthColor, getUsagePercentage };

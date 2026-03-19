@@ -2,17 +2,15 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import { createDefaultProfile } from '../lib/gameProfile';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type {
-  BoostLevel,
   CoreParkingState,
   CpuTopology,
   GameExitEvent,
   GameLaunchEvent,
   GameProfile,
-  PowerPlanType,
-  ProcessPriorityLevel,
   ProfileApplyResult,
   SharedProfile,
 } from '../types';
@@ -49,33 +47,7 @@ interface GameProfileActions {
   clearError: () => void;
 }
 
-// ─── デフォルトプロファイル生成 ──────────────────────────────────────────────
-
-export function createDefaultProfile(
-  displayName: string,
-  exePath: string,
-  steamAppId?: number,
-): Partial<GameProfile> {
-  return {
-    id: '',
-    displayName,
-    exePath,
-    steamAppId: steamAppId ?? null,
-    cpuAffinityGame: null,
-    cpuAffinityBackground: null,
-    processPriority: 'normal' as ProcessPriorityLevel,
-    powerPlan: 'unchanged' as PowerPlanType,
-    processesToSuspend: [],
-    processesToKill: [],
-    timerResolution100ns: null,
-    boostLevel: 'none' as BoostLevel,
-    coreParkingDisabled: false,
-    lastPlayed: null,
-    totalPlaySecs: 0,
-    createdAt: 0,
-    updatedAt: 0,
-  };
-}
+export { createDefaultProfile };
 
 // ─── ストア ──────────────────────────────────────────────────────────────────
 
