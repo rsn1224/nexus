@@ -1,4 +1,13 @@
-import type { BoostLevel, GameProfile, PowerPlanType, ProcessPriorityLevel } from '../types';
+import { invoke } from '@tauri-apps/api/core';
+import type {
+  BoostLevel,
+  CoreParkingState,
+  CpuTopology,
+  GameProfile,
+  PowerPlanType,
+  ProcessPriorityLevel,
+  ProfileApplyResult,
+} from '../types';
 
 export function createDefaultProfile(
   displayName: string,
@@ -24,4 +33,60 @@ export function createDefaultProfile(
     createdAt: 0,
     updatedAt: 0,
   };
+}
+
+export function updateProfileInList(saved: GameProfile, profiles: GameProfile[]): GameProfile[] {
+  const idx = profiles.findIndex((p) => p.id === saved.id);
+  if (idx >= 0) {
+    return profiles.map((p, i) => (i === idx ? saved : p));
+  }
+  return [...profiles, saved];
+}
+
+export async function fetchGameProfiles(): Promise<GameProfile[]> {
+  return await invoke<GameProfile[]>('list_game_profiles');
+}
+
+export async function saveGameProfile(profile: GameProfile): Promise<GameProfile> {
+  return await invoke<GameProfile>('save_game_profile', { profile });
+}
+
+export async function deleteGameProfile(id: string): Promise<void> {
+  await invoke('delete_game_profile', { id });
+}
+
+export async function applyGameProfile(id: string): Promise<ProfileApplyResult> {
+  return await invoke<ProfileApplyResult>('apply_game_profile', { id });
+}
+
+export async function revertGameProfile(): Promise<void> {
+  await invoke('revert_game_profile');
+}
+
+export async function getCpuTopology(): Promise<CpuTopology> {
+  return await invoke<CpuTopology>('get_cpu_topology');
+}
+
+export async function fetchCoreParkingState(): Promise<CoreParkingState> {
+  return await invoke<CoreParkingState>('get_core_parking_state');
+}
+
+export async function setCoreParking(minCoresPercent: number): Promise<void> {
+  await invoke('set_core_parking', { minCoresPercent });
+}
+
+export async function exportGameProfile(id: string): Promise<string> {
+  return await invoke<string>('export_game_profile', { id });
+}
+
+export async function importGameProfile(json: string): Promise<GameProfile> {
+  return await invoke<GameProfile>('import_game_profile', { json });
+}
+
+export async function startGameMonitor(): Promise<void> {
+  await invoke('start_game_monitor');
+}
+
+export async function stopGameMonitor(): Promise<void> {
+  await invoke('stop_game_monitor');
 }

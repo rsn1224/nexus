@@ -1,8 +1,22 @@
-import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
-import { createDefaultProfile } from '../lib/gameProfile';
+import {
+  applyGameProfile as cmdApplyProfile,
+  deleteGameProfile as cmdDeleteProfile,
+  exportGameProfile as cmdExportProfile,
+  fetchCoreParkingState as cmdFetchCoreParking,
+  fetchGameProfiles as cmdFetchProfiles,
+  getCpuTopology as cmdGetCpuTopology,
+  importGameProfile as cmdImportProfile,
+  revertGameProfile as cmdRevertProfile,
+  saveGameProfile as cmdSaveProfile,
+  setCoreParking as cmdSetCoreParking,
+  startGameMonitor as cmdStartMonitor,
+  stopGameMonitor as cmdStopMonitor,
+  createDefaultProfile,
+  updateProfileInList,
+} from '../lib/gameProfile';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type {
@@ -68,7 +82,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   loadProfiles: async () => {
     set({ isLoading: true, error: null });
     try {
-      const profiles = await invoke<GameProfile[]>('list_game_profiles');
+      const profiles = await cmdFetchProfiles();
       set({ profiles, isLoading: false });
     } catch (err) {
       const msg = extractErrorMessage(err);
@@ -79,14 +93,8 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   saveProfile: async (profile: GameProfile) => {
     try {
-      const saved = await invoke<GameProfile>('save_game_profile', { profile });
-      const profiles = get().profiles;
-      const idx = profiles.findIndex((p) => p.id === saved.id);
-      if (idx >= 0) {
-        set({ profiles: profiles.map((p, i) => (i === idx ? saved : p)) });
-      } else {
-        set({ profiles: [...profiles, saved] });
-      }
+      const saved = await cmdSaveProfile(profile);
+      set({ profiles: updateProfileInList(saved, get().profiles) });
       log.info({ profileId: saved.id }, 'gameProfile: プロファイル保存完了');
       return saved;
     } catch (err) {
@@ -99,7 +107,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   deleteProfile: async (id: string) => {
     try {
-      await invoke('delete_game_profile', { id });
+      await cmdDeleteProfile(id);
       set({ profiles: get().profiles.filter((p) => p.id !== id) });
       log.info({ profileId: id }, 'gameProfile: プロファイル削除完了');
     } catch (err) {
@@ -113,7 +121,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   applyProfile: async (id: string) => {
     set({ isApplying: true, error: null });
     try {
-      const result = await invoke<ProfileApplyResult>('apply_game_profile', { id });
+      const result = await cmdApplyProfile(id);
       set({ activeProfileId: id, applyResult: result, isApplying: false });
       log.info({ profileId: id }, 'gameProfile: プロファイル適用完了');
     } catch (err) {
@@ -125,7 +133,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   revertProfile: async () => {
     try {
-      await invoke('revert_game_profile');
+      await cmdRevertProfile();
       set({ activeProfileId: null, applyResult: null });
       log.info('gameProfile: リバート完了');
     } catch (err) {
@@ -138,7 +146,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   // 監視
   startMonitoring: async () => {
     try {
-      await invoke('start_game_monitor');
+      await cmdStartMonitor();
       set({ isMonitoring: true });
       log.info('gameProfile: ゲーム監視開始');
     } catch (err) {
@@ -150,7 +158,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   stopMonitoring: async () => {
     try {
-      await invoke('stop_game_monitor');
+      await cmdStopMonitor();
       set({ isMonitoring: false });
       log.info('gameProfile: ゲーム監視停止');
     } catch (err) {
@@ -204,7 +212,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   getCpuTopology: async () => {
     try {
-      const topology = await invoke<CpuTopology>('get_cpu_topology');
+      const topology = await cmdGetCpuTopology();
       set({ cpuTopology: topology });
       log.info({ topology }, 'gameProfile: CPU トポロジー取得完了');
     } catch (err) {
@@ -216,7 +224,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   fetchCoreParking: async () => {
     try {
-      const state = await invoke<CoreParkingState>('get_core_parking_state');
+      const state = await cmdFetchCoreParking();
       set({ coreParkingState: state });
       log.info({ state }, 'gameProfile: コアパーキング状態取得完了');
     } catch (err) {
@@ -227,9 +235,9 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   applyCoreParking: async (minCoresPercent: number) => {
     try {
-      await invoke('set_core_parking', { minCoresPercent });
+      await cmdSetCoreParking(minCoresPercent);
       log.info({ minCoresPercent }, 'gameProfile: コアパーキング設定完了');
-      const state = await invoke<CoreParkingState>('get_core_parking_state');
+      const state = await cmdFetchCoreParking();
       set({ coreParkingState: state });
     } catch (err) {
       const msg = extractErrorMessage(err);
@@ -242,7 +250,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   exportProfile: async (id: string): Promise<string | null> => {
     try {
-      const json = await invoke<string>('export_game_profile', { id });
+      const json = await cmdExportProfile(id);
       log.info({ id }, 'gameProfile: エクスポート完了');
       return json;
     } catch (err) {
@@ -255,7 +263,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
 
   importProfile: async (json: string): Promise<GameProfile | null> => {
     try {
-      const profile = await invoke<GameProfile>('import_game_profile', { json });
+      const profile = await cmdImportProfile(json);
       log.info({ id: profile.id }, 'gameProfile: インポート完了');
       // ストアのプロファイル一覧を更新
       const { profiles } = useGameProfileStore.getState();
