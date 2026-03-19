@@ -8,7 +8,7 @@ import {
   useLauncherStore,
 } from '../../stores/useLauncherStore';
 import AiPanel from '../shared/AiPanel';
-import { Card, ErrorBoundary } from '../ui';
+import { ErrorBoundary } from '../ui';
 import GameCard from './GameCard';
 import LauncherControls from './LauncherControls';
 
@@ -29,21 +29,15 @@ export default function LauncherWing(): React.ReactElement {
     }
   };
 
-  // 初回データフェッチ
   useInitialData(() => scanGames(), [scanGames]);
 
-  // ゲームのソートとフィルタリング
   const filteredAndSortedGames = useMemo(() => {
     let filtered = games;
-
-    // 検索フィルタ
     if (searchQuery) {
       filtered = filtered.filter((game) =>
         game.name.toLowerCase().includes(searchQuery.toLowerCase()),
       );
     }
-
-    // ソート
     const sorted = [...filtered].sort((a, b) => {
       switch (sortMode) {
         case 'size':
@@ -57,20 +51,36 @@ export default function LauncherWing(): React.ReactElement {
           return a.name.localeCompare(b.name);
       }
     });
-
     return sorted;
   }, [games, searchQuery, sortMode, lastPlayed]);
 
-  // AI提案
+  const featuredGame = useMemo(() => {
+    if (games.length === 0) return null;
+    const withPlayed = games.filter((g) => lastPlayed[g.app_id]);
+    if (withPlayed.length === 0) return null;
+    return withPlayed.reduce((a, b) =>
+      (lastPlayed[a.app_id] ?? 0) > (lastPlayed[b.app_id] ?? 0) ? a : b,
+    );
+  }, [games, lastPlayed]);
+
   const suggestions = useMemo(
     () => launcherPageSuggestions(games.length, favorites.length),
     [games, favorites],
   );
 
+  const favoriteGames = useMemo(
+    () => filteredAndSortedGames.filter((g) => favorites.includes(g.app_id)),
+    [filteredAndSortedGames, favorites],
+  );
+  const otherGames = useMemo(
+    () => filteredAndSortedGames.filter((g) => !favorites.includes(g.app_id)),
+    [filteredAndSortedGames, favorites],
+  );
+
   return (
-    <div className="p-4 h-full overflow-y-auto">
-      {/* Controls */}
-      <Card className="mb-4">
+    <div className="h-full overflow-y-auto">
+      {/* Header bar */}
+      <div className="sticky top-0 z-10 bg-base-900/90 backdrop-blur-sm border-b border-white/[0.06] px-4 py-3">
         <LauncherControls
           searchQuery={searchQuery}
           sortMode={sortMode}
@@ -81,53 +91,127 @@ export default function LauncherWing(): React.ReactElement {
           onToggleAutoBoost={toggleAutoBoost}
           onScanGames={() => void scanGames()}
         />
-      </Card>
+      </div>
 
-      {/* Error Display */}
-      {error && (
-        <Card className="mb-4 border-danger-500">
-          <div className="text-xs text-danger-500">Error: {error}</div>
-        </Card>
-      )}
+      <div className="p-4 flex flex-col gap-6">
+        {/* Error */}
+        {error && (
+          <div className="rounded-xl border border-danger-500/40 bg-danger-500/10 px-4 py-3 text-xs text-danger-500">
+            ERROR: {error}
+          </div>
+        )}
 
-      {/* Games Grid */}
-      <ErrorBoundary name="ゲームリスト">
-        <Card>
+        {/* Featured hero card */}
+        {featuredGame && !searchQuery && (
+          <ErrorBoundary name="フィーチャーカード">
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-1 h-4 rounded-full bg-warm-500" />
+                <span className="text-xs font-bold uppercase tracking-widest text-warm-500">
+                  Continue Playing
+                </span>
+              </div>
+              <GameCard
+                game={featuredGame}
+                isFavorite={favorites.includes(featuredGame.app_id)}
+                lastPlayedAt={lastPlayed[featuredGame.app_id]}
+                onLaunch={handleLaunchGame}
+                onToggleFavorite={toggleFavorite}
+                isBoosting={isBoosting}
+                autoBoostEnabled={autoBoostEnabled}
+                featured
+              />
+            </div>
+          </ErrorBoundary>
+        )}
+
+        {/* Games content */}
+        <ErrorBoundary name="ゲームリスト">
           {filteredAndSortedGames.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-              {filteredAndSortedGames.map((game) => (
-                <GameCard
-                  key={game.app_id}
-                  game={game}
-                  isFavorite={favorites.includes(game.app_id)}
-                  lastPlayedAt={lastPlayed[game.app_id]}
-                  onLaunch={handleLaunchGame}
-                  onToggleFavorite={toggleFavorite}
-                  isBoosting={isBoosting}
-                  autoBoostEnabled={autoBoostEnabled}
-                />
-              ))}
+            <div className="flex flex-col gap-6">
+              {/* Favorites section */}
+              {favoriteGames.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1 h-4 rounded-full bg-accent-500" />
+                    <span className="text-xs font-bold uppercase tracking-widest text-accent-500">
+                      Favorites
+                    </span>
+                    <span className="text-xs text-text-muted">({favoriteGames.length})</span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                    {favoriteGames.map((game) => (
+                      <GameCard
+                        key={game.app_id}
+                        game={game}
+                        isFavorite
+                        lastPlayedAt={lastPlayed[game.app_id]}
+                        onLaunch={handleLaunchGame}
+                        onToggleFavorite={toggleFavorite}
+                        isBoosting={isBoosting}
+                        autoBoostEnabled={autoBoostEnabled}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* All games section */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-4 rounded-full bg-text-muted" />
+                    <span className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+                      {searchQuery ? 'Search Results' : 'All Games'}
+                    </span>
+                    <span className="text-xs text-text-muted">({otherGames.length})</span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+                  {otherGames.map((game) => (
+                    <GameCard
+                      key={game.app_id}
+                      game={game}
+                      isFavorite={false}
+                      lastPlayedAt={lastPlayed[game.app_id]}
+                      onLaunch={handleLaunchGame}
+                      onToggleFavorite={toggleFavorite}
+                      isBoosting={isBoosting}
+                      autoBoostEnabled={autoBoostEnabled}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           ) : isScanning ? (
-            <div className="text-xs text-text-muted text-center py-8">ゲームをスキャン中...</div>
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="w-10 h-10 rounded-full border-2 border-warm-500 border-t-transparent animate-spin" />
+              <div className="text-sm text-text-muted">ゲームをスキャン中...</div>
+            </div>
           ) : searchQuery ? (
-            <div className="text-xs text-text-muted text-center py-8">検索結果がありません</div>
+            <div className="flex flex-col items-center justify-center py-20 gap-2">
+              <div className="text-2xl text-text-muted">🔍</div>
+              <div className="text-sm text-text-secondary">検索結果がありません</div>
+              <div className="text-xs text-text-muted">"{searchQuery}"</div>
+            </div>
           ) : (
-            <div className="text-xs text-text-muted text-center py-8">
-              ゲームが見つかりません
-              <br />
-              スキャンを実行してください
+            <div className="flex flex-col items-center justify-center py-20 gap-4">
+              <div className="text-4xl text-text-muted">🎮</div>
+              <div className="text-sm font-semibold text-text-secondary">
+                ゲームが見つかりません
+              </div>
+              <div className="text-xs text-text-muted">上部のスキャンボタンを押してください</div>
             </div>
           )}
-        </Card>
-      </ErrorBoundary>
+        </ErrorBoundary>
 
-      {/* AI Suggestions */}
-      {suggestions.length > 0 && (
-        <Card className="mt-4">
-          <AiPanel suggestions={suggestions} />
-        </Card>
-      )}
+        {/* AI Suggestions */}
+        {suggestions.length > 0 && (
+          <div className="rounded-xl bg-base-800/60 border border-white/[0.06] p-4">
+            <AiPanel suggestions={suggestions} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
