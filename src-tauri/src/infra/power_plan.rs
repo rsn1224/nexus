@@ -20,7 +20,8 @@ impl PowerPlanController {
 
     const GUID_PATTERNS: &[&str] = &[
         "Power Scheme GUID:", // 英語
-        "電源設定 GUID:",     // 日本語
+        "電源設定の GUID:",   // 日本語（Windows 11）
+        "電源設定 GUID:",     // 日本語（旧バージョン）
         "電源スキーム GUID:", // 日本語（別バージョン）
     ];
 
