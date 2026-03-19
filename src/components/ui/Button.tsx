@@ -34,7 +34,7 @@ export default function Button({
   tooltip,
 }: ButtonProps): React.ReactElement {
   const baseClasses =
-    'transition-all duration-150 cursor-pointer border inline-flex items-center justify-center gap-1';
+    'transition-all duration-150 cursor-pointer border inline-flex items-center justify-center gap-1 active:scale-[0.98]';
 
   const variantClasses = {
     primary:

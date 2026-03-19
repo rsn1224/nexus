@@ -44,85 +44,97 @@ export default function HardwareWing(): React.JSX.Element {
 
   return (
     <div className="p-4 h-full overflow-y-auto">
-      <ErrorBoundary name="省電モード">
-        <EcoModePanel />
-      </ErrorBoundary>
-      <ErrorBoundary name="CPU">
-        <CpuSection
-          cpuName={info.cpuName}
-          cpuCores={info.cpuCores}
-          cpuThreads={info.cpuThreads}
-          cpuBaseGhz={info.cpuBaseGhz}
-          cpuTempC={info.cpuTempC}
-        />
-      </ErrorBoundary>
-      <ErrorBoundary name="GPU">
-        <GpuSection
-          gpuName={info.gpuName}
-          gpuVramTotalMb={info.gpuVramTotalMb}
-          gpuTempC={info.gpuTempC}
-          gpuUsagePercent={info.gpuUsagePercent}
-        />
-      </ErrorBoundary>
-      <ErrorBoundary name="メモリ">
-        <MemorySection
-          memTotalGb={info.memTotalGb}
-          memUsedGb={info.memUsedGb}
-          memUsagePercent={memUsagePercent}
-          createProgressBar={createDiskProgressBar}
-        />
-      </ErrorBoundary>
+      <div className="card-animate stagger-1">
+        <ErrorBoundary name="省電モード">
+          <EcoModePanel />
+        </ErrorBoundary>
+      </div>
+      <div className="card-animate stagger-2">
+        <ErrorBoundary name="CPU">
+          <CpuSection
+            cpuName={info.cpuName}
+            cpuCores={info.cpuCores}
+            cpuThreads={info.cpuThreads}
+            cpuBaseGhz={info.cpuBaseGhz}
+            cpuTempC={info.cpuTempC}
+          />
+        </ErrorBoundary>
+      </div>
+      <div className="card-animate stagger-3">
+        <ErrorBoundary name="GPU">
+          <GpuSection
+            gpuName={info.gpuName}
+            gpuVramTotalMb={info.gpuVramTotalMb}
+            gpuTempC={info.gpuTempC}
+            gpuUsagePercent={info.gpuUsagePercent}
+          />
+        </ErrorBoundary>
+      </div>
+      <div className="card-animate stagger-4">
+        <ErrorBoundary name="メモリ">
+          <MemorySection
+            memTotalGb={info.memTotalGb}
+            memUsedGb={info.memUsedGb}
+            memUsagePercent={memUsagePercent}
+            createProgressBar={createDiskProgressBar}
+          />
+        </ErrorBoundary>
+      </div>
 
-      <Card title="STORAGE" className="mb-4">
-        <div className="text-xs text-text-secondary space-y-3">
-          {info.disks.map((disk) => (
-            <div key={disk.mount} className="border-b border-border-subtle pb-2 last:border-b-0">
-              <div className="flex justify-between mb-1">
-                <span className="text-text-primary">{disk.mount}</span>
-                <span
-                  className={`text-xs ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
-                >
-                  {disk.kind}
-                </span>
-              </div>
-              <div className="flex justify-between text-xs">
-                <span>
-                  {disk.usedGb.toFixed(1)} GB / {disk.totalGb.toFixed(1)} GB
-                </span>
-                <span>{((disk.usedGb / disk.totalGb) * 100).toFixed(1)}%</span>
-              </div>
-              <div className="mt-1">
-                <div className="font-mono text-xs">
-                  {createDiskProgressBar(disk.usedGb, disk.totalGb)}
+      <div className="card-animate stagger-5">
+        <Card title="STORAGE" className="mb-4">
+          <div className="text-xs text-text-secondary space-y-3">
+            {info.disks.map((disk) => (
+              <div key={disk.mount} className="border-b border-border-subtle pb-2 last:border-b-0">
+                <div className="flex justify-between mb-1">
+                  <span className="text-text-primary">{disk.mount}</span>
+                  <span
+                    className={`text-xs ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
+                  >
+                    {disk.kind}
+                  </span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span>
+                    {disk.usedGb.toFixed(1)} GB / {disk.totalGb.toFixed(1)} GB
+                  </span>
+                  <span>{((disk.usedGb / disk.totalGb) * 100).toFixed(1)}%</span>
+                </div>
+                <div className="mt-1">
+                  <div className="font-mono text-xs">
+                    {createDiskProgressBar(disk.usedGb, disk.totalGb)}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
+          </div>
+        </Card>
+      </div>
 
-      <Card title="SYSTEM" className="mb-4">
-        <div className="text-xs text-text-secondary space-y-2">
-          <div className="flex justify-between">
-            <span>OS:</span>
-            <span className="text-text-primary">
-              {info.osName} {info.osVersion}
-            </span>
+      <div className="card-animate stagger-6">
+        <Card title="SYSTEM" className="mb-4">
+          <div className="text-xs text-text-secondary space-y-2">
+            <div className="flex justify-between">
+              <span>OS:</span>
+              <span className="text-text-primary">
+                {info.osName} {info.osVersion}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span>HOSTNAME:</span>
+              <span className="text-text-primary">{info.hostname}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>UPTIME:</span>
+              <span className="text-text-primary">{formattedUptime}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>BOOT TIME:</span>
+              <span className="text-text-primary">{formattedBootTime}</span>
+            </div>
           </div>
-          <div className="flex justify-between">
-            <span>HOSTNAME:</span>
-            <span className="text-text-primary">{info.hostname}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>UPTIME:</span>
-            <span className="text-text-primary">{formattedUptime}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>BOOT TIME:</span>
-            <span className="text-text-primary">{formattedBootTime}</span>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

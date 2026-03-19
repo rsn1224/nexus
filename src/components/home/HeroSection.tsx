@@ -36,7 +36,7 @@ const HeroSection = memo(function HeroSection() {
   return (
     <div className="shrink-0 flex flex-col gap-3 px-3 py-3 border-b border-border-subtle">
       {/* KPI カード行 */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 card-animate stagger-1">
         <KpiCard
           label="CPU"
           value={cpuPct !== null ? `${Math.round(cpuPct)}%` : '--'}
