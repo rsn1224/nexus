@@ -1,8 +1,18 @@
-import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import { defaultWindowsSettings } from '../lib/windowsSettings';
+import {
+  applyAllSafeRecommendations as cmdApplyAllSafe,
+  applyRecommendation as cmdApplyRecommendation,
+  fetchAdvisorResult as cmdFetchAdvisorResult,
+  fetchWindowsSettings as cmdFetchSettings,
+  setPowerPlan as cmdSetPowerPlan,
+  setVisualEffects as cmdSetVisualEffects,
+  toggleFullscreenOptimization as cmdToggleFullscreen,
+  toggleGameMode as cmdToggleGameMode,
+  toggleHardwareGpuScheduling as cmdToggleHags,
+} from '../lib/windowsSettingsCommands';
 import type { AdvisorResult, PowerPlan, VisualEffects, WindowsSettings } from '../types';
 
 interface WindowsSettingsStore {
@@ -38,7 +48,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
   fetchSettings: async () => {
     set({ isLoading: true, error: null });
     try {
-      const settings = await invoke<WindowsSettings>('get_windows_settings');
+      const settings = await cmdFetchSettings();
       set({
         settings,
         isLoading: false,
@@ -58,7 +68,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
 
   setPowerPlan: async (plan: PowerPlan) => {
     try {
-      await invoke('set_power_plan', { plan });
+      await cmdSetPowerPlan(plan);
       // 設定を再取得
       await get().fetchSettings();
     } catch (err) {
@@ -70,7 +80,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
 
   toggleGameMode: async () => {
     try {
-      const newStatus = await invoke<boolean>('toggle_game_mode');
+      const newStatus = await cmdToggleGameMode();
       // ローカル状態を即時更新
       const currentSettings = get().settings;
       if (currentSettings) {
@@ -92,7 +102,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
 
   toggleFullscreenOptimization: async () => {
     try {
-      const newStatus = await invoke<boolean>('toggle_fullscreen_optimization');
+      const newStatus = await cmdToggleFullscreen();
       // ローカル状態を即時更新
       const currentSettings = get().settings;
       if (currentSettings) {
@@ -114,7 +124,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
 
   toggleHardwareGpuScheduling: async () => {
     try {
-      const newStatus = await invoke<boolean>('toggle_hardware_gpu_scheduling');
+      const newStatus = await cmdToggleHags();
       // ローカル状態を即時更新
       const currentSettings = get().settings;
       if (currentSettings) {
@@ -136,7 +146,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
 
   setVisualEffects: async (effect: VisualEffects) => {
     try {
-      await invoke('set_visual_effects', { effect });
+      await cmdSetVisualEffects(effect);
       // 設定を再取得
       await get().fetchSettings();
     } catch (err) {
@@ -151,7 +161,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
   fetchAdvisorResult: async () => {
     set({ advisorLoading: true, advisorError: null });
     try {
-      const result = await invoke<AdvisorResult>('get_settings_advice');
+      const result = await cmdFetchAdvisorResult();
       set({
         advisorResult: result,
         advisorLoading: false,
@@ -169,7 +179,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
   applyRecommendation: async (settingId: string) => {
     set({ advisorLoading: true, advisorError: null });
     try {
-      await invoke('apply_recommendation', { settingId });
+      await cmdApplyRecommendation(settingId);
       // Refresh settings and advisor result
       await get().fetchSettings();
       await get().fetchAdvisorResult();
@@ -187,7 +197,7 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
   applyAllSafeRecommendations: async () => {
     set({ advisorLoading: true, advisorError: null });
     try {
-      await invoke('apply_all_safe_recommendations');
+      await cmdApplyAllSafe();
       // Refresh settings and advisor result
       await get().fetchSettings();
       await get().fetchAdvisorResult();
