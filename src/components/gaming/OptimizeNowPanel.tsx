@@ -54,7 +54,7 @@ export const OptimizeNowPanel = memo(function OptimizeNowPanel() {
       </div>
 
       {activePreset && steps.length > 0 && (
-        <div className="card-glass rounded p-3 flex flex-col gap-1.5">
+        <div className="piano-surface rounded p-3 flex flex-col gap-1.5">
           <p className="text-text-secondary text-xs font-mono uppercase tracking-widest mb-1">
             STEPS
           </p>

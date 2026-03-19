@@ -24,7 +24,7 @@ export const MetricCard = memo(function MetricCard({
   const pct = Math.max(0, Math.min(100, percent));
 
   return (
-    <div className="card-glass rounded p-3 flex flex-col gap-2">
+    <div className="piano-surface rounded p-3 flex flex-col gap-2">
       <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">{label}</p>
       <div className="flex items-baseline gap-1.5">
         <span className={`text-xl font-mono font-bold ${valueClass}`}>{value}</span>

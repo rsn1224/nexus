@@ -29,7 +29,7 @@ export const MemoryPanel = memo(function MemoryPanel() {
 
   return (
     <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1">
-      <div className="card-glass rounded p-4 flex flex-col gap-3">
+      <div className="piano-surface rounded p-4 flex flex-col gap-3">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           MEMORY USAGE
         </p>

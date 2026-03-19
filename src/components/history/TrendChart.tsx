@@ -47,14 +47,14 @@ export const TrendChart = memo(function TrendChart({ sessions, range }: Props) {
 
   if (filtered.length < 2) {
     return (
-      <div className="card-glass rounded p-3 flex items-center justify-center h-24">
+      <div className="piano-surface rounded p-3 flex items-center justify-center h-24">
         <span className="text-text-secondary text-xs font-mono">NOT ENOUGH DATA</span>
       </div>
     );
   }
 
   return (
-    <div className="card-glass rounded p-3 flex flex-col gap-2">
+    <div className="piano-surface rounded p-3 flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">FPS TREND</p>
         <div className="flex items-center gap-3 text-xs font-mono">

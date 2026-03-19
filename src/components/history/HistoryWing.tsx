@@ -82,7 +82,7 @@ export const HistoryWing = memo(function HistoryWing() {
                 </p>
               </div>
               <div className="flex gap-2 text-xs font-mono shrink-0">
-                <div className="card-glass rounded px-2 py-1">
+                <div className="piano-surface rounded px-2 py-1">
                   <div className="text-text-secondary">HEALTH</div>
                   <div className="text-text-primary">
                     {selectedSession.healthScoreStart}→{selectedSession.healthScoreEnd}
@@ -100,14 +100,14 @@ export const HistoryWing = memo(function HistoryWing() {
                 { label: 'MAX FT ms', value: selectedSession.summary.maxFrameTimeMs.toFixed(1) },
                 { label: 'TOTAL FR', value: String(selectedSession.summary.totalFrames) },
               ].map((stat) => (
-                <div key={stat.label} className="card-glass rounded px-3 py-2">
+                <div key={stat.label} className="piano-surface rounded px-3 py-2">
                   <div className="text-text-secondary text-xs font-mono">{stat.label}</div>
                   <div className="text-text-primary text-sm font-mono font-bold">{stat.value}</div>
                 </div>
               ))}
             </div>
 
-            <div className="card-glass rounded p-3">
+            <div className="piano-surface rounded p-3">
               <div className="flex items-center justify-between mb-1">
                 <p className="text-text-secondary text-xs font-mono uppercase">NOTE</p>
                 {!noteEditing && (

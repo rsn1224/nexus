@@ -56,7 +56,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
         </div>
       )}
 
-      <div className="card-glass rounded p-3 flex flex-col gap-2">
+      <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">GAME MODE</p>
         <div className="flex items-center justify-between">
           <span className="text-text-primary text-xs font-mono">
@@ -76,7 +76,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
         </div>
       </div>
 
-      <div className="card-glass rounded p-3 flex flex-col gap-2">
+      <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           POWER PLAN
         </p>
@@ -102,7 +102,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
         </div>
       </div>
 
-      <div className="card-glass rounded p-3 flex flex-col gap-2">
+      <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           VISUAL EFFECTS
         </p>
@@ -132,7 +132,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
         </div>
       </div>
 
-      <div className="card-glass rounded p-3 flex items-center justify-between">
+      <div className="piano-surface rounded p-3 flex items-center justify-between">
         <div>
           <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
             HW GPU SCHEDULING

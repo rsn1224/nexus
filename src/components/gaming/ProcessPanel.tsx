@@ -68,7 +68,7 @@ export const ProcessPanel = memo(function ProcessPanel() {
         </div>
       )}
 
-      <div className="card-glass rounded overflow-hidden">
+      <div className="piano-surface rounded overflow-hidden">
         <div className="grid grid-cols-[1fr_4rem_5rem_5rem] gap-2 px-3 py-1.5 border-b border-border-subtle">
           {(['PROCESS', 'CPU%', 'MEM MB', ''] as const).map((h) => (
             <span key={h} className="text-text-secondary text-xs font-mono uppercase">

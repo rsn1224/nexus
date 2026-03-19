@@ -53,7 +53,7 @@ export const NetworkPanel = memo(function NetworkPanel() {
         </div>
       )}
 
-      <div className="card-glass rounded p-3 flex flex-col gap-3">
+      <div className="piano-surface rounded p-3 flex flex-col gap-3">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           TCP TUNING
         </p>

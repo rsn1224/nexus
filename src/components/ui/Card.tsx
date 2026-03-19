@@ -45,7 +45,7 @@ const Card = memo(function Card({
     elevated: 'bg-base-800/90 border border-white/[0.08] shadow-md backdrop-blur-md',
     outlined: 'bg-transparent border border-border-subtle',
     glow: 'bg-base-800/80 border border-white/[0.06] card-glow backdrop-blur-sm',
-    glass: 'card-glass',
+    glass: 'piano-surface',
     'glass-elevated': 'card-glass-elevated',
   };
 

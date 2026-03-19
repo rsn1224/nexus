@@ -16,7 +16,7 @@ export const TimerPanel = memo(function TimerPanel() {
 
   return (
     <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1">
-      <div className="card-glass rounded p-4 flex flex-col gap-2">
+      <div className="piano-surface rounded p-4 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           CURRENT TIMER RESOLUTION
         </p>
@@ -35,7 +35,7 @@ export const TimerPanel = memo(function TimerPanel() {
         )}
       </div>
 
-      <div className="card-glass rounded p-3 flex flex-col gap-2">
+      <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest mb-1">
           PRESETS
         </p>

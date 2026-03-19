@@ -63,7 +63,7 @@ export const CpuPanel = memo(function CpuPanel() {
         </div>
       )}
 
-      <div className="card-glass rounded p-4 flex flex-col gap-2">
+      <div className="piano-surface rounded p-4 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           CORE PARKING
         </p>
@@ -81,7 +81,7 @@ export const CpuPanel = memo(function CpuPanel() {
         )}
       </div>
 
-      <div className="card-glass rounded p-3 flex flex-col gap-2">
+      <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest mb-1">
           PRESETS
         </p>

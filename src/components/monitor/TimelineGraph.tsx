@@ -69,7 +69,7 @@ export const TimelineGraph = memo(function TimelineGraph({
   const fill = COLOR_FILL[color];
 
   return (
-    <div className="card-glass rounded p-2 flex flex-col gap-1">
+    <div className="piano-surface rounded p-2 flex flex-col gap-1">
       <p className="text-text-secondary text-xs font-mono uppercase tracking-widest px-1">
         {label}
       </p>

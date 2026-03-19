@@ -30,7 +30,7 @@ export const HealthScoreBar = memo(function HealthScoreBar({
 }: Props) {
   if (!healthScore) {
     return (
-      <div className="flex items-center justify-between px-4 h-14 shrink-0 card-glass border-b border-border-subtle">
+      <div className="flex items-center justify-between px-4 h-14 shrink-0 piano-surface border-b border-border-subtle">
         <span className="text-text-secondary text-xs font-mono uppercase tracking-widest">
           {loading ? 'LOADING...' : 'SYSTEM HEALTH: —'}
         </span>
@@ -43,7 +43,7 @@ export const HealthScoreBar = memo(function HealthScoreBar({
   const pct = Math.max(0, Math.min(100, healthScore.score));
 
   return (
-    <div className="flex flex-col gap-1 px-4 py-2 shrink-0 card-glass border-b border-border-subtle">
+    <div className="flex flex-col gap-1 px-4 py-2 shrink-0 piano-surface border-b border-border-subtle">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-text-secondary text-xs font-mono uppercase tracking-widest">

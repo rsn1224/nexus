@@ -26,6 +26,12 @@ function findWingFiles(dir) {
   return results;
 }
 
+// ─── v2 で廃止した Wing（意図的に App.tsx 未登録） ───────────────────────────
+const DECOMMISSIONED = new Set([
+  'HardwareWing',
+  'NetoptWing',
+]);
+
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
 const appContent = readFileSync(APP_FILE, 'utf-8');
@@ -33,6 +39,7 @@ const wings = findWingFiles(COMPONENTS_DIR);
 const errors = [];
 
 for (const wing of wings) {
+  if (DECOMMISSIONED.has(wing.name)) continue;
   // import 文または WING_COMPONENTS への登録のいずれかがあればOK
   if (!appContent.includes(wing.name)) {
     errors.push(`${wing.name}  (${relative(ROOT, wing.path)})`);

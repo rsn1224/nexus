@@ -1,64 +1,64 @@
 @import "tailwindcss";
 @import "@fontsource-variable/inter";
-@import "@fontsource/b612-mono/400.css";
-@import "@fontsource/b612-mono/700.css";
+@import "@fontsource/noto-sans-jp/400.css";
+@import "@fontsource/noto-sans-jp/700.css";
 
 @theme {
-  /* ─── NEXUS Base: FM26 Dark Navy ─────────────────────── */
-  --color-base-950: #080c14; /* 最深 — タイトルバー背景 */
-  --color-base-900: #0d1220; /* メイン背景 — FM26 ネイビー */
-  --color-base-800: #141c2e; /* カード背景 */
-  --color-base-700: #1c2840; /* hover / インタラクティブ */
-  --color-base-600: #243050; /* ボーダー内側 */
-  --color-base-500: #2e3c60; /* セパレーター */
+  /* ─── NEXUS v2: Razer HUD ─────────────────────── */
+  --color-base-950: #010102;
+  --color-base-900: #030305;
+  --color-base-800: #080808;
+  --color-base-700: #0f0f12;
+  --color-base-600: #1a1a1e;
+  --color-base-500: #2d2d33;
 
-  /* Primary Accent: FM26 Lime Green — シグネチャーカラー */
-  --color-accent-600: #7a9e00;
-  --color-accent-500: #a0cc00; /* FM26 Lime Green */
-  --color-accent-400: #b8e000;
-  --color-accent-300: #d4f040;
+  /* Razer Green — メインアクセント */
+  --color-accent-600: #2fa822;
+  --color-accent-500: #44d62c;
+  --color-accent-400: #5ee048;
+  --color-accent-300: #88ec78;
 
-  /* Secondary: Neutral Light（ラベル・見出し） */
+  /* Warm: ニュートラルライト */
   --color-warm-600: #8899aa;
   --color-warm-500: #c8d8e8;
   --color-warm-400: #ddeaf4;
   --color-warm-300: #eef5ff;
 
-  /* Tertiary: Amber — タクティクス・コスト警告 */
+  /* Warning/Amber — 黄色警告 */
   --color-purple-600: #c87800;
-  --color-purple-500: #f59e0b;
+  --color-purple-500: #ffd700;
   --color-purple-400: #fbbf24;
   --color-purple-300: #fde68a;
 
-  /* Info: FM26 Blue — 情報・スカウト・分析 */
-  --color-info-600: #1a6fd4;
-  --color-info-500: #3b9de8;
-  --color-info-400: #60b8f8;
+  /* Info: Cyan/Teal — 情報 */
+  --color-info-600: #0099cc;
+  --color-info-500: #00f0ff;
+  --color-info-400: #60f8ff;
 
   /* Semantic */
-  --color-danger-600: #b91c1c;
-  --color-danger-500: #ef4444;
+  --color-danger-600: #cc1111;
+  --color-danger-500: #ff3131;
   --color-danger-200: #fecaca;
 
   --color-warning-600: #c87800;
-  --color-warning-500: #f59e0b;
+  --color-warning-500: #ffd700;
   --color-warning-200: #fde68a;
 
-  --color-success-600: #15803d;
-  --color-success-500: #22c55e; /* FM26 Green — Good form / Fit */
+  --color-success-600: #2fa822;
+  --color-success-500: #44d62c;
   --color-success-200: #bbf7d0;
 
-  /* Text — FM26 高コントラスト基準 */
-  --color-text-primary: #e8eef8; /* クールホワイト */
-  --color-text-secondary: #8899b8; /* 読みやすいブルーグレー */
-  --color-text-muted: #566080; /* 補助テキスト */
+  /* Text */
+  --color-text-primary: #e5e1e7;
+  --color-text-secondary: #a8b8b9;
+  --color-text-muted: #566070;
 
-  --color-border-subtle: #1c2840; /* ネイビー系ボーダー */
-  --color-border-active: #a0cc00; /* Lime Green アクティブボーダー */
+  --color-border-subtle: #1a1a1e;
+  --color-border-active: #44d62c;
 
-  /* ─── Typography ─────────────────────────────────────── */
-  --font-sans: "Inter Variable", "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "B612 Mono", "JetBrains Mono", ui-monospace, monospace;
+  /* Typography */
+  --font-sans: "Inter", "Noto Sans JP", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Inter", ui-monospace, monospace;
 }
 
 * {
@@ -73,7 +73,7 @@ body,
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background-color: var(--color-base-900);
+  background-color: var(--color-base-800);
   color: var(--color-text-primary);
   font-family: var(--font-sans);
   font-size: 14px;
@@ -81,41 +81,196 @@ body,
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ─── Piano Surface Card（Stitch デザイン） ─────────── */
+.piano-surface {
+  background: linear-gradient(145deg, #080808 0%, #010101 100%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(68, 214, 44, 0.15);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.piano-surface:hover {
+  border-color: rgba(68, 214, 44, 0.4);
+}
+
+/* ─── Circuit Grid Background ──────────────────────── */
+.circuit-bg {
+  background-image: radial-gradient(circle at 1px 1px, rgba(68, 214, 44, 0.03) 1px, transparent 0);
+  background-size: 40px 40px;
+}
+
+/* ─── Scanline Overlay ─────────────────────────────── */
+.scanline-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.08) 50%);
+  background-size: 100% 3px;
+  pointer-events: none;
+  z-index: 100;
+  opacity: 0.15;
+}
+
+/* ─── Scanning Bar ─────────────────────────────────── */
+.scanning-bar {
+  position: fixed;
+  top: -100px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(68, 214, 44, 0.3), transparent);
+  box-shadow: 0 0 20px rgba(68, 214, 44, 0.5);
+  animation: scan 15s linear infinite;
+  pointer-events: none;
+  z-index: 101;
+}
+@keyframes scan {
+  0% {
+    top: -2px;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  95% {
+    opacity: 1;
+  }
+  100% {
+    top: 100vh;
+    opacity: 0;
+  }
+}
+
+/* ─── Glow Effects ─────────────────────────────────── */
+.bloom-razer {
+  filter: drop-shadow(0 0 10px rgba(68, 214, 44, 0.9));
+}
+.bloom-red {
+  filter: drop-shadow(0 0 10px rgba(255, 49, 49, 0.8));
+}
+
+/* ─── Pulse Node ───────────────────────────────────── */
+.pulse-node {
+  animation: pulse-node 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse-node {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+    box-shadow: 0 0 4px rgba(68, 214, 44, 0.5);
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(68, 214, 44, 1);
+  }
+}
+
+/* ─── Glitch Hover ─────────────────────────────────── */
+.hover-glitch:hover {
+  animation: glitch-anim 0.2s infinite;
+}
+@keyframes glitch-anim {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 1px);
+  }
+  40% {
+    transform: translate(2px, -1px);
+  }
+  60% {
+    transform: translate(-1px, -2px);
+  }
+  80% {
+    transform: translate(1px, 2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+/* ─── Progress Flow ────────────────────────────────── */
+.progress-flow {
+  background: linear-gradient(90deg, transparent 0%, #44d62c 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: flow 4s linear infinite;
+}
+@keyframes flow {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ─── HUD Button Sweep ─────────────────────────────── */
+.hud-btn-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(68, 214, 44, 0.3), transparent);
+  pointer-events: none;
+  animation: sweep 3s linear infinite;
+}
+@keyframes sweep {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.4;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translateX(250%) skewX(-15deg);
+    opacity: 0;
+  }
+}
+
 /* ─── Glass Card ─────────────────────────────────────── */
 .card-glass {
-  background: rgba(20, 28, 46, 0.85);
+  background: rgba(8, 8, 8, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(160, 204, 0, 0.08);
+  border: 1px solid rgba(68, 214, 44, 0.08);
   border-radius: 6px;
 }
 
 .card-glass-elevated {
-  background: rgba(20, 28, 46, 0.95);
+  background: rgba(8, 8, 8, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(160, 204, 0, 0.12);
+  border: 1px solid rgba(68, 214, 44, 0.12);
   border-radius: 6px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
 }
 
 /* ─── Glow utilities ──────────────────────────────────── */
 .card-glow {
-  border-color: rgba(160, 204, 0, 0.3);
-  box-shadow: 0 0 20px rgba(160, 204, 0, 0.12);
+  border-color: rgba(68, 214, 44, 0.3);
+  box-shadow: 0 0 20px rgba(68, 214, 44, 0.12);
 }
 
 .card-glow-hover:hover {
-  border-color: rgba(160, 204, 0, 0.5);
-  box-shadow: 0 0 28px rgba(160, 204, 0, 0.18);
+  border-color: rgba(68, 214, 44, 0.5);
+  box-shadow: 0 0 28px rgba(68, 214, 44, 0.18);
   transition: all 200ms ease;
 }
 
 /* ─── Accent Glow（強化版） ──────────────────────────── */
 .glow-cyan {
   box-shadow:
-    0 0 20px rgba(160, 204, 0, 0.22),
-    0 0 60px rgba(160, 204, 0, 0.08);
+    0 0 20px rgba(68, 214, 44, 0.22),
+    0 0 60px rgba(68, 214, 44, 0.08);
 }
 .glow-warm {
   box-shadow:
@@ -124,18 +279,18 @@ body,
 }
 .glow-purple {
   box-shadow:
-    0 0 20px rgba(245, 158, 11, 0.22),
-    0 0 60px rgba(245, 158, 11, 0.08);
+    0 0 20px rgba(255, 215, 0, 0.22),
+    0 0 60px rgba(255, 215, 0, 0.08);
 }
 .glow-blue {
   box-shadow:
-    0 0 20px rgba(59, 157, 232, 0.22),
-    0 0 60px rgba(59, 157, 232, 0.08);
+    0 0 20px rgba(0, 240, 255, 0.22),
+    0 0 60px rgba(0, 240, 255, 0.08);
 }
 .glow-info {
   box-shadow:
-    0 0 20px rgba(59, 157, 232, 0.22),
-    0 0 60px rgba(59, 157, 232, 0.08);
+    0 0 20px rgba(0, 240, 255, 0.22),
+    0 0 60px rgba(0, 240, 255, 0.08);
 }
 
 /* ─── Wing transition ────────────────────────────────── */
@@ -239,7 +394,7 @@ body,
 
 /* ─── Background dot texture ──────────────────────────── */
 .bg-dot-grid {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgba(68, 214, 44, 0.03) 1px, transparent 1px);
   background-size: 20px 20px;
 }
 
@@ -261,6 +416,6 @@ body,
 
 /* ─── Selection ───────────────────────────────────────── */
 ::selection {
-  background: rgba(160, 204, 0, 0.2);
+  background: rgba(68, 214, 44, 0.2);
   color: var(--color-text-primary);
 }
