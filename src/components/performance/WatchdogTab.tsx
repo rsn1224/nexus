@@ -92,7 +92,7 @@ export default function WatchdogTab() {
   }
 
   return (
-    <div className="p-4 font-mono text-[12px]">
+    <div className="p-4 text-[12px]">
       <SectionHeader title="▶ BOOST / WATCHDOG" color="accent">
         <div className="flex gap-2">
           <Button

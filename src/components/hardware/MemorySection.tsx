@@ -16,7 +16,7 @@ export default function MemorySection({
 }: MemorySectionProps): React.ReactElement {
   return (
     <Card title="MEMORY" className="mb-4">
-      <div className="font-mono text-xs text-text-secondary space-y-2">
+      <div className="text-xs text-text-secondary space-y-2">
         <div className="flex justify-between">
           <span>TOTAL:</span>
           <span className="text-text-primary">{memTotalGb.toFixed(1)} GB</span>

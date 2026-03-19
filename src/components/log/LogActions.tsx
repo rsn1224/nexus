@@ -80,9 +80,7 @@ export default function LogActions({
         </Button>
       </div>
 
-      {exportResult && (
-        <div className="font-mono text-xs text-success-500">出力先: {exportResult}</div>
-      )}
+      {exportResult && <div className="text-xs text-success-500">出力先: {exportResult}</div>}
     </div>
   );
 }

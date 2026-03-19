@@ -17,15 +17,13 @@ export default function DriveList({
 }: DriveListProps): React.ReactElement {
   return (
     <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-      <div className="font-mono text-[10px] text-text-muted mb-2">DRIVES</div>
+      <div className="text-[10px] text-text-muted mb-2">DRIVES</div>
       <div className="space-y-2">
         {drives.map((drive) => (
           <div key={drive.name} className="border-b border-border-subtle pb-2 last:border-b-0">
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[11px] text-text-primary font-bold">
-                  {drive.name}
-                </span>
+                <span className="text-[11px] text-text-primary font-bold">{drive.name}</span>
                 <div
                   className={`w-2 h-2 rounded-full ${
                     drive.healthStatus === 'Critical'
@@ -36,7 +34,7 @@ export default function DriveList({
                   }`}
                 />
                 <span
-                  className={`font-mono text-[9px] ${
+                  className={`text-[9px] ${
                     drive.healthStatus === 'Critical'
                       ? 'text-danger-500'
                       : drive.healthStatus === 'Warning'
@@ -58,15 +56,15 @@ export default function DriveList({
             </div>
             <div className="space-y-1">
               <div className="flex justify-between">
-                <span className="font-mono text-[10px] text-text-secondary">Model</span>
-                <span className="font-mono text-[10px] text-text-primary">{drive.model}</span>
+                <span className="text-[10px] text-text-secondary">Model</span>
+                <span className="text-[10px] text-text-primary">{drive.model}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-mono text-[10px] text-text-secondary">File System</span>
-                <span className="font-mono text-[10px] text-text-primary">{drive.fileSystem}</span>
+                <span className="text-[10px] text-text-secondary">File System</span>
+                <span className="text-[10px] text-text-primary">{drive.fileSystem}</span>
               </div>
               <div className="flex justify-between">
-                <span className="font-mono text-[10px] text-text-secondary">Usage</span>
+                <span className="text-[10px] text-text-secondary">Usage</span>
                 <span className="font-mono text-[10px] text-text-primary">
                   {formatBytes(drive.usedBytes)} / {formatBytes(drive.sizeBytes)}
                 </span>

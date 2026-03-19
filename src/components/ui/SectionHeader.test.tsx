@@ -65,7 +65,7 @@ describe('SectionHeader', () => {
     render(<SectionHeader title="TEST" />);
 
     const title = screen.getByText('TEST');
-    expect(title).toHaveClass('font-mono', 'text-[13px]', 'font-bold', 'tracking-[0.15em]');
+    expect(title).toHaveClass('text-[13px]', 'font-semibold');
   });
 
   it('children container has correct classes', () => {

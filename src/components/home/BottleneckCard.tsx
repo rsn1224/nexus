@@ -104,15 +104,13 @@ const BottleneckCard: React.FC = () => {
       {isAnalyzing && (
         <div className="flex items-center gap-2 mb-3">
           <div className="w-1.5 h-1.5 bg-accent-500 animate-pulse" />
-          <span className="font-mono text-[10px] text-accent-500 tracking-[0.1em]">
-            ANALYZING...
-          </span>
+          <span className="text-[10px] text-accent-500">ANALYZING...</span>
         </div>
       )}
 
       {/* エラー表示 */}
       {error && (
-        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 font-mono text-[11px] text-danger-500 mb-3">
+        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 text-[11px] text-danger-500 mb-3">
           ERROR: {error}
         </div>
       )}
@@ -121,13 +119,11 @@ const BottleneckCard: React.FC = () => {
         <div className="flex flex-col gap-3">
           {/* 主要ボトルネック表示 */}
           <div className="flex items-center gap-3">
-            <span
-              className={`font-mono text-2xl font-bold tracking-widest ${getBottleneckColor(bottleneck.primary)}`}
-            >
+            <span className={`text-2xl font-bold ${getBottleneckColor(bottleneck.primary)}`}>
               {getBottleneckLabel(bottleneck.primary)}
             </span>
             <span
-              className={`font-mono text-[9px] px-[5px] py-[1px] border tracking-[0.08em] ${getConfidenceBorder(bottleneck.confidence)}`}
+              className={`text-[9px] px-[5px] py-[1px] border ${getConfidenceBorder(bottleneck.confidence)}`}
             >
               {bottleneck.confidence.toUpperCase()}
             </span>
@@ -144,9 +140,7 @@ const BottleneckCard: React.FC = () => {
               ] as const
             ).map(({ key, label, score }) => (
               <div key={key} className="flex items-center gap-2">
-                <span className="font-mono text-[11px] text-text-muted tracking-widest w-10">
-                  {label}
-                </span>
+                <span className="text-[11px] text-text-muted w-10">{label}</span>
                 <div className="flex-1 h-2 bg-base-800 overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${getScoreBarColor(score, key)}`}
@@ -163,12 +157,10 @@ const BottleneckCard: React.FC = () => {
           {/* 改善提案 */}
           {bottleneck.suggestions.length > 0 && (
             <div className="flex flex-col gap-2 pt-2 border-t border-border-subtle">
-              <span className="font-mono text-[11px] font-semibold text-text-muted tracking-widest">
-                SUGGESTIONS
-              </span>
+              <span className="text-[11px] font-semibold text-text-muted">SUGGESTIONS</span>
               {bottleneck.suggestions.map((suggestion) => (
                 <div key={suggestion.id} className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] text-text-secondary flex-1">
+                  <span className="text-[11px] text-text-secondary flex-1">
                     {suggestion.message}
                   </span>
                   {suggestion.action && (
@@ -176,7 +168,7 @@ const BottleneckCard: React.FC = () => {
                       type="button"
                       onClick={() => handleActionClick(suggestion.action)}
                       aria-label={`${suggestion.message}\u3092\u9069\u7528`}
-                      className="ml-2 font-mono text-[11px] px-[10px] py-[2px] border border-accent-500 text-accent-500 tracking-widest transition-all duration-100 hover:bg-accent-500 hover:text-base-900"
+                      className="ml-2 text-[11px] px-[10px] py-[2px] border border-accent-500 text-accent-500 transition-all duration-100 hover:bg-accent-500 hover:text-base-900"
                     >
                       APPLY
                     </button>
@@ -187,7 +179,7 @@ const BottleneckCard: React.FC = () => {
           )}
         </div>
       ) : (
-        <div className="flex items-center justify-center h-[80px] font-mono text-[11px] text-text-muted tracking-[0.1em]">
+        <div className="flex items-center justify-center h-[80px] text-[11px] text-text-muted">
           WAITING FOR ANALYSIS DATA...
         </div>
       )}

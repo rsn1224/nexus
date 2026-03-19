@@ -48,16 +48,16 @@ export default function StorageWing(): React.ReactElement {
 
       {storageInfo && (
         <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-          <div className="font-mono text-[10px] text-text-muted mb-2">OVERVIEW</div>
+          <div className="text-[10px] text-text-muted mb-2">OVERVIEW</div>
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">Total Size</span>
+              <span className="text-[11px] text-text-secondary">Total Size</span>
               <span className="font-mono text-[11px] text-text-primary">
                 {formatBytes(storageInfo.totalSizeBytes)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">Used</span>
+              <span className="text-[11px] text-text-secondary">Used</span>
               <span className="font-mono text-[11px] text-text-primary">
                 {formatBytes(storageInfo.totalUsedBytes)} (
                 {getUsagePercentage(storageInfo.totalUsedBytes, storageInfo.totalSizeBytes).toFixed(
@@ -67,7 +67,7 @@ export default function StorageWing(): React.ReactElement {
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">Available</span>
+              <span className="text-[11px] text-text-secondary">Available</span>
               <span className="font-mono text-[11px] text-text-primary">
                 {formatBytes(storageInfo.totalAvailableBytes)}
               </span>
@@ -97,7 +97,7 @@ export default function StorageWing(): React.ReactElement {
 
       {isLoading && (
         <div className="flex items-center justify-center py-4">
-          <div className="font-mono text-[10px] text-text-muted">LOADING...</div>
+          <div className="text-[10px] text-text-muted">LOADING...</div>
         </div>
       )}
     </div>

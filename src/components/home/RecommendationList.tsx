@@ -30,7 +30,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
 
   if (recommendations.length === 0) {
     return (
-      <div className="font-mono text-[10px] text-success-500 text-center py-2">
+      <div className="text-[10px] text-success-500 text-center py-2">
         ✓ 改善推奨事項はありません
       </div>
     );
@@ -39,7 +39,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
   return (
     <div className="flex flex-col gap-1.5">
       {recommendations.map((rec) => (
-        <div key={rec.id} className="flex items-start gap-2 font-mono text-[10px]">
+        <div key={rec.id} className="flex items-start gap-2 text-[10px]">
           <span className={`shrink-0 ${PRIORITY_STYLES[rec.priority]}`}>
             {PRIORITY_ICONS[rec.priority]}
           </span>

@@ -25,7 +25,7 @@ export default function LogStats({
   };
 
   return (
-    <div className="font-mono text-xs text-text-secondary mb-4">
+    <div className="text-xs text-text-secondary mb-4">
       <div className="flex items-center gap-4 mb-2">
         <span>
           Total: <span className="text-text-primary">{totalLogs}</span>

@@ -106,10 +106,7 @@ export default function Modal({
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between px-4 py-3 border-b border-border-subtle">
             {title && (
-              <h2
-                id="modal-title"
-                className="font-mono text-[12px] font-semibold text-text-primary uppercase"
-              >
+              <h2 id="modal-title" className="text-[13px] font-semibold text-text-primary">
                 {title}
               </h2>
             )}

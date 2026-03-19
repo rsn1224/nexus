@@ -33,9 +33,7 @@ function QualityBadge({
         {value.toFixed(1)}
         <span className="text-[10px] font-normal text-text-muted">{unit}</span>
       </span>
-      <span className="font-mono text-[9px] text-text-muted tracking-widest uppercase">
-        {label}
-      </span>
+      <span className="text-[9px] text-text-muted">{label}</span>
     </div>
   );
 }
@@ -106,7 +104,7 @@ export default function NetworkQualityCard(): React.ReactElement {
         </div>
 
         {/* 結果表示 */}
-        {error && <p className="font-mono text-[10px] text-red-400">{error}</p>}
+        {error && <p className="text-[10px] text-red-400">{error}</p>}
 
         {qualitySnapshot && (
           <div className="flex flex-col gap-2">
@@ -133,7 +131,7 @@ export default function NetworkQualityCard(): React.ReactElement {
                 danger={5}
               />
             </div>
-            <div className="flex justify-between font-mono text-[9px] text-text-muted">
+            <div className="flex justify-between text-[9px] text-text-muted">
               <span>TARGET: {qualitySnapshot.target}</span>
               <span>SAMPLES: {qualitySnapshot.sampleCount}</span>
             </div>
@@ -141,7 +139,7 @@ export default function NetworkQualityCard(): React.ReactElement {
         )}
 
         {!qualitySnapshot && !isMeasuring && (
-          <p className="font-mono text-[10px] text-text-muted text-center py-2">
+          <p className="text-[10px] text-text-muted text-center py-2">
             ▶ 測定 を押して Jitter / パケットロスを計測
           </p>
         )}

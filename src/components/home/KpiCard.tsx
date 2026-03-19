@@ -62,9 +62,7 @@ const KpiCard = memo(function KpiCard({ label, value, color, sparkline }: KpiCar
     <div
       className={`card-glass rounded-lg p-3 flex flex-col gap-1 flex-1 transition-all duration-200 hover:-translate-y-0.5 hover:${glow}`}
     >
-      <span className="font-mono text-[11px] text-text-muted uppercase tracking-wider">
-        {label}
-      </span>
+      <span className="text-[11px] text-text-muted uppercase">{label}</span>
       <span className={`font-mono text-2xl font-bold leading-none ${text}`}>{value}</span>
       {sparkline && sparkline.length >= 2 && (
         <div className="mt-1">

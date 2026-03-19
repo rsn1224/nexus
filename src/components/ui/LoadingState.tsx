@@ -10,9 +10,7 @@ export default function LoadingState({
   height = 'h-[120px]',
 }: LoadingStateProps): React.ReactElement {
   return (
-    <div
-      className={`flex items-center justify-center ${height} font-mono text-[11px] text-text-muted tracking-[0.1em]`}
-    >
+    <div className={`flex items-center justify-center ${height} text-[11px] text-text-muted`}>
       {message}
     </div>
   );

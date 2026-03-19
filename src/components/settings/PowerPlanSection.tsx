@@ -17,10 +17,10 @@ export default function PowerPlanSection({
 }: PowerPlanSectionProps): React.ReactElement {
   return (
     <div className="bg-base-800 border border-border-subtle rounded p-3">
-      <div className="font-mono text-[10px] text-text-muted mb-2">POWER</div>
+      <div className="text-[10px] text-text-muted mb-2">POWER</div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="font-mono text-[11px] text-text-secondary">Power Plan</div>
+          <div className="text-[11px] text-text-secondary">Power Plan</div>
           <div className="flex items-center gap-2">
             <select
               value={pendingPowerPlan}

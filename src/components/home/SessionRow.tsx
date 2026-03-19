@@ -23,7 +23,7 @@ export default function SessionRow({ session, onSelect, onDelete, isSelected }: 
   return (
     <button
       type="button"
-      className={`w-full flex items-center gap-2 px-2 py-1 border-b border-border-subtle text-[10px] font-mono text-left ${
+      className={`w-full flex items-center gap-2 px-2 py-1 border-b border-border-subtle text-[10px] text-left ${
         isSelected ? 'bg-accent-500/10' : 'hover:bg-base-700'
       } cursor-pointer`}
       onClick={() => onSelect(session.id)}
@@ -45,7 +45,7 @@ export default function SessionRow({ session, onSelect, onDelete, isSelected }: 
               onDelete(session.id);
               setConfirmDelete(false);
             }}
-            className="px-1 py-px font-mono text-[9px] border border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-base-900 transition-colors"
+            className="px-1 py-px text-[9px] border border-danger-500 text-danger-500 hover:bg-danger-500 hover:text-base-900 transition-colors"
           >
             YES
           </button>
@@ -55,7 +55,7 @@ export default function SessionRow({ session, onSelect, onDelete, isSelected }: 
               e.stopPropagation();
               setConfirmDelete(false);
             }}
-            className="px-1 py-px font-mono text-[9px] border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
+            className="px-1 py-px text-[9px] border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
           >
             NO
           </button>
@@ -67,7 +67,7 @@ export default function SessionRow({ session, onSelect, onDelete, isSelected }: 
             e.stopPropagation();
             setConfirmDelete(true);
           }}
-          className="shrink-0 px-1 py-px font-mono text-[9px] border border-border-subtle text-text-muted hover:border-danger-500 hover:text-danger-500 transition-colors"
+          className="shrink-0 px-1 py-px text-[9px] border border-border-subtle text-text-muted hover:border-danger-500 hover:text-danger-500 transition-colors"
         >
           DEL
         </button>

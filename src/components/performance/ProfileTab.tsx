@@ -106,9 +106,7 @@ export default function ProfileTab({
       {/* ヘッダー + リバートボタン + 新規ボタン */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="font-mono text-[10px] text-text-muted">
-            {profiles.length} 件のプロファイル
-          </span>
+          <span className="text-[10px] text-text-muted">{profiles.length} 件のプロファイル</span>
           <CurrentPowerPlanDisplay />
         </div>
         <div className="flex gap-2">
@@ -137,9 +135,7 @@ export default function ProfileTab({
 
       {/* 適用中インジケーター */}
       {isApplying && (
-        <div className="font-mono text-[10px] text-accent-500 text-center py-2">
-          プロファイル適用中...
-        </div>
+        <div className="text-[10px] text-accent-500 text-center py-2">プロファイル適用中...</div>
       )}
 
       {/* プロファイル一覧 */}

@@ -33,17 +33,15 @@ export class ErrorBoundary extends Component<Props, State> {
       const sectionName = this.props.name ?? 'セクション';
       return (
         <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
-          <div className="font-mono text-[10px] text-text-muted tracking-widest">
-            {sectionName.toUpperCase()}
-          </div>
-          <div className="font-mono text-[12px] text-danger-500">⚠ エラーが発生しました</div>
-          <div className="font-mono text-[10px] text-text-secondary max-w-xs wrap-break-word">
+          <div className="text-[10px] text-text-muted">{sectionName.toUpperCase()}</div>
+          <div className="text-[12px] text-danger-500">⚠ エラーが発生しました</div>
+          <div className="text-[10px] text-text-secondary max-w-xs wrap-break-word">
             {this.state.error?.message || 'Unknown error'}
           </div>
           <button
             type="button"
             aria-label={`${sectionName}を再読み込み`}
-            className="font-mono text-[10px] px-3 py-1 border border-accent-500 text-accent-500 hover:bg-accent-500 hover:text-base-900 transition-colors"
+            className="text-[10px] px-3 py-1 border border-accent-500 text-accent-500 hover:bg-accent-500 hover:text-base-900 transition-colors"
             onClick={() => this.setState({ hasError: false, error: null })}
           >
             ↺ 再試行

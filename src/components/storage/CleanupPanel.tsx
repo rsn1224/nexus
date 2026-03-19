@@ -27,7 +27,7 @@ export default function CleanupPanel({
   return (
     <>
       <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-        <div className="font-mono text-[10px] text-text-muted mb-2">CLEANUP</div>
+        <div className="text-[10px] text-text-muted mb-2">CLEANUP</div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <Button variant="secondary" size="sm" onClick={onCleanupTempFiles} disabled={isLoading}>
@@ -60,28 +60,28 @@ export default function CleanupPanel({
 
       {cleanupResult && (
         <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-          <div className="font-mono text-[10px] text-text-muted mb-2">SCAN RESULTS</div>
+          <div className="text-[10px] text-text-muted mb-2">SCAN RESULTS</div>
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="font-mono text-[10px] text-text-secondary">Temp Files</span>
+              <span className="text-[10px] text-text-secondary">Temp Files</span>
               <span className="font-mono text-[10px] text-success-500">
                 {formatBytes(cleanupResult.tempFilesCleaned)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[10px] text-text-secondary">Recycle Bin</span>
+              <span className="text-[10px] text-text-secondary">Recycle Bin</span>
               <span className="font-mono text-[10px] text-success-500">
                 {formatBytes(cleanupResult.recycleBinCleaned)}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[10px] text-text-secondary">System Cache</span>
+              <span className="text-[10px] text-text-secondary">System Cache</span>
               <span className="font-mono text-[10px] text-success-500">
                 {formatBytes(cleanupResult.systemCacheCleaned)}
               </span>
             </div>
             <div className="flex justify-between border-t border-border-subtle pt-1">
-              <span className="font-mono text-[10px] text-text-secondary">Total Reclaimable</span>
+              <span className="text-[10px] text-text-secondary">Total Reclaimable</span>
               <span className="font-mono text-[10px] text-accent-500 font-bold">
                 {formatBytes(cleanupResult.totalFreedBytes)}
               </span>
@@ -92,12 +92,10 @@ export default function CleanupPanel({
 
       {selectedDrive && analysisResults.length > 0 && (
         <div className="bg-base-800 border border-border-subtle rounded p-3">
-          <div className="font-mono text-[10px] text-text-muted mb-2">
-            ANALYSIS: {selectedDrive}
-          </div>
+          <div className="text-[10px] text-text-muted mb-2">ANALYSIS: {selectedDrive}</div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {analysisResults.map((file) => (
-              <div key={file} className="font-mono text-[9px] text-text-primary truncate">
+              <div key={file} className="text-[9px] text-text-primary truncate">
                 {file}
               </div>
             ))}

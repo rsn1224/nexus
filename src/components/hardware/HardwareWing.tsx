@@ -71,13 +71,13 @@ export default function HardwareWing(): React.JSX.Element {
       </ErrorBoundary>
 
       <Card title="STORAGE" className="mb-4">
-        <div className="font-mono text-xs text-text-secondary space-y-3">
+        <div className="text-xs text-text-secondary space-y-3">
           {info.disks.map((disk) => (
             <div key={disk.mount} className="border-b border-border-subtle pb-2 last:border-b-0">
               <div className="flex justify-between mb-1">
                 <span className="text-text-primary">{disk.mount}</span>
                 <span
-                  className={`text-[10px] font-mono ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
+                  className={`text-[10px] ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
                 >
                   {disk.kind}
                 </span>
@@ -99,7 +99,7 @@ export default function HardwareWing(): React.JSX.Element {
       </Card>
 
       <Card title="SYSTEM" className="mb-4">
-        <div className="font-mono text-xs text-text-secondary space-y-2">
+        <div className="text-xs text-text-secondary space-y-2">
           <div className="flex justify-between">
             <span>OS:</span>
             <span className="text-text-primary">

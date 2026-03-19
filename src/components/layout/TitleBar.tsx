@@ -25,10 +25,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
     >
       {/* Logo */}
       <div className="flex items-center h-full px-3" data-tauri-drag-region>
-        <span
-          className="font-sans text-xs font-bold text-accent-500 tracking-[0.2em]"
-          data-tauri-drag-region
-        >
+        <span className="font-sans text-xs font-bold text-accent-500" data-tauri-drag-region>
           NEXUS
         </span>
       </div>

@@ -18,7 +18,7 @@ export default function CpuSection({
 }: CpuSectionProps): React.ReactElement {
   return (
     <Card title="CPU" className="mb-4">
-      <div className="font-mono text-xs text-text-secondary space-y-2">
+      <div className="text-xs text-text-secondary space-y-2">
         <div className="flex justify-between">
           <span>MODEL:</span>
           <span className="text-text-primary">{cpuName}</span>

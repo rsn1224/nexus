@@ -39,9 +39,7 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
           {activeId === 'flush_dns' ? 'RUNNING...' : '▶ DNSキャッシュをクリア'}
         </Button>
         {flushDnsResult && (
-          <div className="font-mono text-[9px] text-text-secondary">
-            最後の実行結果: {flushDnsResult}
-          </div>
+          <div className="text-[9px] text-text-secondary">最後の実行結果: {flushDnsResult}</div>
         )}
       </div>
 
@@ -60,11 +58,9 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
                   <span className={setting.isOptimized ? 'text-accent-500' : 'text-text-muted'}>
                     {setting.isOptimized ? '●' : '○'}
                   </span>
-                  <div className="font-mono text-[11px] font-semibold text-text-primary">
-                    {setting.label}
-                  </div>
+                  <div className="text-[11px] font-semibold text-text-primary">{setting.label}</div>
                 </div>
-                <div className="font-mono text-[10px] text-text-secondary leading-[1.4]">
+                <div className="text-[10px] text-text-secondary leading-[1.4]">
                   {setting.description}
                 </div>
               </div>
@@ -80,7 +76,7 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
                     {activeId === setting.id ? 'RUNNING...' : '↩ 元に戻す'}
                   </Button>
                 ) : setting.isOptimized ? (
-                  <span className="font-mono text-[9px] text-text-muted px-2 py-1">-</span>
+                  <span className="text-[9px] text-text-muted px-2 py-1">-</span>
                 ) : (
                   <Button
                     variant="primary"

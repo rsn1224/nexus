@@ -37,7 +37,7 @@ export interface ProfileFormProps {
 
 const inputClass =
   'bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-accent-500';
-const labelSpanClass = 'font-mono text-[9px] text-text-muted tracking-[0.1em]';
+const labelSpanClass = 'text-[9px] text-text-muted';
 
 export default function ProfileForm({
   initial,

@@ -4,7 +4,7 @@ import AffinityPanel from './AffinityPanel';
 
 const inputClass =
   'bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-accent-500';
-const labelSpanClass = 'font-mono text-[9px] text-text-muted tracking-[0.1em]';
+const labelSpanClass = 'text-[9px] text-text-muted';
 
 interface ProfileFormLevelFieldsProps {
   boostLevel: BoostLevel;
@@ -126,7 +126,7 @@ export default function ProfileFormLevelFields({
               step={0.1}
               className={inputClass}
             />
-            <span className="font-mono text-[9px] text-text-secondary">
+            <span className="text-[9px] text-text-secondary">
               低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
             </span>
           </label>
@@ -144,7 +144,7 @@ export default function ProfileFormLevelFields({
             placeholder="例: wallpaper_engine.exe, obs64.exe"
             className={inputClass}
           />
-          <span className="font-mono text-[9px] text-danger-500">
+          <span className="text-[9px] text-danger-500">
             ⚠️ 強制終了は不可逆です。保存していないデータが失われる可能性があります。
           </span>
         </label>

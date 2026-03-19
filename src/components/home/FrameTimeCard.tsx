@@ -55,7 +55,7 @@ export default function FrameTimeCard() {
   }
 
   return (
-    <div className="p-4 bg-base-800 border border-border-subtle font-mono text-[12px] text-text-primary">
+    <div className="p-4 bg-base-800 border border-border-subtle text-[12px] text-text-primary">
       {/* ヘッダー */}
       <div className="flex justify-between items-center mb-3">
         <div className="font-bold text-[11px] text-accent-500">FRAME TIME</div>
@@ -146,7 +146,7 @@ export default function FrameTimeCard() {
             onClick={handleStart}
             disabled={isLoading || !selectedProcess}
             aria-label="フレームタイム監視開始"
-            className={`flex-1 px-3 py-[6px] font-mono text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] text-[10px] font-bold border ${
               isLoading || !selectedProcess
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-accent-500 text-base-900 cursor-pointer border-accent-500 hover:bg-accent-600'
@@ -160,7 +160,7 @@ export default function FrameTimeCard() {
             onClick={handleStop}
             disabled={isLoading}
             aria-label="フレームタイム監視停止"
-            className={`flex-1 px-3 py-[6px] font-mono text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] text-[10px] font-bold border ${
               isLoading
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-danger-500 text-base-900 cursor-pointer border-danger-500 hover:bg-danger-600'

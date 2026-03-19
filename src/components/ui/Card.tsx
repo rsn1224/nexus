@@ -61,9 +61,7 @@ const Card = memo(function Card({
     <>
       {title && (
         <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
-          <div className="text-text-secondary text-[11px] tracking-widest uppercase font-mono">
-            {title}
-          </div>
+          <div className="text-text-secondary text-[11px]">{title}</div>
           {action && <div>{action}</div>}
         </div>
       )}

@@ -60,9 +60,7 @@ export default function GameReadinessPanel() {
   return (
     <div className="p-3 bg-base-800 border border-border-subtle rounded mt-4">
       {/* ヘッダー */}
-      <div className="font-mono text-[11px] font-semibold text-text-primary mb-3">
-        GAME READINESS
-      </div>
+      <div className="text-[11px] font-semibold text-text-primary mb-3">GAME READINESS</div>
 
       {/* ゲージ + 3軸 */}
       <div className="flex items-center gap-4 mb-3">
@@ -73,11 +71,9 @@ export default function GameReadinessPanel() {
         <div className="flex-1 flex flex-col gap-2">
           {axisLabels.map(({ label, score, isPerformance }) => (
             <div key={label} className="flex items-center gap-2">
-              <span className="font-mono text-[11px] text-text-muted tracking-widest w-[52px]">
-                {label}
-              </span>
+              <span className="text-[11px] text-text-muted w-[52px]">{label}</span>
               {isPerformance && score < 0 ? (
-                <span className="font-mono text-[11px] text-text-muted">N/A</span>
+                <span className="text-[11px] text-text-muted">N/A</span>
               ) : (
                 <>
                   <div className="flex-1 h-1.5 bg-base-800 rounded overflow-hidden">

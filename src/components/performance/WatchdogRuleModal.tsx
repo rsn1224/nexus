@@ -39,7 +39,7 @@ export function WatchdogRuleModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
-      <div className="bg-base-900 p-6 rounded-lg min-w-[700px] max-w-[90vw] max-h-[90vh] overflow-y-auto font-mono text-[12px]">
+      <div className="bg-base-900 p-6 rounded-lg min-w-[700px] max-w-[90vw] max-h-[90vh] overflow-y-auto text-[12px]">
         <h2 className="mb-6 text-[14px] font-bold uppercase text-text-primary">
           {editingRule ? 'EDIT RULE' : 'ADD RULE'}
         </h2>
@@ -59,7 +59,7 @@ export function WatchdogRuleModal({
               className={inputClass}
             />
             {validationError && (
-              <div className="text-danger-500 text-[10px] font-mono mt-1">⚠ {validationError}</div>
+              <div className="text-danger-500 text-[10px] mt-1">⚠ {validationError}</div>
             )}
           </div>
 

@@ -17,10 +17,10 @@ export default function VisualEffectsSection({
 }: VisualEffectsSectionProps): React.ReactElement {
   return (
     <div className="bg-base-800 border border-border-subtle rounded p-3">
-      <div className="font-mono text-[10px] text-text-muted mb-2">VISUAL</div>
+      <div className="text-[10px] text-text-muted mb-2">VISUAL</div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="font-mono text-[11px] text-text-secondary">Visual Effects</div>
+          <div className="text-[11px] text-text-secondary">Visual Effects</div>
           <div className="flex items-center gap-2">
             <select
               value={pendingVisualEffects}
@@ -37,7 +37,7 @@ export default function VisualEffectsSection({
             </Button>
           </div>
         </div>
-        <div className="font-mono text-[10px] text-text-muted">
+        <div className="text-[10px] text-text-muted">
           (Best Performance / Balanced / Best Appearance)
         </div>
       </div>

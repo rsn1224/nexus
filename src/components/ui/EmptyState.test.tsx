@@ -46,23 +46,15 @@ describe('EmptyState', () => {
       'flex-col',
       'items-center',
       'justify-center',
-      'font-mono',
       'text-[11px]',
       'text-text-muted',
     );
-  });
-
-  it('has correct classes for message', () => {
-    render(<EmptyState message="TEST" />);
-
-    const message = screen.getByText('TEST');
-    expect(message).toHaveClass('tracking-[0.1em]');
   });
 
   it('has correct classes for action', () => {
     render(<EmptyState message="TEST" action="ACTION" />);
 
     const action = screen.getByText('ACTION');
-    expect(action).toHaveClass('mt-1', 'text-[10px]', 'tracking-wider', 'opacity-70');
+    expect(action).toHaveClass('mt-1', 'text-[10px]', 'opacity-70');
   });
 });

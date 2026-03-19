@@ -10,7 +10,7 @@ interface SummaryPanelProps {
 export default function SummaryPanel({ summary, title }: SummaryPanelProps): React.ReactElement {
   return (
     <div className="bg-base-800 border border-border-subtle rounded p-2 space-y-1 flex-1">
-      {title && <div className="font-mono text-[9px] text-text-muted mb-2 uppercase">{title}</div>}
+      {title && <div className="text-[9px] text-text-muted mb-2 uppercase">{title}</div>}
       {(
         [
           ['AVG FPS', fmtNum(summary.avgFps)],

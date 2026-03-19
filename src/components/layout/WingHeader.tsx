@@ -17,7 +17,7 @@ export default function WingHeader({ wingId }: WingHeaderProps): React.ReactElem
       {crumbs.map((crumb, i) => (
         <span key={crumb.label} className="flex items-center gap-1">
           {i > 0 && (
-            <span className="font-mono text-[9px] text-text-muted select-none" aria-hidden="true">
+            <span className="text-[11px] text-text-muted select-none" aria-hidden="true">
               /
             </span>
           )}
@@ -25,15 +25,12 @@ export default function WingHeader({ wingId }: WingHeaderProps): React.ReactElem
             <button
               type="button"
               onClick={crumb.onClick}
-              className="font-mono text-[10px] text-text-muted hover:text-accent-500 transition-colors cursor-pointer tracking-widest"
+              className="text-xs text-text-muted hover:text-accent-500 transition-colors cursor-pointer"
             >
               {crumb.label}
             </button>
           ) : (
-            <span
-              className="font-mono text-[10px] text-text-primary font-semibold tracking-widest"
-              aria-current="page"
-            >
+            <span className="text-xs text-text-primary font-semibold" aria-current="page">
               {crumb.label}
             </span>
           )}

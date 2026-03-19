@@ -56,7 +56,7 @@ export default function ProcessRow({
         } ${index % 2 === 0 ? 'bg-white/2' : ''}`}
         onClick={() => onRowClick(process.pid)}
       >
-        <td className="px-3 py-[5px] font-mono text-[12px] text-text-primary">{process.name}</td>
+        <td className="px-3 py-[5px] text-[12px] text-text-primary">{process.name}</td>
         <td className={`px-3 py-[5px] font-mono text-[12px] text-right ${cpuColor}`}>
           {process.cpuPercent.toFixed(1)}%
         </td>
@@ -69,13 +69,13 @@ export default function ProcessRow({
         <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
           {formatDiskIO(process.diskWriteKb)}
         </td>
-        <td className="px-3 py-[5px] font-mono text-[12px]">
+        <td className="px-3 py-[5px] text-[12px]">
           {status === 'target' ? (
-            <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px] font-mono">
+            <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px]">
               [TARGET]
             </span>
           ) : status === 'protected' ? (
-            <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px] font-mono">
+            <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px]">
               [PROT]
             </span>
           ) : (
@@ -88,7 +88,7 @@ export default function ProcessRow({
         <tr>
           <td colSpan={6} className="px-3 py-2 bg-base-700">
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[10px] text-text-muted">PRIORITY:</span>
+              <span className="text-[10px] text-text-muted">PRIORITY:</span>
               <Button size="sm" variant="secondary" onClick={() => onPriority(process.pid, 'high')}>
                 HIGH
               </Button>

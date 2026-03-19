@@ -13,20 +13,14 @@ export default function ProfileBadge({
 }: ProfileBadgeProps): React.ReactElement {
   if (!isActive) {
     return (
-      <span
-        data-testid="profile-badge"
-        className={`font-mono text-[8px] text-text-muted tracking-[0.05em] ${className}`}
-      >
+      <span data-testid="profile-badge" className={`text-[8px] text-text-muted ${className}`}>
         PROFILE: {profileName}
       </span>
     );
   }
 
   return (
-    <span
-      data-testid="profile-badge-active"
-      className={`font-mono text-[8px] text-accent-500 tracking-[0.05em] ${className}`}
-    >
+    <span data-testid="profile-badge-active" className={`text-[8px] text-accent-500 ${className}`}>
       ● PROFILE: {profileName}
     </span>
   );

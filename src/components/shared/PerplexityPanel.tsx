@@ -52,23 +52,21 @@ export default function PerplexityPanel({
         title={processNames.length === 0 ? '先に RUN BOOST を実行してください' : undefined}
       >
         <div className="flex items-center gap-[6px]">
-          <span className="font-mono text-[10px] font-bold text-accent-500 tracking-widest">
-            AI に聞く
-          </span>
+          <span className="text-[10px] font-bold text-accent-500">AI に聞く</span>
         </div>
-        <span className="font-mono text-[9px] text-text-muted">
+        <span className="text-[9px] text-text-muted">
           {panelState.status === 'loading' ? 'ASKING...' : '▶ ASK AI'}
         </span>
       </button>
 
       {panelState.status === 'loading' && (
-        <div className="px-3 py-2 bg-base-900 font-mono text-[10px] text-text-muted mt-2">
+        <div className="px-3 py-2 bg-base-900 text-[10px] text-text-muted mt-2">
           Perplexity に問い合わせ中...
         </div>
       )}
 
       {panelState.status === 'error' && (
-        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 text-danger-500 font-mono text-[10px]">
+        <div className="px-3 py-2 bg-base-800 border-b border-danger-600 text-danger-500 text-[10px]">
           ⚠ {panelState.error}
         </div>
       )}
@@ -77,7 +75,7 @@ export default function PerplexityPanel({
         <div className="px-3 py-2 bg-base-900">
           {panelState.data.map((suggestion, i) => (
             <div
-              className="flex items-start gap-2 py-1 font-mono text-[10px] leading-normal"
+              className="flex items-start gap-2 py-1 text-[10px] leading-normal"
               key={suggestion}
             >
               <span className="text-accent-500 shrink-0 font-semibold">{i + 1}.</span>

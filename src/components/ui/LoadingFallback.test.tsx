@@ -35,7 +35,7 @@ describe('LoadingFallback', () => {
   it('テキストに正しいスタイルが設定される', () => {
     render(<LoadingFallback />);
     const text = screen.getByText('読み込み中...');
-    expect(text).toHaveClass('text-[11px]', 'text-text-muted', 'tracking-[0.12em]', 'uppercase');
+    expect(text).toHaveClass('text-[11px]', 'text-text-muted');
   });
 
   it('コンポーネント構造が正しい', () => {

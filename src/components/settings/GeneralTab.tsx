@@ -85,9 +85,9 @@ export default function GeneralTab(): React.ReactElement {
 
       {/* API Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3">
-        <div className="font-mono text-[10px] text-text-muted mb-2">API</div>
+        <div className="text-[10px] text-text-muted mb-2">API</div>
         <div className="space-y-2">
-          <div className="font-mono text-[11px] text-text-secondary">Perplexity API Key</div>
+          <div className="text-[11px] text-text-secondary">Perplexity API Key</div>
           <div className="flex items-center gap-2">
             <input
               type="password"
@@ -111,11 +111,11 @@ export default function GeneralTab(): React.ReactElement {
                 className={`w-2 h-2 rounded-full ${testResult.valid ? 'bg-success-500' : 'bg-danger-500'}`}
               />
               <span
-                className={`font-mono text-[10px] ${testResult.valid ? 'text-success-500' : 'text-danger-500'}`}
+                className={`text-[10px] ${testResult.valid ? 'text-success-500' : 'text-danger-500'}`}
               >
                 {testResult.valid ? 'VALID' : 'INVALID'}
               </span>
-              <span className="font-mono text-[10px] text-text-muted">— {testResult.message}</span>
+              <span className="text-[10px] text-text-muted">— {testResult.message}</span>
             </div>
           )}
         </div>
@@ -123,15 +123,15 @@ export default function GeneralTab(): React.ReactElement {
 
       {/* APPLICATION Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3">
-        <div className="font-mono text-[10px] text-text-muted mb-2">APPLICATION</div>
+        <div className="text-[10px] text-text-muted mb-2">APPLICATION</div>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <div className="font-mono text-[11px] text-text-secondary">Start with Windows</div>
+            <div className="text-[11px] text-text-secondary">Start with Windows</div>
             <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${settings?.startWithWindows ? 'bg-success-500' : 'bg-text-muted'}`}
               />
-              <span className="font-mono text-[11px] text-text-primary">
+              <span className="text-[11px] text-text-primary">
                 {settings?.startWithWindows ? 'ENABLED' : 'DISABLED'}
               </span>
               <Button
@@ -145,12 +145,12 @@ export default function GeneralTab(): React.ReactElement {
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <div className="font-mono text-[11px] text-text-secondary">Minimize to Tray</div>
+            <div className="text-[11px] text-text-secondary">Minimize to Tray</div>
             <div className="flex items-center gap-2">
               <div
                 className={`w-2 h-2 rounded-full ${settings?.minimizeToTray ? 'bg-success-500' : 'bg-text-muted'}`}
               />
-              <span className="font-mono text-[11px] text-text-primary">
+              <span className="text-[11px] text-text-primary">
                 {settings?.minimizeToTray ? 'ENABLED' : 'DISABLED'}
               </span>
               <Button
@@ -168,10 +168,10 @@ export default function GeneralTab(): React.ReactElement {
 
       {/* ABOUT Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3">
-        <div className="font-mono text-[10px] text-text-muted mb-2">ABOUT</div>
+        <div className="text-[10px] text-text-muted mb-2">ABOUT</div>
         <div className="space-y-1">
-          <div className="font-mono text-[11px] text-text-secondary">Version: {APP_VERSION}</div>
-          <div className="font-mono text-[11px] text-text-secondary">Built: {buildDate}</div>
+          <div className="text-[11px] text-text-secondary">Version: {APP_VERSION}</div>
+          <div className="text-[11px] text-text-secondary">Built: {buildDate}</div>
         </div>
       </div>
     </div>

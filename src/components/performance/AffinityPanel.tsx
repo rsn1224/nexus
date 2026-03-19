@@ -37,18 +37,14 @@ export default function AffinityPanel({
   );
 
   if (!cpuTopology) {
-    return (
-      <div className={`font-mono text-[10px] text-text-muted ${className}`}>
-        CPU 情報を取得中...
-      </div>
-    );
+    return <div className={`text-[10px] text-text-muted ${className}`}>CPU 情報を取得中...</div>;
   }
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      <span className="font-mono text-[9px] text-text-muted tracking-[0.1em]">{label}</span>
+      <span className="text-[9px] text-text-muted">{label}</span>
 
-      <div className="font-mono text-[9px] text-text-muted">
+      <div className="text-[9px] text-text-muted">
         {cpuTopology.brand} — {cpuTopology.physicalCores}C/{cpuTopology.logicalCores}T
         {cpuTopology.eCores.length > 0 && (
           <span>

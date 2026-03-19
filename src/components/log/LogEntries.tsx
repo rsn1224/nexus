@@ -24,7 +24,7 @@ export default function LogEntries({
       {logs.map((log) => (
         <div
           key={`${log.timestamp}-${log.source}-${log.message.slice(0, 20)}`}
-          className="font-mono text-xs border-b border-border-subtle pb-1"
+          className="text-xs border-b border-border-subtle pb-1"
         >
           <div className="flex items-start gap-2">
             <div

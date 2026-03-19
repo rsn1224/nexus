@@ -34,14 +34,14 @@ export default function AffinityPresets({
       <button
         type="button"
         onClick={handleSelectAll}
-        className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
+        className="text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
       >
         全選択
       </button>
       <button
         type="button"
         onClick={handleClearAll}
-        className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
+        className="text-[9px] px-2 py-0.5 bg-base-700 text-text-muted border-none rounded-[2px] cursor-pointer hover:text-text-primary"
       >
         全解除
       </button>
@@ -50,14 +50,14 @@ export default function AffinityPresets({
           <button
             type="button"
             onClick={handleSelectPCores}
-            className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
+            className="text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
           >
             P-Core のみ
           </button>
           <button
             type="button"
             onClick={handleSelectECores}
-            className="font-mono text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
+            className="text-[9px] px-2 py-0.5 bg-base-700 text-accent-500 border-none rounded-[2px] cursor-pointer"
           >
             E-Core のみ
           </button>

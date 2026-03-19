@@ -16,7 +16,7 @@ export default function GpuSection({
 }: GpuSectionProps): React.ReactElement {
   return (
     <Card title="GPU" className="mb-4">
-      <div className="font-mono text-xs text-text-secondary space-y-2">
+      <div className="text-xs text-text-secondary space-y-2">
         <div className="flex justify-between">
           <span>MODEL:</span>
           <span className="text-text-primary">{gpuName || 'N/A'}</span>

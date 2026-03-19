@@ -50,47 +50,47 @@ export default function DnsTab({
 
       {/* ADAPTER Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-        <div className="font-mono text-[10px] text-text-muted mb-2">ADAPTER</div>
+        <div className="text-[10px] text-text-muted mb-2">ADAPTER</div>
         {primaryAdapter ? (
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">Name</span>
-              <span className="font-mono text-[11px] text-text-primary">{primaryAdapter.name}</span>
+              <span className="text-[11px] text-text-secondary">Name</span>
+              <span className="text-[11px] text-text-primary">{primaryAdapter.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">IP</span>
+              <span className="text-[11px] text-text-secondary">IP</span>
               <span className="font-mono text-[11px] text-text-primary">{primaryAdapter.ip}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">MAC</span>
+              <span className="text-[11px] text-text-secondary">MAC</span>
               <span className="font-mono text-[11px] text-text-primary">{primaryAdapter.mac}</span>
             </div>
             <div className="flex justify-between">
-              <span className="font-mono text-[11px] text-text-secondary">Status</span>
+              <span className="text-[11px] text-text-secondary">Status</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success-500" />
-                <span className="font-mono text-[11px] text-text-primary">CONNECTED</span>
+                <span className="text-[11px] text-text-primary">CONNECTED</span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="font-mono text-[11px] text-text-muted">No connected adapters found</div>
+          <div className="text-[11px] text-text-muted">No connected adapters found</div>
         )}
       </div>
 
       {/* DNS Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-        <div className="font-mono text-[10px] text-text-muted mb-2">DNS</div>
+        <div className="text-[10px] text-text-muted mb-2">DNS</div>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="font-mono text-[11px] text-text-secondary">Current</span>
+            <span className="text-[11px] text-text-secondary">Current</span>
             <span className="font-mono text-[11px] text-text-primary">
               {currentDns.length > 0 ? currentDns.join(', ') : 'Not configured'}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] text-text-secondary">Preset</span>
+            <span className="text-[11px] text-text-secondary">Preset</span>
             <select
               value={selectedPreset}
               onChange={(e) => onSelectedPresetChange(e.target.value)}
@@ -114,7 +114,7 @@ export default function DnsTab({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] text-text-secondary">Custom</span>
+            <span className="text-[11px] text-text-secondary">Custom</span>
             <input
               type="text"
               value={customPrimary}
@@ -143,10 +143,10 @@ export default function DnsTab({
 
       {/* PING Section */}
       <div className="bg-base-800 border border-border-subtle rounded p-3">
-        <div className="font-mono text-[10px] text-text-muted mb-2">PING</div>
+        <div className="text-[10px] text-text-muted mb-2">PING</div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[11px] text-text-secondary">Target</span>
+            <span className="text-[11px] text-text-secondary">Target</span>
             <input
               type="text"
               value={pingTarget}
@@ -161,17 +161,17 @@ export default function DnsTab({
 
           {pingResult && (
             <div className="flex items-center gap-2">
-              <span className="font-mono text-[11px] text-text-secondary">Result</span>
+              <span className="text-[11px] text-text-secondary">Result</span>
               {pingResult.success ? (
                 <>
                   <span className="font-mono text-[11px] text-success-500">
                     {pingResult.latencyMs}ms
                   </span>
                   <div className="w-2 h-2 rounded-full bg-success-500" />
-                  <span className="font-mono text-[11px] text-success-500">OK</span>
+                  <span className="text-[11px] text-success-500">OK</span>
                 </>
               ) : (
-                <span className="font-mono text-[11px] text-danger-500">TIMEOUT</span>
+                <span className="text-[11px] text-danger-500">TIMEOUT</span>
               )}
             </div>
           )}

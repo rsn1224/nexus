@@ -19,15 +19,15 @@ export default function GamingSection({
 }: GamingSectionProps): React.ReactElement {
   return (
     <div className="bg-base-800 border border-border-subtle rounded p-3">
-      <div className="font-mono text-[10px] text-text-muted mb-2">GAMING</div>
+      <div className="text-[10px] text-text-muted mb-2">GAMING</div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="font-mono text-[11px] text-text-secondary">Game Mode</div>
+          <div className="text-[11px] text-text-secondary">Game Mode</div>
           <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${settings?.gameMode ? 'bg-success-500' : 'bg-text-muted'}`}
             />
-            <span className="font-mono text-[11px] text-text-primary">
+            <span className="text-[11px] text-text-primary">
               {settings?.gameMode ? 'ENABLED' : 'DISABLED'}
             </span>
             <Button variant="secondary" size="sm" onClick={onToggleGameMode} disabled={isLoading}>
@@ -36,12 +36,12 @@ export default function GamingSection({
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <div className="font-mono text-[11px] text-text-secondary">Fullscreen Opt.</div>
+          <div className="text-[11px] text-text-secondary">Fullscreen Opt.</div>
           <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${settings?.fullscreenOptimization ? 'bg-success-500' : 'bg-text-muted'}`}
             />
-            <span className="font-mono text-[11px] text-text-primary">
+            <span className="text-[11px] text-text-primary">
               {settings?.fullscreenOptimization ? 'ENABLED' : 'DISABLED'}
             </span>
             <Button
@@ -55,12 +55,12 @@ export default function GamingSection({
           </div>
         </div>
         <div className="flex items-center justify-between">
-          <div className="font-mono text-[11px] text-text-secondary">Hardware GPU Sched</div>
+          <div className="text-[11px] text-text-secondary">Hardware GPU Sched</div>
           <div className="flex items-center gap-2">
             <div
               className={`w-2 h-2 rounded-full ${settings?.hardwareGpuScheduling ? 'bg-success-500' : 'bg-text-muted'}`}
             />
-            <span className="font-mono text-[11px] text-text-primary">
+            <span className="text-[11px] text-text-primary">
               {settings?.hardwareGpuScheduling ? 'ENABLED' : 'DISABLED'}
             </span>
             <Button
