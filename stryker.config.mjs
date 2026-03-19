@@ -4,11 +4,7 @@ const config = {
   vitest: {
     configFile: 'vitest.config.ts',
   },
-  mutate: [
-    'src/lib/**/*.ts',
-    '!src/lib/**/*.test.ts',
-    '!src/lib/**/*.d.ts',
-  ],
+  mutate: ['src/lib/**/*.ts', '!src/lib/**/*.test.ts', '!src/lib/**/*.d.ts'],
   reporters: ['html', 'clear-text', 'progress'],
   htmlReporter: {
     fileName: 'reports/mutation/index.html',

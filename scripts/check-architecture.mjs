@@ -21,23 +21,34 @@ const STRICT_MODE = process.argv.includes('--strict');
 
 // ルール 1: Wing コンポーネントは自分のドメインの store のみ import 可能
 // 例外: useNavStore, usePulseStore は全 Wing から参照可
-const SHARED_STORES = new Set([
-  'useNavStore',
-  'usePulseStore',
-]);
+const SHARED_STORES = new Set(['useNavStore', 'usePulseStore']);
 
 // Wing 名 → 許可される store 名のマッピング
 const WING_STORE_MAP = {
   home: [
-    'useHardwareStore', 'useBoostStore', 'useHealthStore', 'useGameProfileStore',
-    'useStorageStore', 'useWindowsSettingsStore',
+    'useHardwareStore',
+    'useBoostStore',
+    'useHealthStore',
+    'useGameProfileStore',
+    'useStorageStore',
+    'useWindowsSettingsStore',
     // ダッシュボードは多数の Wing データを集約表示するため広い参照が必要
-    'useOpsStore', 'useBottleneckStore', 'useFrameTimeStore', 'useTimerStore', 'useSessionStore',
+    'useOpsStore',
+    'useBottleneckStore',
+    'useFrameTimeStore',
+    'useTimerStore',
+    'useSessionStore',
   ],
   performance: [
-    'useOpsStore', 'useWatchdogStore', 'useSessionStore', 'useBoostStore',
+    'useOpsStore',
+    'useWatchdogStore',
+    'useSessionStore',
+    'useBoostStore',
     // パフォーマンス Wing はゲームプロファイル・ネットワーク・Windows 設定と連携
-    'useGameProfileStore', 'useNetworkTuningStore', 'useTimerStore', 'useWinoptStore',
+    'useGameProfileStore',
+    'useNetworkTuningStore',
+    'useTimerStore',
+    'useWinoptStore',
   ],
   games: ['useGameProfileStore', 'useLauncherStore'],
   hardware: ['useHardwareStore', 'useEcoModeStore'],

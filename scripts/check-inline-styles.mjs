@@ -94,7 +94,9 @@ for (const file of files) {
 }
 
 if (violations.length === 0) {
-  console.log(`✅ インラインスタイルチェック: 許可リスト外の使用なし（許可済み: ${allowedCount} 箇所）`);
+  console.log(
+    `✅ インラインスタイルチェック: 許可リスト外の使用なし（許可済み: ${allowedCount} 箇所）`,
+  );
   process.exit(0);
 }
 
@@ -106,5 +108,7 @@ for (const v of violations) {
 console.log('');
 console.log('対応方法:');
 console.log('  1. Tailwind v4 className に置換する（推奨）');
-console.log('  2. 正当な理由がある場合、scripts/check-inline-styles.mjs の ALLOWED_FILES_AND_REASONS に追加');
+console.log(
+  '  2. 正当な理由がある場合、scripts/check-inline-styles.mjs の ALLOWED_FILES_AND_REASONS に追加',
+);
 process.exit(1);
