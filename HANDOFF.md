@@ -53,9 +53,10 @@
 | **v3.0.1 Phase 2** | ✅ 完了（10 Store サイレント catch 撲滅 + log.error 統一） |
 | **v3.0.1 Phase 3** | ✅ 完了（aria-label 7コンポーネント + useFocusTrap Modal フォーカストラップ） |
 | **v3.0.1 Phase 4** | ✅ 完了（ErrorBoundary name prop + BoostWing/HardwareWing/LauncherWing/SettingsWing 適用） |
+| **Design Refresh v2** | ✅ 完了（Phase 1-8: カラー拡張・glass card・タイポグラフィ・KpiCard・グラフグロー・サイドバー・GameCard・モーション） |
 
-**最新コミット:** `7d9a641`（v3.0.0 + EcoModePanel hotfix）
-**テスト:** TS 542 + Rust 230+ all green
+**最新コミット:** `dab34c7`（Design Refresh v2 Phase 1-8）
+**テスト:** TS 605 + Rust 230+ all green
 
 ---
 
