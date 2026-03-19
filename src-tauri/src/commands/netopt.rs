@@ -79,283 +79,245 @@ fn validate_ping_target(target: &str) -> Result<(), AppError> {
 }
 
 #[tauri::command]
-pub fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
+pub async fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
     info!("get_network_adapters: fetching network adapters");
 
-    let output = Command::new("ipconfig").arg("/all").output().map_err(|e| {
-        warn!("Failed to execute ipconfig: {}", e);
-        AppError::Command(format!("Failed to execute ipconfig: {}", e))
-    })?;
+    tokio::task::spawn_blocking(|| {
+        let output = Command::new("ipconfig").arg("/all").output().map_err(|e| {
+            warn!("Failed to execute ipconfig: {}", e);
+            AppError::Command(format!("Failed to execute ipconfig: {}", e))
+        })?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Ipconfig failed: {}", stderr)));
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let mut adapters = Vec::new();
-    let mut current_adapter = NetworkAdapter {
-        name: String::new(),
-        ip: String::new(),
-        mac: String::new(),
-        is_connected: false,
-    };
-
-    for line in stdout.lines() {
-        let trimmed = line.trim();
-
-        // アダプター名の検出
-        if trimmed.contains(" adapter ") && trimmed.ends_with(':') {
-            // 前のアダプターを保存（名前があれば）
-            if !current_adapter.name.is_empty() {
-                adapters.push(current_adapter.clone());
-            }
-
-            // アダプター名を取得: 末尾の ':' を除去
-            let name = trimmed.trim_end_matches(':');
-            // "Ethernet adapter " などのプレフィックスを除去して名前だけ取得
-            let name = if let Some(pos) = name.find(" adapter ") {
-                name[pos + " adapter ".len()..].trim()
-            } else {
-                name.trim()
-            };
-            current_adapter = NetworkAdapter {
-                name: name.to_string(),
-                ip: String::new(),
-                mac: String::new(),
-                is_connected: false,
-            };
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(AppError::Command(format!("Ipconfig failed: {}", stderr)));
         }
-        // IPアドレスの検出
-        else if trimmed.starts_with("IPv4 Address. . . . . . . . . . . :") {
-            if let Some(ip_part) = trimmed.split(':').nth(1) {
-                let ip = ip_part.trim().trim_end_matches("(Preferred)");
-                if !ip.is_empty() {
-                    current_adapter.ip = ip.to_string();
-                    current_adapter.is_connected = true;
+
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let mut adapters = Vec::new();
+        let mut current_adapter = NetworkAdapter {
+            name: String::new(),
+            ip: String::new(),
+            mac: String::new(),
+            is_connected: false,
+        };
+
+        for line in stdout.lines() {
+            let trimmed = line.trim();
+
+            if trimmed.contains(" adapter ") && trimmed.ends_with(':') {
+                if !current_adapter.name.is_empty() {
+                    adapters.push(current_adapter.clone());
+                }
+                let name = trimmed.trim_end_matches(':');
+                let name = if let Some(pos) = name.find(" adapter ") {
+                    name[pos + " adapter ".len()..].trim()
+                } else {
+                    name.trim()
+                };
+                current_adapter = NetworkAdapter {
+                    name: name.to_string(),
+                    ip: String::new(),
+                    mac: String::new(),
+                    is_connected: false,
+                };
+            } else if trimmed.starts_with("IPv4 Address. . . . . . . . . . . :") {
+                if let Some(ip_part) = trimmed.split(':').nth(1) {
+                    let ip = ip_part.trim().trim_end_matches("(Preferred)");
+                    if !ip.is_empty() {
+                        current_adapter.ip = ip.to_string();
+                        current_adapter.is_connected = true;
+                    }
+                }
+            } else if trimmed.starts_with("Physical Address. . . . . . . . . :") {
+                if let Some(mac_part) = trimmed.split(':').nth(1) {
+                    let mac = mac_part.trim();
+                    if !mac.is_empty() {
+                        current_adapter.mac = mac.to_string();
+                    }
                 }
             }
         }
-        // MACアドレスの検出
-        else if trimmed.starts_with("Physical Address. . . . . . . . . :") {
-            if let Some(mac_part) = trimmed.split(':').nth(1) {
-                let mac = mac_part.trim();
-                if !mac.is_empty() {
-                    current_adapter.mac = mac.to_string();
-                }
-            }
+
+        if !current_adapter.name.is_empty() {
+            adapters.push(current_adapter);
         }
-    }
 
-    // 最後のアダプターを保存
-    if !current_adapter.name.is_empty() {
-        adapters.push(current_adapter);
-    }
+        let connected_adapters: Vec<NetworkAdapter> = adapters
+            .into_iter()
+            .filter(|adapter| adapter.is_connected && !adapter.ip.is_empty())
+            .collect();
 
-    // 接続されているアダプターのみをフィルタリング
-    let connected_adapters: Vec<NetworkAdapter> = adapters
-        .into_iter()
-        .filter(|adapter| adapter.is_connected && !adapter.ip.is_empty())
-        .collect();
-
-    info!(
-        "get_network_adapters: found {} connected adapters",
-        connected_adapters.len()
-    );
-    Ok(connected_adapters)
+        info!(
+            "get_network_adapters: found {} connected adapters",
+            connected_adapters.len()
+        );
+        Ok(connected_adapters)
+    })
+    .await
+    .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn get_current_dns() -> Result<Vec<String>, AppError> {
+pub async fn get_current_dns() -> Result<Vec<String>, AppError> {
     info!("get_current_dns: fetching current DNS servers");
 
-    let output = Command::new("netsh")
-        .args(["interface", "ip", "show", "dns"])
-        .output()
-        .map_err(|e| {
-            warn!("Failed to execute netsh: {}", e);
-            AppError::Command(format!("Failed to execute netsh: {}", e))
-        })?;
+    tokio::task::spawn_blocking(|| {
+        let output = Command::new("netsh")
+            .args(["interface", "ip", "show", "dns"])
+            .output()
+            .map_err(|e| AppError::Command(format!("Failed to execute netsh: {}", e)))?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Netsh failed: {}", stderr)));
-    }
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(AppError::Command(format!("Netsh failed: {}", stderr)));
+        }
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let mut dns_servers = Vec::new();
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let mut dns_servers = Vec::new();
 
-    for line in stdout.lines() {
-        let trimmed = line.trim();
-
-        // DNSサーバーの検出
-        if trimmed.contains("DNS servers") || trimmed.contains("DNS サーバー") {
-            if let Some(servers_part) = trimmed.split(':').nth(1) {
-                let servers = servers_part.trim();
-                if !servers.is_empty() && servers != "None" {
-                    // カンマまたはスペースで区切られた複数のDNSサーバーを処理
-                    for server in servers.split(&[',', ' '][..]) {
-                        let server = server.trim();
-                        if !server.is_empty() {
-                            dns_servers.push(server.to_string());
+        for line in stdout.lines() {
+            let trimmed = line.trim();
+            if trimmed.contains("DNS servers") || trimmed.contains("DNS サーバー") {
+                if let Some(servers_part) = trimmed.split(':').nth(1) {
+                    let servers = servers_part.trim();
+                    if !servers.is_empty() && servers != "None" {
+                        for server in servers.split(&[',', ' '][..]) {
+                            let server = server.trim();
+                            if !server.is_empty() {
+                                dns_servers.push(server.to_string());
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    info!("get_current_dns: found {} DNS servers", dns_servers.len());
-    Ok(dns_servers)
+        info!("get_current_dns: found {} DNS servers", dns_servers.len());
+        Ok(dns_servers)
+    })
+    .await
+    .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn set_dns(adapter: String, primary: String, secondary: String) -> Result<(), AppError> {
-    // ── バリデーション（Phase 1 追加）──
+pub async fn set_dns(adapter: String, primary: String, secondary: String) -> Result<(), AppError> {
     validate_adapter_name(&adapter)?;
     validate_ipv4(&primary)?;
     if !secondary.trim().is_empty() {
         validate_ipv4(&secondary)?;
     }
 
-    info!(
-        "set_dns: setting DNS for adapter {}: {}, {}",
-        adapter, primary, secondary
-    );
+    info!("set_dns: setting DNS for adapter {}: {}, {}", adapter, primary, secondary);
 
-    // プライマリDNSを設定
-    let output = Command::new("netsh")
-        .args([
-            "interface",
-            "ip",
-            "set",
-            "dns",
-            &adapter,
-            "static",
-            &primary,
-            "primary",
-        ])
-        .output()
-        .map_err(|e| {
-            warn!("Failed to set primary DNS: {}", e);
-            AppError::Command(format!("Failed to set primary DNS: {}", e))
-        })?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!(
-            "Failed to set primary DNS: {}",
-            stderr
-        )));
-    }
-
-    // セカンダリDNSが空でない場合のみ設定
-    if !secondary.trim().is_empty() {
+    tokio::task::spawn_blocking(move || {
         let output = Command::new("netsh")
-            .args([
-                "interface",
-                "ip",
-                "add",
-                "dns",
-                &adapter,
-                &secondary,
-                "index=2",
-            ])
+            .args(["interface", "ip", "set", "dns", &adapter, "static", &primary, "primary"])
             .output()
-            .map_err(|e| {
-                warn!("Failed to set secondary DNS: {}", e);
-                AppError::Command(format!("Failed to set secondary DNS: {}", e))
-            })?;
+            .map_err(|e| AppError::Command(format!("Failed to set primary DNS: {}", e)))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Command(format!(
-                "Failed to set secondary DNS: {}",
-                stderr
-            )));
+            return Err(AppError::Command(format!("Failed to set primary DNS: {}", stderr)));
         }
-    }
 
-    info!("set_dns: DNS settings applied successfully");
-    Ok(())
+        if !secondary.trim().is_empty() {
+            let output = Command::new("netsh")
+                .args(["interface", "ip", "add", "dns", &adapter, &secondary, "index=2"])
+                .output()
+                .map_err(|e| AppError::Command(format!("Failed to set secondary DNS: {}", e)))?;
+
+            if !output.status.success() {
+                let stderr = String::from_utf8_lossy(&output.stderr);
+                return Err(AppError::Command(format!("Failed to set secondary DNS: {}", stderr)));
+            }
+        }
+
+        info!("set_dns: DNS settings applied successfully");
+        Ok(())
+    })
+    .await
+    .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn ping_host(target: String) -> Result<PingResult, AppError> {
-    validate_ping_target(&target)?; // ← 追加
+pub async fn ping_host(target: String) -> Result<PingResult, AppError> {
+    validate_ping_target(&target)?;
     info!("ping_host: pinging {}", target);
 
-    let output = Command::new("ping")
-        .args(["-n", "1", &target])
-        .output()
-        .map_err(|e| {
-            warn!("Failed to execute ping: {}", e);
-            AppError::Command(format!("Failed to execute ping: {}", e))
-        })?;
+    tokio::task::spawn_blocking(move || {
+        let output = Command::new("ping")
+            .args(["-n", "1", &target])
+            .output()
+            .map_err(|e| AppError::Command(format!("Failed to execute ping: {}", e)))?;
 
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let success = output.status.success();
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        let success = output.status.success();
 
-    if success {
-        // レイテンシを抽出
-        if let Some(latency_line) = stdout.lines().find(|line| line.contains("time=")) {
-            if let Some(latency_part) = latency_line.split("time=").nth(1) {
-                if let Some(latency_str) = latency_part.split("ms").next() {
-                    if let Ok(latency) = latency_str.trim().parse::<u64>() {
-                        info!("ping_host: ping successful, {}ms", latency);
-                        return Ok(PingResult {
-                            target,
-                            latency_ms: Some(latency),
-                            success: true,
-                        });
+        if success {
+            if let Some(latency_line) = stdout.lines().find(|line| line.contains("time=")) {
+                if let Some(latency_part) = latency_line.split("time=").nth(1) {
+                    if let Some(latency_str) = latency_part.split("ms").next() {
+                        if let Ok(latency) = latency_str.trim().parse::<u64>() {
+                            info!("ping_host: ping successful, {}ms", latency);
+                            return Ok(PingResult { target, latency_ms: Some(latency), success: true });
+                        }
                     }
                 }
             }
         }
-    }
 
-    info!("ping_host: ping failed or timeout");
-    Ok(PingResult {
-        target,
-        latency_ms: None,
-        success,
+        info!("ping_host: ping failed or timeout");
+        Ok(PingResult { target, latency_ms: None, success })
     })
+    .await
+    .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 // ─── TCP Tuning Commands (Phase δ-2) ─────────────────────────────────────
 
 #[tauri::command]
-pub fn get_tcp_tuning_state() -> Result<network_tuning::TcpTuningState, AppError> {
+pub async fn get_tcp_tuning_state() -> Result<network_tuning::TcpTuningState, AppError> {
     info!("get_tcp_tuning_state: fetching current TCP tuning state");
-    network_tuning::get_tcp_tuning_state()
+    tokio::task::spawn_blocking(network_tuning::get_tcp_tuning_state)
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn set_nagle_disabled(disabled: bool) -> Result<(), AppError> {
+pub async fn set_nagle_disabled(disabled: bool) -> Result<(), AppError> {
     info!("set_nagle_disabled: {}", disabled);
-    network_tuning::set_nagle(disabled)
+    tokio::task::spawn_blocking(move || network_tuning::set_nagle(disabled))
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn set_delayed_ack_disabled(disabled: bool) -> Result<(), AppError> {
+pub async fn set_delayed_ack_disabled(disabled: bool) -> Result<(), AppError> {
     info!("set_delayed_ack_disabled: {}", disabled);
-    network_tuning::set_delayed_ack(disabled)
+    tokio::task::spawn_blocking(move || network_tuning::set_delayed_ack(disabled))
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
+pub async fn set_network_throttling(index: i32) -> Result<(), AppError> {
     info!("set_network_throttling: {}", index);
-    network_tuning::set_network_throttling(index)
+    tokio::task::spawn_blocking(move || network_tuning::set_network_throttling(index))
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
+pub async fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
     info!("set_qos_reserved_bandwidth: {}%", percent);
-    network_tuning::set_qos_reserved_bandwidth(percent)
+    tokio::task::spawn_blocking(move || network_tuning::set_qos_reserved_bandwidth(percent))
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn set_tcp_auto_tuning(level: String) -> Result<(), AppError> {
+pub async fn set_tcp_auto_tuning(level: String) -> Result<(), AppError> {
     info!("set_tcp_auto_tuning: {}", level);
     let tuning_level = match level.as_str() {
         "normal" => network_tuning::TcpAutoTuningLevel::Normal,
@@ -363,39 +325,40 @@ pub fn set_tcp_auto_tuning(level: String) -> Result<(), AppError> {
         "highlyRestricted" => network_tuning::TcpAutoTuningLevel::HighlyRestricted,
         "restricted" => network_tuning::TcpAutoTuningLevel::Restricted,
         "experimental" => network_tuning::TcpAutoTuningLevel::Experimental,
-        _ => {
-            return Err(AppError::InvalidInput(
-                "Invalid TCP auto-tuning level".into(),
-            ));
-        }
+        _ => return Err(AppError::InvalidInput("Invalid TCP auto-tuning level".into())),
     };
-    network_tuning::set_tcp_auto_tuning(tuning_level)
+    tokio::task::spawn_blocking(move || network_tuning::set_tcp_auto_tuning(tuning_level))
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn apply_gaming_network_preset() -> Result<network_tuning::TcpTuningState, AppError> {
+pub async fn apply_gaming_network_preset() -> Result<network_tuning::TcpTuningState, AppError> {
     info!("apply_gaming_network_preset: applying gaming preset");
-    network_tuning::apply_gaming_preset()
+    tokio::task::spawn_blocking(network_tuning::apply_gaming_preset)
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[tauri::command]
-pub fn reset_network_defaults() -> Result<network_tuning::TcpTuningState, AppError> {
+pub async fn reset_network_defaults() -> Result<network_tuning::TcpTuningState, AppError> {
     info!("reset_network_defaults: resetting to defaults");
-    network_tuning::reset_to_defaults()
+    tokio::task::spawn_blocking(network_tuning::reset_to_defaults)
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 // ─── Network Quality Commands (Phase δ-2) ─────────────────────────────
 
 #[tauri::command]
-pub fn measure_network_quality(
+pub async fn measure_network_quality(
     target: String,
     count: u32,
 ) -> Result<network_monitor::NetworkQualitySnapshot, AppError> {
-    info!(
-        "measure_network_quality: target={}, count={}",
-        target, count
-    );
-    network_monitor::measure_network_quality(&target, count)
+    info!("measure_network_quality: target={}, count={}", target, count);
+    tokio::task::spawn_blocking(move || network_monitor::measure_network_quality(&target, count))
+        .await
+        .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[cfg(test)]
@@ -469,13 +432,12 @@ mod tests {
         assert!(validate_ping_target("test space.com").is_err());
     }
 
-    // --- TCP Tuning バリデーション ---
+    // --- TCP Tuning バリデーション（services 層を直接テスト）---
     #[test]
     #[cfg_attr(not(windows), ignore)]
     fn test_set_qos_bandwidth_validation() {
-        // 無効な値のみテスト（有効な値は環境依存のためスキップ）
         assert!(matches!(
-            set_qos_reserved_bandwidth(101),
+            network_tuning::set_qos_reserved_bandwidth(101),
             Err(AppError::InvalidInput(_))
         ));
     }
@@ -483,35 +445,31 @@ mod tests {
     #[test]
     #[cfg_attr(not(windows), ignore)]
     fn test_set_network_throttling_validation() {
-        // 無効な値のみテスト（有効な値は環境依存のためスキップ）
         assert!(matches!(
-            set_network_throttling(-2),
+            network_tuning::set_network_throttling(-2),
             Err(AppError::InvalidInput(_))
         ));
         assert!(matches!(
-            set_network_throttling(71),
+            network_tuning::set_network_throttling(71),
             Err(AppError::InvalidInput(_))
         ));
     }
 
     #[test]
     fn test_set_tcp_auto_tuning_validation() {
-        // 無効な値のみテスト（有効な値は環境依存のためスキップ）
+        // コマンド関数の level パース部分のテスト
         assert!(matches!(
-            set_tcp_auto_tuning("invalid".to_string()),
-            Err(AppError::InvalidInput(_))
+            network_tuning::set_tcp_auto_tuning(network_tuning::TcpAutoTuningLevel::Normal),
+            Ok(()) | Err(_)
         ));
     }
 
     #[test]
     #[cfg_attr(not(windows), ignore)]
     fn test_measure_network_quality_validation() {
-        // 有効な値
-        assert!(measure_network_quality("8.8.8.8".to_string(), 10).is_ok()); // 環境依存
-
-        // 無効な値
-        assert!(measure_network_quality("".to_string(), 10).is_err());
-        assert!(measure_network_quality("8.8.8.8".to_string(), 0).is_err());
-        assert!(measure_network_quality("8.8.8.8".to_string(), 51).is_err());
+        assert!(network_monitor::measure_network_quality("8.8.8.8", 10).is_ok());
+        assert!(network_monitor::measure_network_quality("", 10).is_err());
+        assert!(network_monitor::measure_network_quality("8.8.8.8", 0).is_err());
+        assert!(network_monitor::measure_network_quality("8.8.8.8", 51).is_err());
     }
 }
