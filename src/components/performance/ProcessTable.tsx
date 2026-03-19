@@ -23,7 +23,7 @@ export interface ProcessTableProps {
 }
 
 export function formatMemory(mb: number): string {
-  return mb >= 1024 ? `${(mb / 1024).toFixed(1)}GB` : `${mb}MB`;
+  return mb >= 1024 ? `${(mb / 1024).toFixed(1)}GB` : `${mb.toFixed(1)}MB`;
 }
 
 export function formatDiskIO(kb: number): string {

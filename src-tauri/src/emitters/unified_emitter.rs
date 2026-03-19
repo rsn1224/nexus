@@ -125,10 +125,13 @@ pub async fn start(app: AppHandle) {
                     .map(|p: &Process| {
                         let name = p.name().to_string_lossy().to_string();
                         let can_terminate = !is_protected_process(&name);
+                        // sysinfo の cpu_usage() はコアごとの使用率を返す（16コアなら最大1600%）
+                        // タスクマネージャーと同じ「全体に対する割合」に正規化する
+                        let num_cpus = s.sys.cpus().len().max(1) as f32;
                         SystemProcess {
                             pid: p.pid().as_u32(),
                             name,
-                            cpu_percent: p.cpu_usage(),
+                            cpu_percent: p.cpu_usage() / num_cpus,
                             mem_mb: p.memory() as f64 / 1024.0 / 1024.0,
                             disk_read_kb: p.disk_usage().read_bytes as f64 / 1024.0,
                             disk_write_kb: p.disk_usage().written_bytes as f64 / 1024.0,
