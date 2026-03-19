@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState } from 'react';
+import { useNavStore } from '../../stores/useNavStore';
 import WinoptTab from '../performance/WinoptTab';
 import { TabBar } from '../ui';
 import GeneralTab from './GeneralTab';
@@ -13,20 +13,16 @@ const settingsTabs = [
 ];
 
 export default function SettingsWing(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<'app' | 'windows' | 'winopt'>('app');
+  const activeTab = useNavStore(
+    (s) => (s.wingStates.settings.activeTab ?? 'app') as 'app' | 'windows' | 'winopt',
+  );
 
   return (
     <div className="flex flex-col h-full p-4">
-      <div className="mb-4">
-        <div className="font-mono text-[11px] text-accent-500 font-bold tracking-widest">
-          ▶ SETTINGS
-        </div>
-      </div>
-
       <TabBar
         tabs={settingsTabs}
         active={activeTab}
-        onChange={(id) => setActiveTab(id as typeof activeTab)}
+        onChange={(id) => useNavStore.getState().setTab('settings', id)}
         className="mb-4"
       />
 

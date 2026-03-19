@@ -1,6 +1,7 @@
 import type React from 'react';
 import { useState } from 'react';
 import { useInitialData } from '../../hooks/useInitialData';
+import { useNavStore } from '../../stores/useNavStore';
 import { useNetopt } from '../../stores/useNetoptStore';
 import { Button, ErrorBanner, TabBar } from '../ui';
 import TcpTuningTab from './TcpTuningTab';
@@ -25,7 +26,7 @@ export default function NetoptWing(): React.ReactElement {
     dnsPresets,
   } = useNetopt();
 
-  const [activeTab, setActiveTab] = useState<'dns' | 'tcp'>('dns');
+  const activeTab = useNavStore((s) => (s.wingStates.network.activeTab ?? 'dns') as 'dns' | 'tcp');
 
   // Local states
   const [selectedPreset, setSelectedPreset] = useState<string>('Cloudflare');
@@ -71,23 +72,18 @@ export default function NetoptWing(): React.ReactElement {
 
   return (
     <div className="flex flex-col h-full p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="font-mono text-[11px] text-accent-500 font-bold tracking-widest">
-          ▶ NETWORK
-        </div>
+      {/* Tab Bar + Refresh */}
+      <div className="flex items-center gap-2 mb-4">
+        <TabBar
+          tabs={netTabs}
+          active={activeTab}
+          onChange={(id) => useNavStore.getState().setTab('network', id)}
+          className="flex-1"
+        />
         <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isLoading}>
           ↻ REFRESH
         </Button>
       </div>
-
-      {/* Tab Bar */}
-      <TabBar
-        tabs={netTabs}
-        active={activeTab}
-        onChange={(id) => setActiveTab(id as typeof activeTab)}
-        className="mb-4"
-      />
 
       {activeTab === 'tcp' && <TcpTuningTab className="flex-1 overflow-y-auto" />}
 

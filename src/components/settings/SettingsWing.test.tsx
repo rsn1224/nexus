@@ -56,8 +56,7 @@ describe('SettingsWing', () => {
   it('renders all sections correctly', () => {
     render(<SettingsWing />);
 
-    // Check main sections
-    expect(screen.getByText('▶ SETTINGS')).toBeInTheDocument();
+    // Check main sections (▶ SETTINGS header moved to WingHeader)
     expect(screen.getByText('API')).toBeInTheDocument();
     expect(screen.getByText('APPLICATION')).toBeInTheDocument();
     expect(screen.getByText('MAINTENANCE')).toBeInTheDocument();

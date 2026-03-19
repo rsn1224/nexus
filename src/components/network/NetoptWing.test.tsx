@@ -40,11 +40,6 @@ describe('NetoptWing', () => {
     mockUseNetopt.mockReturnValue({ ...BASE_STORE });
   });
 
-  it('renders header', () => {
-    render(<NetoptWing />);
-    expect(screen.getByText(/▶ NETWORK/i)).toBeTruthy();
-  });
-
   it('renders refresh button', () => {
     render(<NetoptWing />);
     expect(screen.getByText(/REFRESH/i)).toBeTruthy();

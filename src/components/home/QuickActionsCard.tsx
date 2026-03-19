@@ -4,7 +4,7 @@ import { usePulseStore } from '../../stores/usePulseStore';
 import { Button, Card } from '../ui';
 
 export default function QuickActionsCard(): React.ReactElement {
-  const navigate = useNavStore((s) => s.navigate);
+  const navigateTo = useNavStore((s) => s.navigateTo);
   const subscribePulse = usePulseStore((s) => s.subscribe);
   const isListening = usePulseStore((s) => s.isListening);
 
@@ -20,7 +20,11 @@ export default function QuickActionsCard(): React.ReactElement {
         >
           {isListening ? '■ 監視中' : '▶ 監視開始'}
         </Button>
-        <Button variant="primary" size="sm" onClick={() => navigate('performance')}>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => navigateTo('performance', { tab: 'process' })}
+        >
           ⚡ 今すぐ最適化
         </Button>
       </div>

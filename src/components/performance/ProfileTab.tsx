@@ -13,9 +13,15 @@ import ProfileSharePanel from './ProfileSharePanel';
 
 interface ProfileTabProps {
   className?: string;
+  onNew?: () => void;
+  onEdit?: (profile: GameProfile) => void;
 }
 
-export default function ProfileTab({ className = '' }: ProfileTabProps): React.ReactElement {
+export default function ProfileTab({
+  className = '',
+  onNew,
+  onEdit,
+}: ProfileTabProps): React.ReactElement {
   const { profiles, activeProfileId, isLoading, isApplying, error } = useGameProfileState();
   const {
     loadProfiles,
@@ -49,10 +55,17 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
     [saveProfile],
   );
 
-  const handleEdit = useCallback((profile: GameProfile) => {
-    setEditingProfile(profile);
-    setShowForm(true);
-  }, []);
+  const handleEdit = useCallback(
+    (profile: GameProfile) => {
+      if (onEdit) {
+        onEdit(profile);
+      } else {
+        setEditingProfile(profile);
+        setShowForm(true);
+      }
+    },
+    [onEdit],
+  );
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -62,9 +75,13 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
   );
 
   const handleNewProfile = useCallback(() => {
-    setEditingProfile(null);
-    setShowForm(true);
-  }, []);
+    if (onNew) {
+      onNew();
+    } else {
+      setEditingProfile(null);
+      setShowForm(true);
+    }
+  }, [onNew]);
 
   const handleCancel = useCallback(() => {
     setShowForm(false);
@@ -96,8 +113,8 @@ export default function ProfileTab({ className = '' }: ProfileTabProps): React.R
         </div>
       </div>
 
-      {/* フォーム */}
-      {showForm && (
+      {/* フォーム — 外部ナビゲーションが提供されている場合は表示しない */}
+      {!onNew && showForm && (
         <ProfileForm
           initial={editingProfile ?? createDefaultProfile('', '')}
           onSave={(p) => void handleSave(p)}
