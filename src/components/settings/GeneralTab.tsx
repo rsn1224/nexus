@@ -14,6 +14,7 @@ export default function GeneralTab(): React.ReactElement {
 
   const [apiKeyInput, setApiKeyInput] = useState('');
   const [isTestingKey, setIsTestingKey] = useState(false);
+  const [isSavingKey, setIsSavingKey] = useState(false);
   const [testResult, setTestResult] = useState<{ valid: boolean; message: string } | null>(null);
 
   useInitialData(() => fetchSettings(), [fetchSettings]);
@@ -24,6 +25,19 @@ export default function GeneralTab(): React.ReactElement {
       setTestResult(null);
     }
   }, [settings]);
+
+  const handleSaveApiKey = async (): Promise<void> => {
+    if (!settings) return;
+    setIsSavingKey(true);
+    try {
+      await saveSettings({ ...settings, perplexityApiKey: apiKeyInput });
+      setTestResult({ valid: true, message: '保存しました' });
+    } catch (err) {
+      setTestResult({ valid: false, message: err instanceof Error ? err.message : '保存に失敗' });
+    } finally {
+      setIsSavingKey(false);
+    }
+  };
 
   const handleTestApiKey = async (): Promise<void> => {
     if (!apiKeyInput.trim()) {
@@ -42,7 +56,7 @@ export default function GeneralTab(): React.ReactElement {
       const result = await testApiKey();
       setTestResult({
         valid: result.ok,
-        message: result.ok ? 'APIキーは有効です' : result.error,
+        message: result.ok ? 'APIキーは有効です（保存済み）' : result.error,
       });
     } catch (err) {
       setTestResult({
@@ -52,12 +66,6 @@ export default function GeneralTab(): React.ReactElement {
     } finally {
       setIsTestingKey(false);
     }
-  };
-
-  const handleSaveAll = async (): Promise<void> => {
-    if (!settings) return;
-    await saveSettings({ ...settings, perplexityApiKey: apiKeyInput });
-    setTestResult(null);
   };
 
   const handleToggleStartWithWindows = async (): Promise<void> => {
@@ -78,7 +86,7 @@ export default function GeneralTab(): React.ReactElement {
 
       {/* Save All */}
       <div className="flex justify-end">
-        <Button variant="primary" size="sm" onClick={handleSaveAll} disabled={isLoading}>
+        <Button variant="primary" size="sm" onClick={handleSaveApiKey} disabled={isLoading}>
           SAVE ALL
         </Button>
       </div>
@@ -96,6 +104,14 @@ export default function GeneralTab(): React.ReactElement {
               placeholder="sk-per-******************"
               className="flex-1 bg-base-700 border border-border-subtle text-text-primary font-mono text-[11px] px-2 py-1 rounded"
             />
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={handleSaveApiKey}
+              disabled={isSavingKey || isLoading}
+            >
+              {isSavingKey ? 'SAVING...' : 'SAVE'}
+            </Button>
             <Button
               variant="secondary"
               size="sm"
