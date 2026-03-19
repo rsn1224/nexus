@@ -63,7 +63,7 @@ export const useNavStore = create<NavStore>((set, get) => ({
     }),
 
   // ── 状態 ──────────────────────────────────────────────────────────────────
-  activeWing: 'dashboard',
+  activeWing: 'core',
   wingStates: makeInitialWingStates(),
 
   // ── アクション ────────────────────────────────────────────────────────────

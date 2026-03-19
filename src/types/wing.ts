@@ -1,4 +1,4 @@
-export type WingId = 'dashboard' | 'gaming' | 'monitor' | 'history' | 'settings';
+export type WingId = 'core' | 'arsenal' | 'tactics' | 'logs' | 'settings';
 
 export interface WingStatus {
   id: WingId;

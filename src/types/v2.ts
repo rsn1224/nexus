@@ -6,7 +6,7 @@
 // Wing ID
 // -----------------------------------------------------------------------------
 
-export type WingId = 'dashboard' | 'gaming' | 'monitor' | 'history' | 'settings';
+export type WingId = 'core' | 'arsenal' | 'tactics' | 'logs' | 'settings';
 
 // -----------------------------------------------------------------------------
 // System Health Score (ADR-003)

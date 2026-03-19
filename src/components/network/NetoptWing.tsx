@@ -27,7 +27,7 @@ export default function NetoptWing(): React.ReactElement {
     dnsPresets,
   } = useNetopt();
 
-  const activeTab = useNavStore((s) => (s.wingStates.monitor.activeTab ?? 'dns') as 'dns' | 'tcp');
+  const activeTab = useNavStore((s) => (s.wingStates.tactics.activeTab ?? 'dns') as 'dns' | 'tcp');
 
   const [selectedPreset, setSelectedPreset] = useState<string>('Cloudflare');
   const [customPrimary, setCustomPrimary] = useState('');
@@ -65,7 +65,7 @@ export default function NetoptWing(): React.ReactElement {
         <TabBar
           tabs={netTabs}
           active={activeTab}
-          onChange={(id) => useNavStore.getState().setTab('monitor', id)}
+          onChange={(id) => useNavStore.getState().setTab('tactics', id)}
           className="flex-1"
         />
         <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isLoading}>

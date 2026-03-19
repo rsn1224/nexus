@@ -4,10 +4,10 @@ import { useNavStore } from '../stores/useNavStore';
 import type { WingId } from '../types';
 
 const WING_SHORTCUT_MAP: Record<string, WingId> = {
-  '1': 'dashboard',
-  '2': 'gaming',
-  '3': 'monitor',
-  '4': 'history',
+  '1': 'core',
+  '2': 'arsenal',
+  '3': 'tactics',
+  '4': 'logs',
   '5': 'settings',
 };
 
@@ -42,7 +42,7 @@ export function useKeyboardShortcuts(): void {
 
       if (e.key === 'b' || e.key === 'B') {
         e.preventDefault();
-        useNavStore.getState().navigate('gaming');
+        useNavStore.getState().navigate('arsenal');
         return;
       }
 

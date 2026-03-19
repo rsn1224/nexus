@@ -19,7 +19,7 @@ describe('useKeyboardShortcuts', () => {
     navigateMock = vi.fn() as unknown as (wing: WingId) => void;
     useNavStore.setState({
       navigate: navigateMock,
-      activeWing: 'dashboard',
+      activeWing: 'core',
       wingStates: useNavStore.getInitialState().wingStates,
     });
     useModalStore.setState({ closeSignal: 0, isOpen: false, openCount: 0 });
@@ -29,16 +29,16 @@ describe('useKeyboardShortcuts', () => {
     vi.restoreAllMocks();
   });
 
-  it('Ctrl+1 → navigate("dashboard")', () => {
+  it('Ctrl+1 → navigate("core")', () => {
     renderHook(() => useKeyboardShortcuts());
     fireKey('1', true);
-    expect(navigateMock).toHaveBeenCalledWith('dashboard');
+    expect(navigateMock).toHaveBeenCalledWith('core');
   });
 
-  it('Ctrl+2 → navigate("gaming")', () => {
+  it('Ctrl+2 → navigate("arsenal")', () => {
     renderHook(() => useKeyboardShortcuts());
     fireKey('2', true);
-    expect(navigateMock).toHaveBeenCalledWith('gaming');
+    expect(navigateMock).toHaveBeenCalledWith('arsenal');
   });
 
   it('Ctrl+5 → navigate("settings")', () => {
@@ -47,10 +47,10 @@ describe('useKeyboardShortcuts', () => {
     expect(navigateMock).toHaveBeenCalledWith('settings');
   });
 
-  it('Ctrl+B → navigate("gaming")', () => {
+  it('Ctrl+B → navigate("arsenal")', () => {
     renderHook(() => useKeyboardShortcuts());
     fireKey('b', true);
-    expect(navigateMock).toHaveBeenCalledWith('gaming');
+    expect(navigateMock).toHaveBeenCalledWith('arsenal');
   });
 
   it('Ctrl+, → navigate("settings")', () => {
@@ -70,15 +70,15 @@ describe('useKeyboardShortcuts', () => {
   it('Escape: モーダルなし + サブページあり → popSubpage(activeWing) を呼ぶ', () => {
     const entry = { id: 'profile-edit', params: {}, title: 'Edit' };
     useNavStore.setState((s) => ({
-      activeWing: 'gaming',
+      activeWing: 'arsenal',
       wingStates: {
         ...s.wingStates,
-        gaming: { activeTab: 'profiles', subpageStack: [entry] },
+        arsenal: { activeTab: 'profiles', subpageStack: [entry] },
       },
     }));
     renderHook(() => useKeyboardShortcuts());
     fireKey('Escape');
-    expect(useNavStore.getState().wingStates.gaming.subpageStack).toHaveLength(0);
+    expect(useNavStore.getState().wingStates.arsenal.subpageStack).toHaveLength(0);
   });
 
   it('Escape: モーダルなし + サブページなし → closeSignal は変化しない', () => {

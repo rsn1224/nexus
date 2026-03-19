@@ -3,14 +3,14 @@ import type { Breadcrumb, SubpageEntry, WingNavState } from '../types/navigation
 
 /** Wing の表示名マップ（パンくず用） */
 export const WING_LABELS: Record<WingId, string> = {
-  dashboard: 'DASHBOARD',
-  gaming: 'GAMING',
-  monitor: 'MONITOR',
-  history: 'HISTORY',
+  core: 'CORE',
+  arsenal: 'ARSENAL',
+  tactics: 'TACTICS',
+  logs: 'LOGS',
   settings: 'SETTINGS',
 };
 
-export const ALL_WING_IDS: WingId[] = ['dashboard', 'gaming', 'monitor', 'history', 'settings'];
+export const ALL_WING_IDS: WingId[] = ['core', 'arsenal', 'tactics', 'logs', 'settings'];
 
 export function makeInitialWingStates(): Record<WingId, WingNavState> {
   const states = {} as Record<WingId, WingNavState>;

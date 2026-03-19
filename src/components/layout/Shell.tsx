@@ -13,25 +13,25 @@ type SidebarItem =
 const WING_ACTIVE_CLASSES: Partial<
   Record<string, { text: string; bg: string; shadow: string; bar: string }>
 > = {
-  dashboard: {
+  core: {
     text: 'text-accent-500',
     bg: 'bg-accent-500/15',
     shadow: 'shadow-accent-500/20',
     bar: 'bg-accent-500',
   },
-  gaming: {
+  arsenal: {
     text: 'text-warm-500',
     bg: 'bg-warm-500/15',
     shadow: 'shadow-warm-500/20',
     bar: 'bg-warm-500',
   },
-  monitor: {
+  tactics: {
     text: 'text-info-500',
     bg: 'bg-info-500/15',
     shadow: 'shadow-info-500/20',
     bar: 'bg-info-500',
   },
-  history: {
+  logs: {
     text: 'text-purple-500',
     bg: 'bg-purple-500/15',
     shadow: 'shadow-purple-500/20',
@@ -46,19 +46,19 @@ const WING_ACTIVE_CLASSES: Partial<
 };
 
 const WING_SHORTCUT: Partial<Record<string, string>> = {
-  dashboard: 'Ctrl+1',
-  gaming: 'Ctrl+2',
-  monitor: 'Ctrl+3',
-  history: 'Ctrl+4',
+  core: 'Ctrl+1',
+  arsenal: 'Ctrl+2',
+  tactics: 'Ctrl+3',
+  logs: 'Ctrl+4',
   settings: 'Ctrl+5',
 };
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
-  { id: 'dashboard', label: 'ダッシュボード', icon: Gauge },
+  { id: 'core', label: 'コア', icon: Gauge },
   { id: 'sep-1' },
-  { id: 'gaming', label: 'ゲーミング', icon: Gamepad2 },
-  { id: 'monitor', label: 'モニター', icon: Activity },
-  { id: 'history', label: '履歴', icon: Clock },
+  { id: 'arsenal', label: 'アーセナル', icon: Gamepad2 },
+  { id: 'tactics', label: 'タクティクス', icon: Activity },
+  { id: 'logs', label: 'ログ', icon: Clock },
   { id: 'sep-2' },
   { id: 'settings', label: '設定', icon: Settings },
 ];

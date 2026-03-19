@@ -14,16 +14,16 @@ const HistoryWing = lazy(() => import('./wings/HistoryWing'));
 const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
 
 const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
-  dashboard: DashboardWing,
-  gaming: GamingWing,
-  monitor: MonitorWing,
-  history: HistoryWing,
+  core: DashboardWing,
+  arsenal: GamingWing,
+  tactics: MonitorWing,
+  logs: HistoryWing,
   settings: SettingsWing,
 };
 
 export default function App(): React.ReactElement {
-  const [activeWing, setActiveWing] = useState<WingId>('dashboard');
-  const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['dashboard']));
+  const [activeWing, setActiveWing] = useState<WingId>('core');
+  const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['core']));
 
   useKeyboardShortcuts();
 
