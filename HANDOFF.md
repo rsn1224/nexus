@@ -54,9 +54,279 @@
 | **v3.0.1 Phase 3** | ✅ 完了（aria-label 7コンポーネント + useFocusTrap Modal フォーカストラップ） |
 | **v3.0.1 Phase 4** | ✅ 完了（ErrorBoundary name prop + BoostWing/HardwareWing/LauncherWing/SettingsWing 適用） |
 | **Design Refresh v2** | ✅ 完了（Phase 1-8: カラー拡張・glass card・タイポグラフィ・KpiCard・グラフグロー・サイドバー・GameCard・モーション） |
+| **v3.1 オンボーディング Phase 1** | 🔵 pending（Cascade 実装待ち） |
 
 **最新コミット:** `dab34c7`（Design Refresh v2 Phase 1-8）
 **テスト:** TS 605 + Rust 230+ all green
+
+---
+
+## v3.1 オンボーディング Phase 1 -- Cascade 向け実装指示
+
+> **ステータス:** `pending`
+> **仕様書:** [`docs/specs/onboarding.spec.md`](docs/specs/onboarding.spec.md)
+> **目的:** 初回起動時のウェルカムウィザード（4 ステップ）
+
+### AI 開発ルール（全 Phase 共通）
+
+```
+1. テストが矛盾する場合は即停止して報告せよ
+2. 既存テストの書き換え禁止（新規追加のみ）
+3. 全ファイル 200 行以下
+4. console.log / any 型 禁止
+5. 各 Phase 後に vitest run + tsc --noEmit + npm run check を実行
+```
+
+---
+
+### Phase 1-A: OnboardingWizard + WelcomeStep
+
+**新規ファイル:**
+
+- `src/components/onboarding/OnboardingWizard.tsx`
+- `src/components/onboarding/WelcomeStep.tsx`
+
+**OnboardingWizard.tsx（ステップ管理コンテナ）:**
+
+```typescript
+// ステップ定義
+type OnboardingStep = 'welcome' | 'scan' | 'readiness' | 'complete';
+
+// localStorage キー
+const ONBOARDING_DONE_KEY = 'nexus:onboarding:done';
+
+// ステップ管理 state
+const [currentStep, setCurrentStep] = useState<OnboardingStep>('welcome');
+
+// スキップ機能
+const handleSkip = () => {
+  localStorage.setItem(ONBOARDING_DONE_KEY, 'true');
+  onComplete(); // App.tsx から渡される callback
+};
+```
+
+レイアウト:
+
+```tsx
+<div className="fixed inset-0 z-50 bg-base-900 flex items-center justify-center">
+  {/* ステップインジケーター（4 ドット） */}
+  <div className="flex gap-2 mb-6">
+    {STEPS.map((step, i) => (
+      <div key={step} className={`w-2 h-2 rounded-full ${
+        i < currentIndex ? 'bg-success-500'
+        : i === currentIndex ? 'bg-accent-500'
+        : 'bg-base-600'
+      }`} />
+    ))}
+  </div>
+
+  {/* ステップコンテンツ（card-glass max-w-lg） */}
+  <div className="card-glass rounded-lg p-8 max-w-lg w-full wing-enter">
+    {/* 各ステップコンポーネント */}
+  </div>
+
+  {/* スキップリンク */}
+  <button type="button" onClick={handleSkip}
+    className="font-mono text-[11px] text-text-muted hover:text-text-secondary mt-4">
+    スキップ
+  </button>
+</div>
+```
+
+**WelcomeStep.tsx:**
+
+- NEXUS ロゴ（`text-accent-500 text-2xl font-bold tracking-[0.2em]`）
+- 紹介テキスト（`text-[12px] text-text-secondary`）: "Gaming PC をワンクリックで最適化。まずシステムをスキャンしましょう。"
+- 「始める」ボタン（`Button variant="primary" fullWidth`）
+
+**App.tsx 変更:**
+
+```typescript
+const [onboardingDone, setOnboardingDone] = useState(
+  () => localStorage.getItem('nexus:onboarding:done') === 'true'
+);
+
+if (!onboardingDone) {
+  return <OnboardingWizard onComplete={() => setOnboardingDone(true)} />;
+}
+// 既存の Shell レンダリング
+```
+
+---
+
+### Phase 1-B: ScanStep
+
+**新規ファイル:** `src/components/onboarding/ScanStep.tsx`
+
+3 つのタスクを並行実行し、完了状態をリアルタイム表示:
+
+```typescript
+interface ScanTask {
+  label: string;
+  status: 'pending' | 'running' | 'done' | 'error';
+  errorMessage?: string;
+}
+
+// useEffect でマウント時に 3 タスクを Promise.allSettled で実行
+const tasks: ScanTask[] = [
+  { label: 'STEAM GAMES', status: 'pending' },
+  { label: 'HARDWARE INFO', status: 'pending' },
+  { label: 'APP SETTINGS', status: 'pending' },
+];
+```
+
+各タスク表示:
+
+```tsx
+<div className="flex items-center gap-3">
+  {/* ステータスアイコン */}
+  <div className={`w-2 h-2 rounded-full ${
+    task.status === 'done' ? 'bg-success-500'
+    : task.status === 'running' ? 'bg-accent-500 animate-pulse'
+    : task.status === 'error' ? 'bg-danger-500'
+    : 'bg-base-600'
+  }`} />
+  <span className="font-mono text-[11px] text-text-primary tracking-wider">
+    {task.label}
+  </span>
+  {task.status === 'error' && (
+    <span className="font-mono text-[9px] text-danger-500">ERROR</span>
+  )}
+</div>
+```
+
+- 全タスク完了後に「次へ」ボタン有効化
+- エラーがあってもブロックしない
+
+---
+
+### Phase 1-C: ReadinessSummaryStep + CompleteStep
+
+**新規ファイル:**
+
+- `src/components/onboarding/ReadinessSummaryStep.tsx`
+- `src/components/onboarding/CompleteStep.tsx`
+
+**ReadinessSummaryStep.tsx:**
+
+- `ReadinessGauge` コンポーネント（`src/components/home/ReadinessGauge.tsx`）を再利用
+- `RecommendationList` コンポーネント（`src/components/home/RecommendationList.tsx`）を再利用
+- ScanStep で取得した HW データを props 経由で受け取り、`calcReadiness()` を呼び出す
+- 表示: ゲージ + 3 軸スコアバー + 上位 3 件の推奨アクション
+
+**CompleteStep.tsx:**
+
+- チェックマークアイコン（`text-success-500 text-3xl`）
+- "セットアップ完了" テキスト
+- 「ダッシュボードへ」ボタン（`Button variant="primary" fullWidth`）
+- ボタンクリックで `localStorage` にフラグ保存 + `onComplete()` 呼び出し
+
+---
+
+### Phase 1-D: テスト
+
+**新規ファイル:** `src/components/onboarding/OnboardingWizard.test.tsx`
+
+最低限のテストケース:
+
+- localStorage 未設定で OnboardingWizard が表示される
+- localStorage 設定済みで OnboardingWizard が表示されない（App.tsx レベル）
+- Welcome ステップで「始める」をクリックすると Scan ステップに遷移
+- スキップボタンで localStorage にフラグが保存される
+- Complete ステップで「ダッシュボードへ」をクリックすると onComplete が呼ばれる
+
+---
+
+### 品質ゲート
+
+```bash
+npm run typecheck
+npm run check
+npm run lint
+npm run test
+node scripts/check-file-size.mjs --strict
+```
+
+全てクリア後にコミット: `feat: v3.1 onboarding Phase 1 -- 初回起動ウィザード`
+
+---
+
+## Design Refresh v2 -- Claude Code レビューフィードバック（Cascade 向け）
+
+> **ステータス:** `review` → 5 観点チェック完了
+> **対象コミット:** `dab34c7`（31 files changed, 1485 insertions）
+> **判定:** ✅ **APPROVED** -- 以下の改善提案は任意（次回実装時に対応で OK）
+
+### 1. アーキテクチャ / 構造
+
+**✅ 良い点:**
+
+- KpiCard を独立コンポーネントとして抽出（再利用性◎）
+- HeroSection が 65 行まで削減（200 行制限を大幅にクリア）
+- Card に `glass` / `glass-elevated` variant 追加 -- 既存 API を壊さず拡張
+
+**⚠️ 改善提案:**
+
+- `KpiCard.tsx:13` -- `spark` 値に `rgba()` ハードコードあり。SVG の `stroke` 属性は CSS 変数を直接参照できないため許容だが、将来的に `currentColor` + CSS custom property で置換可能
+- `KpiCard.tsx:63` -- `hover:${glow}` のテンプレートリテラルは **Tailwind v4 の JIT で動的クラス生成不可**。実行時には効かない可能性あり → `data-color` 属性 + CSS セレクタ方式を検討
+
+### 2. デザイン規約準拠（DESIGN.md v3）
+
+**✅ 合格:**
+
+- 色は全て CSS 変数経由（`text-warm-500`, `text-purple-500`, `text-info-500` 等）
+- タイポグラフィ: `text-[11px] tracking-wider font-mono` パターン統一
+- ALL CAPS 規約: ラベル・セクション見出し・ボタンテキストで遵守
+- インラインスタイル: `progressWidth()` ヘルパーのみ（計算値の例外に該当）
+
+**⚠️ 注意:**
+
+- `Shell.tsx:86` -- サイドバーアクティブインジケーターに `glow-cyan` クラスを追加。控えめな光で良いが、色覚多様性ユーザーには形状（`w-[3px] h-5` バー）が主な識別手段であることを確認済み
+
+### 3. パフォーマンス
+
+**✅ 良い点:**
+
+- `SparklineSvg` 内の `useMemo` で points 計算をメモ化
+- `FrameTimeGraph` の Canvas 描画で `getComputedStyle` を `useEffect` 内に閉じ込め（レンダリングブロックなし）
+- `card-glass` の `backdrop-filter: blur(12px)` -- GPU 合成レイヤーになるため高負荷だが、KPI カード 4 枚のみで許容範囲
+
+**⚠️ 改善提案:**
+
+- `FrameTimeGraph.tsx:69-71` -- 毎フレーム `getComputedStyle()` を 5 回呼んでいる。CSS 変数値は `useRef` にキャッシュして reflow を軽減可能
+
+### 4. テスト / 品質
+
+**✅ 合格:**
+
+- 605 テスト全 green
+- Biome lint 0 エラー
+- typecheck 0 エラー
+- ファイルサイズ制限（200 行）全コンポーネントクリア
+- 既存テストファイルの Biome 問題（import 順序等）も同時修正済み
+
+### 5. UX / アクセシビリティ
+
+**✅ 良い点:**
+
+- `KpiCard` SVG に `role="img"` + `aria-label` 付与
+- GameCard の `aria-pressed={isFavorite}` -- トグルボタンの正しいパターン
+- Modal に `modal-enter` アニメーション追加（`scale(0.95)` → `scale(1)`）-- 控えめで適切
+- サイドバー tooltip に `card-glass-elevated` -- 視認性向上
+
+**⚠️ 改善提案:**
+
+- `GameCard.tsx:58` -- `bg-linear-to-t` は Tailwind v4 の正しいグラデーション記法だが、hover のオーバーレイにフォーカスインジケーターがないため、キーボードナビゲーションのとき視覚的変化が乏しい
+
+---
+
+### Cascade 向け次回実装のとき TODO（任意）
+
+```
+1. [ ] KpiCard hover glow -- テンプレートリテラル動的クラスを data 属性 + CSS に置換
+2. [ ] FrameTimeGraph -- getComputedStyle キャッシュ化（useRef）
+3. [ ] GameCard -- キーボードフォーカスのとき オーバーレイ表示
+```
 
 ---
 

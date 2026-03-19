@@ -108,12 +108,21 @@
 
 ---
 
-## v3.1 候補（v3.0 完了後）
+## v3.1 進行中
+
+### オンボーディングフロー（Phase 1）
+
+- **仕様書:** `docs/specs/onboarding.spec.md`
+- **HANDOFF:** Cascade 向け実装指示追記済み（Phase 1-A〜1-D）
+- **ステータス:** `pending`（Cascade 実装待ち）
+- 4 ステップウィザード: Welcome → System Scan → Readiness Summary → Complete
+- `localStorage` フラグ方式、App.tsx で判定
+
+## v3.1 残り候補
 
 | 候補 | 優先度 | 依存 |
 |------|--------|------|
 | Rust 300 行超ファイルの段階的分割（25 ファイル） | 高 | v3.0 完了 |
-| オンボーディングフロー | 高 | v3.0 完了 |
 | i18n 基盤（日本語/英語） | 高 | v3.0 完了 |
 | E2E テスト正式化（continue-on-error 撤去） | 高 | spec.md 完備後 |
 | テーマカスタマイズ（accent color） | 中 | v3.0 完了 |
