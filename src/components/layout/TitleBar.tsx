@@ -4,7 +4,13 @@ import type React from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
 
 const TitleBar = memo(function TitleBar(): React.ReactElement {
-  const appWindow = getCurrentWindow();
+  const appWindow = (() => {
+    try {
+      return getCurrentWindow();
+    } catch {
+      return null;
+    }
+  })();
 
   const [blink, setBlink] = useState(true);
   const [clock, setClock] = useState(() =>
@@ -35,15 +41,15 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
   }, []);
 
   const handleMinimize = useCallback(() => {
-    void appWindow.minimize();
+    void appWindow?.minimize();
   }, [appWindow]);
 
   const handleMaximize = useCallback(() => {
-    void appWindow.toggleMaximize();
+    void appWindow?.toggleMaximize();
   }, [appWindow]);
 
   const handleClose = useCallback(() => {
-    void appWindow.close();
+    void appWindow?.close();
   }, [appWindow]);
 
   return (
