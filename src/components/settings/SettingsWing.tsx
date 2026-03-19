@@ -6,7 +6,7 @@ import log from '../../lib/logger';
 import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
 import type { RevertAllResult, RevertItem } from '../../types';
-import WinoptTab from '../boost/WinoptTab';
+import WinoptTab from '../performance/WinoptTab';
 import { ErrorBanner, TabBar } from '../ui';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';

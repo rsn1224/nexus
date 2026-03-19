@@ -6,12 +6,12 @@ import type { WingId } from './types';
 
 // ─── Lazy Wing imports ──────────────────────────────────────────────────────
 const HomeWing = lazy(() => import('./components/home/HomeWing'));
-const PerformanceWing = lazy(() => import('./components/boost/BoostWing'));
-const GamesWing = lazy(() => import('./components/launcher/LauncherWing'));
+const PerformanceWing = lazy(() => import('./components/performance/BoostWing'));
+const GamesWing = lazy(() => import('./components/games/LauncherWing'));
 const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
 const HardwareWing = lazy(() => import('./components/hardware/HardwareWing'));
 const LogWing = lazy(() => import('./components/log/LogWing'));
-const NetworkWing = lazy(() => import('./components/netopt/NetoptWing'));
+const NetworkWing = lazy(() => import('./components/network/NetoptWing'));
 const StorageWing = lazy(() => import('./components/storage/StorageWing'));
 
 const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
@@ -27,13 +27,10 @@ const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
 
 export default function App(): React.ReactElement {
   const [activeWing, setActiveWing] = useState<WingId>('home');
-  // Wings are kept mounted once visited so state persists
-  const [mountedWings, setMountedWings] = useState<Set<WingId>>(new Set<WingId>(['home']));
 
   const setNavigate = useNavStore((s) => s.setNavigate);
 
   const handleWingChange = useCallback((wing: WingId): void => {
-    setMountedWings((prev) => new Set([...prev, wing]));
     setActiveWing(wing);
   }, []);
 
@@ -44,7 +41,6 @@ export default function App(): React.ReactElement {
   return (
     <Shell activeWing={activeWing} onWingChange={handleWingChange}>
       {(Object.keys(WING_COMPONENTS) as WingId[]).map((wingId) => {
-        if (!mountedWings.has(wingId)) return null;
         const WingComponent = WING_COMPONENTS[wingId];
         return (
           <div

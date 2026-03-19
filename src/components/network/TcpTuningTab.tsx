@@ -1,7 +1,7 @@
 import React from 'react';
 import { useWinoptStore } from '../../stores/useWinoptStore';
-import NetworkQualityCard from '../boost/NetworkQualityCard';
-import TcpTuningCard from '../boost/TcpTuningCard';
+import NetworkQualityCard from '../performance/NetworkQualityCard';
+import TcpTuningCard from '../performance/TcpTuningCard';
 import { Button, LoadingState } from '../ui';
 
 interface TcpTuningTabProps {

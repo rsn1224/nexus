@@ -31,7 +31,7 @@ export default function FpsTimelineGraph({ timeline, height = 60 }: FpsTimelineG
 
     const style = getComputedStyle(document.documentElement);
     const borderColor = style.getPropertyValue('--color-border-subtle').trim() || '#1e293b';
-    const accentColor = style.getPropertyValue('--color-accent-500').trim() || '#f97316';
+    const accentColor = style.getPropertyValue('--color-accent-500').trim() || '#06b6d4';
     const dangerColor = style.getPropertyValue('--color-danger-500').trim() || '#ef4444';
     const successColor = style.getPropertyValue('--color-success-500').trim() || '#22c55e';
     const textMuted = style.getPropertyValue('--color-text-muted').trim() || '#6b7280';
