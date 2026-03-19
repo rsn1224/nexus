@@ -47,9 +47,190 @@
 | v2.2 Phase 4 | ✅ 完了（UnifiedEmitter: 4タスク → 1タスク統合、28c7ca7） |
 | **v3.0 Phase 1** | ✅ 完了（ワークフロー基盤構築: TESTING.md + BACKEND.md + 3 lint スクリプト + CI 更新、`212b958`） |
 | **v3.0 Phase 2** | ✅ 完了（2A: assertNever→lib/assert.ts, 2B: types 前半9分割, 2C: types 後半8分割, 2D: index.ts re-exportのみ化） |
+| **v3.0 Phase 3** | 🔄 進行中（Store ロジック抽出 + Semgrep 導入） |
 
-**最新コミット:** `8e2252e`（v3.0 Phase 2D）
+**最新コミット:** v3.0 Phase 3 作業中（ベース: `cd36c7b`）
 **テスト:** TS 542 + Rust 230+ all green
+
+---
+
+## v3.0 Phase 3 — Store ロジック抽出（Cascade 向け実装指示）
+
+> **ステータス:** ⏳ 実装待ち
+> **前提:** Phase 2（`8e2252e`）完了。TS 542 + Rust 230+ all green。
+> **目標:** 7 ストア全てを 200 行以下にする
+> **コミット:** 1 ストア = 1 コミット（`refactor: v3.0 Phase 3-N — useXxxStore ロジックを lib/ に抽出`）
+
+### AI 開発ルール（Cascade 必読）
+
+```
+1. テストが矛盾する場合は即停止して報告せよ
+2. 既存テストファイルの既存テストケースを書き換えてはならない
+3. リファクタリングでは既存コードの移動のみ。新規ロジック禁止
+4. 1 ファイル 200 行以下。超過する場合は分割方針を報告
+5. 各ストア抽出後に vitest run + tsc --noEmit を実行して確認
+```
+
+---
+
+### 3-1: useNavStore.ts（247 行 → 目標 160 行）
+
+**抽出先:** `src/lib/navigation.ts`（新規作成）
+
+**移動するもの:**
+- `WING_LABELS` 定数（10 行）
+- `ALL_WING_IDS` 定数（10 行）
+- `makeInitialWingStates()` 関数（7 行）
+- `buildBreadcrumbs()` 関数（57 行）— 純粋関数、store 依存なし
+
+**ストアに残すもの:**
+- `navigate()`, `navigateTo()`, `setTab()`, `pushSubpage()`, `popSubpage()`, `clearSubpages()` — 全て `set()` を使用
+- セレクター
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 3-2: useStorageStore.ts（232 行 → 目標 150 行）
+
+**抽出先:** `src/lib/storageCommands.ts`（新規作成）
+
+**移動するもの（Tauri invoke ラッパー 6 関数）:**
+- `fetchStorageInfo()` → `async function fetchStorageInfo(): Promise<StorageInfo | null>`
+- `cleanupTempFiles()` → `async function cleanupTempFiles(): Promise<number>`
+- `cleanupRecycleBin()` → `async function cleanupRecycleBin(): Promise<number>`
+- `cleanupSystemCache()` → `async function cleanupSystemCache(): Promise<number>`
+- `runFullCleanup()` → `async function runFullCleanup(): Promise<CleanupResult>`
+- `analyzeDiskUsage(driveName)` → `async function analyzeDiskUsage(driveName: string): Promise<string[]>`
+
+**ストアに残すもの:**
+- state 定義 + `set()` による状態更新
+- セレクター + 既存 lib/storage.ts からの re-export
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 3-3: useWindowsSettingsStore.ts（246 行 → 目標 150 行）
+
+**抽出先:** `src/lib/windowsSettingsCommands.ts`（新規作成）
+
+**移動するもの（Tauri invoke ラッパー 9 関数）:**
+- `fetchWindowsSettings()`: invoke + fallback to defaultWindowsSettings
+- `setPowerPlan(plan)`: invoke + void
+- `toggleGameMode()`: invoke → boolean
+- `toggleFullscreenOptimization()`: invoke → boolean
+- `toggleHardwareGpuScheduling()`: invoke → boolean
+- `setVisualEffects(effect)`: invoke + void
+- `fetchAdvisorResult()`: invoke → AdvisorResult
+- `applyRecommendation(settingId)`: invoke + void
+- `applyAllSafeRecommendations()`: invoke + void
+
+**ストアに残すもの:**
+- state 定義 + optimistic update ロジック（`set()` 使用）
+- エラーハンドリング + セレクター
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 3-4: useLogStore.ts（239 行 → 目標 180 行）
+
+**抽出先:** `src/lib/logFilter.ts`（新規作成）
+
+**移動するもの（純粋フォーマッター 4 関数）:**
+- `getLogLevelColor(level)`: LogLevel → Tailwind カラークラス
+- `getLogLevelBgColor(level)`: LogLevel → Tailwind 背景クラス
+- `formatTimestamp(timestamp)`: string → ja-JP フォーマット済み文字列
+- `truncateMessage(message, maxLength?)`: 100 文字切り詰め
+
+**追加抽出先:** `src/lib/logCommands.ts`（新規作成、オプション）
+- `fetchSystemLogs()`, `fetchApplicationLogs()`, `analyzeLogs()`, `exportLogs()`
+
+**ストアに残すもの:**
+- state + フィルター setter + セレクター
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 3-5: useHardwareStore.ts（269 行 → 目標 200 行）
+
+**抽出先:** `src/lib/hardwareFormatters.ts`（新規作成）
+
+**移動するもの:**
+- `defaultHardwareInfo` 定数（20 行）
+- `formatUptime(seconds)`: 秒 → "Xd Xh Xm" 文字列（13 行）
+- `createDiskProgressBar(usedGb, totalGb)`: プログレスバー文字列（7 行）
+- `formatBootTime(bootTimeUnix)`: Unix タイムスタンプ → ja-JP 日時（9 行）
+- `calculateMemUsagePercent(used, total)`: 使用率計算（2 行）
+
+**ストアに残すもの:**
+- `subscribe()` / `unsubscribe()` — Tauri イベントリスナー
+- セレクター（lib からの再計算を呼び出し）
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 3-6: useGameProfileStore.ts（313 行 → 目標 200 行）
+
+**抽出先:** `src/lib/gameProfile.ts`（既存ファイルに追加）
+
+**移動するもの（Tauri invoke ラッパー）:**
+- `fetchGameProfiles()`: invoke → GameProfile[]
+- `saveGameProfile(profile)`: invoke → GameProfile
+- `deleteGameProfile(id)`: invoke → void
+- `applyGameProfile(id)`: invoke → ProfileApplyResult
+- `revertGameProfile()`: invoke → void
+- `getCpuTopology()`: invoke → CpuTopology | null
+- `fetchCoreParking()`: invoke → CoreParkingState | null
+- `setCoreParking(minCoresPercent)`: invoke → CoreParkingState | null
+- `exportGameProfile(id)`: invoke → string | null
+- `importGameProfile(json)`: invoke → GameProfile | null
+
+**純粋ヘルパー:**
+- `updateProfileInList(profile, profiles)`: プロファイルリスト内の更新/追加
+
+**ストアに残すもの:**
+- state + `setupListeners()` + セレクター
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 3-7: useNetworkTuningStore.ts（212 行 → 目標 150 行）
+
+**抽出先:** `src/lib/networkTuning.ts`（新規作成）
+
+**移動するもの（Tauri invoke ラッパー 9 関数）:**
+- `fetchTcpTuningState()`: invoke → TcpTuningState
+- `setNagleDisabled(disabled)`: invoke → void
+- `setDelayedAckDisabled(disabled)`: invoke → void
+- `setNetworkThrottling(index)`: invoke → void
+- `setQosReservedBandwidth(percent)`: invoke → void
+- `setTcpAutoTuning(level)`: invoke → void
+- `applyGamingNetworkPreset()`: invoke → TcpTuningState
+- `resetNetworkDefaults()`: invoke → TcpTuningState
+- `measureNetworkQuality(target, count)`: invoke → NetworkQualitySnapshot
+
+**ストアに残すもの:**
+- state + optimistic update + セレクター
+
+**品質チェック:** `vitest run` + `tsc --noEmit`
+
+---
+
+### 全ストア完了後
+
+```
+✅ 7 ストア全てが 200 行以下
+✅ vitest run — 542 件以上
+✅ tsc --noEmit — 型エラーゼロ
+✅ npm run check — Biome クリーン
+✅ npm run lint — 全通過
+✅ check-file-size.mjs --strict — エラーゼロ（エラーモード昇格後）
+```
 
 ---
 

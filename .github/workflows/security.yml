@@ -60,3 +60,25 @@ jobs:
       - name: cargo audit
         working-directory: src-tauri
         run: cargo audit
+
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Semgrep — TypeScript (p/typescript)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/typescript
+        env:
+          SEMGREP_PATHS: src/
+
+      - name: Semgrep — Rust (p/rust)
+        uses: semgrep/semgrep-action@v1
+        with:
+          config: p/rust
+        env:
+          SEMGREP_PATHS: src-tauri/src/
