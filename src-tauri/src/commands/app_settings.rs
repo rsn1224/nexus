@@ -60,7 +60,7 @@ pub fn get_app_settings(app: AppHandle) -> Result<AppSettings, AppError> {
     };
 
     // API キーは keyring から読み込む（JSON ファイルには保存しない）
-    match credentials::load_api_key("perplexity-api-key") {
+    match credentials::load_api_key("perplexity_api_key") {
         Ok(Some(key)) => settings.perplexity_api_key = key,
         Ok(None) => {} // keyring にエントリなし — デフォルト空文字列のまま
         Err(e) => {
@@ -81,7 +81,7 @@ pub fn save_app_settings(app: AppHandle, settings: AppSettings) -> Result<(), Ap
     info!("save_app_settings: 設定保存中");
 
     // API キーは keyring に保存
-    if let Err(e) = credentials::save_api_key("perplexity-api-key", &settings.perplexity_api_key) {
+    if let Err(e) = credentials::save_api_key("perplexity_api_key", &settings.perplexity_api_key) {
         warn!(
             "keyring への API キー保存に失敗: {}。JSON にフォールバック",
             e
