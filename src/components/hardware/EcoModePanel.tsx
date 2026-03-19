@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useEcoModeStore } from '../../stores/useEcoModeStore';
 import type { EcoModeConfig } from '../../types';
 import Button from '../ui/Button';
@@ -23,6 +23,7 @@ const EcoModePanel: React.FC = () => {
 
   const [hoursPerDay, setHoursPerDay] = useState(3.0);
   const [tempConfig, setTempConfig] = useState<EcoModeConfig | null>(null);
+  const prevConfigRef = useRef<string | null>(null);
 
   useEffect(() => {
     fetchConfig();
@@ -30,10 +31,12 @@ const EcoModePanel: React.FC = () => {
   }, [fetchConfig, fetchPowerEstimate]);
 
   useEffect(() => {
-    if (config) {
-      setTempConfig(config);
-      fetchCostEstimate(hoursPerDay);
-    }
+    if (!config) return;
+    const json = JSON.stringify(config);
+    if (json === prevConfigRef.current) return;
+    prevConfigRef.current = json;
+    setTempConfig(config);
+    fetchCostEstimate(hoursPerDay);
   }, [config, hoursPerDay, fetchCostEstimate]);
 
   const handleToggleEcoMode = async () => {
