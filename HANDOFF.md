@@ -55,9 +55,307 @@
 | **v3.0.1 Phase 4** | ✅ 完了（ErrorBoundary name prop + BoostWing/HardwareWing/LauncherWing/SettingsWing 適用） |
 | **Design Refresh v2** | ✅ 完了（Phase 1-8: カラー拡張・glass card・タイポグラフィ・KpiCard・グラフグロー・サイドバー・GameCard・モーション） |
 | **v3.1 オンボーディング Phase 1** | 🔵 pending（Cascade 実装待ち） |
+| **NEXUS v2 Phase 1: クリーンアップ** | 🔵 pending（Cascade 実装待ち） |
 
-**最新コミット:** `dab34c7`（Design Refresh v2 Phase 1-8）
-**テスト:** TS 605 + Rust 230+ all green
+**最新コミット:** `8134f0e`（v2 spec.md + 型定義）
+**ブランチ:** `feature/v2-optimize-core`
+**テスト:** TS 709 + Rust 230+ all green
+
+---
+
+## NEXUS v2 — Cascade 向け全 Phase 実装プロンプト
+
+> **ステータス:** `pending` → Phase 1 から順次実装
+> **ブランチ:** `feature/v2-optimize-core`
+> **仕様書:** [`docs/v2/spec.md`](docs/v2/spec.md)
+> **型定義:** [`src/types/v2.ts`](src/types/v2.ts)（**変更禁止**）
+> **ストア型:** [`src/stores/types/`](src/stores/types/)（**変更禁止**）
+> **v2 は完全な別プロダクト。** 現在の master（v3.x）とは独立して進める。
+
+### AI 開発ルール（全 Phase 共通 — 必ず遵守）
+
+```
+1. テストが矛盾する場合（同じ入力に異なる期待値）は、実装を続けずに即停止して報告せよ
+2. テストファイルの既存テストを書き換えてはならない。新規テスト追加のみ許可
+3. リファクタリングフェーズでは既存コードの移動・分割のみ。新規ロジックの追加は禁止
+4. 全ファイル 200 行以下（TS/TSX）。超過する場合は分割方針を報告して確認を取れ
+5. spec.md に記載された期待動作と実装の結果が異なる場合、実装のバグとして報告せよ（テストを変えるな）
+6. console.log / any 型 禁止
+7. 各 Phase 後に vitest run + tsc --noEmit + npm run check を実行
+```
+
+### 必読ファイル（実装前に必ず読むこと）
+
+```
+docs/v2/spec.md          — 確定版仕様（Rust コマンドマッピング含む）
+src/types/v2.ts          — v2 型定義（変更禁止）
+src/stores/types/        — ストアインターフェース（変更禁止）
+CLAUDE.md                — コード品質ルール
+```
+
+---
+
+### Phase 1: クリーンアップ
+
+**目的:** 削除対象の Rust コマンド + フロントエンドコンポーネントを削除し、Wing ID を 5 つに更新。
+
+#### 1-A: Rust コマンド削除（8 ファイル + lib.rs 更新）
+
+**削除対象ファイル:**
+
+| ファイル | コマンド数 | 削除理由 |
+|---------|----------|---------|
+| `src-tauri/src/commands/launcher.rs` | 2 | Non-Goal |
+| `src-tauri/src/commands/launcher_settings.rs` | 3 | Non-Goal |
+| `src-tauri/src/commands/profile.rs` | 14 | 提案ベースに移行 |
+| `src-tauri/src/commands/watchdog.rs` | 6 | AI 提案が代替 |
+| `src-tauri/src/commands/script.rs` | 6 | セキュリティリスク |
+| `src-tauri/src/commands/storage.rs` | 8 | Non-Goal |
+| `src-tauri/src/commands/log.rs` | 4 | 簡易化 |
+| `src-tauri/src/commands/cleanup.rs` | 1（`cleanup_app_data` のみ） | `revert_all_settings` は残す |
+
+**lib.rs の更新:**
+- `invoke_handler![]` から削除したコマンドの関数名を全て除去
+- `cleanup.rs` の `revert_all_settings` は残す。`cleanup_app_data` のみ除去
+- `mod` 宣言も対応する行を削除
+
+**チェック:** `cargo check --manifest-path src-tauri/Cargo.toml`
+
+#### 1-B: フロントエンド削除
+
+**削除対象ディレクトリ:**
+
+```
+src/components/games/       — ディレクトリごと削除
+src/components/log/         — ディレクトリごと削除
+src/components/storage/     — ディレクトリごと削除
+src/components/performance/ — ディレクトリごと削除（MonitorWing として再設計するため）
+```
+
+**削除対象ストア:**
+
+```
+src/stores/useLauncherStore.ts
+src/stores/useScriptStore.ts
+src/stores/useLogStore.ts
+src/stores/useStorageStore.ts
+src/stores/useWatchdogStore.ts
+src/stores/useGameProfileStore.ts
+src/stores/useSessionStore.ts
+```
+
+**削除対象 lib:**
+
+```
+src/lib/gameDetection.ts
+src/lib/gameProfile.ts
+src/lib/logFilter.ts
+src/lib/storageCommands.ts
+```
+
+**削除対象 hooks:**
+
+```
+src/hooks/gameProfileHooks.ts
+src/hooks/storageHooks.ts
+```
+
+**削除対象テスト:** 上記ストア・コンポーネントに対応するテストファイルも削除。
+
+#### 1-C: WingId + Shell 更新
+
+**`src/types/wing.ts` を更新:**
+
+```typescript
+// v1 の WingId を v2 に変更
+export type WingId = 'dashboard' | 'gaming' | 'monitor' | 'history' | 'settings';
+```
+
+**注:** `src/types/v2.ts` にも `WingId` が定義されている。v1 の `wing.ts` を v2 の定義に合わせること。
+
+**`src/components/layout/Shell.tsx` を更新:**
+- サイドバーアイコン・ラベル・ショートカットを 5 Wing に変更
+- 各 Wing のコンポーネント import を更新（新規 Wing コンポーネントはプレースホルダーで OK）
+
+**`src/components/layout/Sidebar.tsx` を更新:**
+- 5 Wing のアイコンとラベルのみ
+
+**プレースホルダー Wing コンポーネント（5 ファイル新規作成）:**
+
+```
+src/wings/DashboardWing.tsx    — "DASHBOARD — Coming Soon"
+src/wings/GamingWing.tsx       — "GAMING — Coming Soon"
+src/wings/MonitorWing.tsx      — "MONITOR — Coming Soon"
+src/wings/HistoryWing.tsx      — "HISTORY — Coming Soon"
+src/wings/SettingsWing.tsx     — "SETTINGS — Coming Soon"
+```
+
+各ファイルは `memo()` でラップした最小コンポーネント（10 行以下）。
+
+#### Phase 1 品質ゲート
+
+```
+✅ cargo check — Rust コンパイル通過
+✅ tsc --noEmit — 型エラーゼロ
+✅ npm run check — Biome クリーン
+✅ vitest run — 残存テスト全通過（削除したテストは除く）
+✅ Shell が 5 Wing で表示される
+✅ 削除対象ファイルが全て git rm されている
+```
+
+**コミット:** `refactor: NEXUS v2 Phase 1 — クリーンアップ（8 Rust + FE コンポーネント削除 + 5 Wing 化）`
+
+---
+
+### Phase 2: 基盤（lib/ 純粋関数）
+
+**目的:** `healthScore.ts` + `suggestionEngine.ts` を実装。spec.md §4.1 のアルゴリズムに従う。
+
+#### 2-A: `src/lib/healthScore.ts`
+
+- `src/types/v2.ts` の `HealthInput` → `HealthScore` を返す純粋関数
+- spec.md の重み付け表どおりに実装
+- Grade 判定: S/A/B/C/D（spec.md §4.1）
+- `label` フィールド: 改善可能ポイント数を計算して生成
+- **テスト:** `src/lib/healthScore.test.ts` — 境界値 (0,39,40,59,60,79,80,89,90,100) + 各因子のテスト
+
+#### 2-B: `src/lib/suggestionEngine.ts`
+
+- `HealthInput` + 追加情報 → `Suggestion[]` を返す純粋関数
+- spec.md §4.1 の 10 ルールを全て実装
+- 各 Suggestion に正確な `SuggestionAction`（invokeCommand + args）を含める
+- **テスト:** `src/lib/suggestionEngine.test.ts` — 各ルール × 条件 true/false のペア
+
+#### 2-C: `src/lib/constants.ts`
+
+- マジックナンバーを全て定数化
+  - `HEALTH_WEIGHTS`, `GRADE_THRESHOLDS`, `THERMAL_THRESHOLDS` 等
+- healthScore.ts と suggestionEngine.ts がこのファイルの定数のみ参照
+
+#### Phase 2 品質ゲート
+
+```
+✅ tsc --noEmit — 型エラーゼロ
+✅ vitest run — 新規テスト含め全通過
+✅ healthScore.test.ts — 境界値 10 ケース以上
+✅ suggestionEngine.test.ts — 10 ルール × 2 = 20 ケース以上
+✅ lib/ ファイルが stores/ を import していないこと
+✅ 全ファイル 200 行以下
+```
+
+**コミット:** `feat: NEXUS v2 Phase 2 — healthScore + suggestionEngine 純粋関数`
+
+---
+
+### Phase 3: DASHBOARD Wing
+
+**目的:** DASHBOARD Wing の UI 実装。spec.md §4.1 のレイアウトに従う。
+
+- `src/stores/useHealthStore.ts` — `stores/types/healthStore.ts` のインターフェースを実装
+- `src/stores/useAiStore.ts` — `stores/types/aiStore.ts` のインターフェースを実装
+- `src/components/dashboard/` 以下のコンポーネント（spec.md §6 参照）
+- Tauri invoke で `get_windows_settings` + `get_resource_snapshot` + `analyze_bottleneck` を呼び、HealthScore を計算
+- SuggestionCard のワンクリック適用フロー
+
+#### Phase 3 品質ゲート
+
+```
+✅ tsc --noEmit / vitest run / npm run check
+✅ DASHBOARD Wing が Health Score + Suggestion リストを表示
+✅ Suggestion の [適用] ボタンが invoke を正しく呼ぶ
+✅ 全コンポーネント 200 行以下
+✅ 全コンポーネント memo() でラップ
+```
+
+**コミット:** `feat: NEXUS v2 Phase 3 — DASHBOARD Wing（HealthScore + Suggestion + ワンクリック適用）`
+
+---
+
+### Phase 4: GAMING Wing
+
+**目的:** GAMING Wing の UI 実装。spec.md §4.2 のセクション構成に従う。
+
+- `src/stores/useOptimizeStore.ts` — `stores/types/optimizeStore.ts` のインターフェースを実装
+- `src/components/gaming/` 以下のコンポーネント（spec.md §6 参照）
+- Optimize All: 3 プリセット（Gaming/PowerSave/Streaming）の全ステップを順次 invoke
+- 各セクション（Windows/Process/Network/Memory/Timer/CPU）の個別制御 UI
+
+#### Phase 4 品質ゲート
+
+```
+✅ tsc --noEmit / vitest run / npm run check
+✅ Optimize All が全ステップを順次実行
+✅ 各セクションが対応 Rust コマンドを正しく invoke
+✅ 全コンポーネント 200 行以下 + memo()
+```
+
+**コミット:** `feat: NEXUS v2 Phase 4 — GAMING Wing（Optimize All + 7 セクション）`
+
+---
+
+### Phase 5: AI 統合
+
+**目的:** Perplexity Sonar API 統合 + Graceful Degradation（ADR-004）。
+
+- `src/lib/aiAnalyzer.ts` — AI 分析リクエスト/レスポンス処理
+- `useAiStore` の `analyze()` アクション実装
+- API キーなし → Layer 2（ルールベース）で動作することを確認
+- API エラー → Layer 2 にフォールバック
+
+#### Phase 5 品質ゲート
+
+```
+✅ API キーなしで DASHBOARD が正常表示（ルールベースのみ）
+✅ API キーありで AI 分析結果が Suggestion に反映
+✅ ネットワークエラー時にフォールバックが機能
+```
+
+**コミット:** `feat: NEXUS v2 Phase 5 — AI 統合（Perplexity Sonar + Graceful Degradation）`
+
+---
+
+### Phase 6: MONITOR + HISTORY Wing
+
+**目的:** リアルタイム監視 + セッション履歴。
+
+- MONITOR: pulse イベント購読 + CircularBuffer(120) + Canvas グラフ + FrameTime
+- HISTORY: session.rs CRUD + 7d/30d トレンド + セッション比較
+- `src/stores/useHistoryStore.ts` — `stores/types/historyStore.ts` のインターフェースを実装
+
+#### Phase 6 品質ゲート
+
+```
+✅ MONITOR が 500ms 更新でリアルタイムグラフ表示
+✅ HISTORY がセッション一覧 + 詳細 + 比較を表示
+✅ 全コンポーネント 200 行以下 + memo()
+```
+
+**コミット:** `feat: NEXUS v2 Phase 6 — MONITOR Wing + HISTORY Wing`
+
+---
+
+### Phase 7: SETTINGS + 統合テスト
+
+**目的:** SETTINGS Wing + 全体結合テスト + Stryker。
+
+- SETTINGS Wing: API キー管理 + アプリ設定（spec.md §4.5）
+- lib/ の Stryker mutation テスト実行 → mutation score 70%+ 目標
+- 全 Wing 間のナビゲーション確認
+
+#### Phase 7 品質ゲート
+
+```
+✅ tsc --noEmit — ゼロエラー
+✅ vitest run — 全テスト通過
+✅ npm run check — Biome クリーン
+✅ cargo clippy -- -D warnings — ゼロ
+✅ cargo test — 全通過
+✅ Stryker mutation score ≥ 70%（lib/ 対象）
+✅ 全 Wing が正常に表示・遷移
+✅ 全ファイル 200 行以下
+```
+
+**コミット:** `feat: NEXUS v2 Phase 7 — SETTINGS Wing + 統合テスト + Stryker`
 
 ---
 
