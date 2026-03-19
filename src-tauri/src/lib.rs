@@ -88,40 +88,137 @@ pub fn run() {
         .expect("error while running tauri application");
 }
 
-// Build invoke handler based on platform
+// 共通コマンドリストを保持するマクロ。
+// クロスプラットフォームのコマンドはここに追加する。
+// Windows 専用コマンドは build_invoke_handler (windows) 内に直接記述する。
+macro_rules! invoke_handler {
+    ($($windows_only:path),* $(,)?) => {
+        tauri::generate_handler![
+            // AI
+            ai::get_optimization_suggestions,
+            ai::test_api_key,
+            ai::analyze_bottleneck_ai,
+            // HEALTH CHECK
+            health_check::run_health_check,
+            // PULSE
+            pulse::get_resource_snapshot,
+            // HARDWARE
+            hardware::get_hardware_info,
+            // POWER ESTIMATOR
+            hardware::get_power_estimate,
+            hardware::get_monthly_cost_estimate,
+            hardware::set_eco_mode,
+            hardware::get_eco_mode_config,
+            hardware::save_eco_mode_config,
+            // BOOST
+            boost::run_boost,
+            // LAUNCHER
+            launcher::scan_steam_games,
+            launcher::launch_game,
+            // LAUNCHER SETTINGS
+            launcher_settings::get_launcher_settings_cmd,
+            launcher_settings::save_launcher_settings_cmd,
+            launcher_settings::migrate_launcher_settings,
+            // OPS
+            ops::list_processes,
+            ops::kill_process,
+            ops::set_process_priority,
+            ops::get_ai_suggestions,
+            // NETOPT
+            netopt::get_network_adapters,
+            netopt::get_current_dns,
+            netopt::set_dns,
+            netopt::ping_host,
+            // TCP TUNING
+            netopt::get_tcp_tuning_state,
+            netopt::set_nagle_disabled,
+            netopt::set_delayed_ack_disabled,
+            netopt::set_network_throttling,
+            netopt::set_qos_reserved_bandwidth,
+            netopt::set_tcp_auto_tuning,
+            netopt::apply_gaming_network_preset,
+            netopt::reset_network_defaults,
+            netopt::measure_network_quality,
+            // STORAGE
+            storage::get_storage_info,
+            storage::cleanup_temp_files,
+            storage::cleanup_recycle_bin,
+            storage::cleanup_system_cache,
+            storage::run_full_cleanup,
+            storage::analyze_disk_usage,
+            // LOG
+            log::get_system_logs,
+            log::get_application_logs,
+            log::analyze_logs,
+            log::export_logs,
+            // APP SETTINGS
+            app_settings::get_app_settings,
+            app_settings::save_app_settings,
+            // GAME PROFILES
+            profile::list_game_profiles,
+            profile::get_game_profile,
+            profile::save_game_profile,
+            profile::delete_game_profile,
+            profile::apply_game_profile,
+            profile::revert_game_profile,
+            profile::start_game_monitor,
+            profile::stop_game_monitor,
+            profile::get_cpu_topology,
+            profile::set_process_affinity,
+            profile::get_process_affinity,
+            profile::get_suspend_candidates,
+            profile::export_game_profile,
+            profile::import_game_profile,
+            // CORE PARKING
+            core_parking::get_core_parking_state,
+            core_parking::set_core_parking,
+            // TIMER RESOLUTION
+            timer::get_timer_resolution,
+            timer::set_timer_resolution,
+            timer::restore_timer_resolution,
+            // FRAME TIME
+            frame_time::start_frame_time_monitor,
+            frame_time::stop_frame_time_monitor,
+            frame_time::get_frame_time_status,
+            // SESSION
+            session::list_sessions,
+            session::get_session,
+            session::delete_session,
+            session::compare_sessions,
+            session::update_session_note,
+            // WATCHDOG
+            watchdog::get_watchdog_rules,
+            watchdog::add_watchdog_rule,
+            watchdog::update_watchdog_rule,
+            watchdog::remove_watchdog_rule,
+            watchdog::get_watchdog_events,
+            watchdog::get_watchdog_presets,
+            // CLEANUP
+            cleanup::revert_all_settings,
+            cleanup::cleanup_app_data,
+            // MEMORY CLEANER
+            memory::get_memory_cleaner_config,
+            memory::update_memory_cleaner_config,
+            memory::manual_memory_cleanup,
+            memory::start_auto_memory_cleanup,
+            memory::stop_auto_memory_cleanup,
+            // SCRIPT
+            script::list_scripts,
+            script::add_script,
+            script::delete_script,
+            script::execute_script,
+            script::list_execution_logs,
+            script::clear_execution_logs,
+            // ─── WINDOWS ONLY (渡された追加コマンド) ───
+            $($windows_only,)*
+        ]
+    };
+}
+
+// Windows: 共通コマンド + Windows 専用コマンド
 #[cfg(windows)]
 fn build_invoke_handler() -> impl Fn(tauri::ipc::Invoke) -> bool {
-    tauri::generate_handler![
-        // AI
-        ai::get_optimization_suggestions,
-        ai::test_api_key,
-        ai::analyze_bottleneck_ai,
-        // HEALTH CHECK
-        health_check::run_health_check,
-        // PULSE
-        pulse::get_resource_snapshot,
-        // HARDWARE
-        hardware::get_hardware_info,
-        // POWER ESTIMATOR
-        hardware::get_power_estimate,
-        hardware::get_monthly_cost_estimate,
-        hardware::set_eco_mode,
-        hardware::get_eco_mode_config,
-        hardware::save_eco_mode_config,
-        // BOOST
-        boost::run_boost,
-        // LAUNCHER
-        launcher::scan_steam_games,
-        launcher::launch_game,
-        // LAUNCHER SETTINGS
-        launcher_settings::get_launcher_settings_cmd,
-        launcher_settings::save_launcher_settings_cmd,
-        launcher_settings::migrate_launcher_settings,
-        // OPS
-        ops::list_processes,
-        ops::kill_process,
-        ops::set_process_priority,
-        ops::get_ai_suggestions,
+    invoke_handler![
         // WINOPT
         winopt::get_win_settings,
         winopt::apply_win_setting,
@@ -140,212 +237,13 @@ fn build_invoke_handler() -> impl Fn(tauri::ipc::Invoke) -> bool {
         // SETTINGS ADVISOR
         windows_settings::get_settings_advice,
         windows_settings::apply_recommendation,
-        // NETOPT
-        netopt::get_network_adapters,
-        netopt::get_current_dns,
-        netopt::set_dns,
-        netopt::ping_host,
-        // TCP TUNING
-        netopt::get_tcp_tuning_state,
-        netopt::set_nagle_disabled,
-        netopt::set_delayed_ack_disabled,
-        netopt::set_network_throttling,
-        netopt::set_qos_reserved_bandwidth,
-        netopt::set_tcp_auto_tuning,
-        netopt::apply_gaming_network_preset,
-        netopt::reset_network_defaults,
-        netopt::measure_network_quality,
-        // STORAGE
-        storage::get_storage_info,
-        storage::cleanup_temp_files,
-        storage::cleanup_recycle_bin,
-        storage::cleanup_system_cache,
-        storage::run_full_cleanup,
-        storage::analyze_disk_usage,
-        // LOG
-        log::get_system_logs,
-        log::get_application_logs,
-        log::analyze_logs,
-        log::export_logs,
-        // APP SETTINGS
-        app_settings::get_app_settings,
-        app_settings::save_app_settings,
-        // GAME PROFILES
-        profile::list_game_profiles,
-        profile::get_game_profile,
-        profile::save_game_profile,
-        profile::delete_game_profile,
-        profile::apply_game_profile,
-        profile::revert_game_profile,
-        profile::start_game_monitor,
-        profile::stop_game_monitor,
-        profile::get_cpu_topology,
-        profile::set_process_affinity,
-        profile::get_process_affinity,
+        // POWER PLAN
         profile::get_current_power_plan,
-        profile::get_suspend_candidates,
-        profile::export_game_profile,
-        profile::import_game_profile,
-        // CORE PARKING
-        core_parking::get_core_parking_state,
-        core_parking::set_core_parking,
-        // TIMER RESOLUTION
-        timer::get_timer_resolution,
-        timer::set_timer_resolution,
-        timer::restore_timer_resolution,
-        // FRAME TIME
-        frame_time::start_frame_time_monitor,
-        frame_time::stop_frame_time_monitor,
-        frame_time::get_frame_time_status,
-        // SESSION
-        session::list_sessions,
-        session::get_session,
-        session::delete_session,
-        session::compare_sessions,
-        session::update_session_note,
-        // WATCHDOG
-        watchdog::get_watchdog_rules,
-        watchdog::add_watchdog_rule,
-        watchdog::update_watchdog_rule,
-        watchdog::remove_watchdog_rule,
-        watchdog::get_watchdog_events,
-        watchdog::get_watchdog_presets,
-        // CLEANUP
-        cleanup::revert_all_settings,
-        cleanup::cleanup_app_data,
-        // MEMORY CLEANER
-        memory::get_memory_cleaner_config,
-        memory::update_memory_cleaner_config,
-        memory::manual_memory_cleanup,
-        memory::start_auto_memory_cleanup,
-        memory::stop_auto_memory_cleanup,
-        // SCRIPT
-        script::list_scripts,
-        script::add_script,
-        script::delete_script,
-        script::execute_script,
-        script::list_execution_logs,
-        script::clear_execution_logs,
     ]
 }
 
+// 非 Windows: 共通コマンドのみ
 #[cfg(not(windows))]
 fn build_invoke_handler() -> impl Fn(tauri::ipc::Invoke) -> bool {
-    tauri::generate_handler![
-        // AI
-        ai::get_optimization_suggestions,
-        ai::test_api_key,
-        ai::analyze_bottleneck_ai,
-        // HEALTH CHECK
-        health_check::run_health_check,
-        // PULSE
-        pulse::get_resource_snapshot,
-        // HARDWARE
-        hardware::get_hardware_info,
-        // POWER ESTIMATOR
-        hardware::get_power_estimate,
-        hardware::get_monthly_cost_estimate,
-        hardware::set_eco_mode,
-        hardware::get_eco_mode_config,
-        hardware::save_eco_mode_config,
-        // BOOST
-        boost::run_boost,
-        // LAUNCHER
-        launcher::scan_steam_games,
-        launcher::launch_game,
-        // LAUNCHER SETTINGS
-        launcher_settings::get_launcher_settings_cmd,
-        launcher_settings::save_launcher_settings_cmd,
-        launcher_settings::migrate_launcher_settings,
-        // OPS
-        ops::list_processes,
-        ops::kill_process,
-        ops::set_process_priority,
-        ops::get_ai_suggestions,
-        // NETOPT
-        netopt::get_network_adapters,
-        netopt::get_current_dns,
-        netopt::set_dns,
-        netopt::ping_host,
-        // TCP TUNING
-        netopt::get_tcp_tuning_state,
-        netopt::set_nagle_disabled,
-        netopt::set_delayed_ack_disabled,
-        netopt::set_network_throttling,
-        netopt::set_qos_reserved_bandwidth,
-        netopt::set_tcp_auto_tuning,
-        netopt::apply_gaming_network_preset,
-        netopt::reset_network_defaults,
-        netopt::measure_network_quality,
-        // STORAGE
-        storage::get_storage_info,
-        storage::cleanup_temp_files,
-        storage::cleanup_recycle_bin,
-        storage::cleanup_system_cache,
-        storage::run_full_cleanup,
-        storage::analyze_disk_usage,
-        // LOG
-        log::get_system_logs,
-        log::get_application_logs,
-        log::analyze_logs,
-        log::export_logs,
-        // APP SETTINGS
-        app_settings::get_app_settings,
-        app_settings::save_app_settings,
-        // GAME PROFILES
-        profile::list_game_profiles,
-        profile::get_game_profile,
-        profile::save_game_profile,
-        profile::delete_game_profile,
-        profile::apply_game_profile,
-        profile::revert_game_profile,
-        profile::start_game_monitor,
-        profile::stop_game_monitor,
-        profile::get_cpu_topology,
-        profile::set_process_affinity,
-        profile::get_process_affinity,
-        profile::get_suspend_candidates,
-        profile::export_game_profile,
-        profile::import_game_profile,
-        // CORE PARKING
-        core_parking::get_core_parking_state,
-        core_parking::set_core_parking,
-        // TIMER RESOLUTION
-        timer::get_timer_resolution,
-        timer::set_timer_resolution,
-        timer::restore_timer_resolution,
-        // FRAME TIME
-        frame_time::start_frame_time_monitor,
-        frame_time::stop_frame_time_monitor,
-        frame_time::get_frame_time_status,
-        // SESSION
-        session::list_sessions,
-        session::get_session,
-        session::delete_session,
-        session::compare_sessions,
-        session::update_session_note,
-        // WATCHDOG
-        watchdog::get_watchdog_rules,
-        watchdog::add_watchdog_rule,
-        watchdog::update_watchdog_rule,
-        watchdog::remove_watchdog_rule,
-        watchdog::get_watchdog_events,
-        watchdog::get_watchdog_presets,
-        // CLEANUP
-        cleanup::revert_all_settings,
-        cleanup::cleanup_app_data,
-        // MEMORY CLEANER
-        memory::get_memory_cleaner_config,
-        memory::update_memory_cleaner_config,
-        memory::manual_memory_cleanup,
-        memory::start_auto_memory_cleanup,
-        memory::stop_auto_memory_cleanup,
-        // SCRIPT
-        script::list_scripts,
-        script::add_script,
-        script::delete_script,
-        script::execute_script,
-        script::list_execution_logs,
-        script::clear_execution_logs,
-    ]
+    invoke_handler![]
 }

@@ -272,13 +272,17 @@ impl PowerPlanController {
 
         let stdout = String::from_utf8_lossy(&output.stdout);
 
-        // 出力から電源プラン名を抽出
-        // 例: "Power Scheme GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Balanced)"
+        // 出力から電源プラン名を抽出（日英対応）
+        // 例 (英語): "Power Scheme GUID: 381b4222-...  (Balanced)"
+        // 例 (日本語): "電源スキーム GUID: 381b4222-...  (バランス)"
         for line in stdout.lines() {
-            if line.contains("Power Scheme GUID:") {
+            let is_scheme_line = Self::GUID_PATTERNS.iter().any(|pat| line.contains(*pat));
+            if is_scheme_line {
                 if let Some(start) = line.find('(') {
-                    if let Some(end) = line.find(')') {
-                        return Ok(line[start + 1..end].to_string());
+                    if let Some(end) = line.rfind(')') {
+                        if start < end {
+                            return Ok(line[start + 1..end].to_string());
+                        }
                     }
                 }
             }

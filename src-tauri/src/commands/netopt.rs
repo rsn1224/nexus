@@ -208,28 +208,54 @@ pub async fn set_dns(adapter: String, primary: String, secondary: String) -> Res
         validate_ipv4(&secondary)?;
     }
 
-    info!("set_dns: setting DNS for adapter {}: {}, {}", adapter, primary, secondary);
+    info!(
+        "set_dns: setting DNS for adapter {}: {}, {}",
+        adapter, primary, secondary
+    );
 
     tokio::task::spawn_blocking(move || {
         let output = Command::new("netsh")
-            .args(["interface", "ip", "set", "dns", &adapter, "static", &primary, "primary"])
+            .args([
+                "interface",
+                "ip",
+                "set",
+                "dns",
+                &adapter,
+                "static",
+                &primary,
+                "primary",
+            ])
             .output()
             .map_err(|e| AppError::Command(format!("Failed to set primary DNS: {}", e)))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Command(format!("Failed to set primary DNS: {}", stderr)));
+            return Err(AppError::Command(format!(
+                "Failed to set primary DNS: {}",
+                stderr
+            )));
         }
 
         if !secondary.trim().is_empty() {
             let output = Command::new("netsh")
-                .args(["interface", "ip", "add", "dns", &adapter, &secondary, "index=2"])
+                .args([
+                    "interface",
+                    "ip",
+                    "add",
+                    "dns",
+                    &adapter,
+                    &secondary,
+                    "index=2",
+                ])
                 .output()
                 .map_err(|e| AppError::Command(format!("Failed to set secondary DNS: {}", e)))?;
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                return Err(AppError::Command(format!("Failed to set secondary DNS: {}", stderr)));
+                return Err(AppError::Command(format!(
+                    "Failed to set secondary DNS: {}",
+                    stderr
+                )));
             }
         }
 
@@ -260,7 +286,11 @@ pub async fn ping_host(target: String) -> Result<PingResult, AppError> {
                     if let Some(latency_str) = latency_part.split("ms").next() {
                         if let Ok(latency) = latency_str.trim().parse::<u64>() {
                             info!("ping_host: ping successful, {}ms", latency);
-                            return Ok(PingResult { target, latency_ms: Some(latency), success: true });
+                            return Ok(PingResult {
+                                target,
+                                latency_ms: Some(latency),
+                                success: true,
+                            });
                         }
                     }
                 }
@@ -268,7 +298,11 @@ pub async fn ping_host(target: String) -> Result<PingResult, AppError> {
         }
 
         info!("ping_host: ping failed or timeout");
-        Ok(PingResult { target, latency_ms: None, success })
+        Ok(PingResult {
+            target,
+            latency_ms: None,
+            success,
+        })
     })
     .await
     .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
@@ -325,7 +359,11 @@ pub async fn set_tcp_auto_tuning(level: String) -> Result<(), AppError> {
         "highlyRestricted" => network_tuning::TcpAutoTuningLevel::HighlyRestricted,
         "restricted" => network_tuning::TcpAutoTuningLevel::Restricted,
         "experimental" => network_tuning::TcpAutoTuningLevel::Experimental,
-        _ => return Err(AppError::InvalidInput("Invalid TCP auto-tuning level".into())),
+        _ => {
+            return Err(AppError::InvalidInput(
+                "Invalid TCP auto-tuning level".into(),
+            ));
+        }
     };
     tokio::task::spawn_blocking(move || network_tuning::set_tcp_auto_tuning(tuning_level))
         .await
@@ -355,7 +393,10 @@ pub async fn measure_network_quality(
     target: String,
     count: u32,
 ) -> Result<network_monitor::NetworkQualitySnapshot, AppError> {
-    info!("measure_network_quality: target={}, count={}", target, count);
+    info!(
+        "measure_network_quality: target={}, count={}",
+        target, count
+    );
     tokio::task::spawn_blocking(move || network_monitor::measure_network_quality(&target, count))
         .await
         .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?

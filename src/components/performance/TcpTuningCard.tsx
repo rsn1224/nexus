@@ -56,7 +56,7 @@ function ToggleRow({
 }
 
 export default function TcpTuningCard(): React.ReactElement {
-  const { tcpState, isLoading, isApplying } = useNetworkTuningState();
+  const { tcpState, isLoading, isApplying, error } = useNetworkTuningState();
   const {
     fetchTcpState,
     setNagleDisabled,
@@ -96,6 +96,7 @@ export default function TcpTuningCard(): React.ReactElement {
 
   return (
     <Card title="TCP チューニング" action={presetAction}>
+      {error && <p className="text-[10px] text-danger-400 px-2 pt-2">{error}</p>}
       {isLoading || tcpState === null ? (
         <p className="text-[10px] text-text-muted p-2">読み込み中...</p>
       ) : (

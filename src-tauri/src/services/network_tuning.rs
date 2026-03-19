@@ -189,7 +189,10 @@ pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
     }
 
     if let Err(e) = registry::set_dword_value(QOS_KEY, "NonBestEffortLimit", percent) {
-        warn!("QoS レジストリ書き込み失敗（管理者権限が必要な場合があります）: {}", e);
+        warn!(
+            "QoS レジストリ書き込み失敗（管理者権限が必要な場合があります）: {}",
+            e
+        );
         return Err(AppError::Command(
             "QoS 設定の変更には管理者権限が必要です。アプリを管理者として実行してください。".into(),
         ));
