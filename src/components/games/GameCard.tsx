@@ -36,6 +36,22 @@ function isRecentlyPlayed(timestamp: number | undefined): boolean {
   return Date.now() - timestamp < DAYS_RECENT * MS_PER_DAY;
 }
 
+function getGameInitial(name: string): string {
+  return name.trim().charAt(0).toUpperCase() || '?';
+}
+
+function getInitialGradient(name: string): string {
+  const seed = name.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  const gradients = [
+    'from-[#4c1d95]/80 via-[#3b0764]/60 to-base-900',
+    'from-[#1e3a5f]/80 via-[#1e3a8a]/60 to-base-900',
+    'from-[#164e63]/80 via-[#0c4a6e]/60 to-base-900',
+    'from-[#312e81]/80 via-[#1e1b4b]/60 to-base-900',
+    'from-[#3b0764]/80 via-[#4a044e]/60 to-base-900',
+  ];
+  return gradients[seed % gradients.length];
+}
+
 export default function GameCard({
   game,
   isFavorite,
@@ -64,8 +80,12 @@ export default function GameCard({
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full bg-base-700 flex items-center justify-center">
-              <span className="text-xs text-text-muted font-mono">NO IMAGE</span>
+            <div
+              className={`w-full h-full bg-linear-to-br ${getInitialGradient(game.name)} flex items-center justify-center`}
+            >
+              <span className="text-7xl font-black text-white/20 select-none font-mono">
+                {getGameInitial(game.name)}
+              </span>
             </div>
           )}
 
@@ -140,8 +160,12 @@ export default function GameCard({
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />
         ) : (
-          <div className="w-full h-full bg-base-700 flex items-center justify-center">
-            <span className="text-xs text-text-muted font-mono">NO IMAGE</span>
+          <div
+            className={`w-full h-full bg-linear-to-br ${getInitialGradient(game.name)} flex items-center justify-center`}
+          >
+            <span className="text-5xl font-black text-white/20 select-none font-mono">
+              {getGameInitial(game.name)}
+            </span>
           </div>
         )}
 

@@ -15,14 +15,14 @@ const ActionRow = memo(function ActionRow() {
   }, [subscribe]);
 
   return (
-    <div className="h-52 shrink-0 flex gap-2 px-3 py-2 border-b border-border-subtle overflow-hidden">
-      <div className="flex-1 overflow-hidden">
+    <div className="shrink-0 grid grid-cols-[1fr_1fr_160px] gap-2 px-3 py-2 border-b border-border-subtle">
+      <div className="overflow-hidden">
         <FrameTimeCard />
       </div>
-      <div className="flex-1 overflow-hidden">
+      <div className="overflow-hidden">
         <BottleneckCard />
       </div>
-      <div className="w-44 shrink-0 overflow-hidden">
+      <div className="overflow-hidden">
         <QuickActionsCard />
       </div>
     </div>

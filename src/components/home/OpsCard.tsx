@@ -35,7 +35,7 @@ export default function OpsCard(): React.ReactElement {
     <Card title="CPU TOP PROCESSES" accentColor="warm">
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between mb-1">
-          <span className="text-[10px] text-text-muted uppercase tracking-wide">
+          <span className="text-xs text-text-muted uppercase tracking-widest font-semibold">
             Active processes
           </span>
           <span className="text-xs font-bold font-mono text-warm-400">{activeProcessCount}</span>
@@ -43,7 +43,7 @@ export default function OpsCard(): React.ReactElement {
         {topProcesses.length > 0 ? (
           topProcesses.map((p: SystemProcess) => (
             <div key={p.pid} className="flex items-center gap-2">
-              <span className="text-xs text-text-secondary w-28 truncate">{p.name}</span>
+              <span className="text-sm text-text-secondary w-28 truncate">{p.name}</span>
               <div className="flex-1 h-1 bg-base-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${getCpuBarColor(p.cpuPercent)}`}
@@ -51,7 +51,7 @@ export default function OpsCard(): React.ReactElement {
                 />
               </div>
               <span
-                className={`font-mono text-[10px] w-9 text-right ${getCpuTextColor(p.cpuPercent)}`}
+                className={`font-mono text-xs w-10 text-right ${getCpuTextColor(p.cpuPercent)}`}
               >
                 {p.cpuPercent.toFixed(1)}%
               </span>

@@ -37,7 +37,7 @@ const HeroSection = memo(function HeroSection() {
 
   return (
     <div className="shrink-0 border-b border-border-subtle">
-      <div className="grid grid-cols-[1fr_240px] gap-0">
+      <div className="grid grid-cols-[1fr_300px] gap-0">
         {/* Left: KPI cards */}
         <div className="px-3 py-3 border-r border-border-subtle">
           <div className="grid grid-cols-2 gap-2 card-animate stagger-1">

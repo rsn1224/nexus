@@ -69,7 +69,7 @@ export default function GameReadinessPanel() {
       {/* Header */}
       <div className="flex items-center gap-2 px-3 pt-3 pb-2 border-b border-white/[0.05]">
         <div className="w-0.5 h-3.5 rounded-full bg-accent-500 shrink-0" />
-        <span className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+        <span className="text-sm font-bold uppercase tracking-widest text-accent-500">
           GAME READINESS
         </span>
       </div>
@@ -81,9 +81,11 @@ export default function GameReadinessPanel() {
           <div className="flex-1 flex flex-col gap-1.5">
             {axisLabels.map(({ label, score, isPerformance }) => (
               <div key={label} className="flex items-center gap-2">
-                <span className="text-[10px] text-text-muted w-12 uppercase">{label}</span>
+                <span className="text-xs text-text-muted w-14 uppercase font-semibold">
+                  {label}
+                </span>
                 {isPerformance && score < 0 ? (
-                  <span className="text-[10px] text-text-muted">N/A</span>
+                  <span className="text-xs text-text-muted">N/A</span>
                 ) : (
                   <>
                     <div className="flex-1 h-1 bg-base-700 rounded-full overflow-hidden">
@@ -92,7 +94,7 @@ export default function GameReadinessPanel() {
                         style={progressWidth(score)}
                       />
                     </div>
-                    <span className="font-mono text-[10px] text-text-primary w-5 text-right">
+                    <span className="font-mono text-xs text-text-primary w-6 text-right font-bold">
                       {score}
                     </span>
                   </>

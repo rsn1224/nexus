@@ -17,28 +17,28 @@ const COLOR_MAP: Record<
   warm: {
     text: 'text-warm-500',
     glow: 'glow-warm',
-    spark: 'rgba(245,158,11,0.4)',
+    spark: 'rgba(229,229,229,0.35)',
     bar: 'bg-warm-500',
     border: 'border-warm-500/30',
   },
   accent: {
     text: 'text-accent-500',
     glow: 'glow-cyan',
-    spark: 'rgba(6,182,212,0.4)',
+    spark: 'rgba(252,238,10,0.5)',
     bar: 'bg-accent-500',
     border: 'border-accent-500/30',
   },
   purple: {
     text: 'text-purple-500',
     glow: 'glow-purple',
-    spark: 'rgba(139,92,246,0.4)',
+    spark: 'rgba(255,0,60,0.45)',
     bar: 'bg-purple-500',
     border: 'border-purple-500/30',
   },
   info: {
     text: 'text-info-500',
     glow: 'glow-info',
-    spark: 'rgba(96,165,250,0.4)',
+    spark: 'rgba(0,233,254,0.45)',
     bar: 'bg-info-500',
     border: 'border-info-500/30',
   },
@@ -100,11 +100,9 @@ const KpiCard = memo(function KpiCard({
         isHigh ? border : 'border-white/[0.04]'
       }`}
     >
-      <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
-        {label}
-      </span>
+      <span className="text-xs font-bold uppercase tracking-widest text-text-muted">{label}</span>
       <span
-        className={`font-mono text-2xl font-bold leading-none ${text} ${isCritical ? 'animate-pulse' : ''}`}
+        className={`font-mono text-3xl font-bold leading-none ${text} ${isCritical ? 'animate-pulse' : ''}`}
       >
         {value}
       </span>

@@ -58,7 +58,7 @@ export default function FrameTimeCard() {
     <div className="p-4 bg-base-800 border border-border-subtle text-xs text-text-primary">
       {/* ヘッダー */}
       <div className="flex justify-between items-center mb-3">
-        <div className="font-bold text-xs text-accent-500">FRAME TIME</div>
+        <div className="font-bold text-sm tracking-widest text-accent-500">FRAME TIME</div>
         <div
           className={`text-xs ${
             monitorState.type === 'running' ? 'text-success-500' : 'text-text-muted'
@@ -102,19 +102,15 @@ export default function FrameTimeCard() {
           <div className="grid grid-cols-3 gap-2 mb-2">
             <div>
               <div className="text-xs text-text-muted">AVG FPS</div>
-              <div className="text-[14px] font-bold text-accent-500">
-                {snapshot.avgFps.toFixed(1)}
-              </div>
+              <div className="text-sm font-bold text-accent-500">{snapshot.avgFps.toFixed(1)}</div>
             </div>
             <div>
               <div className="text-xs text-text-muted">1% LOW</div>
-              <div className="text-[14px] font-bold text-accent-400">
-                {snapshot.pct1Low.toFixed(1)}
-              </div>
+              <div className="text-sm font-bold text-accent-400">{snapshot.pct1Low.toFixed(1)}</div>
             </div>
             <div>
               <div className="text-xs text-text-muted">0.1% LOW</div>
-              <div className="text-[14px] font-bold text-danger-500">
+              <div className="text-sm font-bold text-danger-500">
                 {snapshot.pct01Low.toFixed(1)}
               </div>
             </div>
@@ -139,36 +135,43 @@ export default function FrameTimeCard() {
       )}
 
       {/* コントロールボタン */}
-      <div className="flex gap-2">
-        {monitorState.type === 'stopped' ? (
-          <button
-            type="button"
-            onClick={handleStart}
-            disabled={isLoading || !selectedProcess}
-            aria-label="フレームタイム監視開始"
-            className={`flex-1 px-3 py-[6px] text-xs font-bold border ${
-              isLoading || !selectedProcess
-                ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
-                : 'bg-accent-500 text-base-900 cursor-pointer border-accent-500 hover:bg-accent-600'
-            }`}
-          >
-            {isLoading ? 'STARTING...' : 'START'}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleStop}
-            disabled={isLoading}
-            aria-label="フレームタイム監視停止"
-            className={`flex-1 px-3 py-[6px] text-xs font-bold border ${
-              isLoading
-                ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
-                : 'bg-danger-500 text-base-900 cursor-pointer border-danger-500 hover:bg-danger-600'
-            }`}
-          >
-            {isLoading ? 'STOPPING...' : 'STOP'}
-          </button>
+      <div className="flex flex-col gap-2">
+        {monitorState.type === 'stopped' && !selectedProcess && (
+          <div className="text-xs text-text-muted text-center py-2 border border-dashed border-border-subtle rounded-lg">
+            ゲームを起動してプロセスを選択してください
+          </div>
         )}
+        <div className="flex gap-2">
+          {monitorState.type === 'stopped' ? (
+            <button
+              type="button"
+              onClick={handleStart}
+              disabled={isLoading || !selectedProcess}
+              aria-label="フレームタイム監視開始"
+              className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
+                isLoading || !selectedProcess
+                  ? 'bg-base-700 text-text-muted cursor-not-allowed border border-border-subtle'
+                  : 'bg-accent-500 text-base-900 cursor-pointer border border-accent-500 hover:bg-accent-600 hover:shadow-lg hover:shadow-accent-500/20'
+              }`}
+            >
+              {isLoading ? 'STARTING...' : '▶ START MONITORING'}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleStop}
+              disabled={isLoading}
+              aria-label="フレームタイム監視停止"
+              className={`flex-1 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${
+                isLoading
+                  ? 'bg-base-700 text-text-muted cursor-not-allowed border border-border-subtle'
+                  : 'bg-base-700 text-text-secondary cursor-pointer border border-border-subtle hover:border-danger-500/50 hover:text-danger-400'
+              }`}
+            >
+              {isLoading ? 'STOPPING...' : '⏹ STOP'}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* エラー表示 */}
