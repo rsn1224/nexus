@@ -30,9 +30,12 @@
 | OH-B1 リアルタイムプロセスリスト | ✅ 完了（ProcessTab: フィルタ・ソート・アクション行・KILL確認Modal・FFI優先度設定） |
 | OH-B2 NVIDIA GPU 使用率 | ✅ 完了（nvml-wrapper: GPU使用率・VRAM・温度 + PowerShell フォールバック） |
 | OH-B4 全設定リバート | ✅ 完了（revert_all_settings + cleanup_app_data + SettingsWing MAINTENANCE セクション） |
+| Design Refresh R1 | ✅ 完了（ディレクトリ名変更・FpsTimelineGraph cyan・ErrorBoundary log・visitedWings） |
+| Design Refresh R2 | ✅ 完了（HomeWing 3-section: HeroSection/ActionRow/TimelineSection、27行、store直参照なし） |
+| Design Refresh R3 | ✅ 完了（フック抽出3本・SettingsWing分離・assertNever・孤立ファイル削除） |
 
-**最新コミット:** `51918a2`
-**テスト:** TS 317 unit + 17 E2E + Rust 142 = 476 green
+**最新コミット:** `2d8de58`
+**テスト:** TS 498 unit + Rust clean
 
 ---
 
