@@ -59,16 +59,7 @@ export function WatchdogRuleModal({
               className={inputClass}
             />
             {validationError && (
-              <div
-                style={{
-                  color: 'var(--color-danger-500)',
-                  fontSize: '10px',
-                  fontFamily: 'var(--font-mono)',
-                  marginTop: '4px',
-                }}
-              >
-                ⚠ {validationError}
-              </div>
+              <div className="text-danger-500 text-[10px] font-mono mt-1">⚠ {validationError}</div>
             )}
           </div>
 
