@@ -6,14 +6,16 @@ import {
   useHardwareStore,
 } from '../../stores/useHardwareStore';
 import { Card, EmptyState, ErrorBanner, LoadingState } from '../ui';
+import CpuSection from './CpuSection';
 import EcoModePanel from './EcoModePanel';
+import GpuSection from './GpuSection';
+import MemorySection from './MemorySection';
 
 export default function HardwareWing(): React.JSX.Element {
   const { subscribe } = useHardwareStore();
   const { info, isLoading, error, memUsagePercent, formattedUptime, formattedBootTime } =
     useHardwareData();
 
-  // イベントリスナー登録
   useEventSubscription(() => subscribe(), [subscribe]);
 
   if (isLoading) {
@@ -42,113 +44,26 @@ export default function HardwareWing(): React.JSX.Element {
 
   return (
     <div className="p-4 h-full overflow-y-auto">
-      {/* CPU Information */}
-      <Card title="CPU" className="mb-4">
-        <div className="font-mono text-xs text-text-secondary space-y-2">
-          <div className="flex justify-between">
-            <span>MODEL:</span>
-            <span className="text-text-primary">{info.cpuName}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>CORES:</span>
-            <span className="text-text-primary">
-              {info.cpuCores}C / {info.cpuThreads}T
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>BASE:</span>
-            <span className="text-text-primary">{info.cpuBaseGhz.toFixed(1)} GHz</span>
-          </div>
-          {info.cpuTempC !== null && (
-            <div className="flex justify-between">
-              <span>TEMP:</span>
-              <span
-                className={
-                  info.cpuTempC >= 80
-                    ? 'text-danger-500'
-                    : info.cpuTempC >= 70
-                      ? 'text-accent-500'
-                      : 'text-success-500'
-                }
-              >
-                {info.cpuTempC.toFixed(1)}°C
-              </span>
-            </div>
-          )}
-        </div>
-      </Card>
+      <CpuSection
+        cpuName={info.cpuName}
+        cpuCores={info.cpuCores}
+        cpuThreads={info.cpuThreads}
+        cpuBaseGhz={info.cpuBaseGhz}
+        cpuTempC={info.cpuTempC}
+      />
+      <GpuSection
+        gpuName={info.gpuName}
+        gpuVramTotalMb={info.gpuVramTotalMb}
+        gpuTempC={info.gpuTempC}
+        gpuUsagePercent={info.gpuUsagePercent}
+      />
+      <MemorySection
+        memTotalGb={info.memTotalGb}
+        memUsedGb={info.memUsedGb}
+        memUsagePercent={memUsagePercent}
+        createProgressBar={createDiskProgressBar}
+      />
 
-      {/* GPU Information */}
-      <Card title="GPU" className="mb-4">
-        <div className="font-mono text-xs text-text-secondary space-y-2">
-          <div className="flex justify-between">
-            <span>MODEL:</span>
-            <span className="text-text-primary">{info.gpuName || 'N/A'}</span>
-          </div>
-          {info.gpuVramTotalMb !== null && (
-            <div className="flex justify-between">
-              <span>VRAM:</span>
-              <span className="text-text-primary">
-                {info.gpuVramTotalMb / 1024 >= 1
-                  ? `${(info.gpuVramTotalMb / 1024).toFixed(1)} GB`
-                  : `${info.gpuVramTotalMb} MB`}
-              </span>
-            </div>
-          )}
-          {info.gpuTempC !== null && (
-            <div className="flex justify-between">
-              <span>TEMP:</span>
-              <span
-                className={
-                  info.gpuTempC >= 80
-                    ? 'text-danger-500'
-                    : info.gpuTempC >= 70
-                      ? 'text-accent-500'
-                      : 'text-success-500'
-                }
-              >
-                {info.gpuTempC.toFixed(1)}°C
-              </span>
-            </div>
-          )}
-          {info.gpuUsagePercent !== null && (
-            <div className="flex justify-between">
-              <span>USAGE:</span>
-              <span className="text-text-primary">{info.gpuUsagePercent.toFixed(1)}%</span>
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Memory Information */}
-      <Card title="MEMORY" className="mb-4">
-        <div className="font-mono text-xs text-text-secondary space-y-2">
-          <div className="flex justify-between">
-            <span>TOTAL:</span>
-            <span className="text-text-primary">{info.memTotalGb.toFixed(1)} GB</span>
-          </div>
-          <div className="flex justify-between">
-            <span>USED:</span>
-            <span className="text-text-primary">
-              {info.memUsedGb.toFixed(1)} GB ({memUsagePercent.toFixed(1)}%)
-            </span>
-          </div>
-          <div className="flex justify-between">
-            <span>FREE:</span>
-            <span className="text-text-primary">
-              {(info.memTotalGb - info.memUsedGb).toFixed(1)} GB
-            </span>
-          </div>
-          <div className="mt-2">
-            <div className="text-text-muted text-[10px] mb-1">USAGE BAR:</div>
-            <div className="font-mono text-[10px]">
-              {createDiskProgressBar(info.memUsedGb, info.memTotalGb)}
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Storage Information */}
       <Card title="STORAGE" className="mb-4">
         <div className="font-mono text-xs text-text-secondary space-y-3">
           {info.disks.map((disk) => (
@@ -177,7 +92,6 @@ export default function HardwareWing(): React.JSX.Element {
         </div>
       </Card>
 
-      {/* System Information */}
       <Card title="SYSTEM" className="mb-4">
         <div className="font-mono text-xs text-text-secondary space-y-2">
           <div className="flex justify-between">
@@ -201,7 +115,6 @@ export default function HardwareWing(): React.JSX.Element {
         </div>
       </Card>
 
-      {/* Eco Mode Section */}
       <EcoModePanel />
     </div>
   );

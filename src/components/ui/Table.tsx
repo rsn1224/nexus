@@ -1,14 +1,6 @@
 import type React from 'react';
 import { LoadingState } from './index';
-
-interface TableColumn<T> {
-  key: keyof T;
-  title: string;
-  sortable?: boolean;
-  width?: string;
-  align?: 'left' | 'center' | 'right';
-  render?: (value: T[keyof T], row: T) => React.ReactNode;
-}
+import { getSortIcon, renderCell, type TableColumn } from './tableHelpers';
 
 interface TableProps<T> {
   data: T[];
@@ -63,7 +55,6 @@ export default function Table<T>({
 
   const handleSort = (column: TableColumn<T>) => {
     if (!column.sortable || !onSort) return;
-
     const newDirection = sortKey === column.key && sortDirection === 'asc' ? 'desc' : 'asc';
     onSort(column.key, newDirection);
   };
@@ -75,7 +66,6 @@ export default function Table<T>({
 
   const handleSelectRow = (row: T, checked: boolean) => {
     if (!onSelectionChange) return;
-
     if (checked) {
       onSelectionChange([...selectedRows, row]);
     } else {
@@ -85,39 +75,6 @@ export default function Table<T>({
 
   const isAllSelected = data.length > 0 && selectedRows.length === data.length;
   const isRowSelected = (row: T) => selectedRows.includes(row);
-
-  const renderCell = (column: TableColumn<T>, row: T) => {
-    const value = row[column.key];
-
-    if (column.render) {
-      return column.render(value, row);
-    }
-
-    // デフォルトレンダリング
-    if (typeof value === 'boolean') {
-      return value ? '✓' : '✗';
-    }
-
-    if (value === null || value === undefined) {
-      return '-';
-    }
-
-    return String(value);
-  };
-
-  const getSortIcon = (column: TableColumn<T>) => {
-    if (!column.sortable) return null;
-
-    if (sortKey !== column.key) {
-      return <span className="text-text-muted">▼</span>;
-    }
-
-    return sortDirection === 'asc' ? (
-      <span className="text-accent-500">▲</span>
-    ) : (
-      <span className="text-accent-500">▼</span>
-    );
-  };
 
   if (loading) {
     return (
@@ -171,7 +128,7 @@ export default function Table<T>({
               >
                 <div className="flex items-center gap-1">
                   {column.title}
-                  {getSortIcon(column)}
+                  {getSortIcon(column, sortKey, sortDirection)}
                 </div>
               </th>
             ))}
