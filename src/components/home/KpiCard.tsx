@@ -7,18 +7,46 @@ interface KpiCardProps {
   value: string;
   color: KpiColor;
   sparkline?: number[];
+  numericValue?: number;
 }
 
-const COLOR_MAP: Record<KpiColor, { text: string; glow: string; spark: string }> = {
-  warm: { text: 'text-warm-500', glow: 'glow-warm', spark: 'rgba(245,158,11,0.4)' },
-  accent: { text: 'text-accent-500', glow: 'glow-cyan', spark: 'rgba(6,182,212,0.4)' },
-  purple: { text: 'text-purple-500', glow: 'glow-purple', spark: 'rgba(139,92,246,0.4)' },
-  info: { text: 'text-info-500', glow: 'glow-info', spark: 'rgba(96,165,250,0.4)' },
+const COLOR_MAP: Record<
+  KpiColor,
+  { text: string; glow: string; spark: string; bar: string; border: string }
+> = {
+  warm: {
+    text: 'text-warm-500',
+    glow: 'glow-warm',
+    spark: 'rgba(245,158,11,0.4)',
+    bar: 'bg-warm-500',
+    border: 'border-warm-500/30',
+  },
+  accent: {
+    text: 'text-accent-500',
+    glow: 'glow-cyan',
+    spark: 'rgba(6,182,212,0.4)',
+    bar: 'bg-accent-500',
+    border: 'border-accent-500/30',
+  },
+  purple: {
+    text: 'text-purple-500',
+    glow: 'glow-purple',
+    spark: 'rgba(139,92,246,0.4)',
+    bar: 'bg-purple-500',
+    border: 'border-purple-500/30',
+  },
+  info: {
+    text: 'text-info-500',
+    glow: 'glow-info',
+    spark: 'rgba(96,165,250,0.4)',
+    bar: 'bg-info-500',
+    border: 'border-info-500/30',
+  },
 };
 
 function SparklineSvg({ data, color }: { data: number[]; color: string }) {
   const width = 100;
-  const height = 24;
+  const height = 28;
   const padding = 1;
 
   const points = useMemo(() => {
@@ -39,7 +67,7 @@ function SparklineSvg({ data, color }: { data: number[]; color: string }) {
     <svg
       viewBox={`0 0 ${width} ${height}`}
       preserveAspectRatio="none"
-      className="w-full h-6"
+      className="w-full h-7"
       role="img"
       aria-label="スパークライングラフ"
     >
@@ -55,17 +83,33 @@ function SparklineSvg({ data, color }: { data: number[]; color: string }) {
   );
 }
 
-const KpiCard = memo(function KpiCard({ label, value, color, sparkline }: KpiCardProps) {
-  const { text, glow, spark } = COLOR_MAP[color];
+const KpiCard = memo(function KpiCard({
+  label,
+  value,
+  color,
+  sparkline,
+  numericValue,
+}: KpiCardProps) {
+  const { text, glow, spark, border } = COLOR_MAP[color];
+  const isHigh = numericValue !== undefined && numericValue >= 80;
+  const isCritical = numericValue !== undefined && numericValue >= 90;
 
   return (
     <div
-      className={`card-glass rounded-lg p-3 flex flex-col gap-1 flex-1 transition-all duration-200 hover:-translate-y-0.5 hover:${glow}`}
+      className={`card-glass rounded-xl p-3 flex flex-col gap-1 flex-1 transition-all duration-200 hover:-translate-y-0.5 hover:${glow} border ${
+        isHigh ? border : 'border-white/[0.04]'
+      }`}
     >
-      <span className="text-xs text-text-muted uppercase">{label}</span>
-      <span className={`font-mono text-2xl font-bold leading-none ${text}`}>{value}</span>
+      <span className="text-[10px] font-bold uppercase tracking-widest text-text-muted">
+        {label}
+      </span>
+      <span
+        className={`font-mono text-2xl font-bold leading-none ${text} ${isCritical ? 'animate-pulse' : ''}`}
+      >
+        {value}
+      </span>
       {sparkline && sparkline.length >= 2 && (
-        <div className="mt-1">
+        <div className="mt-1 opacity-70">
           <SparklineSvg data={sparkline} color={spark} />
         </div>
       )}

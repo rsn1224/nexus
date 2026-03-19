@@ -236,6 +236,12 @@ body,
   animation: modal-content-in 200ms ease-out both;
 }
 
+/* ─── Background dot texture ──────────────────────────── */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
 /* ─── Scrollbar ───────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 4px;

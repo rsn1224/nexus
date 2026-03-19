@@ -80,17 +80,45 @@ export default function LauncherWing(): React.ReactElement {
   return (
     <div className="h-full overflow-y-auto">
       {/* Header bar */}
-      <div className="sticky top-0 z-10 bg-base-900/90 backdrop-blur-sm border-b border-white/[0.06] px-4 py-3">
-        <LauncherControls
-          searchQuery={searchQuery}
-          sortMode={sortMode}
-          autoBoostEnabled={autoBoostEnabled}
-          isScanning={isScanning}
-          onSearchChange={setSearchQuery}
-          onSortModeChange={setSortMode}
-          onToggleAutoBoost={toggleAutoBoost}
-          onScanGames={() => void scanGames()}
-        />
+      <div className="sticky top-0 z-10 bg-base-900/90 backdrop-blur-sm border-b border-white/[0.06]">
+        {/* Stats strip */}
+        <div className="flex items-center gap-4 px-4 py-2 border-b border-white/[0.04]">
+          <span className="text-xs font-bold text-warm-400">
+            {games.length}
+            <span className="text-text-muted font-normal ml-1">GAMES</span>
+          </span>
+          <span className="w-px h-3 bg-white/10" />
+          <span className="text-xs font-bold text-accent-400">
+            {favorites.length}
+            <span className="text-text-muted font-normal ml-1">FAVORITES</span>
+          </span>
+          {filteredAndSortedGames.length !== games.length && (
+            <>
+              <span className="w-px h-3 bg-white/10" />
+              <span className="text-xs text-text-muted">
+                {filteredAndSortedGames.length} results
+              </span>
+            </>
+          )}
+          <div className="flex-1" />
+          <span
+            className={`text-xs font-bold uppercase ${autoBoostEnabled ? 'text-warm-400' : 'text-text-muted'}`}
+          >
+            {autoBoostEnabled ? '⚡ BOOST ACTIVE' : '⚡ BOOST OFF'}
+          </span>
+        </div>
+        <div className="px-4 py-2.5">
+          <LauncherControls
+            searchQuery={searchQuery}
+            sortMode={sortMode}
+            autoBoostEnabled={autoBoostEnabled}
+            isScanning={isScanning}
+            onSearchChange={setSearchQuery}
+            onSortModeChange={setSortMode}
+            onToggleAutoBoost={toggleAutoBoost}
+            onScanGames={() => void scanGames()}
+          />
+        </div>
       </div>
 
       <div className="p-4 flex flex-col gap-6">

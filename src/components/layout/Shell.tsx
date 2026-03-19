@@ -152,7 +152,7 @@ const Shell = memo(function Shell({
         </nav>
 
         {/* Main content */}
-        <main className="flex-1 overflow-hidden" data-testid={`wing-${activeWing}`}>
+        <main className="flex-1 overflow-hidden bg-dot-grid" data-testid={`wing-${activeWing}`}>
           {children}
         </main>
       </div>

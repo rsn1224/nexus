@@ -3,6 +3,7 @@ import { memo } from 'react';
 
 interface CardProps {
   title?: string;
+  icon?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
@@ -13,10 +14,20 @@ interface CardProps {
   onClick?: () => void;
   ariaLabel?: string;
   tabIndex?: number;
+  accentColor?: 'accent' | 'warm' | 'purple' | 'info' | 'muted';
 }
+
+const ACCENT_BAR: Record<string, string> = {
+  accent: 'bg-accent-500',
+  warm: 'bg-warm-500',
+  purple: 'bg-purple-500',
+  info: 'bg-info-500',
+  muted: 'bg-text-muted',
+};
 
 const Card = memo(function Card({
   title,
+  icon,
   children,
   className = '',
   action,
@@ -27,10 +38,11 @@ const Card = memo(function Card({
   onClick,
   ariaLabel,
   tabIndex,
+  accentColor = 'muted',
 }: CardProps): React.ReactElement {
   const variantClasses = {
     default: 'bg-base-800/80 border border-white/[0.06] backdrop-blur-sm',
-    elevated: 'bg-base-800/90 border border-white/[0.08] shadow-lg backdrop-blur-md',
+    elevated: 'bg-base-800/90 border border-white/[0.08] shadow-md backdrop-blur-md',
     outlined: 'bg-transparent border border-border-subtle',
     glow: 'bg-base-800/80 border border-white/[0.06] card-glow backdrop-blur-sm',
     glass: 'card-glass',
@@ -45,7 +57,7 @@ const Card = memo(function Card({
   };
 
   const interactionClasses = `
-    ${hoverable ? 'transition-all duration-200 hover:shadow-lg hover:shadow-accent-500/10 hover:border-white/10 hover:-translate-y-0.5' : ''}
+    ${hoverable ? 'transition-all duration-200 hover:shadow-md hover:shadow-accent-500/10 hover:border-white/10 hover:-translate-y-0.5' : ''}
     ${clickable ? 'cursor-pointer' : ''}
   `;
 
@@ -57,11 +69,19 @@ const Card = memo(function Card({
     ${className}
   `;
 
+  const barClass = ACCENT_BAR[accentColor] ?? ACCENT_BAR.muted;
+
   const inner = (
     <>
       {title && (
-        <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
-          <div className="text-text-secondary text-xs">{title}</div>
+        <div className="flex items-center justify-between px-3 py-2 border-b border-white/[0.05]">
+          <div className="flex items-center gap-2">
+            <div className={`w-0.5 h-3.5 rounded-full ${barClass} shrink-0`} />
+            {icon && <span className="text-text-muted text-sm leading-none">{icon}</span>}
+            <div className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+              {title}
+            </div>
+          </div>
           {action && <div>{action}</div>}
         </div>
       )}

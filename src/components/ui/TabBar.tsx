@@ -17,23 +17,27 @@ export default function TabBar({
   className = '',
   accentColor = 'accent',
 }: TabBarProps): React.ReactElement {
-  const activeClasses: Record<AccentColor, string> = {
-    accent: 'border-accent-500 text-accent-500',
-    warm: 'border-warm-500   text-warm-500',
-    purple: 'border-purple-500 text-purple-500',
-    info: 'border-info-500   text-info-500',
+  const activePillClasses: Record<AccentColor, string> = {
+    accent: 'bg-accent-500/15 text-accent-400 shadow-sm shadow-accent-500/20',
+    warm: 'bg-warm-500/15 text-warm-400 shadow-sm shadow-warm-500/20',
+    purple: 'bg-purple-500/15 text-purple-400 shadow-sm shadow-purple-500/20',
+    info: 'bg-info-500/15 text-info-400 shadow-sm shadow-info-500/20',
   };
+
   return (
-    <div data-testid="ui-tab-bar" className={`flex border-b border-border-subtle ${className}`}>
+    <div
+      data-testid="ui-tab-bar"
+      className={`flex gap-1 p-1 bg-base-800/60 border border-white/[0.06] rounded-xl ${className}`}
+    >
       {tabs.map((tab) => (
         <button
           key={tab.id}
           data-testid={`ui-tab-${tab.id}`}
           type="button"
-          className={`text-sm font-medium px-4 py-2.5 transition-all duration-200 ${
+          className={`text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-lg transition-all duration-200 active:scale-[0.97] flex-1 ${
             active === tab.id
-              ? `border-b-2 ${activeClasses[accentColor]} -mb-px`
-              : 'text-text-muted hover:text-text-secondary'
+              ? activePillClasses[accentColor]
+              : 'text-text-muted hover:text-text-secondary hover:bg-white/[0.04]'
           }`}
           onClick={() => onChange(tab.id)}
         >

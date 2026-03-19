@@ -51,6 +51,13 @@ export default function GameReadinessPanel() {
 
   const result = useMemo(() => calcReadiness(input), [input]);
 
+  const getAxisColor = (score: number): string => {
+    if (score >= 80) return 'bg-success-500';
+    if (score >= 50) return 'bg-accent-500';
+    if (score >= 30) return 'bg-warm-500';
+    return 'bg-danger-500';
+  };
+
   const axisLabels = [
     { label: 'リソース', score: result.axes.resource },
     { label: '最適化', score: result.axes.optimization },
@@ -58,42 +65,48 @@ export default function GameReadinessPanel() {
   ];
 
   return (
-    <div className="p-3 bg-base-800 border border-border-subtle rounded-lg mt-4">
-      {/* ヘッダー */}
-      <div className="text-xs font-semibold text-text-primary mb-3">GAME READINESS</div>
-
-      {/* ゲージ + 3軸 */}
-      <div className="flex items-center gap-4 mb-3">
-        {/* 円弧ゲージ */}
-        <ReadinessGauge score={result.total} rank={result.rank} />
-
-        {/* 3軸スコア */}
-        <div className="flex-1 flex flex-col gap-2">
-          {axisLabels.map(({ label, score, isPerformance }) => (
-            <div key={label} className="flex items-center gap-2">
-              <span className="text-xs text-text-muted w-[52px]">{label}</span>
-              {isPerformance && score < 0 ? (
-                <span className="text-xs text-text-muted">N/A</span>
-              ) : (
-                <>
-                  <div className="flex-1 h-1.5 bg-base-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full transition-all duration-300 bg-accent-500"
-                      style={progressWidth(score)}
-                    />
-                  </div>
-                  <span className="font-mono text-xs text-text-primary w-[24px] text-right">
-                    {score}
-                  </span>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
+    <div className="card-glass-elevated rounded-xl h-full flex flex-col">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-3 pt-3 pb-2 border-b border-white/[0.05]">
+        <div className="w-0.5 h-3.5 rounded-full bg-accent-500 shrink-0" />
+        <span className="text-xs font-bold uppercase tracking-widest text-text-secondary">
+          GAME READINESS
+        </span>
       </div>
 
-      {/* 推奨事項 */}
-      <RecommendationList recommendations={result.recommendations} />
+      <div className="flex-1 flex flex-col gap-2 px-3 pb-3 pt-2">
+        {/* Gauge + axes */}
+        <div className="flex items-center gap-3">
+          <ReadinessGauge score={result.total} rank={result.rank} size={80} />
+          <div className="flex-1 flex flex-col gap-1.5">
+            {axisLabels.map(({ label, score, isPerformance }) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="text-[10px] text-text-muted w-12 uppercase">{label}</span>
+                {isPerformance && score < 0 ? (
+                  <span className="text-[10px] text-text-muted">N/A</span>
+                ) : (
+                  <>
+                    <div className="flex-1 h-1 bg-base-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full transition-all duration-500 rounded-full ${getAxisColor(score)}`}
+                        style={progressWidth(score)}
+                      />
+                    </div>
+                    <span className="font-mono text-[10px] text-text-primary w-5 text-right">
+                      {score}
+                    </span>
+                  </>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recommendations */}
+        <div className="flex-1 overflow-hidden">
+          <RecommendationList recommendations={result.recommendations} />
+        </div>
+      </div>
     </div>
   );
 }

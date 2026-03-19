@@ -4,8 +4,6 @@ import { usePulseStore } from '../../stores/usePulseStore';
 import GameReadinessPanel from './GameReadinessPanel';
 import KpiCard from './KpiCard';
 
-// ─── HeroSection ─────────────────────────────────────────────────────────────
-
 const SPARKLINE_MAX = 30;
 
 const HeroSection = memo(function HeroSection() {
@@ -23,6 +21,10 @@ const HeroSection = memo(function HeroSection() {
 
   const cpuPct = snap?.cpuPercent ?? null;
   const gpuPct = hw?.gpuUsagePercent ?? null;
+  const memPct =
+    snap !== null && snap.memTotalMb > 0
+      ? Math.round((snap.memUsedMb / snap.memTotalMb) * 100)
+      : null;
 
   const cpuSparkline = useMemo(() => recent.map((s) => s.cpuPercent), [recent]);
   const memSparkline = useMemo(
@@ -34,30 +36,45 @@ const HeroSection = memo(function HeroSection() {
     snap !== null && snap.memTotalMb > 0 ? `${(snap.memUsedMb / 1024).toFixed(1)} GB` : '--';
 
   return (
-    <div className="shrink-0 flex flex-col gap-3 px-3 py-3 border-b border-border-subtle">
-      {/* KPI カード行 */}
-      <div className="flex gap-3 card-animate stagger-1">
-        <KpiCard
-          label="CPU"
-          value={cpuPct !== null ? `${Math.round(cpuPct)}%` : '--'}
-          color="warm"
-          sparkline={cpuSparkline}
-        />
-        <KpiCard label="MEM" value={memGb} color="accent" sparkline={memSparkline} />
-        <KpiCard
-          label="GPU"
-          value={gpuPct !== null ? `${Math.round(gpuPct)}%` : '--'}
-          color="purple"
-        />
-        <KpiCard
-          label="DISK"
-          value={diskUsagePercent !== null ? `${Math.round(diskUsagePercent)}%` : '--'}
-          color="info"
-        />
-      </div>
+    <div className="shrink-0 border-b border-border-subtle">
+      <div className="grid grid-cols-[1fr_240px] gap-0">
+        {/* Left: KPI cards */}
+        <div className="px-3 py-3 border-r border-border-subtle">
+          <div className="grid grid-cols-2 gap-2 card-animate stagger-1">
+            <KpiCard
+              label="CPU"
+              value={cpuPct !== null ? `${Math.round(cpuPct)}%` : '--'}
+              color="warm"
+              sparkline={cpuSparkline}
+              numericValue={cpuPct ?? undefined}
+            />
+            <KpiCard
+              label="MEM"
+              value={memGb}
+              color="accent"
+              sparkline={memSparkline}
+              numericValue={memPct ?? undefined}
+            />
+            <KpiCard
+              label="GPU"
+              value={gpuPct !== null ? `${Math.round(gpuPct)}%` : '--'}
+              color="purple"
+              numericValue={gpuPct ?? undefined}
+            />
+            <KpiCard
+              label="DISK"
+              value={diskUsagePercent !== null ? `${Math.round(diskUsagePercent)}%` : '--'}
+              color="info"
+              numericValue={diskUsagePercent ?? undefined}
+            />
+          </div>
+        </div>
 
-      {/* Game Readiness */}
-      <GameReadinessPanel />
+        {/* Right: Game Readiness */}
+        <div className="px-3 py-3">
+          <GameReadinessPanel />
+        </div>
+      </div>
     </div>
   );
 });

@@ -94,32 +94,6 @@ export default function LogWing(): React.ReactElement {
     setSearchQuery(e.target.value);
   };
 
-  const getLevelTextClass = (level: string) => {
-    switch (level) {
-      case 'Error':
-        return 'text-danger-500';
-      case 'Warn':
-        return 'text-accent-500';
-      case 'Info':
-        return 'text-accent-500';
-      default:
-        return 'text-text-muted';
-    }
-  };
-
-  const getLevelDotClass = (level: string) => {
-    switch (level) {
-      case 'Error':
-        return 'bg-danger-500';
-      case 'Warn':
-        return 'bg-accent-500';
-      case 'Info':
-        return 'bg-accent-500';
-      default:
-        return 'bg-text-muted';
-    }
-  };
-
   const handleRefresh = () => {
     void getSystemLogs();
   };
@@ -171,11 +145,7 @@ export default function LogWing(): React.ReactElement {
       <Card>
         {hasFilteredLogs ? (
           <div className="max-h-96 overflow-y-auto">
-            <LogEntries
-              logs={filteredLogs}
-              getLevelTextClass={getLevelTextClass}
-              getLevelDotClass={getLevelDotClass}
-            />
+            <LogEntries logs={filteredLogs} />
           </div>
         ) : hasLogs ? (
           <EmptyState message="No logs match current filters" />
