@@ -21,8 +21,9 @@ export function CurrentPowerPlanDisplay(): React.ReactElement {
         const plan = await invoke<CurrentPowerPlan>('get_current_power_plan');
         setCurrentPlan(plan);
       } catch (err) {
-        setError(err instanceof Error ? err.message : '取得失敗');
-        log.error({ err }, '電源プラン取得エラー');
+        const msg = err instanceof Error ? err.message : JSON.stringify(err);
+        setError(msg);
+        log.error({ err }, '電源プラン取得エラー: %s', msg);
       } finally {
         setLoading(false);
       }
