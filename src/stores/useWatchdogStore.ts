@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { WatchdogEvent, WatchdogRule } from '../types';
@@ -109,11 +110,13 @@ export const useWatchdogEvents = () => useWatchdogStore((state) => state.events)
 export const useWatchdogLoading = () => useWatchdogStore((state) => state.isLoading);
 export const useWatchdogError = () => useWatchdogStore((state) => state.error);
 export const useWatchdogActions = () =>
-  useWatchdogStore((state) => ({
-    fetchRules: state.fetchRules,
-    addRule: state.addRule,
-    updateRule: state.updateRule,
-    removeRule: state.removeRule,
-    fetchEvents: state.fetchEvents,
-    loadPresets: state.loadPresets,
-  }));
+  useWatchdogStore(
+    useShallow((state) => ({
+      fetchRules: state.fetchRules,
+      addRule: state.addRule,
+      updateRule: state.updateRule,
+      removeRule: state.removeRule,
+      fetchEvents: state.fetchEvents,
+      loadPresets: state.loadPresets,
+    })),
+  );

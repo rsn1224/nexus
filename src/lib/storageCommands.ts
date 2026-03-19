@@ -5,16 +5,16 @@ export async function fetchStorageInfo(): Promise<StorageInfo | null> {
   return await invoke<StorageInfo>('get_storage_info');
 }
 
-export async function cleanupTempFiles(): Promise<number> {
-  return await invoke<number>('cleanup_temp_files');
+export async function cleanupTempFiles(confirmed = true): Promise<number> {
+  return await invoke<number>('cleanup_temp_files', { confirmed });
 }
 
 export async function cleanupRecycleBin(): Promise<number> {
   return await invoke<number>('cleanup_recycle_bin');
 }
 
-export async function cleanupSystemCache(): Promise<number> {
-  return await invoke<number>('cleanup_system_cache');
+export async function cleanupSystemCache(confirmed = true): Promise<number> {
+  return await invoke<number>('cleanup_system_cache', { confirmed });
 }
 
 export async function runFullCleanup(): Promise<CleanupResult> {

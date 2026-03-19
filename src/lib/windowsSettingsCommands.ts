@@ -34,5 +34,9 @@ export async function applyRecommendation(settingId: string): Promise<void> {
 }
 
 export async function applyAllSafeRecommendations(): Promise<void> {
-  await invoke('apply_all_safe_recommendations');
+  const result = await invoke<AdvisorResult>('get_settings_advice');
+  const safeItems = result.recommendations.filter((r) => r.safetyLevel === 'safe' && !r.isOptimal);
+  for (const item of safeItems) {
+    await invoke('apply_recommendation', { settingId: item.settingId });
+  }
 }
