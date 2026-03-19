@@ -13,15 +13,15 @@ export interface WindowsSettings {
 }
 
 export enum PowerPlan {
-  Balanced = 'Balanced',
-  HighPerformance = 'High Performance',
-  PowerSaver = 'Power Saver',
+  Balanced = 'balanced',
+  HighPerformance = 'highPerformance',
+  PowerSaver = 'powerSaver',
 }
 
 export enum VisualEffects {
-  BestPerformance = 'Best Performance',
-  Balanced = 'Balanced',
-  BestAppearance = 'Best Appearance',
+  BestPerformance = 'bestPerformance',
+  Balanced = 'balanced',
+  BestAppearance = 'bestAppearance',
 }
 
 export interface WinSetting {

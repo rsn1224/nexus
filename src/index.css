@@ -4,57 +4,57 @@
 @import "@fontsource/b612-mono/700.css";
 
 @theme {
-  /* ─── NEXUS Base: Cyberpunk Night ─────────────────────── */
-  --color-base-950: #000000; /* 最深 — タイトルバー背景 */
-  --color-base-900: #050505; /* メイン背景 */
-  --color-base-800: #0d0d0d; /* カード背景 — Deep Night */
-  --color-base-700: #141414; /* hover / インタラクティブ */
-  --color-base-600: #1c1c1c; /* ボーダー内側 */
-  --color-base-500: #262626; /* セパレーター */
+  /* ─── NEXUS Base: FM26 Dark Navy ─────────────────────── */
+  --color-base-950: #080c14; /* 最深 — タイトルバー背景 */
+  --color-base-900: #0d1220; /* メイン背景 — FM26 ネイビー */
+  --color-base-800: #141c2e; /* カード背景 */
+  --color-base-700: #1c2840; /* hover / インタラクティブ */
+  --color-base-600: #243050; /* ボーダー内側 */
+  --color-base-500: #2e3c60; /* セパレーター */
 
-  /* Primary Accent: Cyberpunk Yellow */
-  --color-accent-600: #d4c200;
-  --color-accent-500: #fcee0a; /* Cyberpunk Yellow — メインアクセント */
-  --color-accent-400: #fdf24a;
-  --color-accent-300: #fef680;
+  /* Primary Accent: FM26 Lime Green — シグネチャーカラー */
+  --color-accent-600: #7a9e00;
+  --color-accent-500: #a0cc00; /* FM26 Lime Green */
+  --color-accent-400: #b8e000;
+  --color-accent-300: #d4f040;
 
-  /* Secondary: Pure White（重要ラベル・見出し） */
-  --color-warm-600: #a3a3a3;
-  --color-warm-500: #e5e5e5;
-  --color-warm-400: #f5f5f5;
-  --color-warm-300: #ffffff;
+  /* Secondary: Neutral Light（ラベル・見出し） */
+  --color-warm-600: #8899aa;
+  --color-warm-500: #c8d8e8;
+  --color-warm-400: #ddeaf4;
+  --color-warm-300: #eef5ff;
 
-  /* Tertiary: Cyberpunk Red — 警告・コスト・危険 */
-  --color-purple-600: #cc0030;
-  --color-purple-500: #ff003c; /* Cyberpunk Red */
-  --color-purple-400: #ff3363;
-  --color-purple-300: #ff668a;
+  /* Tertiary: Amber — タクティクス・コスト警告 */
+  --color-purple-600: #c87800;
+  --color-purple-500: #f59e0b;
+  --color-purple-400: #fbbf24;
+  --color-purple-300: #fde68a;
 
-  /* Info: Cyberpunk Blue — ホログラム・情報UI */
-  --color-info-600: #00aacc;
-  --color-info-500: #00e9fe; /* Cyberpunk Blue */
-  --color-info-400: #40efff;
+  /* Info: FM26 Blue — 情報・スカウト・分析 */
+  --color-info-600: #1a6fd4;
+  --color-info-500: #3b9de8;
+  --color-info-400: #60b8f8;
 
   /* Semantic */
-  --color-danger-600: #cc0030;
-  --color-danger-500: #ff003c; /* Cyberpunk Red — Critical */
-  --color-danger-200: #ffd6df;
+  --color-danger-600: #b91c1c;
+  --color-danger-500: #ef4444;
+  --color-danger-200: #fecaca;
 
-  --color-warning-600: #d4c200;
-  --color-warning-500: #fcee0a; /* Yellow — Warning */
-  --color-warning-200: #fef9c3;
+  --color-warning-600: #c87800;
+  --color-warning-500: #f59e0b;
+  --color-warning-200: #fde68a;
 
-  --color-success-600: #00cc80;
-  --color-success-500: #00ff9f; /* Cyberpunk Green — OK / MaxDoc */
-  --color-success-200: #a7f3d0;
+  --color-success-600: #15803d;
+  --color-success-500: #22c55e; /* FM26 Green — Good form / Fit */
+  --color-success-200: #bbf7d0;
 
-  /* Text */
-  --color-text-primary: #f0f0f0; /* ほぼ白 */
-  --color-text-secondary: #888888;
-  --color-text-muted: #555555;
+  /* Text — FM26 高コントラスト基準 */
+  --color-text-primary: #e8eef8; /* クールホワイト */
+  --color-text-secondary: #8899b8; /* 読みやすいブルーグレー */
+  --color-text-muted: #566080; /* 補助テキスト */
 
-  --color-border-subtle: #1a1a1a;
-  --color-border-active: #fcee0a; /* Yellow ボーダー */
+  --color-border-subtle: #1c2840; /* ネイビー系ボーダー */
+  --color-border-active: #a0cc00; /* Lime Green アクティブボーダー */
 
   /* ─── Typography ─────────────────────────────────────── */
   --font-sans: "Inter Variable", "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
@@ -83,59 +83,59 @@ body,
 
 /* ─── Glass Card ─────────────────────────────────────── */
 .card-glass {
-  background: rgba(13, 13, 13, 0.8);
+  background: rgba(20, 28, 46, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 0;
+  border: 1px solid rgba(160, 204, 0, 0.08);
+  border-radius: 6px;
 }
 
 .card-glass-elevated {
-  background: rgba(13, 13, 13, 0.92);
+  background: rgba(20, 28, 46, 0.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(160, 204, 0, 0.12);
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
 /* ─── Glow utilities ──────────────────────────────────── */
 .card-glow {
-  border-color: rgba(252, 238, 10, 0.25);
-  box-shadow: 0 0 24px rgba(252, 238, 10, 0.15);
+  border-color: rgba(160, 204, 0, 0.3);
+  box-shadow: 0 0 20px rgba(160, 204, 0, 0.12);
 }
 
 .card-glow-hover:hover {
-  border-color: rgba(252, 238, 10, 0.45);
-  box-shadow: 0 0 32px rgba(252, 238, 10, 0.2);
+  border-color: rgba(160, 204, 0, 0.5);
+  box-shadow: 0 0 28px rgba(160, 204, 0, 0.18);
   transition: all 200ms ease;
 }
 
 /* ─── Accent Glow（強化版） ──────────────────────────── */
 .glow-cyan {
   box-shadow:
-    0 0 20px rgba(252, 238, 10, 0.2),
-    0 0 60px rgba(252, 238, 10, 0.08);
+    0 0 20px rgba(160, 204, 0, 0.22),
+    0 0 60px rgba(160, 204, 0, 0.08);
 }
 .glow-warm {
   box-shadow:
-    0 0 20px rgba(229, 229, 229, 0.1),
-    0 0 60px rgba(229, 229, 229, 0.04);
+    0 0 20px rgba(200, 216, 232, 0.12),
+    0 0 60px rgba(200, 216, 232, 0.05);
 }
 .glow-purple {
   box-shadow:
-    0 0 20px rgba(255, 0, 60, 0.22),
-    0 0 60px rgba(255, 0, 60, 0.08);
+    0 0 20px rgba(245, 158, 11, 0.22),
+    0 0 60px rgba(245, 158, 11, 0.08);
 }
 .glow-blue {
   box-shadow:
-    0 0 20px rgba(0, 233, 254, 0.22),
-    0 0 60px rgba(0, 233, 254, 0.08);
+    0 0 20px rgba(59, 157, 232, 0.22),
+    0 0 60px rgba(59, 157, 232, 0.08);
 }
 .glow-info {
   box-shadow:
-    0 0 20px rgba(0, 233, 254, 0.22),
-    0 0 60px rgba(0, 233, 254, 0.08);
+    0 0 20px rgba(59, 157, 232, 0.22),
+    0 0 60px rgba(59, 157, 232, 0.08);
 }
 
 /* ─── Wing transition ────────────────────────────────── */
@@ -261,6 +261,6 @@ body,
 
 /* ─── Selection ───────────────────────────────────────── */
 ::selection {
-  background: rgba(252, 238, 10, 0.2);
+  background: rgba(160, 204, 0, 0.2);
   color: var(--color-text-primary);
 }
