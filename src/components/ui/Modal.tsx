@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useEffect } from 'react';
+import { useModalStore } from '../../stores/useModalStore';
 import Button from './Button';
 
 interface ModalProps {
@@ -27,6 +28,16 @@ export default function Modal({
   footer,
   className = '',
 }: ModalProps): React.ReactElement | null {
+  useEffect(() => {
+    const { openModal, closeModal } = useModalStore.getState();
+    if (isOpen) {
+      openModal();
+      return () => {
+        closeModal();
+      };
+    }
+  }, [isOpen]);
+
   useEffect(() => {
     if (!isOpen || !closeOnEscape) return;
 

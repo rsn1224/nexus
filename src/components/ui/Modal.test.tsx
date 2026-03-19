@@ -1,7 +1,43 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { useModalStore } from '../../stores/useModalStore';
 import Modal from './Modal';
+
+describe('Modal — useModalStore wire-up', () => {
+  beforeEach(() => {
+    useModalStore.setState({ openCount: 0, isOpen: false });
+  });
+
+  it('isOpen=true で openModal() が呼ばれ isOpen が true になる', () => {
+    render(
+      <Modal isOpen={true} onClose={vi.fn()}>
+        内容
+      </Modal>,
+    );
+    expect(useModalStore.getState().isOpen).toBe(true);
+  });
+
+  it('isOpen=false では isOpen が false のまま', () => {
+    render(
+      <Modal isOpen={false} onClose={vi.fn()}>
+        内容
+      </Modal>,
+    );
+    expect(useModalStore.getState().isOpen).toBe(false);
+  });
+
+  it('unmount 時に closeModal() が呼ばれ isOpen が false になる', () => {
+    const { unmount } = render(
+      <Modal isOpen={true} onClose={vi.fn()}>
+        内容
+      </Modal>,
+    );
+    expect(useModalStore.getState().isOpen).toBe(true);
+    unmount();
+    expect(useModalStore.getState().isOpen).toBe(false);
+  });
+});
 
 describe('Modal', () => {
   it('isOpen=true でモーダルが表示される', () => {

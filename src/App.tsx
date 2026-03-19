@@ -1,5 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Shell from './components/layout/Shell';
+import WingHeader from './components/layout/WingHeader';
 import { ErrorBoundary, LoadingFallback } from './components/ui';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useNavStore } from './stores/useNavStore';
@@ -53,6 +54,7 @@ export default function App(): React.ReactElement {
             key={wingId}
             className={wingId === activeWing ? 'flex flex-col h-full overflow-hidden' : 'hidden'}
           >
+            <WingHeader wingId={wingId} />
             <ErrorBoundary>
               <Suspense fallback={<LoadingFallback />}>
                 <WingComponent />
