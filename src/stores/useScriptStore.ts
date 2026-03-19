@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { ExecutionLog, ScriptEntry } from '../types';
 
@@ -30,11 +31,10 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
     try {
       const scripts = await invoke<ScriptEntry[]>('list_scripts');
       set({ scripts, isLoading: false });
-    } catch (error) {
-      set({
-        error: typeof error === 'string' ? error : 'Failed to fetch scripts',
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'script: リスト取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -52,11 +52,10 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
         scripts: [...state.scripts, newScript],
         isLoading: false,
       }));
-    } catch (error) {
-      set({
-        error: extractErrorMessage(error),
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'script: 追加失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -68,11 +67,10 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
         scripts: state.scripts.filter((script) => script.id !== id),
         isLoading: false,
       }));
-    } catch (error) {
-      set({
-        error: extractErrorMessage(error),
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'script: 削除失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -82,16 +80,15 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
 
     set({ isRunning: true, error: null });
     try {
-      const log = await invoke<ExecutionLog>('run_script', { id });
+      const execLog = await invoke<ExecutionLog>('run_script', { id });
       set((state) => ({
-        logs: [log, ...state.logs],
+        logs: [execLog, ...state.logs],
         isRunning: false,
       }));
-    } catch (error) {
-      set({
-        error: extractErrorMessage(error),
-        isRunning: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'script: 実行失敗: %s', msg);
+      set({ error: msg, isRunning: false });
     }
   },
 
@@ -100,11 +97,10 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
     try {
       const logs = await invoke<ExecutionLog[]>('get_execution_logs');
       set({ logs, isLoading: false });
-    } catch (error) {
-      set({
-        error: extractErrorMessage(error),
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'script: 実行ログ取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -113,11 +109,10 @@ export const useScriptStore = create<ScriptStore>((set, get) => ({
     try {
       await invoke('clear_execution_logs');
       set({ logs: [], isLoading: false });
-    } catch (error) {
-      set({
-        error: extractErrorMessage(error),
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'script: ログクリア失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 }));

@@ -5,7 +5,7 @@ import {
   useHardwareData,
   useHardwareStore,
 } from '../../stores/useHardwareStore';
-import { Card, EmptyState, ErrorBanner, LoadingState } from '../ui';
+import { Card, EmptyState, ErrorBanner, ErrorBoundary, LoadingState } from '../ui';
 import CpuSection from './CpuSection';
 import EcoModePanel from './EcoModePanel';
 import GpuSection from './GpuSection';
@@ -44,25 +44,31 @@ export default function HardwareWing(): React.JSX.Element {
 
   return (
     <div className="p-4 h-full overflow-y-auto">
-      <CpuSection
-        cpuName={info.cpuName}
-        cpuCores={info.cpuCores}
-        cpuThreads={info.cpuThreads}
-        cpuBaseGhz={info.cpuBaseGhz}
-        cpuTempC={info.cpuTempC}
-      />
-      <GpuSection
-        gpuName={info.gpuName}
-        gpuVramTotalMb={info.gpuVramTotalMb}
-        gpuTempC={info.gpuTempC}
-        gpuUsagePercent={info.gpuUsagePercent}
-      />
-      <MemorySection
-        memTotalGb={info.memTotalGb}
-        memUsedGb={info.memUsedGb}
-        memUsagePercent={memUsagePercent}
-        createProgressBar={createDiskProgressBar}
-      />
+      <ErrorBoundary name="CPU">
+        <CpuSection
+          cpuName={info.cpuName}
+          cpuCores={info.cpuCores}
+          cpuThreads={info.cpuThreads}
+          cpuBaseGhz={info.cpuBaseGhz}
+          cpuTempC={info.cpuTempC}
+        />
+      </ErrorBoundary>
+      <ErrorBoundary name="GPU">
+        <GpuSection
+          gpuName={info.gpuName}
+          gpuVramTotalMb={info.gpuVramTotalMb}
+          gpuTempC={info.gpuTempC}
+          gpuUsagePercent={info.gpuUsagePercent}
+        />
+      </ErrorBoundary>
+      <ErrorBoundary name="メモリ">
+        <MemorySection
+          memTotalGb={info.memTotalGb}
+          memUsedGb={info.memUsedGb}
+          memUsagePercent={memUsagePercent}
+          createProgressBar={createDiskProgressBar}
+        />
+      </ErrorBoundary>
 
       <Card title="STORAGE" className="mb-4">
         <div className="font-mono text-xs text-text-secondary space-y-3">
@@ -115,7 +121,9 @@ export default function HardwareWing(): React.JSX.Element {
         </div>
       </Card>
 
-      <EcoModePanel />
+      <ErrorBoundary name="省電モード">
+        <EcoModePanel />
+      </ErrorBoundary>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import type React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { useModalStore } from '../../stores/useModalStore';
 import Button from './Button';
 
@@ -28,6 +29,9 @@ export default function Modal({
   footer,
   className = '',
 }: ModalProps): React.ReactElement | null {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  useFocusTrap(dialogRef, isOpen);
+
   useEffect(() => {
     const { openModal, closeModal } = useModalStore.getState();
     if (isOpen) {
@@ -91,6 +95,7 @@ export default function Modal({
         <div role="none" className="absolute inset-0 bg-black bg-opacity-50" />
       )}
       <div
+        ref={dialogRef}
         data-testid="ui-modal"
         role="dialog"
         aria-modal="true"

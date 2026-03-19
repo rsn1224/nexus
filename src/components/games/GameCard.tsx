@@ -71,6 +71,8 @@ export default function GameCard({
               e.stopPropagation();
               onToggleFavorite(game.app_id);
             }}
+            aria-label={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
+            aria-pressed={isFavorite}
             className={`bg-transparent border-none cursor-pointer text-[13px] p-0 leading-none shrink-0 ${isFavorite ? 'text-accent-500' : 'text-text-muted'}`}
           >
             {isFavorite ? '\u2605' : '\u2606'}
@@ -101,6 +103,7 @@ export default function GameCard({
           type="button"
           onClick={() => handleLaunchGame(game.app_id)}
           disabled={isBusy}
+          aria-label={`${game.name}を起動`}
           className={`mt-auto font-mono text-[9px] py-1 border-none rounded-[2px] tracking-[0.05em] w-full ${
             isBusy
               ? 'bg-base-600 text-text-muted cursor-default opacity-50'

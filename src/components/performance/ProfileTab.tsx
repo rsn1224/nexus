@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   createDefaultProfile,
   useGameProfileActions,
@@ -35,6 +35,8 @@ export default function ProfileTab({
 
   const [showForm, setShowForm] = useState(false);
   const [editingProfile, setEditingProfile] = useState<GameProfile | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const deleteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // 初回読み込み + イベントリスナー設定
   useEffect(() => {
@@ -67,8 +69,16 @@ export default function ProfileTab({
     [onEdit],
   );
 
-  const handleDelete = useCallback(
-    async (id: string) => {
+  const handleDeleteRequest = useCallback((id: string): void => {
+    if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+    setDeleteConfirmId(id);
+    deleteTimerRef.current = setTimeout(() => setDeleteConfirmId(null), 3000);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(
+    async (id: string): Promise<void> => {
+      if (deleteTimerRef.current) clearTimeout(deleteTimerRef.current);
+      setDeleteConfirmId(null);
       await deleteProfile(id);
     },
     [deleteProfile],
@@ -146,9 +156,11 @@ export default function ProfileTab({
             key={profile.id}
             profile={profile}
             isActive={profile.id === activeProfileId}
+            deleteConfirmId={deleteConfirmId}
             onApply={(id) => void applyProfile(id)}
             onEdit={handleEdit}
-            onDelete={(id) => void handleDelete(id)}
+            onDeleteRequest={handleDeleteRequest}
+            onDeleteConfirm={(id) => void handleDeleteConfirm(id)}
           />
         ))}
       </div>

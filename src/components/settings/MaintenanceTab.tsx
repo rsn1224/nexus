@@ -11,8 +11,10 @@ export default function MaintenanceTab(): React.ReactElement {
   const [isCleaning, setIsCleaning] = useState(false);
   const [revertResult, setRevertResult] = useState<RevertAllResult | null>(null);
   const [showCleanupConfirm, setShowCleanupConfirm] = useState(false);
+  const [showRevertConfirm, setShowRevertConfirm] = useState(false);
 
-  const handleRevertAll = async (): Promise<void> => {
+  const handleRevertConfirm = async (): Promise<void> => {
+    setShowRevertConfirm(false);
     setIsReverting(true);
     setRevertResult(null);
     try {
@@ -59,7 +61,7 @@ export default function MaintenanceTab(): React.ReactElement {
             <Button
               variant="secondary"
               size="sm"
-              onClick={handleRevertAll}
+              onClick={() => setShowRevertConfirm(true)}
               disabled={isReverting}
               loading={isReverting}
             >
@@ -109,6 +111,33 @@ export default function MaintenanceTab(): React.ReactElement {
           </div>
         )}
       </div>
+
+      <Modal
+        isOpen={showRevertConfirm}
+        onClose={() => setShowRevertConfirm(false)}
+        title="⚠ 設定リバートの確認"
+        size="md"
+      >
+        <div className="space-y-3">
+          <div className="font-mono text-[11px] text-text-primary">
+            nexus が変更した以下の Windows 設定を元に戻します：
+          </div>
+          <ul className="list-disc list-inside space-y-1 font-mono text-[10px] text-text-secondary">
+            <li>電源プラン</li>
+            <li>ゲームモード / フルスクリーン最適化</li>
+            <li>ハードウェア GPU スケジューリング</li>
+            <li>視覚効果設定</li>
+          </ul>
+        </div>
+        <div className="flex justify-end gap-2 mt-4">
+          <Button variant="secondary" size="sm" onClick={() => setShowRevertConfirm(false)}>
+            CANCEL
+          </Button>
+          <Button variant="secondary" size="sm" onClick={handleRevertConfirm} loading={isReverting}>
+            ↩ REVERT ALL
+          </Button>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={showCleanupConfirm}

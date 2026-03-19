@@ -41,7 +41,7 @@ export const formatTimestamp = (timestamp: string): string => {
       minute: '2-digit',
       second: '2-digit',
     });
-  } catch {
+  } catch (_err) {
     return timestamp;
   }
 };

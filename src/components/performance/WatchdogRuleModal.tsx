@@ -23,6 +23,7 @@ export function WatchdogRuleModal({
 }: WatchdogRuleModalProps) {
   const {
     rule,
+    validationError,
     handleSave,
     updateRule,
     updateCondition,
@@ -57,6 +58,18 @@ export function WatchdogRuleModal({
               placeholder="Enter rule name..."
               className={inputClass}
             />
+            {validationError && (
+              <div
+                style={{
+                  color: 'var(--color-danger-500)',
+                  fontSize: '10px',
+                  fontFamily: 'var(--font-mono)',
+                  marginTop: '4px',
+                }}
+              >
+                ⚠ {validationError}
+              </div>
+            )}
           </div>
 
           {/* Enabled Toggle */}

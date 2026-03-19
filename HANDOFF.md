@@ -49,7 +49,10 @@
 | **v3.0 Phase 2** | ✅ 完了（2A: assertNever→lib/assert.ts, 2B: types 前半9分割, 2C: types 後半8分割, 2D: index.ts re-exportのみ化） |
 | **v3.0 Phase 3** | ✅ 完了（3-1〜3-7: Store ロジック→lib/ 抽出 + セレクター→hooks/ 移動 + check-file-size.mjs strict 昇格） |
 | **v3.0 Phase 4** | ✅ 完了（ドキュメント最終更新 + progressWidth ヘルパー + ミューテーション閾値 + リリース） |
-| **v3.0.1 Phase 1** | 🔄 進行中（クリティカルバグ修正: subscribe リーク + alert 除去 + 確認ダイアログ） |
+| **v3.0.1 Phase 1** | ✅ 完了（subscribe リーク修正 + alert→ErrorBanner + 確認ダイアログ: MaintenanceTab/ProfileTab） |
+| **v3.0.1 Phase 2** | ✅ 完了（10 Store サイレント catch 撲滅 + log.error 統一） |
+| **v3.0.1 Phase 3** | ✅ 完了（aria-label 7コンポーネント + useFocusTrap Modal フォーカストラップ） |
+| **v3.0.1 Phase 4** | ✅ 完了（ErrorBoundary name prop + BoostWing/HardwareWing/LauncherWing/SettingsWing 適用） |
 
 **最新コミット:** `7d9a641`（v3.0.0 + EcoModePanel hotfix）
 **テスト:** TS 542 + Rust 230+ all green
@@ -58,7 +61,7 @@
 
 ## v3.0.1 — 包括的バグ修正 + UX 改善（Cascade 向け実装指示）
 
-> **ステータス:** ⏳ Phase 1 実装待ち
+> **ステータス:** ✅ 全 Phase 完了
 > **ベースコミット:** `7d9a641`
 > **コミット:** Phase ごとに 1 コミット（`fix: v3.0.1 Phase N — 概要`）
 

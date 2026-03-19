@@ -9,6 +9,8 @@ import type {
 
 export interface UseWatchdogRuleFormResult {
   rule: WatchdogRule;
+  validationError: string | null;
+  clearValidationError: () => void;
   handleSave: () => void;
   updateRule: (updates: Partial<WatchdogRule>) => void;
   updateCondition: (index: number, updates: Partial<WatchdogCondition>) => void;
@@ -32,6 +34,7 @@ export function useWatchdogRuleForm(
   onSave: (rule: WatchdogRule) => void,
   onClose: () => void,
 ): UseWatchdogRuleFormResult {
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [rule, setRule] = useState<WatchdogRule>(() => {
     if (editingRule) return { ...editingRule };
     return {
@@ -49,14 +52,17 @@ export function useWatchdogRuleForm(
 
   const handleSave = () => {
     if (!rule.name.trim()) {
-      alert('Rule name is required');
+      setValidationError('RULE NAME IS REQUIRED');
       return;
     }
     onSave(rule);
     onClose();
   };
 
+  const clearValidationError = () => setValidationError(null);
+
   const updateRule = (updates: Partial<WatchdogRule>) => {
+    if ('name' in updates) setValidationError(null);
     setRule((prev) => ({ ...prev, ...updates }));
   };
 
@@ -104,6 +110,8 @@ export function useWatchdogRuleForm(
 
   return {
     rule,
+    validationError,
+    clearValidationError,
     handleSave,
     updateRule,
     updateCondition,

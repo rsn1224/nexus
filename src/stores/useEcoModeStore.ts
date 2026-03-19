@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import log from '../lib/logger';
 import type { EcoModeConfig, MonthlyCostEstimate, PowerEstimate } from '../types';
 
 interface EcoModeStoreState {
@@ -40,8 +41,9 @@ export const useEcoModeStore = create<EcoModeStore>()(
             const config = await invoke<EcoModeConfig>('get_eco_mode_config');
             set({ config, isLoading: false });
           } catch (err) {
-            const error = err instanceof Error ? err.message : 'Failed to fetch eco mode config';
-            set({ error, isLoading: false });
+            const msg = err instanceof Error ? err.message : 'Failed to fetch eco mode config';
+            log.error({ err }, 'ecoMode: config取得失敗: %s', msg);
+            set({ error: msg, isLoading: false });
           }
         },
 
@@ -51,8 +53,9 @@ export const useEcoModeStore = create<EcoModeStore>()(
             await invoke('save_eco_mode_config', { config });
             set({ config, isLoading: false });
           } catch (err) {
-            const error = err instanceof Error ? err.message : 'Failed to save eco mode config';
-            set({ error, isLoading: false });
+            const msg = err instanceof Error ? err.message : 'Failed to save eco mode config';
+            log.error({ err }, 'ecoMode: config保存失敗: %s', msg);
+            set({ error: msg, isLoading: false });
           }
         },
 
@@ -72,8 +75,9 @@ export const useEcoModeStore = create<EcoModeStore>()(
               isLoading: false,
             });
           } catch (err) {
-            const error = err instanceof Error ? err.message : 'Failed to toggle eco mode';
-            set({ error, isLoading: false });
+            const msg = err instanceof Error ? err.message : 'Failed to toggle eco mode';
+            log.error({ err }, 'ecoMode: トグル失敗: %s', msg);
+            set({ error: msg, isLoading: false });
           }
         },
 
@@ -83,8 +87,9 @@ export const useEcoModeStore = create<EcoModeStore>()(
             const estimate = await invoke<PowerEstimate>('get_power_estimate');
             set({ powerEstimate: estimate, isLoading: false });
           } catch (err) {
-            const error = err instanceof Error ? err.message : 'Failed to fetch power estimate';
-            set({ error, isLoading: false });
+            const msg = err instanceof Error ? err.message : 'Failed to fetch power estimate';
+            log.error({ err }, 'ecoMode: 電力推定取得失敗: %s', msg);
+            set({ error: msg, isLoading: false });
           }
         },
 
@@ -102,8 +107,9 @@ export const useEcoModeStore = create<EcoModeStore>()(
             });
             set({ costEstimate: estimate, isLoading: false });
           } catch (err) {
-            const error = err instanceof Error ? err.message : 'Failed to fetch cost estimate';
-            set({ error, isLoading: false });
+            const msg = err instanceof Error ? err.message : 'Failed to fetch cost estimate';
+            log.error({ err }, 'ecoMode: コスト推定取得失敗: %s', msg);
+            set({ error: msg, isLoading: false });
           }
         },
 

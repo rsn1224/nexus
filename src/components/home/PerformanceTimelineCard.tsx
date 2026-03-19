@@ -45,6 +45,7 @@ const PerformanceTimelineCard: React.FC = () => {
             key={tab.id}
             type="button"
             onClick={() => setActiveTab(tab.id)}
+            aria-label={`${tab.label}タブを表示`}
             className={`px-3 py-1 font-mono text-[9px] tracking-widest border-b-2 -mb-[2px] transition-colors ${
               activeTab === tab.id
                 ? 'border-accent-500 text-accent-500'

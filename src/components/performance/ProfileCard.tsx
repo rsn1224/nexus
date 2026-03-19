@@ -51,17 +51,21 @@ export function CurrentPowerPlanDisplay(): React.ReactElement {
 export interface ProfileCardProps {
   profile: GameProfile;
   isActive: boolean;
+  deleteConfirmId: string | null;
   onApply: (id: string) => void;
   onEdit: (profile: GameProfile) => void;
-  onDelete: (id: string) => void;
+  onDeleteRequest: (id: string) => void;
+  onDeleteConfirm: (id: string) => void;
 }
 
 export default function ProfileCard({
   profile,
   isActive,
+  deleteConfirmId,
   onApply,
   onEdit,
-  onDelete,
+  onDeleteRequest,
+  onDeleteConfirm,
 }: ProfileCardProps): React.ReactElement {
   const playHours = Math.floor(profile.totalPlaySecs / 3600);
   const playMins = Math.floor((profile.totalPlaySecs % 3600) / 60);
@@ -141,13 +145,23 @@ export default function ProfileCard({
         >
           編集
         </button>
-        <button
-          type="button"
-          onClick={() => onDelete(profile.id)}
-          className="font-mono text-[9px] py-1 px-3 bg-base-700 text-danger-500 border-none rounded-[2px] cursor-pointer"
-        >
-          削除
-        </button>
+        {deleteConfirmId === profile.id ? (
+          <button
+            type="button"
+            onClick={() => onDeleteConfirm(profile.id)}
+            className="font-mono text-[9px] py-1 px-3 bg-danger-500 text-base-900 border-none rounded-[2px] cursor-pointer"
+          >
+            確認?
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onDeleteRequest(profile.id)}
+            className="font-mono text-[9px] py-1 px-3 bg-base-700 text-danger-500 border-none rounded-[2px] cursor-pointer"
+          >
+            削除
+          </button>
+        )}
       </div>
     </div>
   );

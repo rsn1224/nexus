@@ -1,5 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type {
   BottleneckResult,
   FrameTimeMonitorState,
@@ -47,7 +49,7 @@ export const useBottleneckStore = create<BottleneckState & BottleneckActions>((s
       try {
         const frameTimeState = await invoke<FrameTimeMonitorState>('get_frame_time_status');
         isFrameTimeRunning = frameTimeState.type === 'running';
-      } catch {
+      } catch (_err) {
         // frameTime 監視が未開始の場合は無視
       }
 
@@ -76,11 +78,10 @@ export const useBottleneckStore = create<BottleneckState & BottleneckActions>((s
         isAnalyzing: false,
         error: null,
       });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Unknown error',
-        isAnalyzing: false,
-      });
+    } catch (err) {
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'bottleneck: 分析失敗: %s', msg);
+      set({ error: msg, isAnalyzing: false });
     }
   },
 

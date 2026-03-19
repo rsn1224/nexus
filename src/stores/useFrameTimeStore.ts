@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, type UnlistenFn } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { FrameTimeMonitorState, FrameTimeSnapshot } from '../types';
 
@@ -39,7 +40,9 @@ export const useFrameTimeStore = create<FrameTimeStoreState & FrameTimeStoreActi
         });
         set({ monitorState: state, isLoading: false });
       } catch (err) {
-        set({ isLoading: false, error: extractErrorMessage(err) });
+        const msg = extractErrorMessage(err);
+        log.error({ err }, 'frameTime: 監視開始失敗: %s', msg);
+        set({ isLoading: false, error: msg });
       }
     },
 
@@ -49,7 +52,9 @@ export const useFrameTimeStore = create<FrameTimeStoreState & FrameTimeStoreActi
         const state = await invoke<FrameTimeMonitorState>('stop_frame_time_monitor');
         set({ monitorState: state, snapshot: null, history: [], isLoading: false });
       } catch (err) {
-        set({ isLoading: false, error: extractErrorMessage(err) });
+        const msg = extractErrorMessage(err);
+        log.error({ err }, 'frameTime: 監視停止失敗: %s', msg);
+        set({ isLoading: false, error: msg });
       }
     },
 
@@ -58,7 +63,9 @@ export const useFrameTimeStore = create<FrameTimeStoreState & FrameTimeStoreActi
         const state = await invoke<FrameTimeMonitorState>('get_frame_time_status');
         set({ monitorState: state });
       } catch (err) {
-        set({ error: extractErrorMessage(err) });
+        const msg = extractErrorMessage(err);
+        log.error({ err }, 'frameTime: 状態取得失敗: %s', msg);
+        set({ error: msg });
       }
     },
 

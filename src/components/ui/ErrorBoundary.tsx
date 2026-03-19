@@ -5,6 +5,7 @@ import log from '../../lib/logger';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  name?: string;
 }
 
 interface State {
@@ -29,19 +30,23 @@ export class ErrorBoundary extends Component<Props, State> {
   render(): ReactNode {
     if (this.state.hasError) {
       if (this.props.fallback) return this.props.fallback;
+      const sectionName = this.props.name ?? 'セクション';
       return (
-        <div className="flex flex-col items-center justify-center h-full gap-4 p-8 text-center">
-          <div className="text-4xl">⚠️</div>
-          <h2 className="text-lg font-semibold text-zinc-200">予期しないエラーが発生しました</h2>
-          <p className="text-sm text-zinc-400 max-w-md">
+        <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
+          <div className="font-mono text-[10px] text-text-muted tracking-widest">
+            {sectionName.toUpperCase()}
+          </div>
+          <div className="font-mono text-[12px] text-danger-500">⚠ エラーが発生しました</div>
+          <div className="font-mono text-[10px] text-text-secondary max-w-xs break-words">
             {this.state.error?.message || 'Unknown error'}
-          </p>
+          </div>
           <button
             type="button"
-            className="px-4 py-2 text-sm rounded-lg bg-zinc-700 hover:bg-zinc-600 text-zinc-200 transition-colors"
+            aria-label={`${sectionName}を再読み込み`}
+            className="font-mono text-[10px] px-3 py-1 border border-accent-500 text-accent-500 hover:bg-accent-500 hover:text-base-900 transition-colors"
             onClick={() => this.setState({ hasError: false, error: null })}
           >
-            再試行
+            ↺ 再試行
           </button>
         </div>
       );

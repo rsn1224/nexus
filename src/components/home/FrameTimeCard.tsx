@@ -83,6 +83,7 @@ export default function FrameTimeCard() {
           <select
             value={selectedProcessId}
             onChange={(e) => setSelectedProcessId(e.target.value)}
+            aria-label="監視対象プロセスを選択"
             className="w-full px-2 py-1 text-[10px] bg-base-700 border border-border-subtle rounded text-text-primary font-mono"
           >
             <option value="">プロセスを選択...</option>
@@ -144,6 +145,7 @@ export default function FrameTimeCard() {
             type="button"
             onClick={handleStart}
             disabled={isLoading || !selectedProcess}
+            aria-label="フレームタイム監視開始"
             className={`flex-1 px-3 py-[6px] font-mono text-[10px] font-bold border ${
               isLoading || !selectedProcess
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
@@ -157,6 +159,7 @@ export default function FrameTimeCard() {
             type="button"
             onClick={handleStop}
             disabled={isLoading}
+            aria-label="フレームタイム監視停止"
             className={`flex-1 px-3 py-[6px] font-mono text-[10px] font-bold border ${
               isLoading
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'

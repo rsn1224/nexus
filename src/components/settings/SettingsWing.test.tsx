@@ -97,6 +97,15 @@ describe('SettingsWing', () => {
     const revertButton = screen.getByText('↩ REVERT ALL');
     fireEvent.click(revertButton);
 
+    // 確認モーダルが表示される
+    await waitFor(() => {
+      expect(screen.getByText('⚠ 設定リバートの確認')).toBeInTheDocument();
+    });
+
+    // モーダル内の確認ボタンをクリック（getAllByText で2番目）
+    const allRevertButtons = screen.getAllByText('↩ REVERT ALL');
+    fireEvent.click(allRevertButtons[allRevertButtons.length - 1]);
+
     await waitFor(() => {
       expect(mockInvoke).toHaveBeenCalledWith('revert_all_settings');
     });

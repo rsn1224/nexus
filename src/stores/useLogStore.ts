@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import log from '../lib/logger';
 import type { LogAnalysis, LogEntry, LogLevel } from '../types';
 
 export type LogLevelFilter = 'All' | 'Error' | 'Warn' | 'Info' | 'Debug';
@@ -49,11 +50,10 @@ export const useLogStore = create<LogState>((set, get) => ({
         limit: limit || 1000,
       })) as LogEntry[];
       set({ logs, isLoading: false });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Failed to fetch system logs',
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch system logs';
+      log.error({ err }, 'logStore: システムログ取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -65,11 +65,10 @@ export const useLogStore = create<LogState>((set, get) => ({
         limit: limit || 1000,
       })) as LogEntry[];
       set({ logs, isLoading: false });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Failed to fetch application logs',
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to fetch application logs';
+      log.error({ err }, 'logStore: アプリログ取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -84,11 +83,10 @@ export const useLogStore = create<LogState>((set, get) => ({
     try {
       const analysis = (await invoke('analyze_logs', { logs })) as LogAnalysis;
       set({ analysis, isLoading: false });
-    } catch (error) {
-      set({
-        error: error instanceof Error ? error.message : 'Failed to analyze logs',
-        isLoading: false,
-      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to analyze logs';
+      log.error({ err }, 'logStore: ログ解析失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -102,10 +100,11 @@ export const useLogStore = create<LogState>((set, get) => ({
     try {
       const filePath = (await invoke('export_logs', { logs, format })) as string;
       return filePath;
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to export logs';
-      set({ error: errorMessage });
-      throw new Error(errorMessage);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to export logs';
+      log.error({ err }, 'logStore: ログエクスポート失敗: %s', msg);
+      set({ error: msg });
+      throw new Error(msg);
     }
   },
 

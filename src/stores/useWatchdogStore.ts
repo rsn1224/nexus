@@ -1,5 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import log from '../lib/logger';
+import { extractErrorMessage } from '../lib/tauri';
 import type { WatchdogEvent, WatchdogRule } from '../types';
 
 interface WatchdogStoreState {
@@ -34,8 +36,9 @@ export const useWatchdogStore = create<WatchdogStore>()((set, get) => ({
       const rules = await invoke<WatchdogRule[]>('get_watchdog_rules');
       set({ rules, isLoading: false });
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to fetch rules';
-      set({ error, isLoading: false });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'watchdog: ルール取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -45,8 +48,9 @@ export const useWatchdogStore = create<WatchdogStore>()((set, get) => ({
       await invoke('add_watchdog_rule', { rule });
       await get().fetchRules();
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to add rule';
-      set({ error, isLoading: false });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'watchdog: ルール追加失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -56,8 +60,9 @@ export const useWatchdogStore = create<WatchdogStore>()((set, get) => ({
       await invoke('update_watchdog_rule', { rule });
       await get().fetchRules();
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to update rule';
-      set({ error, isLoading: false });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'watchdog: ルール更新失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -67,8 +72,9 @@ export const useWatchdogStore = create<WatchdogStore>()((set, get) => ({
       await invoke('remove_watchdog_rule', { ruleId });
       await get().fetchRules();
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to remove rule';
-      set({ error, isLoading: false });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'watchdog: ルール削除失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -78,8 +84,9 @@ export const useWatchdogStore = create<WatchdogStore>()((set, get) => ({
       const events = await invoke<WatchdogEvent[]>('get_watchdog_events');
       set({ events, isLoading: false });
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to fetch events';
-      set({ error, isLoading: false });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'watchdog: イベント取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
     }
   },
 
@@ -88,8 +95,9 @@ export const useWatchdogStore = create<WatchdogStore>()((set, get) => ({
       const presets = await invoke<WatchdogRule[]>('get_watchdog_presets');
       return presets;
     } catch (err) {
-      const error = err instanceof Error ? err.message : 'Failed to load presets';
-      set({ error, isLoading: false });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'watchdog: プリセット取得失敗: %s', msg);
+      set({ error: msg, isLoading: false });
       return [];
     }
   },

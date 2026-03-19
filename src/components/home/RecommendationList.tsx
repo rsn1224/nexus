@@ -51,6 +51,7 @@ export default function RecommendationList({ recommendations }: RecommendationLi
                 const wingId = actionToWing[rec.action as keyof typeof actionToWing];
                 if (wingId) navigate(wingId);
               }}
+              aria-label={`${rec.message}—詳細を見る`}
               className="shrink-0 text-accent-500 hover:underline"
             >
               →

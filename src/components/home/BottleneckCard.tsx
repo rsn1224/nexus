@@ -176,6 +176,7 @@ const BottleneckCard: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleActionClick(suggestion.action)}
+                      aria-label={`${suggestion.message}\u3092\u9069\u7528`}
                       className="ml-2 font-mono text-[9px] px-[10px] py-[2px] border border-accent-500 text-accent-500 tracking-[0.1em] transition-all duration-100 hover:bg-accent-500 hover:text-base-900"
                     >
                       APPLY

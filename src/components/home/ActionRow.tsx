@@ -9,6 +9,9 @@ const ActionRow = memo(function ActionRow() {
 
   useEffect(() => {
     subscribe();
+    return () => {
+      useOpsStore.getState().unsubscribe();
+    };
   }, [subscribe]);
 
   return (

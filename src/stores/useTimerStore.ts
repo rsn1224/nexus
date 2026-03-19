@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { TimerResolutionState } from '../types';
 
@@ -29,7 +30,9 @@ export const useTimerStore = create<TimerStoreState & TimerStoreActions>((set) =
       const state = await invoke<TimerResolutionState>('get_timer_resolution');
       set({ timerState: state, isLoading: false });
     } catch (err) {
-      set({ isLoading: false, error: extractErrorMessage(err) });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'timer: 状態取得失敗: %s', msg);
+      set({ isLoading: false, error: msg });
     }
   },
 
@@ -41,7 +44,9 @@ export const useTimerStore = create<TimerStoreState & TimerStoreActions>((set) =
       });
       set({ timerState: state, isApplying: false });
     } catch (err) {
-      set({ isApplying: false, error: extractErrorMessage(err) });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'timer: 解像度設定失敗: %s', msg);
+      set({ isApplying: false, error: msg });
     }
   },
 
@@ -53,7 +58,9 @@ export const useTimerStore = create<TimerStoreState & TimerStoreActions>((set) =
       const state = await invoke<TimerResolutionState>('get_timer_resolution');
       set({ timerState: state, isApplying: false });
     } catch (err) {
-      set({ isApplying: false, error: extractErrorMessage(err) });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'timer: 復元失敗: %s', msg);
+      set({ isApplying: false, error: msg });
     }
   },
 }));

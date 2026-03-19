@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
+import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { BoostResult } from '../types';
 
@@ -26,10 +27,9 @@ export const useBoostStore = create<BoostStore>((set) => ({
 
       set({ lastResult: result, isRunning: false });
     } catch (err) {
-      set({
-        error: extractErrorMessage(err),
-        isRunning: false,
-      });
+      const msg = extractErrorMessage(err);
+      log.error({ err }, 'boost: 実行失敗: %s', msg);
+      set({ error: msg, isRunning: false });
     }
   },
 }));

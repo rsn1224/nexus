@@ -6,7 +6,7 @@ import { useNavStore } from '../../stores/useNavStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import type { GameProfile } from '../../types';
 import AiPanel from '../shared/AiPanel';
-import { TabBar } from '../ui';
+import { ErrorBoundary, TabBar } from '../ui';
 import ProcessTab from './ProcessTab';
 import ProfileForm from './ProfileForm';
 import ProfileTab from './ProfileTab';
@@ -84,12 +84,26 @@ export default function BoostWing(): React.ReactElement {
           />
         ) : (
           <>
-            {activeTab === 'process' && <ProcessTab />}
-            {activeTab === 'profiles' && (
-              <ProfileTab onNew={handleNewProfile} onEdit={handleEditProfile} />
+            {activeTab === 'process' && (
+              <ErrorBoundary name="プロセス最適化">
+                <ProcessTab />
+              </ErrorBoundary>
             )}
-            {activeTab === 'watchdog' && <WatchdogTab />}
-            {activeTab === 'session' && <SessionTab />}
+            {activeTab === 'profiles' && (
+              <ErrorBoundary name="プロファイル">
+                <ProfileTab onNew={handleNewProfile} onEdit={handleEditProfile} />
+              </ErrorBoundary>
+            )}
+            {activeTab === 'watchdog' && (
+              <ErrorBoundary name="WATCHDOG">
+                <WatchdogTab />
+              </ErrorBoundary>
+            )}
+            {activeTab === 'session' && (
+              <ErrorBoundary name="セッション">
+                <SessionTab />
+              </ErrorBoundary>
+            )}
           </>
         )}
       </div>

@@ -8,7 +8,7 @@ import {
   useLauncherStore,
 } from '../../stores/useLauncherStore';
 import AiPanel from '../shared/AiPanel';
-import { Card } from '../ui';
+import { Card, ErrorBoundary } from '../ui';
 import GameCard from './GameCard';
 import LauncherControls from './LauncherControls';
 
@@ -91,38 +91,40 @@ export default function LauncherWing(): React.ReactElement {
       )}
 
       {/* Games Grid */}
-      <Card>
-        {filteredAndSortedGames.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-            {filteredAndSortedGames.map((game) => (
-              <GameCard
-                key={game.app_id}
-                game={game}
-                isFavorite={favorites.includes(game.app_id)}
-                lastPlayedAt={lastPlayed[game.app_id]}
-                onLaunch={handleLaunchGame}
-                onToggleFavorite={toggleFavorite}
-                isBoosting={isBoosting}
-                autoBoostEnabled={autoBoostEnabled}
-              />
-            ))}
-          </div>
-        ) : isScanning ? (
-          <div className="font-mono text-[11px] text-text-muted text-center py-8">
-            ゲームをスキャン中...
-          </div>
-        ) : searchQuery ? (
-          <div className="font-mono text-[11px] text-text-muted text-center py-8">
-            検索結果がありません
-          </div>
-        ) : (
-          <div className="font-mono text-[11px] text-text-muted text-center py-8">
-            ゲームが見つかりません
-            <br />
-            スキャンを実行してください
-          </div>
-        )}
-      </Card>
+      <ErrorBoundary name="ゲームリスト">
+        <Card>
+          {filteredAndSortedGames.length > 0 ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+              {filteredAndSortedGames.map((game) => (
+                <GameCard
+                  key={game.app_id}
+                  game={game}
+                  isFavorite={favorites.includes(game.app_id)}
+                  lastPlayedAt={lastPlayed[game.app_id]}
+                  onLaunch={handleLaunchGame}
+                  onToggleFavorite={toggleFavorite}
+                  isBoosting={isBoosting}
+                  autoBoostEnabled={autoBoostEnabled}
+                />
+              ))}
+            </div>
+          ) : isScanning ? (
+            <div className="font-mono text-[11px] text-text-muted text-center py-8">
+              ゲームをスキャン中...
+            </div>
+          ) : searchQuery ? (
+            <div className="font-mono text-[11px] text-text-muted text-center py-8">
+              検索結果がありません
+            </div>
+          ) : (
+            <div className="font-mono text-[11px] text-text-muted text-center py-8">
+              ゲームが見つかりません
+              <br />
+              スキャンを実行してください
+            </div>
+          )}
+        </Card>
+      </ErrorBoundary>
 
       {/* AI Suggestions */}
       {suggestions.length > 0 && (
