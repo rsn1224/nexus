@@ -1,37 +1,39 @@
 @import "tailwindcss";
-@import "@fontsource/b612/400.css";
-@import "@fontsource/b612/700.css";
+@import "@fontsource-variable/inter";
 @import "@fontsource/b612-mono/400.css";
 @import "@fontsource/b612-mono/700.css";
 
 @theme {
-  /* ─── NEXUS Color System (Cyan Mono-Accent) ─────────── */
-  --color-base-950: #08080c;
-  --color-base-900: #0c0c10;
-  --color-base-800: #13131a;
-  --color-base-700: #1a1a24;
-  --color-base-600: #22222e;
-  --color-base-500: #2c2c3a;
+  /* ─── NEXUS Color System (Modern Gaming Dashboard) ──── */
+  --color-base-950: #06060a;
+  --color-base-900: #0a0a10;
+  --color-base-800: #12121c;
+  --color-base-700: #1a1a28;
+  --color-base-600: #222234;
+  --color-base-500: #2c2c40;
 
+  /* Primary Accent: Cyan */
   --color-accent-600: #0891b2;
   --color-accent-500: #06b6d4;
   --color-accent-400: #22d3ee;
   --color-accent-300: #67e8f9;
 
-  /* ─── Secondary Accent: Warm (Orange/Amber) ─────────── */
+  /* Secondary Accent: Warm (Orange/Amber) */
   --color-warm-600: #d97706;
   --color-warm-500: #f59e0b;
   --color-warm-400: #fbbf24;
+  --color-warm-300: #fde68a;
 
-  /* ─── Tertiary Accent: Purple ────────────────────────── */
+  /* Tertiary Accent: Purple */
   --color-purple-600: #7c3aed;
   --color-purple-500: #8b5cf6;
   --color-purple-400: #a78bfa;
+  --color-purple-300: #c4b5fd;
 
-  /* ─── Info (Blue) ────────────────────────────────────── */
+  /* Info: Blue */
   --color-info-600: #2563eb;
-  --color-info-500: #60a5fa;
-  --color-info-400: #93c5fd;
+  --color-info-500: #3b82f6;
+  --color-info-400: #60a5fa;
 
   --color-danger-600: #dc2626;
   --color-danger-500: #ef4444;
@@ -45,16 +47,17 @@
   --color-success-500: #22c55e;
   --color-success-200: #bbf7d0;
 
-  --color-text-primary: #d4d4e0;
-  --color-text-secondary: #8888a0;
+  /* Text — コントラスト改善 */
+  --color-text-primary: #e0e0ec;
+  --color-text-secondary: #9090aa;
   --color-text-muted: #6b6b82;
 
-  --color-border-subtle: #1e1e2a;
+  --color-border-subtle: #1e1e2e;
   --color-border-active: #06b6d4;
 
   /* ─── Typography ─────────────────────────────────────── */
+  --font-sans: "Inter Variable", "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "B612 Mono", "JetBrains Mono", ui-monospace, monospace;
-  --font-sans: "B612", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
 }
 
 * {
@@ -77,60 +80,68 @@ body,
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ─── Glow utilities ──────────────────────────────────── */
-.card-glow {
-  border-color: rgba(6, 182, 212, 0.15);
-  box-shadow: 0 0 16px rgba(6, 182, 212, 0.06);
-}
-
-.card-glow-hover:hover {
-  border-color: rgba(6, 182, 212, 0.25);
-  transition: border-color 200ms ease;
-}
-
 /* ─── Glass Card ─────────────────────────────────────── */
 .card-glass {
-  background: rgba(19, 19, 26, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(18, 18, 28, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
 }
 
 .card-glass-elevated {
-  background: rgba(19, 19, 26, 0.8);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(18, 18, 28, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Glow utilities ──────────────────────────────────── */
+.card-glow {
+  border-color: rgba(6, 182, 212, 0.2);
+  box-shadow: 0 0 24px rgba(6, 182, 212, 0.15);
+}
+
+.card-glow-hover:hover {
+  border-color: rgba(6, 182, 212, 0.35);
+  box-shadow: 0 0 32px rgba(6, 182, 212, 0.2);
+  transition: all 200ms ease;
 }
 
 /* ─── Accent Glow（強化版） ──────────────────────────── */
 .glow-cyan {
   box-shadow:
-    0 0 20px rgba(6, 182, 212, 0.15),
-    0 0 60px rgba(6, 182, 212, 0.05);
+    0 0 24px rgba(6, 182, 212, 0.18),
+    0 0 80px rgba(6, 182, 212, 0.06);
 }
 .glow-warm {
   box-shadow:
-    0 0 20px rgba(245, 158, 11, 0.15),
-    0 0 60px rgba(245, 158, 11, 0.05);
+    0 0 24px rgba(245, 158, 11, 0.18),
+    0 0 80px rgba(245, 158, 11, 0.06);
 }
 .glow-purple {
   box-shadow:
-    0 0 20px rgba(139, 92, 246, 0.15),
-    0 0 60px rgba(139, 92, 246, 0.05);
+    0 0 24px rgba(139, 92, 246, 0.18),
+    0 0 80px rgba(139, 92, 246, 0.06);
+}
+.glow-blue {
+  box-shadow:
+    0 0 24px rgba(59, 130, 246, 0.18),
+    0 0 80px rgba(59, 130, 246, 0.06);
 }
 .glow-info {
   box-shadow:
-    0 0 20px rgba(96, 165, 250, 0.15),
-    0 0 60px rgba(96, 165, 250, 0.05);
+    0 0 24px rgba(59, 130, 246, 0.18),
+    0 0 80px rgba(59, 130, 246, 0.06);
 }
 
 /* ─── Wing transition ────────────────────────────────── */
-@keyframes wing-enter {
+@keyframes wing-fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -139,7 +150,11 @@ body,
 }
 
 .wing-enter {
-  animation: wing-enter 200ms ease-out both;
+  animation: wing-fade-in 250ms ease-out both;
+}
+
+.wing-animate {
+  animation: wing-fade-in 250ms ease-out both;
 }
 
 /* ─── Card stagger animation ─────────────────────────── */
@@ -162,16 +177,42 @@ body,
   animation-delay: 0ms;
 }
 .stagger-2 {
-  animation-delay: 50ms;
+  animation-delay: 60ms;
 }
 .stagger-3 {
-  animation-delay: 100ms;
+  animation-delay: 120ms;
 }
 .stagger-4 {
-  animation-delay: 150ms;
+  animation-delay: 180ms;
+}
+.stagger-5 {
+  animation-delay: 240ms;
+}
+.stagger-6 {
+  animation-delay: 300ms;
 }
 
 /* ─── Modal animation ────────────────────────────────── */
+@keyframes modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-content-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 @keyframes modal-enter {
   from {
     opacity: 0;
@@ -185,6 +226,14 @@ body,
 
 .modal-enter {
   animation: modal-enter 200ms ease-out both;
+}
+
+.modal-overlay-animate {
+  animation: modal-overlay-in 150ms ease-out both;
+}
+
+.modal-content-animate {
+  animation: modal-content-in 200ms ease-out both;
 }
 
 /* ─── Scrollbar ───────────────────────────────────────── */
