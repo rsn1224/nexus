@@ -6,7 +6,7 @@ interface CardProps {
   children: React.ReactNode;
   className?: string;
   action?: React.ReactNode;
-  variant?: 'default' | 'elevated' | 'outlined' | 'glow';
+  variant?: 'default' | 'elevated' | 'outlined' | 'glow' | 'glass' | 'glass-elevated';
   padding?: 'none' | 'sm' | 'md' | 'lg';
   hoverable?: boolean;
   clickable?: boolean;
@@ -33,6 +33,8 @@ const Card = memo(function Card({
     elevated: 'bg-base-800 border border-border-subtle shadow-lg',
     outlined: 'bg-transparent border border-border-subtle',
     glow: 'bg-base-800 border border-border-subtle card-glow',
+    glass: 'card-glass rounded-lg',
+    'glass-elevated': 'card-glass-elevated rounded-lg',
   };
 
   const paddingClasses = {
@@ -43,7 +45,7 @@ const Card = memo(function Card({
   };
 
   const interactionClasses = `
-    ${hoverable ? 'transition-all duration-200 hover:shadow-md hover:border-accent-500' : ''}
+    ${hoverable ? 'transition-all duration-200 hover:shadow-lg hover:shadow-accent-500/10 hover:border-white/10 hover:-translate-y-0.5' : ''}
     ${clickable ? 'cursor-pointer' : ''}
   `;
 
@@ -59,7 +61,7 @@ const Card = memo(function Card({
     <>
       {title && (
         <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
-          <div className="text-text-secondary text-[10px] tracking-widest uppercase font-mono">
+          <div className="text-text-secondary text-[11px] tracking-widest uppercase font-mono">
             {title}
           </div>
           {action && <div>{action}</div>}

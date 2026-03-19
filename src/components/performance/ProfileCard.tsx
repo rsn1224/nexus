@@ -82,7 +82,7 @@ export default function ProfileCard({
           {profile.displayName}
         </div>
         {isActive && (
-          <span className="font-mono text-[9px] text-accent-500 tracking-[0.1em]">● 適用中</span>
+          <span className="font-mono text-[9px] text-accent-500 tracking-widest">● 適用中</span>
         )}
       </div>
 

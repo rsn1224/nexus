@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
             {sectionName.toUpperCase()}
           </div>
           <div className="font-mono text-[12px] text-danger-500">⚠ エラーが発生しました</div>
-          <div className="font-mono text-[10px] text-text-secondary max-w-xs break-words">
+          <div className="font-mono text-[10px] text-text-secondary max-w-xs wrap-break-word">
             {this.state.error?.message || 'Unknown error'}
           </div>
           <button

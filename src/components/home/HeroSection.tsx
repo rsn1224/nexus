@@ -1,62 +1,16 @@
-import { memo, useEffect } from 'react';
-import { progressWidth } from '../../lib/styles';
+import { memo, useEffect, useMemo } from 'react';
 import { useHardwareData } from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import GameReadinessPanel from './GameReadinessPanel';
-
-// ─── ResourceBar ─────────────────────────────────────────────────────────────
-
-function ResourceBar({
-  label,
-  pct,
-  warn = 50,
-  danger = 80,
-}: {
-  label: string;
-  pct: number | null;
-  warn?: number;
-  danger?: number;
-}) {
-  const barColor =
-    pct === null
-      ? 'bg-border-subtle'
-      : pct >= danger
-        ? 'bg-danger-500'
-        : pct >= warn
-          ? 'bg-accent-400'
-          : 'bg-accent-500';
-  const textColor =
-    pct === null
-      ? 'text-text-muted'
-      : pct >= danger
-        ? 'text-danger-500'
-        : pct >= warn
-          ? 'text-accent-400'
-          : 'text-accent-500';
-
-  return (
-    <div className="flex items-center gap-2">
-      <span className="font-mono text-[9px] text-text-muted w-7 shrink-0">{label}</span>
-      <div className="flex-1 h-1.5 bg-base-700 overflow-hidden">
-        <div
-          className={`h-full transition-all duration-300 ${barColor}`}
-          style={progressWidth(pct ?? 0)}
-        />
-      </div>
-      <span className={`font-mono text-[9px] w-7 text-right shrink-0 ${textColor}`}>
-        {pct !== null ? `${Math.round(pct)}%` : '--'}
-      </span>
-    </div>
-  );
-}
+import KpiCard from './KpiCard';
 
 // ─── HeroSection ─────────────────────────────────────────────────────────────
 
+const SPARKLINE_MAX = 30;
+
 const HeroSection = memo(function HeroSection() {
   const subscribePulse = usePulseStore((s) => s.subscribe);
-  const snap = usePulseStore((s) =>
-    s.snapshots.length > 0 ? s.snapshots[s.snapshots.length - 1] : null,
-  );
+  const snapshots = usePulseStore((s) => s.snapshots);
   const { info: hw, diskUsagePercent, fetchHardware } = useHardwareData();
 
   useEffect(() => {
@@ -64,25 +18,46 @@ const HeroSection = memo(function HeroSection() {
     fetchHardware();
   }, [subscribePulse, fetchHardware]);
 
+  const snap = snapshots.length > 0 ? snapshots[snapshots.length - 1] : null;
+  const recent = snapshots.slice(-SPARKLINE_MAX);
+
   const cpuPct = snap?.cpuPercent ?? null;
-  const memPct =
-    snap !== null && snap.memTotalMb > 0 ? (snap.memUsedMb / snap.memTotalMb) * 100 : null;
   const gpuPct = hw?.gpuUsagePercent ?? null;
 
+  const cpuSparkline = useMemo(() => recent.map((s) => s.cpuPercent), [recent]);
+  const memSparkline = useMemo(
+    () => recent.map((s) => (s.memTotalMb > 0 ? (s.memUsedMb / s.memTotalMb) * 100 : 0)),
+    [recent],
+  );
+
+  const memGb =
+    snap !== null && snap.memTotalMb > 0 ? `${(snap.memUsedMb / 1024).toFixed(1)} GB` : '--';
+
   return (
-    <div className="h-44 shrink-0 flex gap-3 px-3 py-2 border-b border-border-subtle overflow-hidden">
-      <div className="flex-1 overflow-hidden">
-        <GameReadinessPanel />
+    <div className="shrink-0 flex flex-col gap-3 px-3 py-3 border-b border-border-subtle">
+      {/* KPI カード行 */}
+      <div className="flex gap-3">
+        <KpiCard
+          label="CPU"
+          value={cpuPct !== null ? `${Math.round(cpuPct)}%` : '--'}
+          color="warm"
+          sparkline={cpuSparkline}
+        />
+        <KpiCard label="MEM" value={memGb} color="accent" sparkline={memSparkline} />
+        <KpiCard
+          label="GPU"
+          value={gpuPct !== null ? `${Math.round(gpuPct)}%` : '--'}
+          color="purple"
+        />
+        <KpiCard
+          label="DISK"
+          value={diskUsagePercent !== null ? `${Math.round(diskUsagePercent)}%` : '--'}
+          color="info"
+        />
       </div>
-      <div className="w-[152px] flex flex-col justify-center gap-2 border-l border-border-subtle pl-3">
-        <span className="font-mono text-[9px] font-semibold text-text-muted tracking-[0.12em]">
-          RESOURCES
-        </span>
-        <ResourceBar label="CPU" pct={cpuPct} />
-        <ResourceBar label="MEM" pct={memPct} />
-        <ResourceBar label="GPU" pct={gpuPct} />
-        <ResourceBar label="DISK" pct={diskUsagePercent} warn={70} danger={90} />
-      </div>
+
+      {/* Game Readiness */}
+      <GameReadinessPanel />
     </div>
   );
 });

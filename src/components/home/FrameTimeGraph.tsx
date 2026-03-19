@@ -73,7 +73,28 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
       gradient.addColorStop(0, accentColor);
       gradient.addColorStop(1, accentColor);
 
-      ctx.strokeStyle = gradient;
+      // グラデーションフィルエリア
+      const fillGradient = ctx.createLinearGradient(0, 0, 0, height);
+      fillGradient.addColorStop(0, accentColor + '33');
+      fillGradient.addColorStop(1, accentColor + '00');
+
+      ctx.beginPath();
+      frameTimes.forEach((frameTime, index) => {
+        const x = padding + index * step;
+        const y = height - padding - Math.min(frameTime, maxFrameTime) * yScale;
+        if (index === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(padding + (frameTimes.length - 1) * step, height - padding);
+      ctx.lineTo(padding, height - padding);
+      ctx.closePath();
+      ctx.fillStyle = fillGradient;
+      ctx.fill();
+
+      // グローライン（影として2回描画）
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = accentColor;
+      ctx.strokeStyle = accentColor;
       ctx.lineWidth = 1.5;
       ctx.beginPath();
 
@@ -89,6 +110,8 @@ export default function FrameTimeGraph({ frameTimes }: FrameTimeGraphProps) {
       });
 
       ctx.stroke();
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = 'transparent';
 
       // スタッター（33ms以上）をハイライト
       const dangerColor =

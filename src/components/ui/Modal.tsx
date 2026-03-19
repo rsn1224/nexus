@@ -100,7 +100,7 @@ export default function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
-        className={`relative bg-base-800 border border-border-subtle w-full ${sizeClasses[size]} ${className}`}
+        className={`relative bg-base-800 border border-border-subtle w-full ${sizeClasses[size]} modal-enter ${className}`}
       >
         {/* Header */}
         {(title || showCloseButton) && (

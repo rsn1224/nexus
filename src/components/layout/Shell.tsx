@@ -76,16 +76,19 @@ const Shell = memo(function Shell({
                       ? `${item.label} (${WING_SHORTCUT[item.id]})`
                       : item.label
                   }
-                  className={`w-10 h-10 flex items-center justify-center rounded transition-colors ${
+                  className={`relative w-10 h-10 flex items-center justify-center rounded transition-colors ${
                     isActive
                       ? 'text-accent-500 bg-base-700'
                       : 'text-text-secondary hover:text-text-primary hover:bg-base-800'
                   }`}
                 >
+                  {isActive && (
+                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-accent-500 rounded-r glow-cyan" />
+                  )}
                   <Icon size={20} />
                 </button>
                 {/* Tooltip */}
-                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-2 py-1 bg-base-700 border border-border-subtle rounded text-xs text-text-primary whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-3 py-1.5 card-glass-elevated rounded-md text-[11px] text-text-primary whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
                   {item.label}
                 </div>
               </div>

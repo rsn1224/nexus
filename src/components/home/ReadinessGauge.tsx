@@ -40,14 +40,18 @@ export default function ReadinessGauge({ score, rank, size = 120 }: ReadinessGau
     ctx.arc(cx, cy, radius, startAngle, endAngle);
     ctx.stroke();
 
-    // スコア円弧
+    // スコア円弧（グロー付き）
     const scoreAngle = startAngle + (score / 100) * sweepAngle;
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = rankStyle.color;
     ctx.strokeStyle = rankStyle.color;
     ctx.lineWidth = 6;
     ctx.lineCap = 'round';
     ctx.beginPath();
     ctx.arc(cx, cy, radius, startAngle, scoreAngle);
     ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.shadowColor = 'transparent';
 
     // 中央テキスト — スコア
     ctx.fillStyle = rankStyle.color;

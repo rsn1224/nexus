@@ -52,7 +52,9 @@ export default function App(): React.ReactElement {
         return (
           <div
             key={wingId}
-            className={wingId === activeWing ? 'flex flex-col h-full overflow-hidden' : 'hidden'}
+            className={
+              wingId === activeWing ? 'flex flex-col h-full overflow-hidden wing-enter' : 'hidden'
+            }
           >
             <WingHeader wingId={wingId} />
             <ErrorBoundary>

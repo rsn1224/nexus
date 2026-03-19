@@ -45,15 +45,18 @@ export default function GameCard({
   const isBusy = autoBoostEnabled && isBoosting;
 
   return (
-    <div className="bg-base-800 border border-border-subtle rounded overflow-hidden flex flex-col transition-all duration-200 hover:border-accent-500">
+    <div className="bg-base-800 border border-border-subtle rounded overflow-hidden flex flex-col transition-all duration-300 hover:border-accent-500/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent-500/10">
       {/* サムネイル */}
       {!imgError && (
-        <img
-          src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.app_id}/header.jpg`}
-          alt={game.name}
-          onError={() => setImgError(true)}
-          className="w-full h-[94px] object-cover rounded-tl-[3px] rounded-tr-[3px] block bg-base-700"
-        />
+        <div className="relative group/thumb overflow-hidden">
+          <img
+            src={`https://cdn.akamai.steamstatic.com/steam/apps/${game.app_id}/header.jpg`}
+            alt={game.name}
+            onError={() => setImgError(true)}
+            className="w-full h-[94px] object-cover rounded-tl-[3px] rounded-tr-[3px] block bg-base-700 transition-transform duration-300 group-hover/thumb:scale-105"
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-base-900/80 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300 rounded-tl-[3px] rounded-tr-[3px]" />
+        </div>
       )}
       {imgError && (
         <div className="w-full h-[94px] bg-base-700 flex items-center justify-center font-mono text-[9px] text-text-muted">

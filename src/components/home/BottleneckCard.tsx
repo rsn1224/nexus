@@ -12,17 +12,15 @@ import { Card } from '../ui';
 const getBottleneckColor = (type: BottleneckType): string => {
   switch (type) {
     case 'cpu':
-      return 'text-danger-500';
+      return 'text-warm-500';
     case 'gpu':
-      return 'text-accent-500';
+      return 'text-purple-500';
     case 'memory':
       return 'text-accent-500';
     case 'storage':
-      return 'text-text-secondary';
+      return 'text-info-500';
     case 'balanced':
       return 'text-success-500';
-    case 'unknown':
-      return 'text-text-muted';
     default:
       return 'text-text-muted';
   }
@@ -60,11 +58,12 @@ const getConfidenceBorder = (confidence: BottleneckConfidence): string => {
   }
 };
 
-const getScoreBarColor = (score: number): string => {
+const getScoreBarColor = (score: number, key: string): string => {
   if (score >= 0.8) return 'bg-danger-500';
-  if (score >= 0.6) return 'bg-accent-500';
-  if (score >= 0.4) return 'bg-accent-500';
-  return 'bg-success-500';
+  if (key === 'cpu') return 'bg-warm-500';
+  if (key === 'gpu') return 'bg-purple-500';
+  if (key === 'storage') return 'bg-info-500';
+  return 'bg-accent-500';
 };
 
 // ─── コンポーネント ───────────────────────────────────────────────────────────
@@ -123,7 +122,7 @@ const BottleneckCard: React.FC = () => {
           {/* 主要ボトルネック表示 */}
           <div className="flex items-center gap-3">
             <span
-              className={`font-mono text-[14px] font-bold tracking-[0.1em] ${getBottleneckColor(bottleneck.primary)}`}
+              className={`font-mono text-2xl font-bold tracking-widest ${getBottleneckColor(bottleneck.primary)}`}
             >
               {getBottleneckLabel(bottleneck.primary)}
             </span>
@@ -145,16 +144,16 @@ const BottleneckCard: React.FC = () => {
               ] as const
             ).map(({ key, label, score }) => (
               <div key={key} className="flex items-center gap-2">
-                <span className="font-mono text-[10px] text-text-muted tracking-[0.1em] w-10">
+                <span className="font-mono text-[11px] text-text-muted tracking-widest w-10">
                   {label}
                 </span>
                 <div className="flex-1 h-2 bg-base-800 overflow-hidden">
                   <div
-                    className={`h-full transition-all duration-300 ${getScoreBarColor(score)}`}
+                    className={`h-full transition-all duration-300 ${getScoreBarColor(score, key)}`}
                     style={progressWidth(Math.round(score * 100))}
                   />
                 </div>
-                <span className="font-mono text-[10px] text-text-muted w-8 text-right">
+                <span className="font-mono text-[11px] text-text-muted w-8 text-right">
                   {Math.round(score * 100)}%
                 </span>
               </div>
@@ -164,7 +163,7 @@ const BottleneckCard: React.FC = () => {
           {/* 改善提案 */}
           {bottleneck.suggestions.length > 0 && (
             <div className="flex flex-col gap-2 pt-2 border-t border-border-subtle">
-              <span className="font-mono text-[10px] font-semibold text-text-muted tracking-[0.12em]">
+              <span className="font-mono text-[11px] font-semibold text-text-muted tracking-widest">
                 SUGGESTIONS
               </span>
               {bottleneck.suggestions.map((suggestion) => (
@@ -177,7 +176,7 @@ const BottleneckCard: React.FC = () => {
                       type="button"
                       onClick={() => handleActionClick(suggestion.action)}
                       aria-label={`${suggestion.message}\u3092\u9069\u7528`}
-                      className="ml-2 font-mono text-[9px] px-[10px] py-[2px] border border-accent-500 text-accent-500 tracking-[0.1em] transition-all duration-100 hover:bg-accent-500 hover:text-base-900"
+                      className="ml-2 font-mono text-[11px] px-[10px] py-[2px] border border-accent-500 text-accent-500 tracking-widest transition-all duration-100 hover:bg-accent-500 hover:text-base-900"
                     >
                       APPLY
                     </button>
