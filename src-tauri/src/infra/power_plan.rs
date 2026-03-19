@@ -6,6 +6,13 @@ use std::process::Command;
 use crate::error::AppError;
 use crate::types::game::PowerPlan;
 
+/// powercfg 出力を Shift_JIS → UTF-8 にデコード
+#[cfg(windows)]
+fn decode_powercfg(bytes: &[u8]) -> String {
+    let (decoded, _, _) = encoding_rs::SHIFT_JIS.decode(bytes);
+    decoded.to_string()
+}
+
 /// Windows 電源プラン制御インフラ
 /// Win32 API を使って電源プランの切り替えを行う
 #[cfg(windows)]
@@ -48,14 +55,14 @@ impl PowerPlanController {
             .map_err(|e| AppError::GameMonitor(format!("powercfg getactivescheme 失敗: {}", e)))?;
 
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stderr = decode_powercfg(&output.stderr);
             return Err(AppError::GameMonitor(format!(
                 "電源プラン取得失敗: {}",
                 stderr
             )));
         }
 
-        let stdout = String::from_utf8_lossy(&output.stdout);
+        let stdout = decode_powercfg(&output.stdout);
 
         // 出力から GUID を抽出（日英対応）
         for line in stdout.lines() {
@@ -87,7 +94,7 @@ impl PowerPlanController {
             .map_err(|e| AppError::GameMonitor(format!("powercfg setactive 失敗: {}", e)))?;
 
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stderr = decode_powercfg(&output.stderr);
             return Err(AppError::GameMonitor(format!(
                 "電源プラン切り替え失敗 GUID: {}, エラー: {}",
                 guid, stderr
@@ -135,7 +142,7 @@ impl PowerPlanController {
             .map_err(|e| AppError::GameMonitor(format!("powercfg setactive 失敗: {}", e)))?;
 
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stderr = decode_powercfg(&output.stderr);
             return Err(AppError::GameMonitor(format!(
                 "電源プラン切り替え失敗 GUID: {}, エラー: {}",
                 guid, stderr
@@ -158,14 +165,14 @@ impl PowerPlanController {
             .map_err(|e| AppError::GameMonitor(format!("powercfg list 失敗: {}", e)))?;
 
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stderr = decode_powercfg(&output.stderr);
             return Err(AppError::GameMonitor(format!(
                 "電源プラン一覧取得失敗: {}",
                 stderr
             )));
         }
 
-        let stdout = String::from_utf8_lossy(&output.stdout);
+        let stdout = decode_powercfg(&output.stdout);
         let mut plans = Vec::new();
 
         // 出力行を解析（日英対応）
@@ -267,11 +274,11 @@ impl PowerPlanController {
             .map_err(|e| AppError::Power(format!("powercfg実行エラー: {}", e)))?;
 
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stderr = decode_powercfg(&output.stderr);
             return Err(AppError::Power(format!("電源プラン名取得失敗: {}", stderr)));
         }
 
-        let stdout = String::from_utf8_lossy(&output.stdout);
+        let stdout = decode_powercfg(&output.stdout);
 
         // 出力から電源プラン名を抽出（日英対応）
         // 例 (英語): "Power Scheme GUID: 381b4222-...  (Balanced)"
