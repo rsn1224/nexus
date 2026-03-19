@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-// ─── check-file-size.mjs ────────────────────────────────────────────────────
+// ─── check-file-size.mjs ────────────────────────────────────────────
 // TS/TSX 実装ファイルの行数制限チェック（テストファイル除外）
-// Phase 1: 警告モード（exit 0）— 8 ファイルが現在超過中
-// Phase 3 完了後: エラーモード（--strict フラグで有効化）
+// Phase 3 完了: エラーモード（常時有効— 全ファイル 200 行以下を強制）
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
@@ -16,7 +15,7 @@ const MAX_LINES_TS = 200;
 const SCAN_EXTENSIONS = ['.ts', '.tsx'];
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'test']);
 const SKIP_SUFFIXES = ['.test.ts', '.test.tsx', '.spec.ts', '.spec.tsx', '.d.ts'];
-const STRICT_MODE = process.argv.includes('--strict');
+const STRICT_MODE = true;
 
 // ─── ファイル検索 ─────────────────────────────────────────────────────────────
 
@@ -72,12 +71,6 @@ for (const v of violations) {
   console.log(`  ${v.file}: ${v.lines} 行 (+${over})`);
 }
 
-if (STRICT_MODE) {
-  console.log('');
-  console.log('エラーモード（--strict）: 全ファイルを 200 行以下にしてください');
-  process.exit(1);
-}
-
 console.log('');
-console.log('警告モード: Phase 3 完了後に --strict でエラー化予定');
-process.exit(0);
+console.log('エラーモード: 全ファイルを 200 行以下にしてください');
+process.exit(1);

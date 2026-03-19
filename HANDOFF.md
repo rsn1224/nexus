@@ -47,18 +47,18 @@
 | v2.2 Phase 4 | ✅ 完了（UnifiedEmitter: 4タスク → 1タスク統合、28c7ca7） |
 | **v3.0 Phase 1** | ✅ 完了（ワークフロー基盤構築: TESTING.md + BACKEND.md + 3 lint スクリプト + CI 更新、`212b958`） |
 | **v3.0 Phase 2** | ✅ 完了（2A: assertNever→lib/assert.ts, 2B: types 前半9分割, 2C: types 後半8分割, 2D: index.ts re-exportのみ化） |
-| **v3.0 Phase 3** | 🔄 進行中（Store ロジック抽出 + Semgrep 導入） |
+| **v3.0 Phase 3** | ✅ 完了（3-1〜3-7: Store ロジック→lib/ 抽出 + セレクター→hooks/ 移動 + check-file-size.mjs strict 昇格） |
 
-**最新コミット:** v3.0 Phase 3 作業中（ベース: `cd36c7b`）
+**最新コミット:** v3.0 Phase 3 完了
 **テスト:** TS 542 + Rust 230+ all green
 
 ---
 
 ## v3.0 Phase 3 — Store ロジック抽出（Cascade 向け実装指示）
 
-> **ステータス:** ⏳ 実装待ち
+> **ステータス:** ✅ 完了
 > **前提:** Phase 2（`8e2252e`）完了。TS 542 + Rust 230+ all green。
-> **目標:** 7 ストア全てを 200 行以下にする
+> **目標:** 7 ストア全てを 200 行以下にする ← **達成済み**
 > **コミット:** 1 ストア = 1 コミット（`refactor: v3.0 Phase 3-N — useXxxStore ロジックを lib/ に抽出`）
 
 ### AI 開発ルール（Cascade 必読）
@@ -221,16 +221,36 @@
 
 ---
 
-### 全ストア完了後
+### 全ストア完了後（✅ 達成済み）
 
 ```
-✅ 7 ストア全てが 200 行以下
-✅ vitest run — 542 件以上
+✅ 7 ストア全てが 200 行以下（useGameProfileStore.ts: 198行、他全て 200行以下）
+✅ vitest run — 542 件 all green
 ✅ tsc --noEmit — 型エラーゼロ
-✅ npm run check — Biome クリーン
-✅ npm run lint — 全通過
-✅ check-file-size.mjs --strict — エラーゼロ（エラーモード昇格後）
+✅ npm run check — Biome クリーン（5 files fixed）
+✅ check-file-size.mjs — 常時エラーモードに昇格（STRICT_MODE = true）
 ```
+
+### 作成・変更ファイル一覧
+
+| ファイル | 変更内容 |
+|---------|----------|
+| `src/lib/navigation.ts` | 新規: WING_LABELS / ALL_WING_IDS / makeInitialWingStates / buildBreadcrumbs |
+| `src/lib/storageCommands.ts` | 新規: fetchStorageInfo 等 6 invoke ラッパー |
+| `src/lib/windowsSettingsCommands.ts` | 新規: fetchWindowsSettings 等 9 invoke ラッパー |
+| `src/lib/logFilter.ts` | 新規: getLogLevelColor / getLogLevelBgColor / formatTimestamp / truncateMessage |
+| `src/lib/hardwareFormatters.ts` | 新規: defaultHardwareInfo / formatUptime / createDiskProgressBar / formatBootTime / calculateMemUsagePercent |
+| `src/lib/gameProfile.ts` | 追記: fetchGameProfiles 等 10 invoke ラッパー + updateProfileInList + setupGameListeners |
+| `src/lib/networkTuning.ts` | 新規: fetchTcpTuningState 等 9 invoke ラッパー |
+| `src/hooks/networkTuningHooks.ts` | 新規: useNetworkTuningState / useNetworkTuningActions |
+| `src/hooks/hardwareHooks.ts` | 新規: useHardwareData |
+| `src/hooks/storageHooks.ts` | 新規: useStorage |
+| `src/hooks/windowsSettingsHooks.ts` | 新規: useWindowsSettings |
+| `src/hooks/gameProfileHooks.ts` | 新規: useGameProfileState / useGameProfileActions |
+| `src/types/storage.ts` | 追記: StorageStore interface |
+| `src/types/settings.ts` | 追記: WindowsSettingsStore interface |
+| `src/types/game.ts` | 追記: GameProfileState / GameProfileActions interface |
+| `scripts/check-file-size.mjs` | 変更: STRICT_MODE を常時 true に昇格 |
 
 ---
 

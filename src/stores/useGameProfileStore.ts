@@ -1,6 +1,4 @@
-import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
-import { useShallow } from 'zustand/react/shallow';
 import {
   applyGameProfile as cmdApplyProfile,
   deleteGameProfile as cmdDeleteProfile,
@@ -15,55 +13,13 @@ import {
   startGameMonitor as cmdStartMonitor,
   stopGameMonitor as cmdStopMonitor,
   createDefaultProfile,
+  setupGameListeners,
   updateProfileInList,
 } from '../lib/gameProfile';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
-import type {
-  CoreParkingState,
-  CpuTopology,
-  GameExitEvent,
-  GameLaunchEvent,
-  GameProfile,
-  ProfileApplyResult,
-  SharedProfile,
-} from '../types';
-
-// ─── ストア型定義 ────────────────────────────────────────────────────────────
-
-interface GameProfileState {
-  profiles: GameProfile[];
-  activeProfileId: string | null;
-  currentGameExe: string | null;
-  applyResult: ProfileApplyResult | null;
-  isLoading: boolean;
-  isApplying: boolean;
-  error: string | null;
-  isMonitoring: boolean;
-  cpuTopology: CpuTopology | null;
-  coreParkingState: CoreParkingState | null;
-}
-
-interface GameProfileActions {
-  loadProfiles: () => Promise<void>;
-  saveProfile: (profile: GameProfile) => Promise<GameProfile | null>;
-  deleteProfile: (id: string) => Promise<void>;
-  applyProfile: (id: string) => Promise<void>;
-  revertProfile: () => Promise<void>;
-  startMonitoring: () => Promise<void>;
-  stopMonitoring: () => Promise<void>;
-  setupListeners: () => Promise<() => void>;
-  getCpuTopology: () => Promise<void>;
-  fetchCoreParking: () => Promise<void>;
-  applyCoreParking: (minCoresPercent: number) => Promise<void>;
-  exportProfile: (id: string) => Promise<string | null>;
-  importProfile: (json: string) => Promise<GameProfile | null>;
-  clearError: () => void;
-}
-
-export { createDefaultProfile };
-
-// ─── ストア ──────────────────────────────────────────────────────────────────
+import type { GameProfile, SharedProfile } from '../types';
+import type { GameProfileActions, GameProfileState } from '../types/game';
 
 export const useGameProfileStore = create<GameProfileState & GameProfileActions>((set, get) => ({
   // 状態
@@ -78,7 +34,6 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   cpuTopology: null,
   coreParkingState: null,
 
-  // CRUD
   loadProfiles: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -117,7 +72,6 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
     }
   },
 
-  // 適用・リバート
   applyProfile: async (id: string) => {
     set({ isApplying: true, error: null });
     try {
@@ -169,46 +123,7 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   },
 
   // イベントリスナー
-  setupListeners: async () => {
-    const unlistenLaunched = await listen<GameLaunchEvent>('nexus://game-launched', (e) => {
-      log.info({ event: e.payload }, 'gameProfile: ゲーム起動検出');
-      set({
-        currentGameExe: e.payload.exePath,
-        activeProfileId: e.payload.profileId,
-      });
-    });
-
-    const unlistenExited = await listen<GameExitEvent>('nexus://game-exited', (e) => {
-      log.info({ event: e.payload }, 'gameProfile: ゲーム終了検出');
-      set({
-        currentGameExe: null,
-        activeProfileId: null,
-        applyResult: null,
-      });
-      // プレイ時間が更新されたので再読み込み
-      void get().loadProfiles();
-    });
-
-    const unlistenApplied = await listen<ProfileApplyResult>('nexus://profile-applied', (e) => {
-      log.info({ event: e.payload }, 'gameProfile: プロファイル適用通知');
-      set({
-        applyResult: e.payload,
-        activeProfileId: e.payload.profileId,
-      });
-    });
-
-    const unlistenReverted = await listen('nexus://profile-reverted', () => {
-      log.info('gameProfile: リバート通知');
-      set({ activeProfileId: null, applyResult: null });
-    });
-
-    return () => {
-      unlistenLaunched();
-      unlistenExited();
-      unlistenApplied();
-      unlistenReverted();
-    };
-  },
+  setupListeners: async () => setupGameListeners(set, get),
 
   getCpuTopology: async () => {
     try {
@@ -265,7 +180,6 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
     try {
       const profile = await cmdImportProfile(json);
       log.info({ id: profile.id }, 'gameProfile: インポート完了');
-      // ストアのプロファイル一覧を更新
       const { profiles } = useGameProfileStore.getState();
       set({ profiles: [...profiles, profile] });
       return profile;
@@ -278,43 +192,6 @@ export const useGameProfileStore = create<GameProfileState & GameProfileActions>
   },
 }));
 
-// SharedProfile 型は import/export の戻り値として commands から直接使用される
+export { useGameProfileActions, useGameProfileState } from '../hooks/gameProfileHooks';
 export type { SharedProfile };
-
-// ─── useShallow セレクタ ─────────────────────────────────────────────────────
-
-export const useGameProfileState = () =>
-  useGameProfileStore(
-    useShallow((s) => ({
-      profiles: s.profiles,
-      activeProfileId: s.activeProfileId,
-      currentGameExe: s.currentGameExe,
-      applyResult: s.applyResult,
-      isLoading: s.isLoading,
-      isApplying: s.isApplying,
-      error: s.error,
-      isMonitoring: s.isMonitoring,
-      cpuTopology: s.cpuTopology,
-      coreParkingState: s.coreParkingState,
-    })),
-  );
-
-export const useGameProfileActions = () =>
-  useGameProfileStore(
-    useShallow((s) => ({
-      loadProfiles: s.loadProfiles,
-      saveProfile: s.saveProfile,
-      deleteProfile: s.deleteProfile,
-      applyProfile: s.applyProfile,
-      revertProfile: s.revertProfile,
-      startMonitoring: s.startMonitoring,
-      stopMonitoring: s.stopMonitoring,
-      setupListeners: s.setupListeners,
-      getCpuTopology: s.getCpuTopology,
-      fetchCoreParking: s.fetchCoreParking,
-      applyCoreParking: s.applyCoreParking,
-      exportProfile: s.exportProfile,
-      importProfile: s.importProfile,
-      clearError: s.clearError,
-    })),
-  );
+export { createDefaultProfile };

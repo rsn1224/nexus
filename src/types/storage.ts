@@ -30,3 +30,20 @@ export interface CleanupResult {
   systemCacheCleaned: number;
   totalFreedBytes: number;
 }
+
+export interface StorageStore {
+  storageInfo: StorageInfo | null;
+  cleanupResult: CleanupResult | null;
+  analysisResults: string[];
+  isLoading: boolean;
+  error: string | null;
+  lastUpdated: number | null;
+  fetchStorageInfo: () => Promise<void>;
+  cleanupTempFiles: () => Promise<void>;
+  cleanupRecycleBin: () => Promise<void>;
+  cleanupSystemCache: () => Promise<void>;
+  runFullCleanup: () => Promise<void>;
+  analyzeDiskUsage: (driveName: string) => Promise<void>;
+  clearError: () => void;
+  reset: () => void;
+}

@@ -60,6 +60,36 @@ export interface GameExitEvent {
   stutterCount?: number;
 }
 
+export interface GameProfileState {
+  profiles: GameProfile[];
+  activeProfileId: string | null;
+  currentGameExe: string | null;
+  applyResult: ProfileApplyResult | null;
+  isLoading: boolean;
+  isApplying: boolean;
+  error: string | null;
+  isMonitoring: boolean;
+  cpuTopology: import('./hardware').CpuTopology | null;
+  coreParkingState: import('./hardware').CoreParkingState | null;
+}
+
+export interface GameProfileActions {
+  loadProfiles: () => Promise<void>;
+  saveProfile: (profile: GameProfile) => Promise<GameProfile | null>;
+  deleteProfile: (id: string) => Promise<void>;
+  applyProfile: (id: string) => Promise<void>;
+  revertProfile: () => Promise<void>;
+  startMonitoring: () => Promise<void>;
+  stopMonitoring: () => Promise<void>;
+  setupListeners: () => Promise<() => void>;
+  getCpuTopology: () => Promise<void>;
+  fetchCoreParking: () => Promise<void>;
+  applyCoreParking: (minCoresPercent: number) => Promise<void>;
+  exportProfile: (id: string) => Promise<string | null>;
+  importProfile: (json: string) => Promise<GameProfile | null>;
+  clearError: () => void;
+}
+
 /** コミュニティ共有用プロファイル（マシン固有情報を除く） */
 export interface SharedProfile {
   version: number;

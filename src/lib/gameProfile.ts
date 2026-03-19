@@ -1,13 +1,17 @@
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import type {
   BoostLevel,
   CoreParkingState,
   CpuTopology,
+  GameExitEvent,
+  GameLaunchEvent,
   GameProfile,
   PowerPlanType,
   ProcessPriorityLevel,
   ProfileApplyResult,
 } from '../types';
+import log from './logger';
 
 export function createDefaultProfile(
   displayName: string,
@@ -89,4 +93,56 @@ export async function startGameMonitor(): Promise<void> {
 
 export async function stopGameMonitor(): Promise<void> {
   await invoke('stop_game_monitor');
+}
+
+type GameProfileSetFn = (partial: {
+  currentGameExe?: string | null;
+  activeProfileId?: string | null;
+  applyResult?: ProfileApplyResult | null;
+}) => void;
+
+type GameProfileGetFn = () => { loadProfiles: () => Promise<void> };
+
+export async function setupGameListeners(
+  set: GameProfileSetFn,
+  get: GameProfileGetFn,
+): Promise<() => void> {
+  const unlistenLaunched = await listen<GameLaunchEvent>('nexus://game-launched', (e) => {
+    log.info({ event: e.payload }, 'gameProfile: ゲーム起動検出');
+    set({
+      currentGameExe: e.payload.exePath,
+      activeProfileId: e.payload.profileId,
+    });
+  });
+
+  const unlistenExited = await listen<GameExitEvent>('nexus://game-exited', (e) => {
+    log.info({ event: e.payload }, 'gameProfile: ゲーム終了検出');
+    set({
+      currentGameExe: null,
+      activeProfileId: null,
+      applyResult: null,
+    });
+    // プレイ時間が更新されたので再読み込み
+    void get().loadProfiles();
+  });
+
+  const unlistenApplied = await listen<ProfileApplyResult>('nexus://profile-applied', (e) => {
+    log.info({ event: e.payload }, 'gameProfile: プロファイル適用通知');
+    set({
+      applyResult: e.payload,
+      activeProfileId: e.payload.profileId,
+    });
+  });
+
+  const unlistenReverted = await listen('nexus://profile-reverted', () => {
+    log.info('gameProfile: リバート通知');
+    set({ activeProfileId: null, applyResult: null });
+  });
+
+  return () => {
+    unlistenLaunched();
+    unlistenExited();
+    unlistenApplied();
+    unlistenReverted();
+  };
 }

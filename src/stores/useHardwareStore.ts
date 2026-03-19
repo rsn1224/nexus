@@ -1,12 +1,7 @@
 import { listen } from '@tauri-apps/api/event';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
-import {
-  calculateMemUsagePercent,
-  defaultHardwareInfo,
-  formatBootTime,
-  formatUptime,
-} from '../lib/hardwareFormatters';
+import { defaultHardwareInfo } from '../lib/hardwareFormatters';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type { HardwareInfo, ThermalAlert } from '../types';
@@ -161,37 +156,7 @@ export const useGpuVram = () =>
     })),
   );
 
-// Selectors for derived data
-export const useHardwareData = () => {
-  const { info, isListening, error, subscribe } = useHardwareStore(
-    useShallow((s) => ({
-      info: s.info,
-      isListening: s.isListening,
-      error: s.error,
-      subscribe: s.subscribe,
-    })),
-  );
-
-  const memUsagePercent = info ? calculateMemUsagePercent(info.memUsedGb, info.memTotalGb) : 0;
-
-  const formattedUptime = info ? formatUptime(info.uptimeSecs) : '--';
-
-  const formattedBootTime = info ? formatBootTime(info.bootTimeUnix) : '--';
-
-  const diskUsagePercent =
-    info && info.disks.length > 0 ? (info.disks[0].usedGb / info.disks[0].totalGb) * 100 : null;
-
-  return {
-    info,
-    isLoading: !isListening && info === null, // 初回のみローディング表示
-    error,
-    memUsagePercent,
-    formattedUptime,
-    formattedBootTime,
-    diskUsagePercent,
-    fetchHardware: subscribe, // 互換性維持: fetchHardware → subscribe
-  };
-};
+export { useHardwareData } from '../hooks/hardwareHooks';
 
 // 後方互換 re-export
 export { createDiskProgressBar } from '../lib/hardwareFormatters';

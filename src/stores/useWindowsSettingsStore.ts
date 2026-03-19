@@ -13,28 +13,7 @@ import {
   toggleGameMode as cmdToggleGameMode,
   toggleHardwareGpuScheduling as cmdToggleHags,
 } from '../lib/windowsSettingsCommands';
-import type { AdvisorResult, PowerPlan, VisualEffects, WindowsSettings } from '../types';
-
-interface WindowsSettingsStore {
-  settings: WindowsSettings | null;
-  advisorResult: AdvisorResult | null;
-  isLoading: boolean;
-  advisorLoading: boolean;
-  error: string | null;
-  advisorError: string | null;
-  lastUpdated: number | null;
-  fetchSettings: () => Promise<void>;
-  setPowerPlan: (plan: PowerPlan) => Promise<void>;
-  toggleGameMode: () => Promise<void>;
-  toggleFullscreenOptimization: () => Promise<void>;
-  toggleHardwareGpuScheduling: () => Promise<void>;
-  setVisualEffects: (effect: VisualEffects) => Promise<void>;
-  fetchAdvisorResult: () => Promise<void>;
-  applyRecommendation: (settingId: string) => Promise<void>;
-  applyAllSafeRecommendations: () => Promise<void>;
-  clearError: () => void;
-  clearAdvisorError: () => void;
-}
+import type { PowerPlan, VisualEffects, WindowsSettingsStore } from '../types/settings';
 
 export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) => ({
   settings: null,
@@ -215,41 +194,4 @@ export const useWindowsSettingsStore = create<WindowsSettingsStore>((set, get) =
   clearAdvisorError: () => set({ advisorError: null }),
 }));
 
-// セレクター関数
-export const useWindowsSettings = () => {
-  const {
-    settings,
-    advisorResult,
-    isLoading,
-    advisorLoading,
-    error,
-    advisorError,
-    fetchSettings,
-    setPowerPlan,
-    toggleGameMode,
-    toggleFullscreenOptimization,
-    toggleHardwareGpuScheduling,
-    setVisualEffects,
-    fetchAdvisorResult,
-    applyRecommendation,
-    applyAllSafeRecommendations,
-  } = useWindowsSettingsStore();
-
-  return {
-    settings,
-    advisorResult,
-    isLoading,
-    advisorLoading,
-    error,
-    advisorError,
-    fetchSettings,
-    setPowerPlan,
-    toggleGameMode,
-    toggleFullscreenOptimization,
-    toggleHardwareGpuScheduling,
-    setVisualEffects,
-    fetchAdvisorResult,
-    applyRecommendation,
-    applyAllSafeRecommendations,
-  };
-};
+export { useWindowsSettings } from '../hooks/windowsSettingsHooks';

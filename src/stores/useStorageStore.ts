@@ -10,26 +10,7 @@ import {
   runFullCleanup as cmdRunFullCleanup,
 } from '../lib/storageCommands';
 import { extractErrorMessage } from '../lib/tauri';
-import type { CleanupResult, StorageInfo } from '../types';
-
-interface StorageStore {
-  storageInfo: StorageInfo | null;
-  cleanupResult: CleanupResult | null;
-  analysisResults: string[];
-  isLoading: boolean;
-  error: string | null;
-  lastUpdated: number | null;
-
-  // Actions
-  fetchStorageInfo: () => Promise<void>;
-  cleanupTempFiles: () => Promise<void>;
-  cleanupRecycleBin: () => Promise<void>;
-  cleanupSystemCache: () => Promise<void>;
-  runFullCleanup: () => Promise<void>;
-  analyzeDiskUsage: (driveName: string) => Promise<void>;
-  clearError: () => void;
-  reset: () => void;
-}
+import type { StorageStore } from '../types/storage';
 
 export const useStorageStore = create<StorageStore>((set, get) => ({
   storageInfo: null,
@@ -200,39 +181,5 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   },
 }));
 
-// セレクター関数
-export const useStorage = () => {
-  const {
-    storageInfo,
-    cleanupResult,
-    analysisResults,
-    isLoading,
-    error,
-    fetchStorageInfo,
-    cleanupTempFiles,
-    cleanupRecycleBin,
-    cleanupSystemCache,
-    runFullCleanup,
-    analyzeDiskUsage,
-    clearError,
-    reset,
-  } = useStorageStore();
-
-  return {
-    storageInfo,
-    cleanupResult,
-    analysisResults,
-    isLoading,
-    error,
-    fetchStorageInfo,
-    cleanupTempFiles,
-    cleanupRecycleBin,
-    cleanupSystemCache,
-    runFullCleanup,
-    analyzeDiskUsage,
-    clearError,
-    reset,
-  };
-};
-
+export { useStorage } from '../hooks/storageHooks';
 export { formatBytes, getHealthColor, getUsagePercentage };
