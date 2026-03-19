@@ -392,6 +392,94 @@ body,
   animation: modal-content-in 200ms ease-out both;
 }
 
+/* ─── Blink Fast ──────────────────────────────────────── */
+.blink-fast {
+  animation: blink-fast 0.6s step-end infinite;
+}
+@keyframes blink-fast {
+  50% {
+    opacity: 0.1;
+  }
+}
+
+/* ─── Rotate Gear ─────────────────────────────────────── */
+.rotate-gear {
+  animation: rotate-gear 8s linear infinite;
+}
+@keyframes rotate-gear {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Icon Glow Pulses ────────────────────────────────── */
+.glow-green-icon {
+  filter: drop-shadow(0 0 8px rgba(68, 214, 44, 0.8));
+  animation: icon-pulse-green 4s ease-in-out infinite;
+}
+.glow-yellow-icon {
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.8));
+  animation: icon-pulse-yellow 4s ease-in-out infinite;
+}
+.glow-red-icon {
+  filter: drop-shadow(0 0 8px rgba(255, 49, 49, 0.8));
+  animation: icon-pulse-red 4s ease-in-out infinite;
+}
+@keyframes icon-pulse-green {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(68, 214, 44, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(68, 214, 44, 1));
+  }
+}
+@keyframes icon-pulse-yellow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 1));
+  }
+}
+@keyframes icon-pulse-red {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(255, 49, 49, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 49, 49, 1));
+  }
+}
+
+/* ─── Glass Panel (Stitch alternate card style) ────────── */
+.glass-panel {
+  background: linear-gradient(135deg, rgba(15, 15, 20, 0.9) 0%, rgba(5, 5, 8, 0.98) 100%);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border: 1px solid rgba(68, 214, 44, 0.05);
+  box-shadow: 0 10px 50px -12px rgba(0, 0, 0, 0.9);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.glass-panel:hover {
+  border-color: rgba(68, 214, 44, 0.2);
+  box-shadow:
+    0 20px 60px -10px rgba(0, 0, 0, 1),
+    inset 0 0 30px rgba(68, 214, 44, 0.02);
+}
+
+/* ─── Grid Background (for bar charts) ────────────────── */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(68, 214, 44, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(68, 214, 44, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
 /* ─── Background dot texture ──────────────────────────── */
 .bg-dot-grid {
   background-image: radial-gradient(circle, rgba(68, 214, 44, 0.03) 1px, transparent 1px);

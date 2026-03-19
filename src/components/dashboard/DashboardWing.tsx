@@ -7,12 +7,13 @@ import { usePulseStore } from '../../stores/usePulseStore';
 import type { TcpTuningState, TimerResolutionState, WindowsSettings } from '../../types';
 import { PowerPlan, VisualEffects } from '../../types';
 import type { HealthInput } from '../../types/v2';
-import { AppliedBadgeRow } from './AppliedBadgeRow';
-import { HealthScoreBar } from './HealthScoreBar';
-import { SuggestionList } from './SuggestionList';
+import { AiAdvisorLog } from './AiAdvisorLog';
+import { HardwareTelemetry } from './HardwareTelemetry';
+import { IntegrityRing } from './IntegrityRing';
+import { SuggestionCard } from './SuggestionCard';
 
 // =============================================================================
-// DashboardWing — AI 提案一覧・ヘルススコア・ワンクリック最適化
+// DashboardWing — 3-column Stitch HUD layout
 // =============================================================================
 
 async function buildHealthInput(): Promise<HealthInput> {
@@ -47,10 +48,11 @@ async function buildHealthInput(): Promise<HealthInput> {
 }
 
 export const DashboardWing = memo(function DashboardWing() {
-  const { healthScore, appliedActions, loading, error } = useHealthState();
+  const { healthScore, loading, error } = useHealthState();
   const { recalculate, applySuggestion, rollbackSuggestion, clearError } = useHealthActions();
-
   const suggestions = useHealthState().suggestions;
+  const snapshots = usePulseStore((s) => s.snapshots);
+  const latestSnapshot = snapshots[snapshots.length - 1] ?? null;
 
   const refresh = useCallback(async (): Promise<void> => {
     try {
@@ -74,35 +76,56 @@ export const DashboardWing = memo(function DashboardWing() {
     }
   }, [suggestions, applySuggestion]);
 
+  const topSuggestions = suggestions.filter((s) => !s.isApplied).slice(0, 2);
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <HealthScoreBar
-        healthScore={healthScore}
-        loading={loading}
-        onOptimizeNow={handleOptimizeNow}
-      />
-
       {error && (
         <div className="flex items-center justify-between px-4 py-2 bg-danger-500/10 border-b border-danger-500/30">
-          <span className="text-danger-500 text-xs font-mono">{error}</span>
+          <span className="text-danger-500 text-xs">{error}</span>
           <button
             type="button"
             onClick={clearError}
-            className="text-danger-500 text-xs font-mono hover:text-text-primary transition-colors"
+            className="text-danger-500 text-xs hover:text-text-primary"
           >
             ✕
           </button>
         </div>
       )}
 
-      <SuggestionList
-        suggestions={suggestions}
-        onApply={applySuggestion}
-        onRollback={rollbackSuggestion}
-        loading={loading}
-      />
+      <div className="grid grid-cols-12 gap-6 p-6 flex-1 overflow-y-auto">
+        {/* Left: Hardware Telemetry */}
+        <div className="col-span-3">
+          <HardwareTelemetry snapshot={latestSnapshot} />
+        </div>
 
-      <AppliedBadgeRow appliedActions={appliedActions} />
+        {/* Center: Integrity Ring + Suggestion Cards */}
+        <div className="col-span-6 flex flex-col">
+          <IntegrityRing
+            healthScore={healthScore}
+            loading={loading}
+            onOptimizeNow={handleOptimizeNow}
+          />
+          {topSuggestions.length > 0 && (
+            <div className="grid grid-cols-2 gap-4 mt-8">
+              {topSuggestions.map((s) => (
+                <SuggestionCard
+                  key={s.id}
+                  suggestion={s}
+                  onApply={applySuggestion}
+                  onRollback={rollbackSuggestion}
+                  loading={loading}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Right: AI Advisor */}
+        <div className="col-span-3">
+          <AiAdvisorLog suggestions={suggestions} />
+        </div>
+      </div>
     </div>
   );
 });

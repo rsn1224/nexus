@@ -36,7 +36,7 @@ export const SessionList = memo(function SessionList({
 
   if (loading && sessions.length === 0) {
     return (
-      <div className="flex-1 flex items-center justify-center text-text-secondary text-xs font-mono">
+      <div className="glass-panel p-8 flex items-center justify-center text-text-secondary text-xs">
         LOADING...
       </div>
     );
@@ -44,63 +44,126 @@ export const SessionList = memo(function SessionList({
 
   if (sessions.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-2">
-        <span className="text-text-secondary text-xs font-mono uppercase">NO SESSIONS</span>
-        <span className="text-text-secondary text-xs font-mono opacity-60">
-          プレイ後にセッションが記録されます
-        </span>
+      <div className="glass-panel p-8 flex flex-col items-center justify-center gap-2">
+        <span className="text-text-secondary text-xs uppercase">NO SESSIONS</span>
+        <span className="text-text-muted text-xs">プレイ後にセッションが記録されます</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-1 overflow-y-auto flex-1">
-      {sessions.map((s) => {
-        const start = new Date(s.startedAt);
-        const dateStr = start.toLocaleDateString('ja-JP', { month: 'short', day: 'numeric' });
-        const timeStr = start.toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' });
+    <div className="glass-panel overflow-hidden">
+      {/* Progress bar */}
+      <div className="h-0.5 w-full bg-white/2 relative">
+        <div className="absolute inset-y-0 left-0 w-1/4 bg-accent-500 shadow-[0_0_15px_rgba(68,214,44,0.6)] progress-flow" />
+      </div>
 
-        return (
-          <button
-            key={s.id}
-            type="button"
-            onClick={() => onSelect(s.id)}
-            className={`flex items-center gap-3 px-3 py-2.5 rounded text-left transition-colors ${
-              selectedId === s.id
-                ? 'bg-accent-500/10 border border-accent-500/30'
-                : 'border border-transparent hover:bg-base-700/40'
-            }`}
-          >
-            <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-              <span className="text-text-primary text-xs font-mono truncate">{s.gameName}</span>
-              <span className="text-text-secondary text-xs font-mono">
-                {dateStr} {timeStr}
-              </span>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="text-right">
-                <div className="text-text-primary text-xs font-mono">
-                  {s.summary.avgFps.toFixed(0)} FPS
-                </div>
-                <div className="text-text-secondary text-xs font-mono">
-                  1%: {s.summary.pct1Low.toFixed(0)}
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={(e) => handleDeleteClick(s.id, e)}
-                className={`text-xs font-mono px-1.5 py-0.5 rounded border transition-colors ${
-                  confirmDelete === s.id
-                    ? 'border-danger-500 bg-danger-500/10 text-danger-500'
-                    : 'border-transparent text-text-secondary hover:border-danger-500/40 hover:text-danger-500'
-                }`}
-              >
-                {confirmDelete === s.id ? '✓?' : '✕'}
-              </button>
-            </div>
-          </button>
-        );
-      })}
+      {/* Header */}
+      <div className="px-6 py-4 border-b border-white/3 flex justify-between items-center bg-white/1">
+        <div>
+          <h3 className="font-black text-[10px] tracking-[0.3em] text-accent-500 uppercase flex items-center gap-3">
+            <span className="rotate-gear glow-green-icon">⟳</span>
+            SESSION TRANSACTION LOG / 取引履歴
+          </h3>
+          <p className="text-text-muted text-[8px] tracking-[0.2em] mt-1.5 uppercase font-light">
+            {'PERFORMANCE DATA // VERIFIED BY CORE'}
+          </p>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-black/60 text-text-muted text-[8px] tracking-[0.4em] uppercase font-black">
+            <tr>
+              <th className="px-6 py-4 border-b border-white/3">TIMESTAMP / 記録</th>
+              <th className="px-6 py-4 border-b border-white/3">GAME / ゲーム</th>
+              <th className="px-6 py-4 border-b border-white/3">DURATION / 期間</th>
+              <th className="px-6 py-4 border-b border-white/3">FPS</th>
+              <th className="px-6 py-4 border-b border-white/3 text-right">STATUS</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/2">
+            {sessions.map((s) => (
+              <SessionRow
+                key={s.id}
+                session={s}
+                isSelected={s.id === selectedId}
+                confirmDelete={confirmDelete === s.id}
+                onSelect={onSelect}
+                onDeleteClick={handleDeleteClick}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
+  );
+});
+
+// ─── Row sub-component ───────────────────────────────────
+
+const SessionRow = memo(function SessionRow({
+  session,
+  isSelected,
+  confirmDelete,
+  onSelect,
+  onDeleteClick,
+}: {
+  session: SessionListItem;
+  isSelected: boolean;
+  confirmDelete: boolean;
+  onSelect: (id: string) => void;
+  onDeleteClick: (id: string, e: React.MouseEvent) => void;
+}) {
+  const start = new Date(session.startedAt);
+  const dateStr = `${start.getFullYear()}.${String(start.getMonth() + 1).padStart(2, '0')}.${String(start.getDate()).padStart(2, '0')}`;
+  const timeStr = start.toLocaleTimeString('ja-JP', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+  const endMs = session.endedAt ? new Date(session.endedAt).getTime() : Date.now();
+  const durationMin = Math.round((endMs - start.getTime()) / 60_000);
+  const hours = Math.floor(durationMin / 60);
+  const mins = durationMin % 60;
+  const durationStr = hours > 0 ? `${hours}H ${String(mins).padStart(2, '0')}M` : `${mins}M`;
+
+  return (
+    <tr
+      className={`hover:bg-accent-500/5 transition-all cursor-pointer h-16 ${isSelected ? 'bg-accent-500/10' : ''}`}
+      onClick={() => onSelect(session.id)}
+    >
+      <td className="px-6 py-3 text-[9px] tracking-[0.2em] text-text-secondary">
+        <div className="flex items-center gap-3">
+          <span className="w-1.5 h-1.5 bg-accent-500 rounded-full pulse-node" />
+          {`${dateStr} // ${timeStr}`}
+        </div>
+      </td>
+      <td className="px-6 py-3 text-[10px] font-black text-accent-500 tracking-tighter">
+        {session.gameName}
+      </td>
+      <td className="px-6 py-3 text-[9px] text-text-muted tracking-widest font-light">
+        {durationStr}
+      </td>
+      <td className="px-6 py-3">
+        <span className="text-accent-500 font-black text-[10px]">
+          {session.summary.avgFps.toFixed(0)} FPS
+        </span>
+      </td>
+      <td className="px-6 py-3 text-right">
+        <button
+          type="button"
+          onClick={(e) => onDeleteClick(session.id, e)}
+          className={`text-[8px] px-3 py-1.5 border font-black uppercase tracking-[0.3em] transition-all ${
+            confirmDelete
+              ? 'border-danger-500/40 text-danger-500 bg-danger-500/10'
+              : 'border-white/10 text-text-muted hover:border-danger-500/40 hover:text-danger-500'
+          }`}
+        >
+          {confirmDelete ? 'CONFIRM?' : 'DELETE'}
+        </button>
+      </td>
+    </tr>
   );
 });
