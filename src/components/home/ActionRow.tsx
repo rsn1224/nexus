@@ -15,7 +15,7 @@ const ActionRow = memo(function ActionRow() {
   }, [subscribe]);
 
   return (
-    <div className="shrink-0 grid grid-cols-[1fr_1fr_160px] gap-2 px-3 py-2 border-b border-border-subtle">
+    <div className="shrink-0 grid grid-cols-[1fr_1fr_180px] gap-2 px-3 py-1.5 border-b border-border-subtle">
       <div className="overflow-hidden">
         <FrameTimeCard />
       </div>
