@@ -165,10 +165,59 @@ bash scripts/check-cost.sh blocks  # 現在の5時間ブロック
 
 ---
 
+## デザインシステム Quick Reference
+
+> SSOT: `src/design-tokens.ts` — CSS 実体: `src/index.css` @theme  
+> 値を変更するときは **両方** 更新すること
+
+### カラーシステム（ダークモード専用）
+
+- 背景: `base-950`〜`base-500`（6段階、深い紫寄りのグレー）
+- テキスト: `text-primary` (#e0e0ec) / `text-secondary` (#9090aa) / `text-muted` (#6b6b82)
+- デフォルトアクセント: `accent-500` (cyan)
+- Wing 別マルチカラー: performance/games=warm, hardware/storage=purple, network/log=info, home/settings=accent
+
+### テキストサイズ階層
+
+| 用途 | クラス |
+|---|---|
+| KPI 大見出し | `text-3xl font-bold` |
+| KPI 数値 | `text-2xl font-bold` |
+| 温度・小 KPI | `text-xl font-semibold` |
+| 容量等 | `text-lg font-semibold` |
+| 本文 | `text-sm` |
+| ラベル・補助 | `text-xs` |
+
+### カードシステム
+
+- Glass: `card-glass` / `card-glass-elevated`（CSS 定義済、Tailwind で**再実装禁止**）
+- 角丸: カード = `rounded-xl` (12px), 内部パネル = `rounded-lg` (8px)
+- 3層レイヤー: L1=`bg-base-900`, L2=`card-glass`, L3=`bg-base-700/40`
+
+### 禁止パターン ⛔
+
+```
+text-black / text-white      → text-text-primary / text-text-secondary
+bg-black / bg-white          → bg-base-900 / bg-base-800
+shadow-lg / shadow-xl        → card-glass の built-in shadow か shadow-sm のみ
+bg-gradient-to-*             → グラデーション背景禁止
+text-[Npx]                   → Tailwind 標準 (text-xs/sm/base/lg/xl/2xl/3xl) のみ
+font-[N]                     → font-normal/medium/semibold/bold のみ
+rounded (裸)                 → rounded-xl (カード) / rounded-lg (パネル)
+style={{...}} inline         → Tailwind className で対応
+console.log                  → log.info を使う
+any 型                       → 適切な型を定義
+```
+
+検証: `npx tsx scripts/validate-design.ts`
+
+---
+
 ## 参照先
 
 | 内容 | ファイル |
 | ---- | ------- |
+| デザイントークン SSOT | `src/design-tokens.ts` |
 | UIデザイン規約・Tailwindクラス | `DESIGN.md` / `.claude/skills/nexus-design/SKILL.md` |
 | Cascade協業・モデル使い分け | `.claude/skills/cascade-workflow/SKILL.md` |
 | Tauri v2 注意点 | `.claude/rules/tauri-v2-gotchas.md` |
