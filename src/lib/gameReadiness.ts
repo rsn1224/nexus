@@ -3,6 +3,7 @@
 //! リソース使用率 + 最適化状態 + フレームタイムの3軸で「ゲームレディネス」を評価する。
 
 import type { FrameTimeSnapshot, TimerResolutionState } from '../types';
+import { assertNever } from '../types';
 import {
   CPU_USAGE_BOOST_WARN_PCT,
   GPU_TEMP_SCORE_CRITICAL_C,
@@ -183,6 +184,8 @@ function calcOptimizationScore(input: ReadinessInput): number {
     case 'none':
       score += 0;
       break;
+    default:
+      return assertNever(input.boostLevel);
   }
 
   // タイマーリゾリューション（0〜20）
@@ -251,6 +254,8 @@ export function getRankStyle(rank: ReadinessRank): { label: string; color: strin
       return { label: 'FAIR', color: 'var(--color-accent-400)' };
     case 'NOT_READY':
       return { label: 'NOT READY', color: 'var(--color-danger-500)' };
+    default:
+      return assertNever(rank);
   }
 }
 

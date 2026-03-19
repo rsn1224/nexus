@@ -712,12 +712,26 @@ export interface WatchdogEvent {
  * Exhaustive switch helper. Pass the `default` branch value here to get a
  * compile-time error when a new union member is not handled.
  *
- * @example
+ * @example WingId の全 case を網羅しない場合にコンパイルエラーが出る
  * switch (wingId) {
- *   case 'home': return ...;
+ *   case 'home':        return ...;
  *   case 'performance': return ...;
- *   // ... all cases
- *   default: return assertNever(wingId);
+ *   case 'games':       return ...;
+ *   case 'hardware':    return ...;
+ *   case 'network':     return ...;
+ *   case 'storage':     return ...;
+ *   case 'settings':    return ...;
+ *   case 'log':         return ...;
+ *   default:            return assertNever(wingId);
+ * }
+ *
+ * @example ReadinessRank などの union にも適用可能
+ * switch (rank) {
+ *   case 'READY':     return ...;
+ *   case 'GOOD':      return ...;
+ *   case 'FAIR':      return ...;
+ *   case 'NOT_READY': return ...;
+ *   default:          return assertNever(rank);
  * }
  */
 export function assertNever(value: never): never {

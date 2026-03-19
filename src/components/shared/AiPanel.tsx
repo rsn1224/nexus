@@ -1,6 +1,8 @@
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import type { LocalSuggestion, SuggestionLevel } from '../../lib/localAi';
+
+const ReactMarkdown = lazy(() => import('react-markdown'));
 
 const LEVEL_COLOR: Record<SuggestionLevel, string> = {
   critical: 'text-danger-500',
@@ -9,17 +11,33 @@ const LEVEL_COLOR: Record<SuggestionLevel, string> = {
   ok: 'text-text-muted',
 };
 
-// Unicode エスケープで Biome no-literal-unicode 対策
 const LEVEL_ICON: Record<SuggestionLevel, string> = {
-  critical: '\u25b2', // ▲
-  warn: '\u25cf', // ●
-  info: '\u25c6', // ◆
-  ok: '\u2713', // ✓
+  critical: '\u25b2',
+  warn: '\u25cf',
+  info: '\u25c6',
+  ok: '\u2713',
 };
 
 interface AiPanelProps {
   suggestions: LocalSuggestion[];
   title?: string;
+}
+
+function SuggestionMessage({ message }: { message: string }): React.ReactElement {
+  return (
+    <Suspense fallback={<span className="text-text-secondary leading-6">{message}</span>}>
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => <span className="text-text-secondary leading-6">{children}</span>,
+          code: ({ children }) => (
+            <code className="font-mono text-[9px] bg-base-700 px-1 rounded">{children}</code>
+          ),
+        }}
+      >
+        {message}
+      </ReactMarkdown>
+    </Suspense>
+  );
 }
 
 export default function AiPanel({
@@ -28,7 +46,6 @@ export default function AiPanel({
 }: AiPanelProps): React.ReactElement {
   const hasAlert = suggestions.some((s) => s.level === 'warn' || s.level === 'critical');
 
-  // suggestions が変わったとき（初回 scan 完了後など）に展開状態を同期する
   const [expanded, setExpanded] = useState(hasAlert);
   useEffect(() => {
     if (hasAlert) setExpanded(true);
@@ -59,7 +76,7 @@ export default function AiPanel({
           {suggestions.map((s) => (
             <div key={s.id} className="flex items-start gap-2 py-1 font-mono text-[10px]">
               <span className={`${LEVEL_COLOR[s.level]} shrink-0`}>{LEVEL_ICON[s.level]}</span>
-              <span className="text-text-secondary leading-6">{s.message}</span>
+              <SuggestionMessage message={s.message} />
             </div>
           ))}
         </div>
