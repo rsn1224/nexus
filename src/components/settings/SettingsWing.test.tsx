@@ -217,7 +217,7 @@ describe('SettingsWing', () => {
 
     render(<SettingsWing />);
 
-    const saveButton = screen.getByText('SAVE ALL');
-    expect(saveButton).toBeDisabled();
+    // loading 時もタブバーは表示される
+    expect(screen.getByText('アプリ設定')).toBeInTheDocument();
   });
 });

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('../../stores/useHardwareStore', () => ({
   useHardwareStore: vi.fn(),
+  useHardwareActions: vi.fn(),
   useHardwareData: vi.fn(),
   createDiskProgressBar: vi.fn(() => '████░░'),
 }));
@@ -17,10 +18,10 @@ vi.mock('./EcoModePanel', () => ({
   default: () => <div data-testid="eco-mode-panel" />,
 }));
 
-import { useHardwareData, useHardwareStore } from '../../stores/useHardwareStore';
+import { useHardwareActions, useHardwareData } from '../../stores/useHardwareStore';
 import HardwareWing from './HardwareWing';
 
-const mockUseHardwareStore = vi.mocked(useHardwareStore);
+const mockUseHardwareActions = vi.mocked(useHardwareActions);
 const mockUseHardwareData = vi.mocked(useHardwareData);
 
 const MOCK_INFO = {
@@ -47,9 +48,11 @@ const MOCK_INFO = {
 describe('HardwareWing', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseHardwareStore.mockReturnValue({ subscribe: vi.fn() } as ReturnType<
-      typeof useHardwareStore
-    >);
+    mockUseHardwareActions.mockReturnValue({
+      subscribe: vi.fn(),
+      unsubscribe: vi.fn(),
+      clearError: vi.fn(),
+    });
     mockUseHardwareData.mockReturnValue({
       info: null,
       isLoading: false,

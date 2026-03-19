@@ -2,8 +2,8 @@ import type React from 'react';
 import { useEventSubscription } from '../../hooks/useInitialData';
 import {
   createDiskProgressBar,
+  useHardwareActions,
   useHardwareData,
-  useHardwareStore,
 } from '../../stores/useHardwareStore';
 import { Card, EmptyState, ErrorBanner, ErrorBoundary, LoadingState } from '../ui';
 import CpuSection from './CpuSection';
@@ -12,7 +12,7 @@ import GpuSection from './GpuSection';
 import MemorySection from './MemorySection';
 
 export default function HardwareWing(): React.JSX.Element {
-  const { subscribe } = useHardwareStore();
+  const { subscribe } = useHardwareActions();
   const { info, isLoading, error, memUsagePercent, formattedUptime, formattedBootTime } =
     useHardwareData();
 
@@ -44,6 +44,9 @@ export default function HardwareWing(): React.JSX.Element {
 
   return (
     <div className="p-4 h-full overflow-y-auto">
+      <ErrorBoundary name="省電モード">
+        <EcoModePanel />
+      </ErrorBoundary>
       <ErrorBoundary name="CPU">
         <CpuSection
           cpuName={info.cpuName}
@@ -120,10 +123,6 @@ export default function HardwareWing(): React.JSX.Element {
           </div>
         </div>
       </Card>
-
-      <ErrorBoundary name="省電モード">
-        <EcoModePanel />
-      </ErrorBoundary>
     </div>
   );
 }

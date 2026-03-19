@@ -17,9 +17,9 @@ export interface UseWatchdogRuleFormResult {
   addCondition: () => void;
   removeCondition: (index: number) => void;
   updateFilter: (updates: Partial<ProcessFilter>) => void;
-  addIncludeName: () => void;
+  addIncludeName: (name: string) => void;
   removeIncludeName: (index: number) => void;
-  addExcludeName: () => void;
+  addExcludeName: (name: string) => void;
   removeExcludeName: (index: number) => void;
 }
 
@@ -88,9 +88,8 @@ export function useWatchdogRuleForm(
     setRule((prev) => ({ ...prev, processFilter: { ...prev.processFilter, ...updates } }));
   };
 
-  const addIncludeName = () => {
-    const name = prompt('Enter process name to include:');
-    if (name?.trim())
+  const addIncludeName = (name: string) => {
+    if (name.trim())
       updateFilter({ includeNames: [...rule.processFilter.includeNames, name.trim()] });
   };
 
@@ -98,9 +97,8 @@ export function useWatchdogRuleForm(
     updateFilter({ includeNames: rule.processFilter.includeNames.filter((_, i) => i !== index) });
   };
 
-  const addExcludeName = () => {
-    const name = prompt('Enter process name to exclude:');
-    if (name?.trim())
+  const addExcludeName = (name: string) => {
+    if (name.trim())
       updateFilter({ excludeNames: [...rule.processFilter.excludeNames, name.trim()] });
   };
 

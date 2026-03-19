@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
 import type { SavedFrameTimeSession, SessionComparisonResult, SessionListItem } from '../types';
 
@@ -143,3 +144,27 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     });
   },
 }));
+
+export const useSessionState = () =>
+  useSessionStore(
+    useShallow((s) => ({
+      sessionList: s.sessionList,
+      selectedSession: s.selectedSession,
+      comparisonResult: s.comparisonResult,
+      isLoading: s.isLoading,
+      error: s.error,
+    })),
+  );
+
+export const useSessionActions = () =>
+  useSessionStore(
+    useShallow((s) => ({
+      fetchSessions: s.fetchSessions,
+      getSession: s.getSession,
+      deleteSession: s.deleteSession,
+      compareSessions: s.compareSessions,
+      updateSessionNote: s.updateSessionNote,
+      clearError: s.clearError,
+      reset: s.reset,
+    })),
+  );

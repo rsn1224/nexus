@@ -1,7 +1,7 @@
 import type React from 'react';
 import { useEffect } from 'react';
 import { progressWidth } from '../../lib/styles';
-import { useBottleneckStore } from '../../stores/useBottleneckStore';
+import { useBottleneckActions, useBottleneckState } from '../../stores/useBottleneckStore';
 import { useFrameTimeState } from '../../stores/useFrameTimeStore';
 import { useNavStore } from '../../stores/useNavStore';
 import type { BottleneckConfidence, BottleneckType, WingId } from '../../types';
@@ -69,10 +69,10 @@ const getScoreBarColor = (score: number, key: string): string => {
 // ─── コンポーネント ───────────────────────────────────────────────────────────
 
 const BottleneckCard: React.FC = () => {
-  const { bottleneck, isAnalyzing, error, startAutoAnalysis, stopAutoAnalysis } =
-    useBottleneckStore();
+  const { bottleneck, isAnalyzing, error } = useBottleneckState();
+  const { startAutoAnalysis, stopAutoAnalysis } = useBottleneckActions();
   const { monitorState: frameTimeState } = useFrameTimeState();
-  const { navigate } = useNavStore();
+  const navigate = useNavStore((s) => s.navigate);
 
   // フレームタイム監視中のみ自動分析を開始
   useEffect(() => {
