@@ -45,10 +45,151 @@
 | v2.2 Phase 3-B | ✅ 完了（Store ロジック → lib/ 抽出: 4ストア） |
 | v2.2 Phase 3-C | ✅ 完了（gameReadiness/localAi ディレクトリ化） |
 | v2.2 Phase 4 | ✅ 完了（UnifiedEmitter: 4タスク → 1タスク統合、28c7ca7） |
-| **v3.0 Phase 1** | ✅ 完了（ワークフロー基盤構築: TESTING.md + BACKEND.md + 3 lint スクリプト + CI 更新） |
+| **v3.0 Phase 1** | ✅ 完了（ワークフロー基盤構築: TESTING.md + BACKEND.md + 3 lint スクリプト + CI 更新、`212b958`） |
+| **v3.0 Phase 2** | 🔄 進行中（spec.md 13 ファイル + Stryker 導入 + types 分割仕様） |
 
-**最新コミット:** v3.0 Phase 1 作業中（ベース: `28c7ca7`）
-**テスト:** TS 542 + Rust 230+ all green（Phase 1 はコード変更なし、テスト数不変）
+**最新コミット:** v3.0 Phase 2 作業中（ベース: `212b958`）
+**テスト:** TS 542 + Rust 230+ all green
+
+---
+
+## v3.0 Phase 2 — types 分割 + Stryker（Cascade 向け実装指示）
+
+> **ステータス:** ⏳ 実装待ち
+> **前提:** Phase 1（`212b958`）完了。TS 542 + Rust 230+ all green。
+> **コミット分割:**
+> 1. `refactor: v3.0 Phase 2A — assertNever を lib/assert.ts に移動`
+> 2. `refactor: v3.0 Phase 2B — types/index.ts を 18 ドメインファイルに分割（前半）`
+> 3. `refactor: v3.0 Phase 2C — types/index.ts を 18 ドメインファイルに分割（後半）`
+> 4. `refactor: v3.0 Phase 2D — types/index.ts を re-export のみに書き換え`
+
+### AI 開発ルール（Cascade 必読）
+
+```
+1. テストが矛盾する場合は即停止して報告せよ
+2. 既存テストファイルの既存テストケースを書き換えてはならない
+3. リファクタリングでは既存コードの移動のみ。新規ロジック禁止
+4. 1 ファイル 200 行以下。超過する場合は分割方針を報告
+5. spec.md と実装結果が異なる場合、実装のバグとして報告（テストを変えるな）
+```
+
+---
+
+### 2A: assertNever を lib/assert.ts に移動
+
+**作成するファイル `src/lib/assert.ts`:**
+
+```typescript
+/**
+ * 網羅性チェック用ユーティリティ
+ * switch/if-else の exhaustive check に使用する
+ */
+export function assertNever(value: never): never {
+  throw new Error(`Unhandled case: ${JSON.stringify(value)}`);
+}
+```
+
+**import 更新が必要なファイル（2 件）:**
+- `src/lib/gameReadiness/index.ts` — `from '../../types'` → `from '../assert'`
+- `src/lib/gameReadiness/scores.ts` — `from '../../types'` → `from '../assert'`
+
+**types/index.ts の変更:**
+- `assertNever` 関数定義を削除
+- `export { assertNever } from '../lib/assert'` を追加（後方互換）
+
+**品質チェック:** `vitest run` + `tsc --noEmit` 全通過
+
+---
+
+### 2B: types/index.ts 前半分割（9 ドメインファイル）
+
+**ルール（厳守）:**
+- 既存コードの import パスは変更しない（`import { X } from '../types'` がそのまま動くこと）
+- 新規ファイルは `src/types/` に作成
+- `src/types/navigation.ts` は変更しない
+- 各サブフェーズ後に `vitest run` + `tsc --noEmit` を実行
+
+**作成するファイルと収録型:**
+
+| ファイル | 収録する型 |
+|---------|-----------|
+| `types/wing.ts` | WingId, WingStatus, FeedLevel, FeedEntry |
+| `types/boost.ts` | BoostAction, BoostResult, ProcessPriorityLevel, BoostLevel |
+| `types/script.ts` | ScriptEntry, ExecutionLog |
+| `types/hardware.ts` | HardwareInfo, DiskInfo, CpuTopology, CoreParkingState, ThermalAlertLevel, ThermalAlert, CurrentPowerPlan |
+| `types/storage.ts` | DriveInfo, DiskDrive, StorageInfo, CleanupResult |
+| `types/network.ts` | NetworkAdapter, DnsPreset, PingResult, NetworkDevice, TrafficSnapshot, TcpAutoTuningLevel, TcpTuningState, NetworkQualitySnapshot |
+| `types/settings.ts` | AppSettings, WindowsSettings, PowerPlan(enum), VisualEffects(enum), WinSetting |
+| `types/advisor.ts` | SettingRecommendation, RecommendedValue, AdvisorResult, WindowsSettingsSnapshot |
+| `types/power.ts` | PowerEstimate, EcoModeConfig, MonthlyCostEstimate, RevertItem, RevertAllResult |
+
+**手順:**
+1. 各ファイルに該当する型定義をカット＆ペースト
+2. index.ts に `export * from './xxx'` を追加（元の型定義は削除）
+3. `vitest run` + `tsc --noEmit` で確認
+
+---
+
+### 2C: types/index.ts 後半分割（9 ドメインファイル）
+
+| ファイル | 収録する型 |
+|---------|-----------|
+| `types/log.ts` | LogLevel, LogEntry, LogAnalysis |
+| `types/session.ts` | SessionSummary, FrameTimePercentile, FpsTimelinePoint, HardwareSnapshot, SavedFrameTimeSession, SessionListItem, SessionComparisonResult |
+| `types/watchdog.ts` | WatchdogRule, WatchdogCondition, WatchdogMetric, WatchdogOperator, WatchdogAction, ProcessFilter, WatchdogEvent |
+| `types/game.ts` | GameInfo, GameProfile, SharedProfile, PowerPlanType, ProfileApplyResult, GameLaunchEvent, GameExitEvent |
+| `types/process.ts` | SystemProcess, AiSuggestion |
+| `types/analysis.ts` | BottleneckType, BottleneckConfidence, BottleneckScores, BottleneckSuggestion, BottleneckResult, AiRecommendation, AiBottleneckResponse, HealthSeverity, HealthFixAction, HealthCheckItem, HealthCheckResult, HealthCheckInput, HeavyProcess |
+| `types/performance.ts` | TimerResolutionState, FrameTimeSnapshot, FrameTimeMonitorState |
+| `types/pulse.ts` | ResourceSnapshot |
+
+**クロス依存（src/types/ 内）:**
+- `types/game.ts` → `import type { ProcessPriorityLevel, BoostLevel } from './boost'`
+- `types/hardware.ts` の `CpuTopology` は `types/game.ts` でも使用されるが、`types/hardware.ts` に定義を置き `game.ts` から import
+
+**手順:** 2B と同じ
+
+---
+
+### 2D: types/index.ts を re-export のみに書き換え
+
+**types/index.ts の最終形:**
+
+```typescript
+// 後方互換 re-export — このファイルに型定義の実体を置かない
+export * from './navigation';
+export * from './wing';
+export * from './boost';
+export * from './script';
+export * from './hardware';
+export * from './storage';
+export * from './network';
+export * from './settings';
+export * from './advisor';
+export * from './power';
+export * from './log';
+export * from './session';
+export * from './watchdog';
+export * from './game';
+export * from './process';
+export * from './analysis';
+export * from './performance';
+export * from './pulse';
+// assertNever は lib/assert.ts に移動済み — 後方互換のため再 export
+export { assertNever } from '../lib/assert';
+```
+
+### 品質ゲート
+
+```
+✅ vitest run — 542 件以上
+✅ tsc --noEmit — 型エラーゼロ
+✅ npm run check — Biome クリーン
+✅ npm run lint — 全通過
+✅ types/index.ts が re-export のみ（型定義の実体ゼロ）
+✅ assertNever が src/lib/assert.ts に存在
+✅ import { X } from '../types' が全箇所で動作（後方互換）
+```
 
 ---
 

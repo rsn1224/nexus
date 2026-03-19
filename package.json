@@ -39,6 +39,8 @@
     "@fontsource/b612": "^5.2.7",
     "@fontsource/b612-mono": "^5.2.7",
     "@playwright/test": "^1.58.2",
+    "@stryker-mutator/core": "^9.6.0",
+    "@stryker-mutator/vitest-runner": "^9.6.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tauri-apps/cli": "^2",
     "@testing-library/jest-dom": "^6.9.1",

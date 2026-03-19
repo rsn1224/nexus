@@ -17,6 +17,10 @@ playwright-report/
 test-results/
 /.playwright/
 
+# Stryker
+.stryker-tmp/
+reports/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
