@@ -12,4 +12,3 @@ pub fn revert_all_settings(state: State<'_, SharedState>) -> Result<RevertAllRes
     info!("revert_all_settings: 全設定リバート開始");
     Ok(crate::services::cleanup::revert_all(&state))
 }
-
