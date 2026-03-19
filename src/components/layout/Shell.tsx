@@ -10,6 +10,59 @@ type SidebarItem =
   | { id: string; label: string; icon: React.ComponentType<{ size?: number }> }
   | { id: string };
 
+const WING_ACTIVE_CLASSES: Partial<
+  Record<string, { text: string; bg: string; shadow: string; bar: string }>
+> = {
+  home: {
+    text: 'text-accent-500',
+    bg: 'bg-accent-500/15',
+    shadow: 'shadow-accent-500/20',
+    bar: 'bg-accent-500',
+  },
+  performance: {
+    text: 'text-warm-500',
+    bg: 'bg-warm-500/15',
+    shadow: 'shadow-warm-500/20',
+    bar: 'bg-warm-500',
+  },
+  games: {
+    text: 'text-warm-500',
+    bg: 'bg-warm-500/15',
+    shadow: 'shadow-warm-500/20',
+    bar: 'bg-warm-500',
+  },
+  hardware: {
+    text: 'text-purple-500',
+    bg: 'bg-purple-500/15',
+    shadow: 'shadow-purple-500/20',
+    bar: 'bg-purple-500',
+  },
+  network: {
+    text: 'text-info-500',
+    bg: 'bg-info-500/15',
+    shadow: 'shadow-info-500/20',
+    bar: 'bg-info-500',
+  },
+  storage: {
+    text: 'text-purple-500',
+    bg: 'bg-purple-500/15',
+    shadow: 'shadow-purple-500/20',
+    bar: 'bg-purple-500',
+  },
+  log: {
+    text: 'text-info-500',
+    bg: 'bg-info-500/15',
+    shadow: 'shadow-info-500/20',
+    bar: 'bg-info-500',
+  },
+  settings: {
+    text: 'text-accent-500',
+    bg: 'bg-accent-500/15',
+    shadow: 'shadow-accent-500/20',
+    bar: 'bg-accent-500',
+  },
+};
+
 const WING_SHORTCUT: Partial<Record<string, string>> = {
   home: 'Ctrl+1',
   performance: 'Ctrl+2',
@@ -55,12 +108,12 @@ const Shell = memo(function Shell({
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar (48px) */}
         <nav
-          className="w-12 shrink-0 bg-base-950 border-r border-border-subtle flex flex-col items-center py-2 gap-1"
+          className="w-12 shrink-0 bg-base-950/90 backdrop-blur-md border-r border-white/[0.05] flex flex-col items-center py-2 gap-1"
           data-testid="sidebar"
         >
           {SIDEBAR_ITEMS.map((item) => {
             if (!('label' in item)) {
-              return <div key={item.id} className="w-6 h-px bg-border-subtle my-1" />;
+              return <div key={item.id} className="w-6 h-px bg-white/5 my-1" />;
             }
             const wingId = item.id as WingId;
             const isActive = wingId === activeWing;
@@ -76,14 +129,16 @@ const Shell = memo(function Shell({
                       ? `${item.label} (${WING_SHORTCUT[item.id]})`
                       : item.label
                   }
-                  className={`relative w-10 h-10 flex items-center justify-center rounded-lg transition-colors ${
+                  className={`relative w-10 h-10 flex items-center justify-center rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'text-accent-500 bg-base-700'
-                      : 'text-text-secondary hover:text-text-primary hover:bg-base-800'
+                      ? `${WING_ACTIVE_CLASSES[item.id]?.text ?? 'text-accent-500'} ${WING_ACTIVE_CLASSES[item.id]?.bg ?? 'bg-accent-500/15'} shadow-lg ${WING_ACTIVE_CLASSES[item.id]?.shadow ?? 'shadow-accent-500/20'}`
+                      : 'text-text-secondary hover:text-text-primary hover:bg-base-800/80'
                   }`}
                 >
                   {isActive && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-accent-500 rounded-r glow-cyan" />
+                    <div
+                      className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 ${WING_ACTIVE_CLASSES[item.id]?.bar ?? 'bg-accent-500'} rounded-r`}
+                    />
                   )}
                   <Icon size={20} />
                 </button>
