@@ -57,39 +57,12 @@ pub fn run() {
         .setup(|app| {
             let handle = app.handle().clone();
 
-            // Pulse エミッター（リソース監視 — 2秒間隔）
-            let pulse_handle = handle.clone();
+            // UnifiedEmitter（pulse=2s / ops+game=3s / hardware=5s — 1秒ベースループ）
+            let unified_handle = handle.clone();
             tauri::async_runtime::spawn(async move {
-                emitters::pulse_emitter::start(pulse_handle).await;
+                emitters::unified_emitter::start(unified_handle).await;
             });
-
-            // Ops エミッター（プロセス一覧 — 3秒間隔）
-            let ops_handle = handle.clone();
-            tauri::async_runtime::spawn(async move {
-                emitters::ops_emitter::start(ops_handle).await;
-            });
-
-            // Hardware エミッター（ハードウェア情報 — 5秒間隔）
-            let hw_handle = handle.clone();
-            tauri::async_runtime::spawn(async move {
-                emitters::hardware_emitter::start(hw_handle).await;
-            });
-
-            info!("emitters: 全エミッター起動完了（pulse=2s, ops=3s, hardware=5s）");
-
-            // ゲーム起動監視（sysinfo ポーリング — 3秒間隔）
-            {
-                let game_handle = handle.clone();
-                // game_monitor_active を true に設定
-                let state = handle.state::<SharedState>();
-                if let Ok(mut s) = state.lock() {
-                    s.game_monitor_active = true;
-                }
-                tauri::async_runtime::spawn(async move {
-                    crate::services::game_monitor::start_polling(game_handle).await;
-                });
-                info!("game_monitor: ゲーム監視開始（sysinfo polling=3s）");
-            }
+            info!("unified_emitter: 起動（base=1s, pulse=2s, ops=3s, hardware=5s）");
 
             // Watchdog ルール読み込み
             {

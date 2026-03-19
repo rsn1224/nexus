@@ -5,6 +5,13 @@ use crate::services::hardware::GpuStaticInfo;
 use crate::services::memory_cleaner::MemoryCleaner;
 use crate::types::game::{CpuTopology, RevertSnapshot};
 
+#[derive(Debug, Clone, Copy, PartialEq, Default)]
+pub enum PollingMode {
+    #[default]
+    Normal,
+    Active,
+}
+
 /// アプリケーション全体で共有するシステム情報ステート
 pub struct AppState {
     pub sys: System,
@@ -25,6 +32,8 @@ pub struct AppState {
     pub gpu_static: Option<GpuStaticInfo>,
     /// メモリクリーナー
     pub memory_cleaner: MemoryCleaner,
+    /// ポーリングモード（将来の拡張用）
+    pub polling_mode: PollingMode,
 }
 
 impl Default for AppState {
@@ -59,7 +68,7 @@ impl AppState {
             last_disk_write: initial_write,
             networks,
             revert_snapshot: None,
-            game_monitor_active: false,
+            game_monitor_active: true,
             timer_resolution_requested: None,
             frame_time_session: None,
             cpu_topology: None,
@@ -67,6 +76,7 @@ impl AppState {
             memory_cleaner: MemoryCleaner::new(
                 crate::services::memory_cleaner::MemoryCleanerConfig::default(),
             ),
+            polling_mode: PollingMode::Normal,
         }
     }
 }

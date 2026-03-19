@@ -88,27 +88,14 @@ pub fn revert_game_profile(app: AppHandle, state: State<'_, SharedState>) -> Res
     Ok(())
 }
 
-/// ゲーム起動監視開始
+/// ゲーム起動監視開始（unified_emitter が tick%3 ごとに check_once を呼ぶ）
 #[tauri::command]
-pub fn start_game_monitor(app: AppHandle, state: State<'_, SharedState>) -> Result<(), AppError> {
-    {
-        let mut s = state
-            .lock()
-            .map_err(|e| AppError::GameMonitor(format!("Stateロックエラー: {}", e)))?;
-        if s.game_monitor_active {
-            return Ok(()); // 既に起動中
-        }
-        s.game_monitor_active = true;
-    }
-
+pub fn start_game_monitor(state: State<'_, SharedState>) -> Result<(), AppError> {
+    let mut s = state
+        .lock()
+        .map_err(|e| AppError::GameMonitor(format!("Stateロックエラー: {}", e)))?;
+    s.game_monitor_active = true;
     info!("ゲーム起動監視を開始します");
-
-    // sysinfo ポーリングで監視開始
-    let monitor_handle = app.clone();
-    tauri::async_runtime::spawn(async move {
-        services::game_monitor::start_polling(monitor_handle).await;
-    });
-
     Ok(())
 }
 
