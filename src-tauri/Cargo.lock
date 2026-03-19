@@ -2490,6 +2490,7 @@ name = "nexus"
 version = "1.0.0"
 dependencies = [
  "chrono",
+ "encoding_rs",
  "ferrisetw",
  "keyring",
  "nvml-wrapper",

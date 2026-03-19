@@ -1,10 +1,21 @@
+use encoding_rs::SHIFT_JIS;
 use serde::{Deserialize, Serialize};
 use std::net::Ipv4Addr;
 use std::process::Command;
-use tracing::{info, warn};
+use tracing::info;
 
 use crate::error::AppError;
 use crate::services::{network_monitor, network_tuning};
+
+/// Windows コマンド出力を Shift_JIS → UTF-8 に変換（フォールバック: lossy UTF-8）
+fn decode_output(bytes: &[u8]) -> String {
+    let (decoded, _, had_errors) = SHIFT_JIS.decode(bytes);
+    if had_errors {
+        String::from_utf8_lossy(bytes).to_string()
+    } else {
+        decoded.to_string()
+    }
+}
 
 #[derive(Debug, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
@@ -83,21 +94,17 @@ pub async fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
     info!("get_network_adapters: fetching network adapters");
 
     tokio::task::spawn_blocking(|| {
-        // chcp 65001 で UTF-8 出力を強制（日本語 Windows の cp932 文字化け対策）
-        let output = Command::new("cmd")
-            .args(["/c", "chcp 65001 >nul && ipconfig /all"])
+        let output = Command::new("ipconfig")
+            .arg("/all")
             .output()
-            .map_err(|e| {
-                warn!("Failed to execute ipconfig: {}", e);
-                AppError::Command(format!("Failed to execute ipconfig: {}", e))
-            })?;
+            .map_err(|e| AppError::Command(format!("Failed to execute ipconfig: {}", e)))?;
 
         if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stderr = decode_output(&output.stderr);
             return Err(AppError::Command(format!("Ipconfig failed: {}", stderr)));
         }
 
-        let stdout = String::from_utf8_lossy(&output.stdout);
+        let stdout = decode_output(&output.stdout);
         let mut adapters = Vec::new();
         let mut current_adapter = NetworkAdapter {
             name: String::new(),
