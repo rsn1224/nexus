@@ -51,6 +51,8 @@ mod platform {
 
     /// プロセスの現在のアフィニティマスクを取得し、コアインデックスリストとして返す。
     pub fn get_affinity(pid: u32) -> Result<Vec<usize>, AppError> {
+        // SAFETY: Windows API GetProcessAffinityMask 呼び出し。有効なプロセスハンドルを使用し、
+        // 読み取り専用操作のため安全。handle は関数内で CloseHandle される。
         unsafe {
             let handle = OpenProcess(PROCESS_QUERY_INFORMATION, 0, pid);
             if handle == INVALID_HANDLE_VALUE || handle.is_null() {

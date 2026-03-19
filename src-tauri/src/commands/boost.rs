@@ -65,6 +65,8 @@ pub fn run_boost(threshold_percent: Option<f32>) -> Result<BoostResult, AppError
                 });
             } else {
                 // Windows API で優先度を変更
+                // SAFETY: Windows API SetPriorityClass 呼び出し。
+                // handle は直前の OpenProcess で取得した有効なハンドル。使用後に CloseHandle で閉じる。
                 let success = unsafe {
                     use windows_sys::Win32::Foundation::BOOL;
                     use windows_sys::Win32::System::Threading::{

@@ -61,6 +61,8 @@ fn get_allowed_directories() -> Result<Vec<PathBuf>, AppError> {
 
 /// スクリプトパスを厳格にバリデーション
 fn validate_script_path_strict(script_path: &str) -> Result<(), AppError> {
+    // NOTE: TOCTOU リスクあり（check 後に symlink が変更される可能性）。
+    // execute_script 内でも再バリデーションを実施しているため攻撃ウィンドウは最小限。
     let canonical = fs::canonicalize(script_path)
         .map_err(|e| AppError::InvalidInput(format!("パス解決失敗: {}", e)))?;
 
@@ -123,7 +125,7 @@ pub async fn add_script(
 
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .expect("SystemTime before UNIX_EPOCH")
         .as_secs();
 
     let script = ScriptEntry {
@@ -159,7 +161,7 @@ pub async fn execute_script(script_id: String) -> Result<ExecutionLog, AppError>
 
     let started_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .expect("SystemTime before UNIX_EPOCH")
         .as_secs();
 
     info!("スクリプト実行開始: {} (ID: {})", script_path, script_id);
@@ -179,7 +181,7 @@ pub async fn execute_script(script_id: String) -> Result<ExecutionLog, AppError>
 
     let completed_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
-        .unwrap()
+        .expect("SystemTime before UNIX_EPOCH")
         .as_secs();
 
     let duration_ms = Some(completed_at.saturating_sub(started_at) * 1000);
