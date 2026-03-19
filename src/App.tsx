@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Shell from './components/layout/Shell';
 import { ErrorBoundary, LoadingFallback } from './components/ui';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
@@ -28,6 +29,8 @@ const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
 export default function App(): React.ReactElement {
   const [activeWing, setActiveWing] = useState<WingId>('home');
   const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['home']));
+
+  useKeyboardShortcuts();
 
   const setNavigate = useNavStore((s) => s.setNavigate);
 

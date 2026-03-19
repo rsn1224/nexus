@@ -1,6 +1,8 @@
 import { useWatchdogRuleForm } from '../../hooks/useWatchdogRuleForm';
-import type { WatchdogMetric, WatchdogOperator, WatchdogRule } from '../../types';
+import type { WatchdogRule } from '../../types';
 import Button from '../ui/Button';
+import WatchdogConditionsSection from './WatchdogConditionsSection';
+import WatchdogFilterSection from './WatchdogFilterSection';
 
 interface WatchdogRuleModalProps {
   isOpen: boolean;
@@ -12,8 +14,6 @@ interface WatchdogRuleModalProps {
 const labelClass = 'block mb-1 text-[10px] font-bold uppercase text-text-secondary';
 const inputClass =
   'w-full px-2 py-2 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[12px]';
-const selectSmClass =
-  'px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[11px]';
 
 export function WatchdogRuleModal({
   isOpen,
@@ -74,64 +74,12 @@ export function WatchdogRuleModal({
           </div>
 
           {/* Conditions */}
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] font-bold uppercase text-text-secondary">
-                CONDITIONS (AND)
-              </span>
-              <Button variant="ghost" onClick={addCondition}>
-                + ADD
-              </Button>
-            </div>
-
-            {rule.conditions.map((condition, index) => (
-              <div
-                key={`${condition.metric}-${condition.operator}-${condition.threshold}`}
-                className="flex gap-2 items-center p-2 border border-border-subtle rounded mb-2"
-              >
-                <select
-                  value={condition.metric}
-                  onChange={(e) =>
-                    updateCondition(index, { metric: e.target.value as WatchdogMetric })
-                  }
-                  aria-label="Condition metric"
-                  className={selectSmClass}
-                >
-                  <option value="cpuPercent">CPU %</option>
-                  <option value="memoryMb">MEMORY MB</option>
-                  <option value="diskReadKb">DISK READ KB</option>
-                  <option value="diskWriteKb">DISK WRITE KB</option>
-                </select>
-
-                <select
-                  value={condition.operator}
-                  onChange={(e) =>
-                    updateCondition(index, { operator: e.target.value as WatchdogOperator })
-                  }
-                  aria-label="Condition operator"
-                  className={selectSmClass}
-                >
-                  <option value="greaterThan">&gt;</option>
-                  <option value="lessThan">&lt;</option>
-                  <option value="equals">=</option>
-                </select>
-
-                <input
-                  type="number"
-                  value={condition.threshold}
-                  onChange={(e) =>
-                    updateCondition(index, { threshold: parseFloat(e.target.value) || 0 })
-                  }
-                  aria-label="Condition threshold"
-                  className="w-20 px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[11px]"
-                />
-
-                <Button variant="danger" onClick={() => removeCondition(index)}>
-                  DELETE
-                </Button>
-              </div>
-            ))}
-          </div>
+          <WatchdogConditionsSection
+            conditions={rule.conditions}
+            onAdd={addCondition}
+            onRemove={removeCondition}
+            onUpdate={updateCondition}
+          />
 
           {/* Action */}
           <div>
@@ -183,53 +131,13 @@ export function WatchdogRuleModal({
           )}
 
           {/* Process Filter */}
-          <div>
-            <span className="block mb-2 text-[10px] font-bold uppercase text-text-secondary">
-              PROCESS FILTER
-            </span>
-
-            <div className="mb-3">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[11px] text-text-primary">
-                  INCLUDE NAMES (empty = all processes)
-                </span>
-                <Button variant="ghost" onClick={addIncludeName}>
-                  + ADD
-                </Button>
-              </div>
-              {rule.processFilter.includeNames.map((name, index) => (
-                <div
-                  key={`include-${name}`}
-                  className="flex justify-between items-center px-2 py-1 bg-base-800 border border-border-subtle rounded mb-1"
-                >
-                  <span className="text-[11px] text-text-primary">{name}</span>
-                  <Button variant="danger" onClick={() => removeIncludeName(index)}>
-                    DELETE
-                  </Button>
-                </div>
-              ))}
-            </div>
-
-            <div>
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-[11px] text-text-primary">EXCLUDE NAMES</span>
-                <Button variant="ghost" onClick={addExcludeName}>
-                  + ADD
-                </Button>
-              </div>
-              {rule.processFilter.excludeNames.map((name, index) => (
-                <div
-                  key={`exclude-${name}`}
-                  className="flex justify-between items-center px-2 py-1 bg-base-800 border border-border-subtle rounded mb-1"
-                >
-                  <span className="text-[11px] text-text-primary">{name}</span>
-                  <Button variant="danger" onClick={() => removeExcludeName(index)}>
-                    DELETE
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
+          <WatchdogFilterSection
+            processFilter={rule.processFilter}
+            onAddInclude={addIncludeName}
+            onRemoveInclude={removeIncludeName}
+            onAddExclude={addExcludeName}
+            onRemoveExclude={removeExcludeName}
+          />
 
           {/* Cooldown */}
           <div>

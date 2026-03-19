@@ -10,6 +10,16 @@ type SidebarItem =
   | { id: string; label: string; icon: React.ComponentType<{ size?: number }> }
   | { id: string };
 
+const WING_SHORTCUT: Partial<Record<string, string>> = {
+  home: 'Ctrl+1',
+  performance: 'Ctrl+2',
+  games: 'Ctrl+3',
+  hardware: 'Ctrl+4',
+  network: 'Ctrl+5',
+  storage: 'Ctrl+6',
+  settings: 'Ctrl+7',
+};
+
 const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: 'home', label: 'ダッシュボード', icon: Gauge },
   { id: 'sep-1' },
@@ -61,6 +71,11 @@ const Shell = memo(function Shell({
                   type="button"
                   onClick={() => onWingChange(wingId)}
                   data-testid={`nav-${item.id}`}
+                  aria-label={
+                    WING_SHORTCUT[item.id]
+                      ? `${item.label} (${WING_SHORTCUT[item.id]})`
+                      : item.label
+                  }
                   className={`w-10 h-10 flex items-center justify-center rounded transition-colors ${
                     isActive
                       ? 'text-accent-500 bg-base-700'

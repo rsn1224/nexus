@@ -6,10 +6,13 @@ import AiPanel from '../shared/AiPanel';
 import { TabBar } from '../ui';
 import ProcessTab from './ProcessTab';
 import ProfileTab from './ProfileTab';
+import SessionTab from './SessionTab';
 import WatchdogTab from './WatchdogTab';
 
 export default function BoostWing(): React.ReactElement {
-  const [activeTab, setActiveTab] = useState<'process' | 'profiles' | 'watchdog'>('process');
+  const [activeTab, setActiveTab] = useState<'process' | 'profiles' | 'watchdog' | 'session'>(
+    'process',
+  );
 
   const cpuPercent = usePulseStore((s) =>
     s.snapshots.length > 0 ? (s.snapshots[s.snapshots.length - 1]?.cpuPercent ?? null) : null,
@@ -22,6 +25,7 @@ export default function BoostWing(): React.ReactElement {
     { id: 'process', label: 'プロセス最適化' },
     { id: 'profiles', label: 'プロファイル' },
     { id: 'watchdog', label: 'WATCHDOG' },
+    { id: 'session', label: 'セッション' },
   ];
 
   return (
@@ -46,6 +50,7 @@ export default function BoostWing(): React.ReactElement {
         {activeTab === 'process' && <ProcessTab />}
         {activeTab === 'profiles' && <ProfileTab />}
         {activeTab === 'watchdog' && <WatchdogTab />}
+        {activeTab === 'session' && <SessionTab />}
       </div>
 
       <AiPanel suggestions={boostSuggestions} />
