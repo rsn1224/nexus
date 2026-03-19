@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import type { RecommendedValue, SettingRecommendation } from '../../types';
 import Button from '../ui/Button';
 
@@ -55,9 +55,7 @@ export default function RecommendationList({
 }: RecommendationListProps): React.ReactElement {
   return (
     <div>
-      <h4 className="text-text-primary text-[12px] mb-2">
-        RECOMMENDATIONS ({recommendations.length})
-      </h4>
+      <h4 className="text-text-primary text-xs mb-2">RECOMMENDATIONS ({recommendations.length})</h4>
 
       {recommendations.length === 0 ? (
         <div className="p-3 bg-base-800 rounded-lg text-center">

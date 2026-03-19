@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import type { PowerEstimate } from '../../types';
 import Button from '../ui/Button';
 
@@ -17,7 +17,7 @@ export default function PowerConsumptionDisplay({
 
   return (
     <div className="mb-4">
-      <h4 className="text-text-primary text-[12px] mb-2">CURRENT POWER CONSUMPTION</h4>
+      <h4 className="text-text-primary text-xs mb-2">CURRENT POWER CONSUMPTION</h4>
       <div className="p-3 bg-base-800 rounded-lg">
         <div className="grid grid-cols-2 gap-2 mb-2">
           <div>
@@ -36,7 +36,7 @@ export default function PowerConsumptionDisplay({
         <div className="flex justify-between items-center pt-2 border-t border-base-800">
           <div>
             <div className="text-text-secondary text-xs">TOTAL</div>
-            <div className={`${totalColor} text-[12px] font-bold`}>
+            <div className={`${totalColor} text-xs font-bold`}>
               {powerEstimate.totalEstimatedW.toFixed(1)}W
             </div>
           </div>

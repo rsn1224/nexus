@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import type { EcoModeConfig } from '../../types';
 import Button from '../ui/Button';
 
@@ -21,7 +21,7 @@ export default function EcoModeToggle({
 }: EcoModeToggleProps): React.ReactElement {
   return (
     <div className="mb-4">
-      <h4 className="text-text-primary text-[12px] mb-2">ECO MODE</h4>
+      <h4 className="text-text-primary text-xs mb-2">ECO MODE</h4>
       <div className="p-3 bg-base-800 rounded-lg">
         <div className="flex justify-between items-center mb-3">
           <div>

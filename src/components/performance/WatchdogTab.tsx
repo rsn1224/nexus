@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { formatTime } from '../../lib/formatters';
 import {
   useWatchdogActions,
@@ -92,7 +92,7 @@ export default function WatchdogTab() {
   }
 
   return (
-    <div className="p-4 text-[12px]">
+    <div className="p-4 text-xs">
       <SectionHeader title="▶ BOOST / WATCHDOG" color="accent">
         <div className="flex gap-2">
           <Button

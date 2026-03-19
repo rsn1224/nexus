@@ -1,4 +1,4 @@
-import type { ErrorInfo, ReactNode } from 'react';
+﻿import type { ErrorInfo, ReactNode } from 'react';
 import { Component } from 'react';
 import log from '../../lib/logger';
 
@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
       return (
         <div className="flex flex-col items-center justify-center h-full gap-3 p-6 text-center">
           <div className="text-xs text-text-muted">{sectionName.toUpperCase()}</div>
-          <div className="text-[12px] text-danger-500">⚠ エラーが発生しました</div>
+          <div className="text-xs text-danger-500">⚠ エラーが発生しました</div>
           <div className="text-xs text-text-secondary max-w-xs wrap-break-word">
             {this.state.error?.message || 'Unknown error'}
           </div>

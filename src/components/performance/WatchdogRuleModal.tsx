@@ -1,4 +1,4 @@
-import { useWatchdogRuleForm } from '../../hooks/useWatchdogRuleForm';
+﻿import { useWatchdogRuleForm } from '../../hooks/useWatchdogRuleForm';
 import type { WatchdogRule } from '../../types';
 import Button from '../ui/Button';
 import WatchdogConditionsSection from './WatchdogConditionsSection';
@@ -13,7 +13,7 @@ interface WatchdogRuleModalProps {
 
 const labelClass = 'block mb-1 text-xs font-bold uppercase text-text-secondary';
 const inputClass =
-  'w-full px-2 py-2 border border-border-subtle rounded-lg bg-base-800 text-text-primary font-mono text-[12px]';
+  'w-full px-2 py-2 border border-border-subtle rounded-lg bg-base-800 text-text-primary font-mono text-xs';
 
 export function WatchdogRuleModal({
   isOpen,
@@ -39,7 +39,7 @@ export function WatchdogRuleModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
-      <div className="bg-base-900 p-6 rounded-lg min-w-[700px] max-w-[90vw] max-h-[90vh] overflow-y-auto text-[12px]">
+      <div className="bg-base-900 p-6 rounded-lg min-w-[700px] max-w-[90vw] max-h-[90vh] overflow-y-auto text-xs">
         <h2 className="mb-6 text-[14px] font-bold uppercase text-text-primary">
           {editingRule ? 'EDIT RULE' : 'ADD RULE'}
         </h2>
@@ -72,7 +72,7 @@ export function WatchdogRuleModal({
               onChange={(e) => updateRule({ enabled: e.target.checked })}
               className="accent-accent-500"
             />
-            <label htmlFor="modal-rule-enabled" className="text-[12px] text-text-primary">
+            <label htmlFor="modal-rule-enabled" className="text-xs text-text-primary">
               ENABLED
             </label>
           </div>

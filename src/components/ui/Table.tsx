@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import { LoadingState } from './index';
 import { getSortIcon, renderCell, type TableColumn } from './tableHelpers';
 
@@ -50,7 +50,7 @@ export default function Table<T>({
   const sizeClasses = {
     sm: 'text-xs',
     md: 'text-xs',
-    lg: 'text-[12px]',
+    lg: 'text-xs',
   };
 
   const handleSort = (column: TableColumn<T>) => {

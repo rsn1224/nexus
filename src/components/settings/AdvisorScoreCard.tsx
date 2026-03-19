@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import { progressWidth } from '../../lib/styles';
 import type { AdvisorResult } from '../../types';
 import Button from '../ui/Button';
@@ -28,10 +28,8 @@ export default function AdvisorScoreCard({
 
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-text-secondary text-[12px]">OPTIMIZATION SCORE</span>
-          <span
-            className={`${scoreTextClass(advisorResult.optimizationScore)} text-[12px] font-bold`}
-          >
+          <span className="text-text-secondary text-xs">OPTIMIZATION SCORE</span>
+          <span className={`${scoreTextClass(advisorResult.optimizationScore)} text-xs font-bold`}>
             {advisorResult.optimizationScore}%
           </span>
         </div>

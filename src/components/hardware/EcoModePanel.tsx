@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { useEcoModeStore } from '../../stores/useEcoModeStore';
 import type { EcoModeConfig } from '../../types';
@@ -123,7 +123,7 @@ const EcoModePanel: React.FC = () => {
       )}
 
       <div className="mb-4">
-        <h4 className="text-text-primary text-[12px] mb-2">CONFIGURATION</h4>
+        <h4 className="text-text-primary text-xs mb-2">CONFIGURATION</h4>
         <div className="p-3 bg-base-800 rounded-lg">
           <div className="mb-3">
             <div className="text-text-secondary text-xs mb-1">ELECTRICITY RATE (¥/kWh)</div>

@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import type { MonthlyCostEstimate } from '../../types';
 
 interface CostEstimationPanelProps {
@@ -14,7 +14,7 @@ export default function CostEstimationPanel({
 }: CostEstimationPanelProps): React.ReactElement {
   return (
     <div className="mb-4">
-      <h4 className="text-text-primary text-[12px] mb-2">MONTHLY COST ESTIMATE</h4>
+      <h4 className="text-text-primary text-xs mb-2">MONTHLY COST ESTIMATE</h4>
       <div className="p-3 bg-base-800 rounded-lg">
         <div className="mb-3">
           <div className="text-text-secondary text-xs mb-1">HOURS PER DAY</div>
@@ -53,7 +53,7 @@ export default function CostEstimationPanel({
           <div>
             <div className="text-text-secondary text-xs">SAVINGS</div>
             <div
-              className={`${costEstimate.savingsYen > 0 ? 'text-success-500' : 'text-text-secondary'} text-[12px] font-bold`}
+              className={`${costEstimate.savingsYen > 0 ? 'text-success-500' : 'text-text-secondary'} text-xs font-bold`}
             >
               ¥{costEstimate.savingsYen.toFixed(0)}/month
             </div>

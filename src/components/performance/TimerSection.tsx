@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useTimerActions, useTimerState } from '../../stores/useTimerStore';
 import { Button } from '../ui';
@@ -80,14 +80,14 @@ export default function TimerSection(): React.ReactElement {
         <div className="grid grid-cols-2 gap-2 mb-3">
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-text-muted">現在値</span>
-            <span className="font-mono text-[12px] text-text-primary font-bold">
+            <span className="font-mono text-xs text-text-primary font-bold">
               {toMs(timerState.current100ns)} ms
             </span>
           </div>
           <div className="flex flex-col gap-0.5">
             <span className="text-xs text-text-muted">nexus 要求値</span>
             <span
-              className={`font-mono text-[12px] font-bold ${
+              className={`font-mono text-xs font-bold ${
                 isActive ? 'text-accent-500' : 'text-text-muted'
               }`}
             >

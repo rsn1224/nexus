@@ -1,4 +1,4 @@
-import { useSessionStore } from '../../stores/useSessionStore';
+﻿import { useSessionStore } from '../../stores/useSessionStore';
 import FpsTimelineGraph from './FpsTimelineGraph';
 
 function formatDate(ms: number): string {
@@ -34,7 +34,7 @@ export default function SessionDetailView() {
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <div className="text-[12px] font-bold text-accent-500">{selectedSession.gameName}</div>
+        <div className="text-xs font-bold text-accent-500">{selectedSession.gameName}</div>
         <div className="text-xs text-text-muted">
           {formatDate(selectedSession.startedAt)} — {formatDate(selectedSession.endedAt)}（
           {Math.round(selectedSession.playSecs / 60)} 分）

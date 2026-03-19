@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 
 interface InputProps {
   type?: 'text' | 'password' | 'email' | 'number' | 'search';
@@ -67,7 +67,7 @@ export default function Input({
   const sizeClasses = {
     sm: 'text-xs px-2 py-1',
     md: 'text-xs px-3 py-2',
-    lg: 'text-[12px] px-4 py-3',
+    lg: 'text-xs px-4 py-3',
   };
 
   const stateClasses = {

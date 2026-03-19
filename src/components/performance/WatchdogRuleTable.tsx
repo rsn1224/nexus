@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import type { WatchdogAction, WatchdogRule } from '../../types';
 import Button from '../ui/Button';
 
@@ -23,7 +23,7 @@ export default function WatchdogRuleTable({
 }: WatchdogRuleTableProps): React.ReactElement {
   return (
     <div className="border border-border overflow-hidden mb-6">
-      <table className="w-full border-collapse text-[12px]">
+      <table className="w-full border-collapse text-xs">
         <thead>
           <tr className="bg-base-800 border-b border-border">
             <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">

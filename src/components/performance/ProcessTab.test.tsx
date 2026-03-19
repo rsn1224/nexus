@@ -94,7 +94,7 @@ describe('ProcessTab', () => {
     render(<ProcessTab />);
 
     // NAME 列ヘッダーをクリック
-    const nameHeader = screen.getByText('NAME');
+    const nameHeader = screen.getByRole('columnheader', { name: /NAME/ });
     fireEvent.click(nameHeader);
 
     // 昇順にソートされることを確認（chrome, node, system）
@@ -110,7 +110,8 @@ describe('ProcessTab', () => {
     // 再度クリックで降順に変わることを確認
     fireEvent.click(nameHeader);
     await waitFor(() => {
-      expect(screen.getByText(/NAME ▼/)).toBeInTheDocument();
+      const header = screen.getByRole('columnheader', { name: /NAME/ });
+      expect(header).toHaveTextContent('▼');
     });
   });
 
@@ -118,7 +119,7 @@ describe('ProcessTab', () => {
     render(<ProcessTab />);
 
     // CPU% 列ヘッダーをクリック
-    const cpuHeader = screen.getByText(/CPU% ▼/);
+    const cpuHeader = screen.getByRole('columnheader', { name: /CPU%/ });
     fireEvent.click(cpuHeader);
 
     // 昇順にソートされることを確認（system, node, chrome）
@@ -260,13 +261,14 @@ describe('ProcessTab', () => {
     render(<ProcessTab />);
 
     // MEM 列ヘッダーをクリック
-    const memHeader = screen.getByText('MEM');
+    const memHeader = screen.getByRole('columnheader', { name: /^MEM/ });
     fireEvent.click(memHeader);
 
     // ソート後の順序を確認 - テーブルの実際の順序を検証
     await waitFor(() => {
       // MEM ▲ に変わっていることを確認（昇順ソート）
-      expect(screen.getByText('MEM ▲')).toBeInTheDocument();
+      const memHeaderEl = screen.getByRole('columnheader', { name: /^MEM/ });
+      expect(memHeaderEl).toHaveTextContent('▲');
 
       // 最初の行が node.exe であることを確認
       const firstRow = screen.getByText('node.exe').closest('tr');

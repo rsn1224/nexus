@@ -62,36 +62,40 @@ export default function ProcessTable({
           <table className="w-full border-collapse font-mono text-xs">
             <thead className="sticky top-0 bg-base-800 border-b border-border-subtle">
               <tr>
-                <th
-                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none"
-                  onClick={() => onSort('name')}
-                >
-                  NAME {sortKey === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
-                </th>
-                <th
-                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-16"
-                  onClick={() => onSort('cpu')}
-                >
-                  CPU% {sortKey === 'cpu' && (sortDirection === 'asc' ? '▲' : '▼')}
-                </th>
-                <th
-                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-16"
-                  onClick={() => onSort('mem')}
-                >
-                  MEM {sortKey === 'mem' && (sortDirection === 'asc' ? '▲' : '▼')}
-                </th>
-                <th
-                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-20"
-                  onClick={() => onSort('diskRead')}
-                >
-                  DISK R {sortKey === 'diskRead' && (sortDirection === 'asc' ? '▲' : '▼')}
-                </th>
-                <th
-                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-20"
-                  onClick={() => onSort('diskWrite')}
-                >
-                  DISK W {sortKey === 'diskWrite' && (sortDirection === 'asc' ? '▲' : '▼')}
-                </th>
+                {(['name', 'cpu', 'mem', 'diskRead', 'diskWrite'] as const).map((key) => {
+                  const labels: Record<ProcessSortKey, string> = {
+                    name: 'NAME',
+                    cpu: 'CPU%',
+                    mem: 'MEM',
+                    diskRead: 'DISK R',
+                    diskWrite: 'DISK W',
+                  };
+                  const widths: Partial<Record<ProcessSortKey, string>> = {
+                    cpu: 'w-16',
+                    mem: 'w-16',
+                    diskRead: 'w-20',
+                    diskWrite: 'w-20',
+                  };
+                  const isActive = sortKey === key;
+                  return (
+                    <th
+                      key={key}
+                      className={`px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none hover:text-text-secondary ${widths[key] ?? ''}`}
+                      onClick={() => onSort(key)}
+                    >
+                      <span className="flex items-center gap-1">
+                        {labels[key]}
+                        {isActive ? (
+                          <span className="text-accent-500">
+                            {sortDirection === 'asc' ? '▲' : '▼'}
+                          </span>
+                        ) : (
+                          <span className="text-text-muted opacity-40">▼</span>
+                        )}
+                      </span>
+                    </th>
+                  );
+                })}
                 <th className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left w-20">
                   STATUS
                 </th>

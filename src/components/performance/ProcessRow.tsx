@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import type { SystemProcess } from '../../types';
 import { Button } from '../ui';
 import { formatDiskIO, formatMemory } from './ProcessTable';
@@ -56,20 +56,20 @@ export default function ProcessRow({
         } ${index % 2 === 0 ? 'bg-white/2' : ''}`}
         onClick={() => onRowClick(process.pid)}
       >
-        <td className="px-3 py-[5px] text-[12px] text-text-primary">{process.name}</td>
-        <td className={`px-3 py-[5px] font-mono text-[12px] text-right ${cpuColor}`}>
+        <td className="px-3 py-[5px] text-xs text-text-primary">{process.name}</td>
+        <td className={`px-3 py-[5px] font-mono text-xs text-right ${cpuColor}`}>
           {process.cpuPercent.toFixed(1)}%
         </td>
-        <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
+        <td className="px-3 py-[5px] font-mono text-xs text-right text-text-primary">
           {formatMemory(process.memMb)}
         </td>
-        <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
+        <td className="px-3 py-[5px] font-mono text-xs text-right text-text-primary">
           {formatDiskIO(process.diskReadKb)}
         </td>
-        <td className="px-3 py-[5px] font-mono text-[12px] text-right text-text-primary">
+        <td className="px-3 py-[5px] font-mono text-xs text-right text-text-primary">
           {formatDiskIO(process.diskWriteKb)}
         </td>
-        <td className="px-3 py-[5px] text-[12px]">
+        <td className="px-3 py-[5px] text-xs">
           {status === 'target' ? (
             <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-xs">
               [TARGET]

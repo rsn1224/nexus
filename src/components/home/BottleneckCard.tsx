@@ -141,7 +141,7 @@ const BottleneckCard: React.FC = () => {
             ).map(({ key, label, score }) => (
               <div key={key} className="flex items-center gap-2">
                 <span className="text-xs text-text-muted w-10">{label}</span>
-                <div className="flex-1 h-2 bg-base-800 overflow-hidden">
+                <div className="flex-1 h-1.5 bg-base-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${getScoreBarColor(score, key)}`}
                     style={progressWidth(Math.round(score * 100))}

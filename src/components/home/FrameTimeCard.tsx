@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useRef, useState } from 'react';
 import { useFrameTimeActions, useFrameTimeState } from '../../stores/useFrameTimeStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import type { SystemProcess } from '../../types';
@@ -55,7 +55,7 @@ export default function FrameTimeCard() {
   }
 
   return (
-    <div className="p-4 bg-base-800 border border-border-subtle text-[12px] text-text-primary">
+    <div className="p-4 bg-base-800 border border-border-subtle text-xs text-text-primary">
       {/* ヘッダー */}
       <div className="flex justify-between items-center mb-3">
         <div className="font-bold text-xs text-accent-500">FRAME TIME</div>

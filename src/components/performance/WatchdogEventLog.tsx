@@ -1,4 +1,4 @@
-import type React from 'react';
+﻿import type React from 'react';
 import type { WatchdogEvent } from '../../types';
 import EmptyState from '../ui/EmptyState';
 
@@ -19,7 +19,7 @@ export default function WatchdogEventLog({
         <EmptyState message="NO EVENTS YET — Watchdog events will appear here when rules are triggered" />
       ) : (
         <div className="border border-border overflow-hidden max-h-[300px] overflow-y-auto">
-          <table className="w-full border-collapse text-[12px]">
+          <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-base-800 border-b border-border sticky top-0">
                 <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
