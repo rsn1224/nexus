@@ -1,5 +1,5 @@
 import type React from 'react';
-import { formatBytes } from '../../stores/useStorageStore';
+import { formatBytes } from '../../lib/storage';
 import type { CleanupResult } from '../../types';
 import { Button } from '../ui';
 

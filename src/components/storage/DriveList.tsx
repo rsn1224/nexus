@@ -1,5 +1,5 @@
 import type React from 'react';
-import { formatBytes, getUsagePercentage } from '../../stores/useStorageStore';
+import { formatBytes, getUsagePercentage } from '../../lib/storage';
 import type { DiskDrive } from '../../types';
 import { Button } from '../ui';
 
