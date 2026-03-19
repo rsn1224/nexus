@@ -1,7 +1,17 @@
-import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
+import {
+  applyGamingNetworkPreset as cmdApplyGamingPreset,
+  fetchTcpTuningState as cmdFetchTcpState,
+  measureNetworkQuality as cmdMeasureQuality,
+  resetNetworkDefaults as cmdResetDefaults,
+  setTcpAutoTuning as cmdSetAutoTuning,
+  setDelayedAckDisabled as cmdSetDelayedAck,
+  setNagleDisabled as cmdSetNagle,
+  setQosReservedBandwidth as cmdSetQos,
+  setNetworkThrottling as cmdSetThrottling,
+} from '../lib/networkTuning';
 import { extractErrorMessage } from '../lib/tauri';
 import type { NetworkQualitySnapshot, TcpAutoTuningLevel, TcpTuningState } from '../types';
 
@@ -44,7 +54,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     fetchTcpState: async () => {
       set({ isLoading: true, error: null });
       try {
-        const state = await invoke<TcpTuningState>('get_tcp_tuning_state');
+        const state = await cmdFetchTcpState();
         set({ tcpState: state, isLoading: false });
         log.info({ state }, 'networkTuning: TCP状態取得完了');
       } catch (err) {
@@ -57,7 +67,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     setNagleDisabled: async (disabled: boolean) => {
       set({ isApplying: true, error: null });
       try {
-        await invoke('set_nagle_disabled', { disabled });
+        await cmdSetNagle(disabled);
         set((s) => ({
           isApplying: false,
           tcpState: s.tcpState ? { ...s.tcpState, nagleDisabled: disabled } : null,
@@ -73,7 +83,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     setDelayedAckDisabled: async (disabled: boolean) => {
       set({ isApplying: true, error: null });
       try {
-        await invoke('set_delayed_ack_disabled', { disabled });
+        await cmdSetDelayedAck(disabled);
         set((s) => ({
           isApplying: false,
           tcpState: s.tcpState ? { ...s.tcpState, delayedAckDisabled: disabled } : null,
@@ -89,7 +99,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     setNetworkThrottling: async (index: number) => {
       set({ isApplying: true, error: null });
       try {
-        await invoke('set_network_throttling', { index });
+        await cmdSetThrottling(index);
         set((s) => ({
           isApplying: false,
           tcpState: s.tcpState ? { ...s.tcpState, networkThrottlingIndex: index } : null,
@@ -105,7 +115,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     setQosReservedBandwidth: async (percent: number) => {
       set({ isApplying: true, error: null });
       try {
-        await invoke('set_qos_reserved_bandwidth', { percent });
+        await cmdSetQos(percent);
         set((s) => ({
           isApplying: false,
           tcpState: s.tcpState ? { ...s.tcpState, qosReservedBandwidthPct: percent } : null,
@@ -121,7 +131,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     setTcpAutoTuning: async (level: TcpAutoTuningLevel) => {
       set({ isApplying: true, error: null });
       try {
-        await invoke('set_tcp_auto_tuning', { level });
+        await cmdSetAutoTuning(level);
         set((s) => ({
           isApplying: false,
           tcpState: s.tcpState ? { ...s.tcpState, tcpAutoTuning: level } : null,
@@ -137,7 +147,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     applyGamingPreset: async () => {
       set({ isApplying: true, error: null });
       try {
-        const state = await invoke<TcpTuningState>('apply_gaming_network_preset');
+        const state = await cmdApplyGamingPreset();
         set({ tcpState: state, isApplying: false });
         log.info('networkTuning: ゲーミングプリセット適用完了');
       } catch (err) {
@@ -150,7 +160,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     resetDefaults: async () => {
       set({ isApplying: true, error: null });
       try {
-        const state = await invoke<TcpTuningState>('reset_network_defaults');
+        const state = await cmdResetDefaults();
         set({ tcpState: state, isApplying: false });
         log.info('networkTuning: デフォルトリセット完了');
       } catch (err) {
@@ -163,10 +173,7 @@ export const useNetworkTuningStore = create<NetworkTuningStoreState & NetworkTun
     measureNetworkQuality: async (target: string, count: number) => {
       set({ isMeasuring: true, error: null });
       try {
-        const snapshot = await invoke<NetworkQualitySnapshot>('measure_network_quality', {
-          target,
-          count,
-        });
+        const snapshot = await cmdMeasureQuality(target, count);
         set({ qualitySnapshot: snapshot, isMeasuring: false });
         log.info({ snapshot }, 'networkTuning: ネットワーク品質測定完了');
       } catch (err) {
