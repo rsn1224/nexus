@@ -56,15 +56,156 @@
   --color-border-subtle: #1a1a1e;
   --color-border-active: #44d62c;
 
-  /* Typography */
-  --font-sans: "Inter", "Noto Sans JP", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Inter", ui-monospace, monospace;
+  /* ─── NEXUS v2: Stitch 確定カラーパレット ───────────── */
+  --color-piano-black: #030305; /* SURFACE-DIM / SATIN DEPTH THRESHOLD */
+  --color-razer-green: #44d62c; /* SUCCESS-EMIT / LUMINOUS BLOOM HIGH */
+  --color-cyberpunk-red: #ef4444; /* ERROR-CRITICAL / LUMINOUS BLOOM MAX */
+  --color-tactical-yellow: #fcee0a; /* WARN-STATE / LUMINOUS BLOOM WARNING */
+
+  /* ─── NEXUS v2: エイリアス（コンポーネント用） ─────────── */
+  --color-nexus-bg: #030305; /* piano-black そのまま */
+  --color-nexus-surface: #111113; /* piano-black + 少し明るい */
+  --color-nexus-surface2: #1a1a1e; /* ネストカード */
+  --color-nexus-border: #1f1f25;
+  --color-nexus-green: #44d62c; /* razer-green */
+  --color-nexus-red: #ef4444; /* cyberpunk-red */
+  --color-nexus-yellow: #fcee0a; /* tactical-yellow */
+  --color-nexus-cyan: #00e5ff; /* シアン（Stitch UI から目視） */
+  --color-nexus-text: #e0e0e0;
+  --color-nexus-muted: #4a4a55;
+  --color-nexus-label: #6b7280;
+
+  /* ─── TYPOGRAPHIC ARRAY（Stitch 確定値） ───────────── */
+  --font-sans: "Inter", "system-ui", sans-serif; /* PRIMARY: Inter */
+  --font-mono: "B612 Mono", "JetBrains Mono", monospace; /* SECONDARY: B612 Mono */
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+@layer components {
+  /* Frosted Obsidian: ガラス質カード */
+  .surface-obsidian {
+    background-color: var(--color-base-800);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .surface-obsidian:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      inset 0 0 0 0.5px rgba(255, 255, 255, 0.06),
+      0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Tactical Mesh: 高密度データモジュール用 */
+  .surface-mesh {
+    background-color: var(--color-base-700);
+    background-image:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 23px,
+        rgba(68, 214, 44, 0.03) 23px,
+        rgba(68, 214, 44, 0.03) 24px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 23px,
+        rgba(68, 214, 44, 0.03) 23px,
+        rgba(68, 214, 44, 0.03) 24px
+      );
+  }
+
+  /* Luminous Void: フォーカルポイント（APPLY ALL ボタン等） */
+  .surface-void {
+    background-color: var(--color-base-800);
+    box-shadow:
+      0 0 40px rgba(68, 214, 44, 0.15),
+      inset 0 0 20px rgba(68, 214, 44, 0.05);
+  }
+
+  /* Headline XL: Inter 900 / -2% tracking */
+  .type-headline-xl {
+    font-family: var(--font-sans);
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+
+  /* Section Header: Inter 700 / -1% tracking */
+  .type-section {
+    font-family: var(--font-sans);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* Metadata Label: Inter 300 / +5% tracking */
+  .type-metadata {
+    font-family: var(--font-sans);
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* DATA_STREAM: B612 Mono 700 / Telemetry Display */
+  .type-data {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--color-accent-500);
+  }
+
+  /* System Output: B612 Mono 400 */
+  .type-system {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+}
+
+@layer utilities {
+  /* SUCCESS-EMIT（緑）: HIGH intensity */
+  .bloom-green {
+    filter: drop-shadow(0 0 8px rgba(68, 214, 44, 0.6)) drop-shadow(0 0 20px rgba(68, 214, 44, 0.3));
+  }
+
+  /* ERROR-CRITICAL（赤）: MAX intensity */
+  .bloom-red {
+    filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.8)) drop-shadow(0 0 24px rgba(239, 68, 68, 0.4));
+  }
+
+  /* WARN-STATE（黄）: WARNING intensity */
+  .bloom-yellow {
+    filter: drop-shadow(0 0 6px rgba(252, 238, 10, 0.5))
+      drop-shadow(0 0 16px rgba(252, 238, 10, 0.2));
+  }
+
+  /* Ripple Animation */
+  @keyframes ripple {
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(4);
+      opacity: 0;
+    }
+  }
+
+  .animate-ripple {
+    animation: ripple 0.6s ease-out;
+  }
 }
 
 html,

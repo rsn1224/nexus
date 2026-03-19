@@ -28,6 +28,7 @@ export { SystemLogStream } from './SystemLogStream';
 export { default as TabBar } from './TabBar';
 export { default as Table } from './Table';
 export { TacticalButtonGroup } from './TacticalButtonGroup';
+export { TelemetryCard } from './TelemetryCard';
 export { Checkbox, Toggle } from './Toggle';
 export { ToggleV2 } from './ToggleV2';
 export { ViewSwitcher } from './ViewSwitcher';
