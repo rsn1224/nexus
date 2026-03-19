@@ -61,6 +61,12 @@ jobs:
       - run: npm run typecheck
       - run: npm run check
       - run: npm run lint
+      - name: File size check (warning)
+        run: node scripts/check-file-size.mjs
+      - name: Architecture check (warning)
+        run: node scripts/check-architecture.mjs
+      - name: Inline styles check
+        run: node scripts/check-inline-styles.mjs
       - run: npm run test:coverage
 
   rust-lint:
