@@ -46,22 +46,21 @@
 | v2.2 Phase 3-C | ✅ 完了（gameReadiness/localAi ディレクトリ化） |
 | v2.2 Phase 4 | ✅ 完了（UnifiedEmitter: 4タスク → 1タスク統合、28c7ca7） |
 | **v3.0 Phase 1** | ✅ 完了（ワークフロー基盤構築: TESTING.md + BACKEND.md + 3 lint スクリプト + CI 更新、`212b958`） |
-| **v3.0 Phase 2** | 🔄 進行中（spec.md 13 ファイル + Stryker 導入 + types 分割仕様） |
+| **v3.0 Phase 2** | ✅ 完了（2A: assertNever→lib/assert.ts, 2B: types 前半9分割, 2C: types 後半8分割, 2D: index.ts re-exportのみ化） |
 
-**最新コミット:** v3.0 Phase 2 作業中（ベース: `212b958`）
+**最新コミット:** `8e2252e`（v3.0 Phase 2D）
 **テスト:** TS 542 + Rust 230+ all green
 
 ---
 
 ## v3.0 Phase 2 — types 分割 + Stryker（Cascade 向け実装指示）
 
-> **ステータス:** ⏳ 実装待ち
-> **前提:** Phase 1（`212b958`）完了。TS 542 + Rust 230+ all green。
-> **コミット分割:**
-> 1. `refactor: v3.0 Phase 2A — assertNever を lib/assert.ts に移動`
-> 2. `refactor: v3.0 Phase 2B — types/index.ts を 18 ドメインファイルに分割（前半）`
-> 3. `refactor: v3.0 Phase 2C — types/index.ts を 18 ドメインファイルに分割（後半）`
-> 4. `refactor: v3.0 Phase 2D — types/index.ts を re-export のみに書き換え`
+> **ステータス:** ✅ 完了（2026-03-19）
+> **コミット:**
+> 1. `b2bdaec` — `refactor: v3.0 Phase 2A — assertNever を lib/assert.ts に移動`
+> 2. `25825e2` — `refactor: v3.0 Phase 2B — types/index.ts を 18 ドメインファイルに分割（前半）`
+> 3. `84c42a0` — `refactor: v3.0 Phase 2C — types/index.ts を 18 ドメインファイルに分割（後半）`
+> 4. `8e2252e` — `refactor: v3.0 Phase 2D — types/index.ts を re-export のみに書き換え`
 
 ### AI 開発ルール（Cascade 必読）
 
