@@ -12,6 +12,11 @@ const config = {
   coverageAnalysis: 'perTest',
   timeoutMS: 30000,
   concurrency: 2,
+  thresholds: {
+    high: 60,
+    low: 40,
+    break: 25,
+  },
 };
 
 export default config;

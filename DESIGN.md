@@ -1,9 +1,9 @@
-# DESIGN.md — nexus アプリケーション設計書 v2
+# DESIGN.md — nexus アプリケーション設計書 v3
 
 > **目的:** Claude Code / Cascade が参照することで、実装・レビュー時のブレをゼロにする。
 > 「どう見えるか」ではなく「どう実装するか」の粒度で書く。
 >
-> **最終更新:** 2026-03-19 (Phase R1)
+> **最終更新:** 2026-03-19 (v3.0)
 > **旧バージョン:** `docs/archive/DESIGN_v1.md`
 
 ---
@@ -40,11 +40,16 @@ src/
 │   ├── layout/       — Shell, TitleBar
 │   ├── shared/       — AiPanel, PerplexityPanel
 │   └── ui/           — 共通コンポーネント
-├── stores/           — Zustand ストア
-├── hooks/            — カスタムフック
-├── lib/              — ユーティリティ（logger, gameReadiness 等）
+├── stores/           — Zustand ストア（状態管理 + set/get のみ）
+├── hooks/            — セレクターフック（stores/ から分離）
+├── lib/              — 純粋関数 + Tauri invoke ラッパー
+│   ├── gameReadiness/ — ゲームレディネススコア計算
+│   ├── ai/            — AI プロンプト生成
+│   ├── navigation.ts  — ナビゲーション定数 + buildBreadcrumbs
+│   ├── gameProfile.ts — プロファイル CRUD invoke
+│   └── ...            — その他ドメイン別ユーティリティ
 ├── services/         — 外部 API クライアント
-└── types/            — 型定義（WingId 等）
+└── types/            — 型定義（18 ドメイン別ファイル + re-export index.ts）
 ```
 
 ### WingId 一覧
@@ -331,7 +336,7 @@ Wing コンポーネントではなくストア自身が `listen()` を保持す
 ```bash
 npm run typecheck     # tsc --noEmit
 npm run check         # biome check
-npm run lint          # lint:css + lint:wings + lint:handoff
+npm run lint          # lint:css + wings + handoff + filesize + arch + inline-styles
 npm run test          # vitest
 cargo clippy -- -D warnings
 cargo test
@@ -346,3 +351,48 @@ cargo test
 | `unwrap()` in Rust 本番コード | `AppError` で適切にハンドリング |
 | `style={{ color: ... }}` | `className="text-accent-500"` 等 |
 | `#f97316` / `rgba()` ハードコード | CSS 変数クラス |
+
+---
+
+## Part 9 — v3.0 アーキテクチャルール
+
+### ファイルサイズ制限（CI 強制）
+
+| 対象 | 上限 | 強制レベル |
+|------|------|-----------|
+| TS/TSX 実装ファイル | 200 行 | エラー（`check-file-size.mjs --strict`） |
+| Rust ファイル | 300 行 | 目標（v3.1 で段階対処） |
+| テストファイル | 制限なし | — |
+
+### Store / lib / hooks の分離原則
+
+```
+stores/    → 状態管理のみ（set/get + エラーハンドリング）
+lib/       → 純粋関数 + Tauri invoke ラッパー（store 依存禁止）
+hooks/     → セレクターフック（store を useShallow で参照）
+types/     → 型定義（18 ドメイン別ファイル、index.ts は re-export のみ）
+```
+
+**lib/ は store を import しない。** store が lib の関数を呼び出す一方向のみ。
+
+### アーキテクチャ適合ルール（`check-architecture.mjs`）
+
+1. **Wing → Store 境界:** コンポーネントは自ドメインの store + 共有 store のみ import 可
+2. **lib/ → store 禁止:** lib は純粋関数のみ、store を参照しない
+3. **ui/ → store 禁止:** ui/ コンポーネントは presentational only
+
+### Spec-First 開発ワークフロー
+
+```
+spec.md（Given/When/Then） → 実装 → UT(Cascade) → IT(Claude Code) → ミューテーション
+```
+
+- `docs/specs/` に 13 仕様書が存在
+- テスト失敗時: spec.md に合致していれば実装バグ、乖離していればテスト修正
+- 既存テストの書き換え禁止（新規追加のみ）
+
+### ミューテーションテスト（Stryker）
+
+- ベースライン: 31.64%（src/lib/ 対象）
+- 閾値: 25（これを下回ると CI 失敗）
+- 実行: weekly + manual trigger
