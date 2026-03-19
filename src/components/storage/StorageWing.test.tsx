@@ -39,11 +39,6 @@ describe('StorageWing', () => {
     mockUseStorage.mockReturnValue({ ...BASE_STORE });
   });
 
-  it('renders header', () => {
-    render(<StorageWing />);
-    expect(screen.getByText(/STORAGE.*DISK/i)).toBeTruthy();
-  });
-
   it('renders refresh button', () => {
     render(<StorageWing />);
     expect(screen.getByText(/REFRESH/i)).toBeTruthy();

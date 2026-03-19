@@ -67,11 +67,6 @@ describe('LogWing', () => {
     mockUseLogActions.mockReturnValue({ ...BASE_ACTIONS });
   });
 
-  it('renders header', () => {
-    render(<LogWing />);
-    expect(screen.getByText('LOG MANAGEMENT')).toBeTruthy();
-  });
-
   it('renders log filters', () => {
     render(<LogWing />);
     expect(screen.getByTestId('log-filters')).toBeTruthy();

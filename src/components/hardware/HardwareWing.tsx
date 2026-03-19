@@ -42,14 +42,6 @@ export default function HardwareWing(): React.JSX.Element {
 
   return (
     <div className="p-4 h-full overflow-y-auto">
-      {/* Header */}
-      <div className="mb-5">
-        <div className="font-mono text-xs font-bold text-accent-500 tracking-[0.15em] mb-1">
-          ▶ HARDWARE
-        </div>
-        <div className="font-mono text-[10px] text-text-muted">SYSTEM SPECIFICATIONS</div>
-      </div>
-
       {/* CPU Information */}
       <Card title="CPU" className="mb-4">
         <div className="font-mono text-xs text-text-secondary space-y-2">

@@ -69,11 +69,6 @@ export default function LauncherWing(): React.ReactElement {
 
   return (
     <div className="p-4 h-full overflow-y-auto">
-      {/* Header */}
-      <div className="mb-4">
-        <div className="font-mono text-[11px] text-text-muted mb-2">GAME LAUNCHER</div>
-      </div>
-
       {/* Controls */}
       <Card className="mb-4">
         <LauncherControls

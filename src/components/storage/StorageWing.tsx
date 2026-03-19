@@ -38,11 +38,8 @@ export default function StorageWing(): React.ReactElement {
 
   return (
     <div className="flex flex-col h-full p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="font-mono text-[11px] text-accent-500 font-bold tracking-widest">
-          ▶ STORAGE / DISK
-        </div>
+      {/* Refresh */}
+      <div className="flex justify-end mb-4">
         <Button variant="secondary" size="sm" onClick={handleRefresh} disabled={isLoading}>
           ↻ REFRESH
         </Button>
