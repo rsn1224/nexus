@@ -1,6 +1,5 @@
 import type React from 'react';
-import { useCallback, useState } from 'react';
-import { TIMER_100NS_PER_MS } from '../../lib/constants';
+import { useProfileForm } from '../../hooks/useProfileForm';
 import type { BoostLevel, GameProfile, PowerPlanType, ProcessPriorityLevel } from '../../types';
 import { Button } from '../ui';
 import AffinityPanel from './AffinityPanel';
@@ -41,79 +40,31 @@ export default function ProfileForm({
   onSave,
   onCancel,
 }: ProfileFormProps): React.ReactElement {
-  const [displayName, setDisplayName] = useState(initial?.displayName ?? '');
-  const [exePath, setExePath] = useState(initial?.exePath ?? '');
-  const [boostLevel, setBoostLevel] = useState<BoostLevel>(initial?.boostLevel ?? 'none');
-  const [processesToSuspend, setProcessesToSuspend] = useState(
-    initial?.processesToSuspend?.join(', ') ?? '',
-  );
-  const [processPriority, setProcessPriority] = useState<ProcessPriorityLevel>(
-    initial?.processPriority ?? 'normal',
-  );
-  const [powerPlan, setPowerPlan] = useState<PowerPlanType>(initial?.powerPlan ?? 'unchanged');
-  const [cpuAffinityGame, setCpuAffinityGame] = useState<number[]>(initial?.cpuAffinityGame ?? []);
-  const [cpuAffinityBackground, setCpuAffinityBackground] = useState<number[]>(
-    initial?.cpuAffinityBackground ?? [],
-  );
-  const [processesToKill, setProcessesToKill] = useState(
-    initial?.processesToKill?.join(', ') ?? '',
-  );
-  const [timerResolutionMs, setTimerResolutionMs] = useState(() => {
-    const val = initial?.timerResolution100ns;
-    return val != null ? (val / TIMER_100NS_PER_MS).toFixed(3) : '';
-  });
-  const [autoSuspendEnabled, setAutoSuspendEnabled] = useState(
-    initial?.autoSuspendEnabled ?? false,
-  );
-
-  const handleSubmit = useCallback(() => {
-    if (!displayName.trim() || !exePath.trim()) return;
-
-    const profile: GameProfile = {
-      id: initial?.id ?? '',
-      displayName: displayName.trim(),
-      exePath: exePath.trim(),
-      steamAppId: initial?.steamAppId ?? null,
-      cpuAffinityGame: cpuAffinityGame.length > 0 ? cpuAffinityGame : null,
-      cpuAffinityBackground: cpuAffinityBackground.length > 0 ? cpuAffinityBackground : null,
-      processPriority,
-      powerPlan,
-      processesToSuspend: processesToSuspend
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean),
-      processesToKill: processesToKill
-        .split(',')
-        .map((s) => s.trim())
-        .filter(Boolean),
-      timerResolution100ns: timerResolutionMs
-        ? Math.round(parseFloat(timerResolutionMs) * TIMER_100NS_PER_MS)
-        : null,
-      autoSuspendEnabled,
-      boostLevel,
-      coreParkingDisabled: initial?.coreParkingDisabled ?? false,
-      lastPlayed: initial?.lastPlayed ?? null,
-      totalPlaySecs: initial?.totalPlaySecs ?? 0,
-      createdAt: initial?.createdAt ?? 0,
-      updatedAt: initial?.updatedAt ?? 0,
-    };
-
-    onSave(profile);
-  }, [
+  const {
     displayName,
+    setDisplayName,
     exePath,
+    setExePath,
     boostLevel,
+    setBoostLevel,
     processesToSuspend,
+    setProcessesToSuspend,
     processPriority,
+    setProcessPriority,
     powerPlan,
+    setPowerPlan,
     cpuAffinityGame,
+    setCpuAffinityGame,
     cpuAffinityBackground,
+    setCpuAffinityBackground,
     processesToKill,
+    setProcessesToKill,
     timerResolutionMs,
+    setTimerResolutionMs,
     autoSuspendEnabled,
-    initial,
-    onSave,
-  ]);
+    setAutoSuspendEnabled,
+    handleSubmit,
+  } = useProfileForm(initial, onSave);
 
   return (
     <div className="flex flex-col gap-3 p-3 bg-base-800 border border-border-subtle rounded">

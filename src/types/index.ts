@@ -705,3 +705,21 @@ export interface WatchdogEvent {
   success: boolean;
   detail: string;
 }
+
+// ─── EXHAUSTIVE CHECK UTILITY ─────────────────────────────────────────────────
+
+/**
+ * Exhaustive switch helper. Pass the `default` branch value here to get a
+ * compile-time error when a new union member is not handled.
+ *
+ * @example
+ * switch (wingId) {
+ *   case 'home': return ...;
+ *   case 'performance': return ...;
+ *   // ... all cases
+ *   default: return assertNever(wingId);
+ * }
+ */
+export function assertNever(value: never): never {
+  throw new Error(`Unhandled case: ${JSON.stringify(value)}`);
+}

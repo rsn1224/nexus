@@ -1,11 +1,5 @@
-import { useState } from 'react';
-import type {
-  ProcessFilter,
-  WatchdogCondition,
-  WatchdogMetric,
-  WatchdogOperator,
-  WatchdogRule,
-} from '../../types';
+import { useWatchdogRuleForm } from '../../hooks/useWatchdogRuleForm';
+import type { WatchdogMetric, WatchdogOperator, WatchdogRule } from '../../types';
 import Button from '../ui/Button';
 
 interface WatchdogRuleModalProps {
@@ -27,80 +21,20 @@ export function WatchdogRuleModal({
   onSave,
   editingRule,
 }: WatchdogRuleModalProps) {
-  const [rule, setRule] = useState<WatchdogRule>(() => {
-    if (editingRule) return { ...editingRule };
-    return {
-      id: `rule-${Date.now()}`,
-      name: '',
-      enabled: true,
-      conditions: [{ metric: 'cpuPercent', operator: 'greaterThan', threshold: 50 }],
-      action: 'suspend',
-      processFilter: { includeNames: [], excludeNames: [] },
-      profileId: null,
-      cooldownSecs: 30,
-      lastTriggeredAt: null,
-    };
-  });
+  const {
+    rule,
+    handleSave,
+    updateRule,
+    updateCondition,
+    addCondition,
+    removeCondition,
+    addIncludeName,
+    removeIncludeName,
+    addExcludeName,
+    removeExcludeName,
+  } = useWatchdogRuleForm(editingRule, onSave, onClose);
 
   if (!isOpen) return null;
-
-  const handleSave = () => {
-    if (!rule.name.trim()) {
-      alert('Rule name is required');
-      return;
-    }
-    onSave(rule);
-    onClose();
-  };
-
-  const updateRule = (updates: Partial<WatchdogRule>) => {
-    setRule((prev) => ({ ...prev, ...updates }));
-  };
-
-  const updateCondition = (index: number, updates: Partial<WatchdogCondition>) => {
-    setRule((prev) => ({
-      ...prev,
-      conditions: prev.conditions.map((cond, i) => (i === index ? { ...cond, ...updates } : cond)),
-    }));
-  };
-
-  const addCondition = () => {
-    setRule((prev) => ({
-      ...prev,
-      conditions: [
-        ...prev.conditions,
-        { metric: 'cpuPercent', operator: 'greaterThan', threshold: 50 },
-      ],
-    }));
-  };
-
-  const removeCondition = (index: number) => {
-    setRule((prev) => ({ ...prev, conditions: prev.conditions.filter((_, i) => i !== index) }));
-  };
-
-  const updateFilter = (updates: Partial<ProcessFilter>) => {
-    setRule((prev) => ({ ...prev, processFilter: { ...prev.processFilter, ...updates } }));
-  };
-
-  const addIncludeName = () => {
-    const name = prompt('Enter process name to include:');
-    if (name?.trim())
-      updateFilter({ includeNames: [...rule.processFilter.includeNames, name.trim()] });
-  };
-
-  const removeIncludeName = (index: number) => {
-    updateFilter({ includeNames: rule.processFilter.includeNames.filter((_, i) => i !== index) });
-  };
-
-  const addExcludeName = () => {
-    const name = prompt('Enter process name to exclude:');
-    if (name?.trim())
-      updateFilter({ excludeNames: [...rule.processFilter.excludeNames, name.trim()] });
-  };
-
-  const removeExcludeName = (index: number) => {
-    updateFilter({ excludeNames: rule.processFilter.excludeNames.filter((_, i) => i !== index) });
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">

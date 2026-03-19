@@ -1,11 +1,11 @@
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
+import { useProcessSort } from '../../hooks/useProcessSort';
 import { useBoostStore } from '../../stores/useBoostStore';
 import { useOpsStore } from '../../stores/useOpsStore';
 import { Button } from '../ui';
 import Input from '../ui/Input';
 import Modal, { ModalActions } from '../ui/Modal';
-import type { ProcessSortKey } from './ProcessTable';
 import ProcessTable from './ProcessTable';
 
 const DEFAULT_CPU_THRESHOLD = 15;
@@ -20,74 +20,12 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
   const { processes, isLoading, lastUpdated, killProcess, setProcessPriority } = useOpsStore();
   const [threshold, setThreshold] = useState(DEFAULT_CPU_THRESHOLD);
   const [filterText, setFilterText] = useState('');
-  const [sortKey, setSortKey] = useState<ProcessSortKey>('cpu');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
   const [selectedPid, setSelectedPid] = useState<number | null>(null);
+
+  const { filteredProcesses, sortedProcesses, targetCount, sortKey, sortDirection, handleSort } =
+    useProcessSort(processes, threshold, filterText);
   const [killModalOpen, setKillModalOpen] = useState(false);
   const [killTarget, setKillTarget] = useState<{ pid: number; name: string } | null>(null);
-
-  // フィルタ済みプロセスリスト
-  const filteredProcesses = useMemo(
-    () =>
-      processes.filter(
-        (p) => filterText === '' || p.name.toLowerCase().includes(filterText.toLowerCase()),
-      ),
-    [processes, filterText],
-  );
-
-  // ソート済みプロセスリスト
-  const sortedProcesses = useMemo(() => {
-    const sorted = [...filteredProcesses];
-    sorted.sort((a, b) => {
-      let aValue: number;
-      let bValue: number;
-
-      switch (sortKey) {
-        case 'name': {
-          const aName = a.name.toLowerCase();
-          const bName = b.name.toLowerCase();
-          return sortDirection === 'asc' ? aName.localeCompare(bName) : bName.localeCompare(aName);
-        }
-        case 'cpu':
-          aValue = a.cpuPercent;
-          bValue = b.cpuPercent;
-          break;
-        case 'mem':
-          aValue = a.memMb;
-          bValue = b.memMb;
-          break;
-        case 'diskRead':
-          aValue = a.diskReadKb;
-          bValue = b.diskReadKb;
-          break;
-        case 'diskWrite':
-          aValue = a.diskWriteKb;
-          bValue = b.diskWriteKb;
-          break;
-        default:
-          return 0;
-      }
-
-      return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
-    });
-    return sorted;
-  }, [filteredProcesses, sortKey, sortDirection]);
-
-  // BOOST対象プロセス数
-  const targetCount = useMemo(
-    () => processes.filter((p) => p.cpuPercent >= threshold && p.canTerminate).length,
-    [processes, threshold],
-  );
-
-  // ソートハンドラ
-  const handleSort = (key: typeof sortKey) => {
-    if (sortKey === key) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortKey(key);
-      setSortDirection('asc');
-    }
-  };
 
   // プロセス選択ハンドラ
   const handleRowClick = (pid: number) => {
