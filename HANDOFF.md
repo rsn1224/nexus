@@ -63,10 +63,291 @@
 | **NEXUS v2 Phase 7: MONITOR Wing** | ✅ 完了（MonitorWing + MetricCard + TimelineGraph） |
 | **NEXUS v2 Phase 8: HISTORY Wing** | ✅ 完了（HistoryWing + SessionList + TrendChart） |
 | **NEXUS v2 Phase 10: UT** | ✅ 完了（healthScore.test + suggestionEngine.test + useHealthStore.test + useOptimizeStore.test） |
+| **NEXUS v2 WingId リネーム** | ✅ 完了（dashboard→core, gaming→arsenal, monitor→tactics, history→logs） |
+| **NEXUS v2 Stitch デザイン実装** | 🔵 pending（Cascade 実装待ち） |
 
-**最新コミット:** `8134f0e`（v2 spec.md + 型定義）
+**最新コミット:** `9b21268`（Stitch デザイン WingId 変更 + 仕様書）
 **ブランチ:** `feature/v2-optimize-core`
-**テスト:** TS 565 all green（biome + typecheck + vitest all pass）
+**テスト:** TS 650 all green（biome + typecheck + vitest all pass）
+
+---
+
+## NEXUS v2 Stitch デザイン全面採用 — Cascade 向け実装指示
+
+> **ステータス:** `pending`
+> **ブランチ:** `feature/v2-optimize-core`
+> **デザイン仕様:** [`docs/v2/design-overhaul-spec.md`](docs/v2/design-overhaul-spec.md)
+> **参考画像:** Stitch 生成の 6 画面スクリーンショット（ユーザー確認済み）
+> **方針:** Razer HUD 美学を全面適用。Stitch 出力のビジュアルを忠実に再現する。
+
+### AI 開発ルール（必ず遵守）
+
+```
+1. 全ファイル 200 行以下（TS/TSX）
+2. console.log / any 型 禁止
+3. 各 Phase 後に vitest run + tsc --noEmit + npm run check を実行
+4. 既存テストを壊さないこと
+5. カラー値は index.css @theme のみで管理（ハードコード禁止）
+```
+
+### 必読ファイル
+
+```
+docs/v2/design-overhaul-spec.md  — 全デザイン仕様（カラー・CSS・レイアウト）
+src/index.css                    — 現在の @theme（ここを書き換える）
+src/design-tokens.ts             — トークン定義（index.css と同期）
+```
+
+---
+
+### Phase D-1: CSS 基盤（index.css + design-tokens.ts）
+
+**目的:** Razer HUD カラーパレット + 新 CSS クラス全面適用
+
+1. `src/index.css` の `@theme` を `design-overhaul-spec.md §1` のカラーに全面置換
+2. 以下の新 CSS クラスを追加:
+   - `.piano-surface` — Stitch の glass panel カード（gradient + green border）
+   - `.circuit-bg` — ドットグリッド背景（40px 間隔、green 0.03 opacity）
+   - `.scanline-overlay` — スキャンライン効果（fixed、pointer-events: none）
+   - `.scanning-bar` — 水平スキャンバー（15s アニメーション）
+   - `.bloom-razer` — green glow drop-shadow
+   - `.bloom-red` — red glow drop-shadow
+   - `.pulse-node` — 3s パルスアニメーション
+   - `.hover-glitch` — ホバー時グリッチエフェクト
+   - `.progress-flow` — 流れるプログレスバー
+   - `.hud-btn-sweep` — ボタンスウィープエフェクト
+3. 旧 `.card-glass` / `.card-glass-elevated` は `.piano-surface` に統合（後方互換で残す）
+4. `.glow-cyan` → `.glow-green` にリネーム（Razer Green 対応）
+5. scrollbar を green テーマに更新
+6. `::selection` を green に更新
+7. `src/design-tokens.ts` を新カラーに同期
+
+**フォント変更:**
+```css
+@import "@fontsource-variable/inter";
+@import "@fontsource/noto-sans-jp/400.css";
+@import "@fontsource/noto-sans-jp/700.css";
+/* B612 Mono の import を削除 */
+```
+
+**品質チェック:** `tsc --noEmit` + `vitest run` + `npm run check`
+
+---
+
+### Phase D-2: Shell レイアウト変更（サイドバー 264px 化）
+
+**目的:** 48px アイコンサイドバー → 264px テキスト付き展開型サイドバー
+
+**Shell.tsx 書き換え:**
+
+```
+新レイアウト:
+┌──────────────────────────────────────────┐
+│ TitleBar (h-16)                           │
+├──────────┬───────────────────────────────┤
+│ Sidebar  │ Main Content                  │
+│ (w-64)   │ (circuit-bg)                  │
+│          │                               │
+│ ┌──────┐ │                               │
+│ │STATUS│ │                               │
+│ └──────┘ │                               │
+│ CORE     │                               │
+│ ARSENAL  │                               │
+│ TACTICS  │                               │
+│ NETWORK  │                               │
+│ LOGS     │                               │
+│ ──────── │                               │
+│ [SYNC]   │                               │
+│ DIAG     │                               │
+│ EMER     │                               │
+├──────────┴───────────────────────────────┤
+│ BottomBar (h-10): CPU | RAM | NET | TEMP │
+└──────────────────────────────────────────┘
+```
+
+**サイドバー仕様（Stitch HISTORY Wing を参考）:**
+
+- 背景: `bg-[#030305]/98 backdrop-blur-3xl`
+- 幅: `w-64`
+- ボーダー: `border-r border-white/[0.03]`
+- 上部パネル: SYSTEM STATUS（グリーンパルスドット + "稼働状況: OPTIMAL"）
+- ナビ項目:
+  - アイコン: Material Symbols Outlined（grid_view, swords, strategy, hub, terminal）
+  - テキスト: `text-[10px] font-black tracking-[0.3em] uppercase`
+  - 日英併記: "CORE / コア", "ARSENAL / 兵装", "TACTICS / 戦術", "NETWORK / 網", "LOGS / 履歴"
+- アクティブ状態: `bg-[#44D62C]/10 text-[#44D62C] border-r-2 border-[#44D62C]` + `.progress-flow` ボトムライン
+- 非アクティブ: `text-white/30 hover:text-[#44D62C] hover:bg-[#44D62C]/5`
+- 下部: NEURAL SYNC ボタン + DIAG / EMER リンク
+
+**Material Symbols の導入:**
+```html
+<!-- index.html に追加 -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+```
+
+または `npm install material-symbols` で Tailwind 経由。
+
+**scanline + scanning-bar の追加:**
+Shell.tsx のルート要素内に:
+```tsx
+<div className="scanline-overlay" />
+<div className="scanning-bar" />
+```
+
+---
+
+### Phase D-3: TitleBar 変更
+
+**目的:** カスタムタイトルバーを Stitch デザインに合わせる
+
+**Stitch DASHBOARD を参考にした仕様:**
+
+```
+┌──────────────────────────────────────────────────┐
+│ NEXUS_V2  │ CPU:44°C GPU:62°C │ DASHBOARD │ ⚙ ⏻ │
+│ [WING名]  │                   │ TELEMETRY │      │
+│           │                   │ TACTICAL  │      │
+└──────────────────────────────────────────────────┘
+```
+
+- 左: `NEXUS_V2` (text-2xl, font-black, tracking-tighter, text-accent-500, bloom-razer)
+- 左下: `[DASHBOARD_WING]` など現在の Wing 名（text-[9px], text-accent-500/60）
+- 中央: CPU_TEMP + GPU_TEMP（リアルタイム、color-coded）
+- 右ナビ: Wing 名タブ（アクティブに下線）
+- 右端: settings (rotate-gear) + power (bloom-razer, pulse)
+- 高さ: `h-16`
+- 背景: `bg-[#030305]/95 backdrop-blur-3xl border-b border-white/[0.03]`
+
+---
+
+### Phase D-4: BottomBar（新規コンポーネント）
+
+**ファイル:** `src/components/layout/BottomBar.tsx`
+
+**Stitch MONITOR の下部バーを参考:**
+
+```
+┌─────────────────────────────────────────────────────┐
+│ ⚙ CPU: 22.4% │ 📊 RAM: 4.2GB │ 🌐 NET: 1.2GBPS │ 🌡 TEMP: 42°C │
+└─────────────────────────────────────────────────────┘
+```
+
+- 高さ: `h-10`
+- 固定下部: `fixed bottom-0`
+- 背景: `bg-black/98 backdrop-blur-xl border-t border-accent-500/20`
+- 各項目: Material Symbol アイコン + ラベル（text-[9px], tracking-wider, uppercase）
+- CPU は warning-yellow で強調、他は accent-500/50
+- pulse イベントからリアルタイムデータ取得
+
+---
+
+### Phase D-5: CORE Wing（DASHBOARD）UI 実装
+
+**Stitch DASHBOARD を再現:**
+
+```
+3 カラムレイアウト:
+┌──────────┬──────────────┬──────────┐
+│ CPU_FREQ │              │ ALERTS   │
+│ MONITOR  │  SYSTEM      │ CRITICAL │
+│          │  INTEGRITY   │          │
+│ GPU_VRAM │  98% ゲージ  │ AI_ADVIS │
+│ STATE    │              │ OR       │
+│          │  OPTIMIZED   │          │
+├──────────┴──────────────┴──────────┤
+│ BOOST_MODE │ HEAP_FLUSH │ NET_SHIELD│
+└────────────┴────────────┴──────────┘
+```
+
+**左カラム:**
+- CPU_FREQ_MONITOR: 5.2 GHz + LOCKED バッジ + 棒グラフ（6本、green）
+- LOAD: 32.4% / THREADS: 16/32
+- GPU_VRAM_STATE: 98% UTIL + TURBO バッジ + プログレスバー
+- JUNC_TEMP: 74°C / RPM_CTRL: 2450
+
+**中央:**
+- SYSTEM_INTEGRITY 円形ゲージ（SVG、98%、green glow）
+- "OPTIMIZED" ステータス + green パルスドット
+- UPTIME + STABILITY + THREAT_LVL + ENCRYPTION 情報
+
+**右カラム:**
+- SYSTEM_ALERTS (CRITICAL バッジ、red)
+- アラートカード: UNAUTHORIZED_ACCESS + THERMAL_THRESHOLD
+- AI_ADVISOR_STITCH: テキストアドバイス
+- V-SYNC_OPTIMIZATION / BACKGROUND_KILLER タグ
+
+**下部:**
+- BOOST_MODE: ULTRA_PERFORMANCE（アイコン + テキスト）
+- HEAP_FLUSH: 4.2 GB RECLAIMABLE
+- NET_SHIELD: ACTIVE_FIREWALL
+- CMD_ 入力欄（テキスト入力 + 送信ボタン）
+
+---
+
+### Phase D-6: ARSENAL Wing（GAMING）UI 実装
+
+**Stitch GAMING を再現:**
+
+- ヘッダー: "GAMING WING" + "すべて適用 / APPLY ALL" ボタン
+- プリセットカード 3 枚: ゲーミング(ACTIVE) / パワーセーブ(STANDBY) / ストリーミング
+- GPU 温度 / TEMP カード（右端）
+- 最適化チェックリスト / CHECKLIST: チェックボックス + ステータスバッジ
+- CORE_STABILITY_MONITOR: 98% ゲージ（小）
+
+---
+
+### Phase D-7: TACTICS Wing（MONITOR）UI 実装
+
+**Stitch MONITOR を再現:**
+
+- 安定性ゲージ（左、SVG 円形、98%）
+- コア負荷分散バーチャート（右、12 本の縦棒、色分け: green/yellow/red）
+- KPI 3 枚: 熱ステータス 42.8°C / 帯域幅 1.2gbps / ニューラル同期 0.99ms
+- プロセステーブル: PID / MODULE NAME / STATUS / LOAD / MEMORY
+
+---
+
+### Phase D-8: LOGS Wing（HISTORY）UI 実装
+
+**Stitch HISTORY を再現:**
+
+- PERFORMANCE TREND チャート（SVG、7D/30D トグル）
+- STITCH // TACTICAL AI パネル（右、yellow アクセント）
+- SESSION TRANSACTION LOG テーブル
+
+---
+
+### Phase D-9: SETTINGS Wing UI 実装
+
+**Stitch SETTINGS を再現:**
+
+- UI カスタマイズ: ネオン発光強度スライダー
+- AI AUTONOMY ALIGNMENT: トグル 2 件
+- PREVIEW パネル 3 枚
+- API キー設定: マスク入力 + SECURE バッジ
+- ハードウェア構成ツリー: 4 枚 KPI カード
+
+---
+
+### 品質ゲート（全 Phase 共通）
+
+```
+✅ tsc --noEmit — ゼロエラー
+✅ vitest run — 全テスト通過（650+）
+✅ npm run check — Biome クリーン
+✅ 全ファイル 200 行以下
+✅ scanline overlay が表示される
+✅ サイドバーが 264px で Wing 一覧を表示
+✅ BottomBar が CPU/RAM/NET/TEMP を表示
+✅ circuit-bg ドットグリッドが main content に表示
+```
+
+**コミット分割:**
+- D-1: `style: Stitch デザイン Phase D-1 — Razer HUD カラー + CSS エフェクト`
+- D-2: `refactor: Stitch デザイン Phase D-2 — 264px サイドバー + scanline`
+- D-3: `refactor: Stitch デザイン Phase D-3 — TitleBar HUD 化`
+- D-4: `feat: Stitch デザイン Phase D-4 — BottomBar リアルタイムステータス`
+- D-5〜D-9: 各 Wing 実装（`feat: Stitch デザイン Phase D-N — WING名 Wing UI`）
 
 ---
 
