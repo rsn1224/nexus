@@ -1,4 +1,4 @@
-import { assertNever } from '../../types';
+import { assertNever } from '../assert';
 import { generateRecommendations } from './recommendations';
 import { calcOptimizationScore, calcPerformanceScore, calcResourceScore } from './scores';
 import type { ReadinessInput, ReadinessRank, ReadinessResult } from './types';

@@ -1,5 +1,5 @@
 import type { FrameTimeSnapshot } from '../../types';
-import { assertNever } from '../../types';
+import { assertNever } from '../assert';
 import {
   GPU_TEMP_SCORE_CRITICAL_C,
   GPU_TEMP_SCORE_GOOD_C,
