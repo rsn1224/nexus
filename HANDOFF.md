@@ -56,10 +56,17 @@
 | **Design Refresh v2** | ✅ 完了（Phase 1-8: カラー拡張・glass card・タイポグラフィ・KpiCard・グラフグロー・サイドバー・GameCard・モーション） |
 | **v3.1 オンボーディング Phase 1** | 🔵 pending（Cascade 実装待ち） |
 | **NEXUS v2 Phase 1: クリーンアップ** | ✅ 完了（8 Rust コマンド削除 + FE 削除 + 5 Wing 化） |
+| **NEXUS v2 Phase 2: lib/ 純粋関数** | ✅ 完了（healthScore.ts + suggestionEngine.ts） |
+| **NEXUS v2 Phase 3: Store 実装** | ✅ 完了（useHealthStore + useOptimizeStore + useAiStore + useHistoryStore） |
+| **NEXUS v2 Phase 5: DASHBOARD Wing** | ✅ 完了（DashboardWing + HealthScoreBar + SuggestionCard/List + AppliedBadgeRow） |
+| **NEXUS v2 Phase 6: GAMING Wing** | ✅ 完了（GamingWing + 7 panels） |
+| **NEXUS v2 Phase 7: MONITOR Wing** | ✅ 完了（MonitorWing + MetricCard + TimelineGraph） |
+| **NEXUS v2 Phase 8: HISTORY Wing** | ✅ 完了（HistoryWing + SessionList + TrendChart） |
+| **NEXUS v2 Phase 10: UT** | ✅ 完了（healthScore.test + suggestionEngine.test + useHealthStore.test + useOptimizeStore.test） |
 
 **最新コミット:** `8134f0e`（v2 spec.md + 型定義）
 **ブランチ:** `feature/v2-optimize-core`
-**テスト:** TS 709 + Rust 230+ all green
+**テスト:** TS 565 all green（biome + typecheck + vitest all pass）
 
 ---
 
