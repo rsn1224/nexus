@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[cfg(windows)]
 use std::process::Command;
 #[cfg(windows)]
-use tracing::info;
+use tracing::{info, warn};
 
 /// TCP 最適化設定の現在の状態
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -188,7 +188,12 @@ pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
         ));
     }
 
-    registry::set_dword_value(QOS_KEY, "NonBestEffortLimit", percent)?;
+    if let Err(e) = registry::set_dword_value(QOS_KEY, "NonBestEffortLimit", percent) {
+        warn!("QoS レジストリ書き込み失敗（管理者権限が必要な場合があります）: {}", e);
+        return Err(AppError::Command(
+            "QoS 設定の変更には管理者権限が必要です。アプリを管理者として実行してください。".into(),
+        ));
+    }
 
     info!("QoS 予約帯域幅設定: {}%", percent);
     Ok(())

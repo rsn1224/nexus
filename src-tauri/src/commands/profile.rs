@@ -131,19 +131,23 @@ pub fn get_process_affinity(pid: u32) -> Result<Vec<usize>, AppError> {
 /// 現在のアクティブな電源プランを取得
 #[cfg(windows)]
 #[tauri::command]
-pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
-    let controller = PowerPlanController::new();
-    let guid = controller
-        .get_active_plan_guid()?
-        .ok_or_else(|| AppError::Power("現在の電源プランが取得できません".to_string()))?;
-    let name = controller.get_plan_name(&guid)?;
-    Ok(crate::types::game::CurrentPowerPlan { name, guid })
+pub async fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
+    tokio::task::spawn_blocking(|| {
+        let controller = PowerPlanController::new();
+        let guid = controller
+            .get_active_plan_guid()?
+            .ok_or_else(|| AppError::Power("現在の電源プランが取得できません".to_string()))?;
+        let name = controller.get_plan_name(&guid)?;
+        Ok(crate::types::game::CurrentPowerPlan { name, guid })
+    })
+    .await
+    .map_err(|e| AppError::Internal(format!("Task join error: {}", e)))?
 }
 
 #[cfg(not(windows))]
 #[allow(dead_code)]
 #[tauri::command]
-pub fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
+pub async fn get_current_power_plan() -> Result<crate::types::game::CurrentPowerPlan, AppError> {
     Err(AppError::Command("Windows 専用機能です".into()))
 }
 

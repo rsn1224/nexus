@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
+import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
 import type { EcoModeConfig, MonthlyCostEstimate, PowerEstimate } from '../types';
 
@@ -140,11 +141,13 @@ export const useCostEstimate = () => useEcoModeStore((state) => state.costEstima
 export const useEcoModeLoading = () => useEcoModeStore((state) => state.isLoading);
 export const useEcoModeError = () => useEcoModeStore((state) => state.error);
 export const useEcoModeActions = () =>
-  useEcoModeStore((state) => ({
-    fetchConfig: state.fetchConfig,
-    saveConfig: state.saveConfig,
-    toggleEcoMode: state.toggleEcoMode,
-    fetchPowerEstimate: state.fetchPowerEstimate,
-    fetchCostEstimate: state.fetchCostEstimate,
-    updateConfig: state.updateConfig,
-  }));
+  useEcoModeStore(
+    useShallow((state) => ({
+      fetchConfig: state.fetchConfig,
+      saveConfig: state.saveConfig,
+      toggleEcoMode: state.toggleEcoMode,
+      fetchPowerEstimate: state.fetchPowerEstimate,
+      fetchCostEstimate: state.fetchCostEstimate,
+      updateConfig: state.updateConfig,
+    })),
+  );
