@@ -40,12 +40,12 @@ export default function SessionCompareView({ sessions }: SessionCompareViewProps
           const setter = side === 'A' ? setAId : setBId;
           return (
             <div key={side} className="flex-1">
-              <div className="text-[9px] text-text-muted mb-1">SESSION {side}</div>
+              <div className="text-xs text-text-muted mb-1">SESSION {side}</div>
               <select
                 aria-label={`Session ${side}`}
                 value={value}
                 onChange={(e) => setter(e.target.value)}
-                className="w-full px-2 py-1 font-mono text-[10px] bg-base-700 border border-border-subtle text-text-primary"
+                className="w-full px-2 py-1 font-mono text-xs bg-base-700 border border-border-subtle text-text-primary"
               >
                 <option value="">SELECT...</option>
                 {sessions.map((s) => (
@@ -63,7 +63,7 @@ export default function SessionCompareView({ sessions }: SessionCompareViewProps
         type="button"
         onClick={handleCompare}
         disabled={!aId || !bId || aId === bId || isLoading}
-        className={`w-full py-[5px] text-[10px] font-bold border transition-colors ${
+        className={`w-full py-[5px] text-xs font-bold border transition-colors ${
           !aId || !bId || aId === bId || isLoading
             ? 'bg-base-800 text-text-muted border-border-subtle cursor-not-allowed'
             : 'bg-accent-500 text-base-900 border-accent-500 cursor-pointer hover:bg-accent-600'
@@ -74,7 +74,7 @@ export default function SessionCompareView({ sessions }: SessionCompareViewProps
 
       {comparisonResult && (
         <div className="flex flex-col gap-2 pt-2 border-t border-border-subtle">
-          <div className="text-[9px] text-text-muted">COMPARISON RESULT</div>
+          <div className="text-xs text-text-muted">COMPARISON RESULT</div>
           <div className="flex flex-col gap-1">
             {(
               [
@@ -101,8 +101,8 @@ export default function SessionCompareView({ sessions }: SessionCompareViewProps
               const { text, cls } = formatDelta(delta);
               return (
                 <div key={label} className="flex justify-between items-center">
-                  <span className="text-[10px] text-text-muted">{label}</span>
-                  <div className="flex gap-4 font-mono text-[10px]">
+                  <span className="text-xs text-text-muted">{label}</span>
+                  <div className="flex gap-4 font-mono text-xs">
                     <span className="text-text-secondary">{aVal.toFixed(1)}</span>
                     <span className="text-text-muted">→</span>
                     <span className="text-text-secondary">{bVal.toFixed(1)}</span>
@@ -112,9 +112,9 @@ export default function SessionCompareView({ sessions }: SessionCompareViewProps
               );
             })}
             <div className="flex justify-between items-center">
-              <span className="text-[10px] text-text-muted">STUTTER Δ</span>
+              <span className="text-xs text-text-muted">STUTTER Δ</span>
               <span
-                className={`font-mono text-[10px] ${comparisonResult.stutterDelta <= 0 ? 'text-success-500' : 'text-danger-500'}`}
+                className={`font-mono text-xs ${comparisonResult.stutterDelta <= 0 ? 'text-success-500' : 'text-danger-500'}`}
               >
                 {comparisonResult.stutterDelta > 0 ? '+' : ''}
                 {comparisonResult.stutterDelta}
@@ -122,8 +122,8 @@ export default function SessionCompareView({ sessions }: SessionCompareViewProps
             </div>
           </div>
           <div className="pt-2 border-t border-border-subtle">
-            <div className="text-[9px] text-text-muted mb-1">SUMMARY</div>
-            <div className="text-[10px] text-text-secondary leading-relaxed">
+            <div className="text-xs text-text-muted mb-1">SUMMARY</div>
+            <div className="text-xs text-text-secondary leading-relaxed">
               {comparisonResult.autoSummary}
             </div>
           </div>

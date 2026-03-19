@@ -16,17 +16,17 @@ export default function VisualEffectsSection({
   onApply,
 }: VisualEffectsSectionProps): React.ReactElement {
   return (
-    <div className="bg-base-800 border border-border-subtle rounded p-3">
-      <div className="text-[10px] text-text-muted mb-2">VISUAL</div>
+    <div className="bg-base-800 border border-border-subtle rounded-lg p-3">
+      <div className="text-xs text-text-muted mb-2">VISUAL</div>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <div className="text-[11px] text-text-secondary">Visual Effects</div>
+          <div className="text-xs text-text-secondary">Visual Effects</div>
           <div className="flex items-center gap-2">
             <select
               value={pendingVisualEffects}
               title="Visual Effects"
               onChange={(e) => onPendingChange(e.target.value as VisualEffects)}
-              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-[11px] px-2 py-1 rounded"
+              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-xs px-2 py-1 rounded-lg"
             >
               <option value={VisualEffects.BestPerformance}>Best Performance</option>
               <option value={VisualEffects.Balanced}>Balanced</option>
@@ -37,7 +37,7 @@ export default function VisualEffectsSection({
             </Button>
           </div>
         </div>
-        <div className="text-[10px] text-text-muted">
+        <div className="text-xs text-text-muted">
           (Best Performance / Balanced / Best Appearance)
         </div>
       </div>

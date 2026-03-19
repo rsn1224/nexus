@@ -12,11 +12,9 @@ export default function EmptyState({
   height = 'h-[120px]',
 }: EmptyStateProps): React.ReactElement {
   return (
-    <div
-      className={`flex flex-col items-center justify-center ${height} text-[11px] text-text-muted`}
-    >
+    <div className={`flex flex-col items-center justify-center ${height} text-xs text-text-muted`}>
       <div>{message}</div>
-      {action && <div className="mt-1 text-[10px] opacity-70">{action}</div>}
+      {action && <div className="mt-1 text-xs opacity-70">{action}</div>}
     </div>
   );
 }

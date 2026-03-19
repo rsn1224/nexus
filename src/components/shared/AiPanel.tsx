@@ -30,7 +30,7 @@ function SuggestionMessage({ message }: { message: string }): React.ReactElement
         components={{
           p: ({ children }) => <span className="text-text-secondary leading-6">{children}</span>,
           code: ({ children }) => (
-            <code className="font-mono text-[9px] bg-base-700 px-1 rounded">{children}</code>
+            <code className="font-mono text-xs bg-base-700 px-1 rounded-lg">{children}</code>
           ),
         }}
       >
@@ -61,16 +61,16 @@ export default function AiPanel({
         className="w-full flex items-center justify-between px-3 py-2 bg-base-800 border-none cursor-pointer hover:bg-base-700 transition-colors"
       >
         <div className="flex items-center gap-[6px]">
-          <span className={`text-[10px] ${LEVEL_COLOR[topLevel]}`}>{LEVEL_ICON[topLevel]}</span>
-          <span className="text-[10px] font-semibold text-text-muted">{title}</span>
+          <span className={`text-xs ${LEVEL_COLOR[topLevel]}`}>{LEVEL_ICON[topLevel]}</span>
+          <span className="text-xs font-semibold text-text-muted">{title}</span>
         </div>
-        <span className="text-[9px] text-text-muted">{expanded ? '\u25b2' : '\u25bc'}</span>
+        <span className="text-xs text-text-muted">{expanded ? '\u25b2' : '\u25bc'}</span>
       </button>
 
       {expanded && (
         <div className="px-3 py-2 bg-base-900">
           {suggestions.map((s) => (
-            <div key={s.id} className="flex items-start gap-2 py-1 text-[10px]">
+            <div key={s.id} className="flex items-start gap-2 py-1 text-xs">
               <span className={`${LEVEL_COLOR[s.level]} shrink-0`}>{LEVEL_ICON[s.level]}</span>
               <SuggestionMessage message={s.message} />
             </div>

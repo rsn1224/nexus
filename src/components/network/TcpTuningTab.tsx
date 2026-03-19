@@ -27,7 +27,7 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
   return (
     <div className={className}>
       {/* DNS Cache Flush Button */}
-      <div className="mb-4 p-3 bg-base-800 border border-border-subtle rounded">
+      <div className="mb-4 p-3 bg-base-800 border border-border-subtle rounded-lg">
         <Button
           variant="primary"
           size="sm"
@@ -39,7 +39,7 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
           {activeId === 'flush_dns' ? 'RUNNING...' : '▶ DNSキャッシュをクリア'}
         </Button>
         {flushDnsResult && (
-          <div className="text-[9px] text-text-secondary">最後の実行結果: {flushDnsResult}</div>
+          <div className="text-xs text-text-secondary">最後の実行結果: {flushDnsResult}</div>
         )}
       </div>
 
@@ -51,16 +51,16 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
           {netSettings.map((setting) => (
             <div
               key={setting.id}
-              className="p-3 bg-base-800 border border-border-subtle rounded flex justify-between items-start"
+              className="p-3 bg-base-800 border border-border-subtle rounded-lg flex justify-between items-start"
             >
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className={setting.isOptimized ? 'text-accent-500' : 'text-text-muted'}>
                     {setting.isOptimized ? '●' : '○'}
                   </span>
-                  <div className="text-[11px] font-semibold text-text-primary">{setting.label}</div>
+                  <div className="text-xs font-semibold text-text-primary">{setting.label}</div>
                 </div>
-                <div className="text-[10px] text-text-secondary leading-[1.4]">
+                <div className="text-xs text-text-secondary leading-[1.4]">
                   {setting.description}
                 </div>
               </div>
@@ -76,7 +76,7 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
                     {activeId === setting.id ? 'RUNNING...' : '↩ 元に戻す'}
                   </Button>
                 ) : setting.isOptimized ? (
-                  <span className="text-[9px] text-text-muted px-2 py-1">-</span>
+                  <span className="text-xs text-text-muted px-2 py-1">-</span>
                 ) : (
                   <Button
                     variant="primary"

@@ -49,18 +49,18 @@ export default function AdvisorScoreCard({
         </div>
       </div>
 
-      <div className="p-2 bg-base-800 rounded mb-3">
-        <div className="text-text-secondary text-[10px] mb-1">HARDWARE SUMMARY</div>
-        <div className="text-text-primary text-[11px]">{advisorResult.hardwareSummary}</div>
+      <div className="p-2 bg-base-800 rounded-lg mb-3">
+        <div className="text-text-secondary text-xs mb-1">HARDWARE SUMMARY</div>
+        <div className="text-text-primary text-xs">{advisorResult.hardwareSummary}</div>
       </div>
 
       {advisorResult.warnings.length > 0 && (
         <div className="mb-3">
-          <div className="text-accent-500 text-[11px] mb-1">WARNINGS:</div>
+          <div className="text-accent-500 text-xs mb-1">WARNINGS:</div>
           {advisorResult.warnings.map((warning) => (
             <div
               key={`warning-${warning.substring(0, 30)}`}
-              className="text-accent-500 text-[10px] mb-0.5"
+              className="text-accent-500 text-xs mb-0.5"
             >
               • {warning}
             </div>

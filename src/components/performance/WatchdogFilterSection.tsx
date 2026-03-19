@@ -19,15 +19,13 @@ export default function WatchdogFilterSection({
 }: WatchdogFilterSectionProps): React.ReactElement {
   return (
     <div>
-      <span className="block mb-2 text-[10px] font-bold uppercase text-text-secondary">
+      <span className="block mb-2 text-xs font-bold uppercase text-text-secondary">
         PROCESS FILTER
       </span>
 
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-[11px] text-text-primary">
-            INCLUDE NAMES (empty = all processes)
-          </span>
+          <span className="text-xs text-text-primary">INCLUDE NAMES (empty = all processes)</span>
           <Button variant="ghost" onClick={onAddInclude}>
             + ADD
           </Button>
@@ -35,9 +33,9 @@ export default function WatchdogFilterSection({
         {processFilter.includeNames.map((name, index) => (
           <div
             key={`include-${name}`}
-            className="flex justify-between items-center px-2 py-1 bg-base-800 border border-border-subtle rounded mb-1"
+            className="flex justify-between items-center px-2 py-1 bg-base-800 border border-border-subtle rounded-lg mb-1"
           >
-            <span className="text-[11px] text-text-primary">{name}</span>
+            <span className="text-xs text-text-primary">{name}</span>
             <Button variant="danger" onClick={() => onRemoveInclude(index)}>
               DELETE
             </Button>
@@ -47,7 +45,7 @@ export default function WatchdogFilterSection({
 
       <div>
         <div className="flex justify-between items-center mb-1">
-          <span className="text-[11px] text-text-primary">EXCLUDE NAMES</span>
+          <span className="text-xs text-text-primary">EXCLUDE NAMES</span>
           <Button variant="ghost" onClick={onAddExclude}>
             + ADD
           </Button>
@@ -55,9 +53,9 @@ export default function WatchdogFilterSection({
         {processFilter.excludeNames.map((name, index) => (
           <div
             key={`exclude-${name}`}
-            className="flex justify-between items-center px-2 py-1 bg-base-800 border border-border-subtle rounded mb-1"
+            className="flex justify-between items-center px-2 py-1 bg-base-800 border border-border-subtle rounded-lg mb-1"
           >
-            <span className="text-[11px] text-text-primary">{name}</span>
+            <span className="text-xs text-text-primary">{name}</span>
             <Button variant="danger" onClick={() => onRemoveExclude(index)}>
               DELETE
             </Button>

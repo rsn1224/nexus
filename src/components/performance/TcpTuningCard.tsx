@@ -36,9 +36,9 @@ function ToggleRow({
           <span className={active ? 'text-accent-500' : 'text-text-muted'}>
             {active ? '●' : '○'}
           </span>
-          <span className="text-[11px] font-semibold text-text-primary">{label}</span>
+          <span className="text-xs font-semibold text-text-primary">{label}</span>
         </div>
-        <p className="text-[9px] text-text-muted mt-0.5 ml-4">{description}</p>
+        <p className="text-xs text-text-muted mt-0.5 ml-4">{description}</p>
       </div>
       <div className="shrink-0">
         {active ? (
@@ -96,9 +96,9 @@ export default function TcpTuningCard(): React.ReactElement {
 
   return (
     <Card title="TCP チューニング" action={presetAction}>
-      {error && <p className="text-[10px] text-danger-400 px-2 pt-2">{error}</p>}
+      {error && <p className="text-xs text-danger-400 px-2 pt-2">{error}</p>}
       {isLoading || tcpState === null ? (
-        <p className="text-[10px] text-text-muted p-2">読み込み中...</p>
+        <p className="text-xs text-text-muted p-2">読み込み中...</p>
       ) : (
         <div className="flex flex-col">
           <ToggleRow
@@ -135,14 +135,14 @@ export default function TcpTuningCard(): React.ReactElement {
           />
           <div className="flex items-start justify-between gap-3 py-2">
             <div className="flex-1 min-w-0">
-              <span className="text-[11px] font-semibold text-text-primary">TCP AUTO-TUNING</span>
-              <p className="text-[9px] text-text-muted mt-0.5">受信バッファの自動調整レベル</p>
+              <span className="text-xs font-semibold text-text-primary">TCP AUTO-TUNING</span>
+              <p className="text-xs text-text-muted mt-0.5">受信バッファの自動調整レベル</p>
             </div>
             <select
               value={tcpState.tcpAutoTuning}
               onChange={(e) => void setTcpAutoTuning(e.target.value as TcpAutoTuningLevel)}
               disabled={isApplying}
-              className="bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-accent-500"
+              className="bg-base-900 border border-border-subtle font-mono text-xs text-text-primary px-2 py-1 outline-none focus:border-accent-500"
               aria-label="TCP Auto-Tuning レベル"
             >
               {(Object.entries(AUTO_TUNING_LABELS) as [TcpAutoTuningLevel, string][]).map(

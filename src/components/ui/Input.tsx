@@ -65,8 +65,8 @@ export default function Input({
     'font-mono border transition-all duration-150 focus:outline-none focus:ring-2';
 
   const sizeClasses = {
-    sm: 'text-[10px] px-2 py-1',
-    md: 'text-[11px] px-3 py-2',
+    sm: 'text-xs px-2 py-1',
+    md: 'text-xs px-3 py-2',
     lg: 'text-[12px] px-4 py-3',
   };
 

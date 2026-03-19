@@ -27,9 +27,9 @@ export default function SessionListView({
   return (
     <div className="flex gap-3">
       <div className="flex-1 min-w-0">
-        {isLoading && <div className="text-[11px] text-text-muted">Loading...</div>}
+        {isLoading && <div className="text-xs text-text-muted">Loading...</div>}
         {!isLoading && sessionList.length === 0 && (
-          <div className="text-[11px] text-text-muted">セッションがありません</div>
+          <div className="text-xs text-text-muted">セッションがありません</div>
         )}
         {sessionList.map((s) => (
           <button
@@ -41,13 +41,13 @@ export default function SessionListView({
             }`}
           >
             <div>
-              <div className="text-[11px] text-text-primary">{s.gameName}</div>
-              <div className="text-[9px] text-text-muted">
+              <div className="text-xs text-text-primary">{s.gameName}</div>
+              <div className="text-xs text-text-muted">
                 {fmtDate(s.startedAt)} · {fmtDuration(s.startedAt, s.endedAt)}
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <span className="font-mono text-[10px] text-text-secondary">
+              <span className="font-mono text-xs text-text-secondary">
                 {fmtNum(s.summary.avgFps)} fps
               </span>
               {deleteConfirmId === s.id ? (
@@ -57,7 +57,7 @@ export default function SessionListView({
                     e.stopPropagation();
                     onDeleteConfirm(s.id);
                   }}
-                  className="text-[9px] text-danger-500 border border-danger-500 px-1 rounded"
+                  className="text-xs text-danger-500 border border-danger-500 px-1 rounded-lg"
                 >
                   CONFIRM
                 </button>
@@ -68,7 +68,7 @@ export default function SessionListView({
                     e.stopPropagation();
                     onDeleteRequest(s.id);
                   }}
-                  className="text-[9px] text-text-muted hover:text-danger-500"
+                  className="text-xs text-text-muted hover:text-danger-500"
                 >
                   ✕
                 </button>
@@ -80,11 +80,11 @@ export default function SessionListView({
 
       {selectedSession && selectedId === selectedSession.id && (
         <div className="w-44 shrink-0 space-y-2">
-          <div className="text-[9px] text-text-muted">DETAIL</div>
-          <div className="text-[11px] text-text-primary">{selectedSession.gameName}</div>
+          <div className="text-xs text-text-muted">DETAIL</div>
+          <div className="text-xs text-text-primary">{selectedSession.gameName}</div>
           <SummaryPanel summary={selectedSession.summary} />
           {selectedSession.note && (
-            <div className="text-[10px] text-text-secondary italic">{selectedSession.note}</div>
+            <div className="text-xs text-text-secondary italic">{selectedSession.note}</div>
           )}
         </div>
       )}

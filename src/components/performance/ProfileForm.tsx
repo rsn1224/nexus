@@ -36,8 +36,8 @@ export interface ProfileFormProps {
 }
 
 const inputClass =
-  'bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-accent-500';
-const labelSpanClass = 'text-[9px] text-text-muted';
+  'bg-base-900 border border-border-subtle rounded-lg px-2 py-1 font-mono text-xs text-text-primary outline-none focus:border-accent-500';
+const labelSpanClass = 'text-xs text-text-muted';
 
 export default function ProfileForm({
   initial,
@@ -71,7 +71,7 @@ export default function ProfileForm({
   } = useProfileForm(initial, onSave);
 
   return (
-    <div className="flex flex-col gap-3 p-3 bg-base-800 border border-border-subtle rounded">
+    <div className="flex flex-col gap-3 p-3 bg-base-800 border border-border-subtle rounded-lg">
       {/* ゲーム名 */}
       <label className="flex flex-col gap-1">
         <span className={labelSpanClass}>ゲーム名</span>

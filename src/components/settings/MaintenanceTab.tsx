@@ -48,13 +48,13 @@ export default function MaintenanceTab(): React.ReactElement {
 
   return (
     <>
-      <div className="bg-base-800 border border-border-subtle rounded p-3">
-        <div className="text-[10px] text-text-muted mb-2">MAINTENANCE</div>
+      <div className="bg-base-800 border border-border-subtle rounded-lg p-3">
+        <div className="text-xs text-text-muted mb-2">MAINTENANCE</div>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[11px] text-text-secondary">全設定リバート</div>
-              <div className="text-[10px] text-text-muted">
+              <div className="text-xs text-text-secondary">全設定リバート</div>
+              <div className="text-xs text-text-muted">
                 nexus が変更した Windows 設定を全て元に戻します
               </div>
             </div>
@@ -73,8 +73,8 @@ export default function MaintenanceTab(): React.ReactElement {
 
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-[11px] text-danger-500">アプリデータ削除</div>
-              <div className="text-[10px] text-text-muted">
+              <div className="text-xs text-danger-500">アプリデータ削除</div>
+              <div className="text-xs text-text-muted">
                 プロファイル・設定・API キーを完全に削除します
               </div>
             </div>
@@ -92,13 +92,13 @@ export default function MaintenanceTab(): React.ReactElement {
 
         {revertResult && (
           <div className="mt-3 border-t border-border-subtle pt-3">
-            <div className="text-[10px] text-text-muted mb-1">
+            <div className="text-xs text-text-muted mb-1">
               RESULT: {revertResult.successCount} 成功 / {revertResult.failCount} 失敗
             </div>
             {revertResult.items.map((item) => (
               <div
                 key={`${item.category}-${item.label}`}
-                className="flex items-center gap-2 text-[10px]"
+                className="flex items-center gap-2 text-xs"
               >
                 <span className={item.success ? 'text-success-500' : 'text-danger-500'}>
                   {item.success ? '✓' : '✗'}
@@ -119,10 +119,10 @@ export default function MaintenanceTab(): React.ReactElement {
         size="md"
       >
         <div className="space-y-3">
-          <div className="text-[11px] text-text-primary">
+          <div className="text-xs text-text-primary">
             nexus が変更した以下の Windows 設定を元に戻します：
           </div>
-          <ul className="list-disc list-inside space-y-1 text-[10px] text-text-secondary">
+          <ul className="list-disc list-inside space-y-1 text-xs text-text-secondary">
             <li>電源プラン</li>
             <li>ゲームモード / フルスクリーン最適化</li>
             <li>ハードウェア GPU スケジューリング</li>
@@ -146,14 +146,14 @@ export default function MaintenanceTab(): React.ReactElement {
         size="md"
       >
         <div className="space-y-3">
-          <div className="text-[11px] text-text-primary">以下のデータが完全に削除されます：</div>
-          <ul className="list-disc list-inside space-y-1 text-[10px] text-text-secondary">
+          <div className="text-xs text-text-primary">以下のデータが完全に削除されます：</div>
+          <ul className="list-disc list-inside space-y-1 text-xs text-text-secondary">
             <li>ゲームプロファイル (profiles.json)</li>
             <li>アプリ設定 (app_settings.json)</li>
             <li>Windows 設定バックアップ (winopt_backup.json)</li>
             <li>API キー (keyring)</li>
           </ul>
-          <div className="text-[10px] text-danger-500">⚠ この操作は元に戻せません</div>
+          <div className="text-xs text-danger-500">⚠ この操作は元に戻せません</div>
         </div>
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="secondary" size="sm" onClick={() => setShowCleanupConfirm(false)}>

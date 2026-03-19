@@ -109,13 +109,11 @@ export default function LauncherWing(): React.ReactElement {
               ))}
             </div>
           ) : isScanning ? (
-            <div className="text-[11px] text-text-muted text-center py-8">
-              ゲームをスキャン中...
-            </div>
+            <div className="text-xs text-text-muted text-center py-8">ゲームをスキャン中...</div>
           ) : searchQuery ? (
-            <div className="text-[11px] text-text-muted text-center py-8">検索結果がありません</div>
+            <div className="text-xs text-text-muted text-center py-8">検索結果がありません</div>
           ) : (
-            <div className="text-[11px] text-text-muted text-center py-8">
+            <div className="text-xs text-text-muted text-center py-8">
               ゲームが見つかりません
               <br />
               スキャンを実行してください

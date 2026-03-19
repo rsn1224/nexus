@@ -3,8 +3,8 @@ import type { BoostLevel, PowerPlanType, ProcessPriorityLevel } from '../../type
 import AffinityPanel from './AffinityPanel';
 
 const inputClass =
-  'bg-base-900 border border-border-subtle rounded px-2 py-1 font-mono text-[11px] text-text-primary outline-none focus:border-accent-500';
-const labelSpanClass = 'text-[9px] text-text-muted';
+  'bg-base-900 border border-border-subtle rounded-lg px-2 py-1 font-mono text-xs text-text-primary outline-none focus:border-accent-500';
+const labelSpanClass = 'text-xs text-text-muted';
 
 interface ProfileFormLevelFieldsProps {
   boostLevel: BoostLevel;
@@ -66,7 +66,7 @@ export default function ProfileFormLevelFields({
           type="checkbox"
           checked={autoSuspendEnabled}
           onChange={(e) => setAutoSuspendEnabled(e.target.checked)}
-          className="w-3 h-3 rounded border-border-subtle bg-base-900 text-accent-500 focus:ring-accent-500 focus:ring-offset-0"
+          className="w-3 h-3 rounded-lg border-border-subtle bg-base-900 text-accent-500 focus:ring-accent-500 focus:ring-offset-0"
         />
         <span className={labelSpanClass}>バックグラウンドプロセスを自動でサスペンドする</span>
       </label>
@@ -126,7 +126,7 @@ export default function ProfileFormLevelFields({
               step={0.1}
               className={inputClass}
             />
-            <span className="text-[9px] text-text-secondary">
+            <span className="text-xs text-text-secondary">
               低い値ほどスケジューリング精度が向上しますが、消費電力が増加します。
             </span>
           </label>
@@ -144,7 +144,7 @@ export default function ProfileFormLevelFields({
             placeholder="例: wallpaper_engine.exe, obs64.exe"
             className={inputClass}
           />
-          <span className="text-[9px] text-danger-500">
+          <span className="text-xs text-danger-500">
             ⚠️ 強制終了は不可逆です。保存していないデータが失われる可能性があります。
           </span>
         </label>

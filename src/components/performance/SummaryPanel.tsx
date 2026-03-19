@@ -9,8 +9,8 @@ interface SummaryPanelProps {
 
 export default function SummaryPanel({ summary, title }: SummaryPanelProps): React.ReactElement {
   return (
-    <div className="bg-base-800 border border-border-subtle rounded p-2 space-y-1 flex-1">
-      {title && <div className="text-[9px] text-text-muted mb-2 uppercase">{title}</div>}
+    <div className="bg-base-800 border border-border-subtle rounded-lg p-2 space-y-1 flex-1">
+      {title && <div className="text-xs text-text-muted mb-2 uppercase">{title}</div>}
       {(
         [
           ['AVG FPS', fmtNum(summary.avgFps)],
@@ -20,7 +20,7 @@ export default function SummaryPanel({ summary, title }: SummaryPanelProps): Rea
           ['MIN FPS', fmtNum(summary.minFps)],
         ] as [string, string][]
       ).map(([label, value]) => (
-        <div key={label} className="flex justify-between font-mono text-[11px]">
+        <div key={label} className="flex justify-between font-mono text-xs">
           <span className="text-text-muted">{label}</span>
           <span className="text-text-primary">{value}</span>
         </div>

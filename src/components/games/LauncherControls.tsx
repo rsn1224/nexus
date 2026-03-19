@@ -40,7 +40,7 @@ export default function LauncherControls({
           value={sortMode}
           onChange={(e) => onSortModeChange(e.target.value as SortMode)}
           aria-label="ソート順を選択"
-          className="font-mono text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded"
+          className="font-mono text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded-lg"
         >
           <option value="name">名前順</option>
           <option value="size">サイズ順</option>

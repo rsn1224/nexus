@@ -11,9 +11,9 @@ interface WatchdogRuleModalProps {
   editingRule?: WatchdogRule | null;
 }
 
-const labelClass = 'block mb-1 text-[10px] font-bold uppercase text-text-secondary';
+const labelClass = 'block mb-1 text-xs font-bold uppercase text-text-secondary';
 const inputClass =
-  'w-full px-2 py-2 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[12px]';
+  'w-full px-2 py-2 border border-border-subtle rounded-lg bg-base-800 text-text-primary font-mono text-[12px]';
 
 export function WatchdogRuleModal({
   isOpen,
@@ -59,7 +59,7 @@ export function WatchdogRuleModal({
               className={inputClass}
             />
             {validationError && (
-              <div className="text-danger-500 text-[10px] mt-1">⚠ {validationError}</div>
+              <div className="text-danger-500 text-xs mt-1">⚠ {validationError}</div>
             )}
           </div>
 

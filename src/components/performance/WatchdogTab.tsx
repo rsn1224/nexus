@@ -152,9 +152,7 @@ export default function WatchdogTab() {
             {presets.map((preset) => (
               <div key={preset.id} className="p-3 border border-border mb-2">
                 <div className="font-bold">{preset.name}</div>
-                <div className="text-[10px] text-text-muted">
-                  {formatConditions(preset.conditions)}
-                </div>
+                <div className="text-xs text-text-muted">{formatConditions(preset.conditions)}</div>
               </div>
             ))}
             <div className="mt-4 flex gap-2">

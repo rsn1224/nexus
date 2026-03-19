@@ -55,7 +55,7 @@ export default function SessionTab(): React.ReactElement {
   };
 
   const navBtnClass = (active: boolean): string =>
-    `text-[10px] px-3 py-1 rounded transition-colors ${
+    `text-xs px-3 py-1 rounded-lg transition-colors ${
       active ? 'bg-accent-500 text-white' : 'text-text-secondary hover:text-text-primary'
     }`;
 

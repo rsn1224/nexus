@@ -13,7 +13,7 @@ export default function WatchdogEventLog({
 }: WatchdogEventLogProps): React.ReactElement {
   return (
     <div className="mt-6">
-      <h3 className="mb-4 text-[11px] font-bold uppercase text-text-primary">EVENT LOG</h3>
+      <h3 className="mb-4 text-xs font-bold uppercase text-text-primary">EVENT LOG</h3>
 
       {events.length === 0 ? (
         <EmptyState message="NO EVENTS YET — Watchdog events will appear here when rules are triggered" />
@@ -22,19 +22,19 @@ export default function WatchdogEventLog({
           <table className="w-full border-collapse text-[12px]">
             <thead>
               <tr className="bg-base-800 border-b border-border sticky top-0">
-                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
                   TIME
                 </th>
-                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
                   RULE
                 </th>
-                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
                   PROCESS
                 </th>
-                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
                   ACTION
                 </th>
-                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+                <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
                   RESULT
                 </th>
               </tr>
@@ -46,22 +46,22 @@ export default function WatchdogEventLog({
                   className={`border-b border-border ${event.success ? '' : 'bg-danger-50'}`}
                 >
                   <td className="px-3 py-[5px]">
-                    <div className="text-text-muted text-[10px]">{formatTime(event.timestamp)}</div>
+                    <div className="text-text-muted text-xs">{formatTime(event.timestamp)}</div>
                   </td>
                   <td className="px-3 py-[5px]">
-                    <div className="text-text-primary text-[11px]">{event.ruleName}</div>
+                    <div className="text-text-primary text-xs">{event.ruleName}</div>
                   </td>
                   <td className="px-3 py-[5px]">
-                    <div className="text-text-primary text-[11px]">
+                    <div className="text-text-primary text-xs">
                       {event.processName} ({event.pid})
                     </div>
                   </td>
                   <td className="px-3 py-[5px]">
-                    <div className="text-accent-500 font-bold text-[11px]">{event.actionTaken}</div>
+                    <div className="text-accent-500 font-bold text-xs">{event.actionTaken}</div>
                   </td>
                   <td className="px-3 py-[5px]">
                     <div
-                      className={`font-bold text-[11px] ${event.success ? 'text-success-500' : 'text-danger-500'}`}
+                      className={`font-bold text-xs ${event.success ? 'text-success-500' : 'text-danger-500'}`}
                     >
                       {event.success ? 'SUCCESS' : 'FAILED'}
                     </div>

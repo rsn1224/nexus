@@ -46,7 +46,7 @@ const PerformanceTimelineCard: React.FC = () => {
             type="button"
             onClick={() => setActiveTab(tab.id)}
             aria-label={`${tab.label}タブを表示`}
-            className={`px-3 py-1 text-[9px] border-b-2 -mb-[2px] transition-colors ${
+            className={`px-3 py-1 text-xs border-b-2 -mb-[2px] transition-colors ${
               activeTab === tab.id
                 ? 'border-accent-500 text-accent-500'
                 : 'border-transparent text-text-muted hover:text-text-secondary'
@@ -57,12 +57,12 @@ const PerformanceTimelineCard: React.FC = () => {
         ))}
       </div>
 
-      {error && <div className="mb-2 text-[10px] text-danger-500">ERROR: {error}</div>}
+      {error && <div className="mb-2 text-xs text-danger-500">ERROR: {error}</div>}
 
       {activeTab === 'list' && (
         <div>
           {isLoading && sessionList.length === 0 ? (
-            <div className="flex items-center justify-center h-[60px] text-[11px] text-text-muted">
+            <div className="flex items-center justify-center h-[60px] text-xs text-text-muted">
               LOADING...
             </div>
           ) : sessionList.length === 0 ? (

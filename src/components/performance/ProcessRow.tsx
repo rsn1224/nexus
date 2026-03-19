@@ -71,11 +71,11 @@ export default function ProcessRow({
         </td>
         <td className="px-3 py-[5px] text-[12px]">
           {status === 'target' ? (
-            <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-[9px]">
+            <span className="inline-block px-1 py-0.5 border border-accent-500 text-accent-500 text-xs">
               [TARGET]
             </span>
           ) : status === 'protected' ? (
-            <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px]">
+            <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-xs">
               [PROT]
             </span>
           ) : (
@@ -88,7 +88,7 @@ export default function ProcessRow({
         <tr>
           <td colSpan={6} className="px-3 py-2 bg-base-700">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-text-muted">PRIORITY:</span>
+              <span className="text-xs text-text-muted">PRIORITY:</span>
               <Button size="sm" variant="secondary" onClick={() => onPriority(process.pid, 'high')}>
                 HIGH
               </Button>

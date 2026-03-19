@@ -19,7 +19,7 @@ function ExportModal({ json, onClose }: { json: string; onClose: () => void }) {
   return (
     <Modal isOpen title="EXPORT PROFILE" onClose={onClose}>
       <div className="flex flex-col gap-3">
-        <p className="text-[10px] text-text-muted">
+        <p className="text-xs text-text-muted">
           COPY THE JSON BELOW AND SHARE IT WITH OTHER USERS.
           <br />
           EXE PATH AND PLAY STATISTICS ARE NOT INCLUDED.
@@ -29,13 +29,13 @@ function ExportModal({ json, onClose }: { json: string; onClose: () => void }) {
           readOnly
           value={json}
           rows={12}
-          className="w-full px-2 py-1 font-mono text-[10px] bg-base-700 border border-border-subtle text-text-secondary resize-none outline-none"
+          className="w-full px-2 py-1 font-mono text-xs bg-base-700 border border-border-subtle text-text-secondary resize-none outline-none"
         />
         <div className="flex gap-2 justify-end">
           <button
             type="button"
             onClick={handleCopy}
-            className={`px-4 py-[5px] text-[10px] border transition-colors ${
+            className={`px-4 py-[5px] text-xs border transition-colors ${
               copied
                 ? 'border-success-500 text-success-500'
                 : 'border-accent-500 text-accent-500 hover:bg-accent-500 hover:text-base-900'
@@ -46,7 +46,7 @@ function ExportModal({ json, onClose }: { json: string; onClose: () => void }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-[5px] text-[10px] border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
+            className="px-4 py-[5px] text-xs border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
           >
             CLOSE
           </button>
@@ -86,7 +86,7 @@ function ImportModal({
   return (
     <Modal isOpen title="IMPORT PROFILE" onClose={onClose}>
       <div className="flex flex-col gap-3">
-        <p className="text-[10px] text-text-muted">
+        <p className="text-xs text-text-muted">
           PASTE A SHARED PROFILE JSON BELOW.
           <br />
           THE EXE PATH WILL BE EMPTY — CONFIGURE IT AFTER IMPORT.
@@ -97,15 +97,15 @@ function ImportModal({
           onChange={(e) => setJson(e.target.value)}
           rows={12}
           placeholder='{"version":1,"displayName":"..."}'
-          className="w-full px-2 py-1 font-mono text-[10px] bg-base-700 border border-border-subtle text-text-secondary resize-none outline-none placeholder:text-text-muted"
+          className="w-full px-2 py-1 font-mono text-xs bg-base-700 border border-border-subtle text-text-secondary resize-none outline-none placeholder:text-text-muted"
         />
-        {importError && <div className="text-[10px] text-danger-500">ERROR: {importError}</div>}
+        {importError && <div className="text-xs text-danger-500">ERROR: {importError}</div>}
         <div className="flex gap-2 justify-end">
           <button
             type="button"
             onClick={() => void handleImport()}
             disabled={!json.trim() || isImporting}
-            className={`px-4 py-[5px] text-[10px] border transition-colors ${
+            className={`px-4 py-[5px] text-xs border transition-colors ${
               !json.trim() || isImporting
                 ? 'border-border-subtle text-text-muted cursor-not-allowed'
                 : 'bg-accent-500 text-base-900 border-accent-500 hover:bg-accent-600 cursor-pointer'
@@ -116,7 +116,7 @@ function ImportModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-[5px] text-[10px] border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
+            className="px-4 py-[5px] text-xs border border-border-subtle text-text-muted hover:bg-base-700 transition-colors"
           >
             CANCEL
           </button>
@@ -153,12 +153,12 @@ const ProfileSharePanel: React.FC<ProfileSharePanelProps> = ({ selectedProfile }
   return (
     <>
       <div className="flex items-center gap-2 pt-2 border-t border-border-subtle mt-1">
-        <span className="text-[9px] text-text-muted flex-1">PROFILE SHARING</span>
+        <span className="text-xs text-text-muted flex-1">PROFILE SHARING</span>
         <button
           type="button"
           onClick={() => void handleExport()}
           disabled={!selectedProfile || isExporting}
-          className={`px-3 py-[3px] text-[9px] border transition-colors ${
+          className={`px-3 py-[3px] text-xs border transition-colors ${
             !selectedProfile || isExporting
               ? 'border-border-subtle text-text-muted cursor-not-allowed'
               : 'border-border-subtle text-text-secondary hover:border-accent-500 hover:text-accent-500 cursor-pointer'
@@ -169,7 +169,7 @@ const ProfileSharePanel: React.FC<ProfileSharePanelProps> = ({ selectedProfile }
         <button
           type="button"
           onClick={() => setShowImport(true)}
-          className="px-3 py-[3px] text-[9px] border border-border-subtle text-text-secondary hover:border-accent-500 hover:text-accent-500 transition-colors"
+          className="px-3 py-[3px] text-xs border border-border-subtle text-text-secondary hover:border-accent-500 hover:text-accent-500 transition-colors"
         >
           IMPORT JSON
         </button>

@@ -20,7 +20,7 @@ export default function TabBar({
           key={tab.id}
           data-testid={`ui-tab-${tab.id}`}
           type="button"
-          className={`text-[13px] font-medium px-4 py-2.5 transition-all duration-200 ${
+          className={`text-sm font-medium px-4 py-2.5 transition-all duration-200 ${
             active === tab.id
               ? 'border-b-2 border-accent-500 text-accent-500 -mb-px'
               : 'text-text-muted hover:text-text-secondary'

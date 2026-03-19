@@ -17,7 +17,7 @@ export default function WingHeader({ wingId }: WingHeaderProps): React.ReactElem
       {crumbs.map((crumb, i) => (
         <span key={crumb.label} className="flex items-center gap-1">
           {i > 0 && (
-            <span className="text-[11px] text-text-muted select-none" aria-hidden="true">
+            <span className="text-xs text-text-muted select-none" aria-hidden="true">
               /
             </span>
           )}

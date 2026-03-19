@@ -70,7 +70,7 @@ export default function LogActions({
         <select
           value={exportFormat}
           onChange={(e) => setExportFormat(e.target.value as 'json' | 'csv')}
-          className="font-mono text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded"
+          className="font-mono text-xs bg-base-800 text-text-primary border border-border-subtle px-2 py-1 rounded-lg"
         >
           <option value="json">JSON</option>
           <option value="csv">CSV</option>

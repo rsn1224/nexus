@@ -26,22 +26,22 @@ export default function WatchdogRuleTable({
       <table className="w-full border-collapse text-[12px]">
         <thead>
           <tr className="bg-base-800 border-b border-border">
-            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
               NAME
             </th>
-            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
               STATUS
             </th>
-            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
               CONDITIONS
             </th>
-            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
               ACTION
             </th>
-            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
+            <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-xs">
               PROFILE
             </th>
-            <th className="px-3 py-[5px] text-right font-bold text-text-muted uppercase text-[10px]">
+            <th className="px-3 py-[5px] text-right font-bold text-text-muted uppercase text-xs">
               ACTIONS
             </th>
           </tr>
@@ -54,7 +54,7 @@ export default function WatchdogRuleTable({
             >
               <td className="px-3 py-[5px]">
                 <div className="font-bold text-text-primary">{rule.name}</div>
-                <div className="text-[10px] text-text-muted mt-[2px]">ID: {rule.id}</div>
+                <div className="text-xs text-text-muted mt-[2px]">ID: {rule.id}</div>
               </td>
               <td className="px-3 py-[5px]">
                 <Button
@@ -67,17 +67,13 @@ export default function WatchdogRuleTable({
                 </Button>
               </td>
               <td className="px-3 py-[5px]">
-                <div className="text-text-primary text-[11px]">
-                  {formatConditions(rule.conditions)}
-                </div>
+                <div className="text-text-primary text-xs">{formatConditions(rule.conditions)}</div>
               </td>
               <td className="px-3 py-[5px]">
-                <div className="text-accent-500 font-bold text-[11px]">
-                  {formatAction(rule.action)}
-                </div>
+                <div className="text-accent-500 font-bold text-xs">{formatAction(rule.action)}</div>
               </td>
               <td className="px-3 py-[5px]">
-                <div className="text-text-primary text-[11px]">{rule.profileId || 'GLOBAL'}</div>
+                <div className="text-text-primary text-xs">{rule.profileId || 'GLOBAL'}</div>
               </td>
               <td className="px-3 py-[5px] text-right">
                 <div className="flex gap-1 justify-end">

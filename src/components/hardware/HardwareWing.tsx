@@ -77,19 +77,19 @@ export default function HardwareWing(): React.JSX.Element {
               <div className="flex justify-between mb-1">
                 <span className="text-text-primary">{disk.mount}</span>
                 <span
-                  className={`text-[10px] ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
+                  className={`text-xs ${disk.kind === 'SSD' ? 'text-success-500' : 'text-text-secondary'}`}
                 >
                   {disk.kind}
                 </span>
               </div>
-              <div className="flex justify-between text-[10px]">
+              <div className="flex justify-between text-xs">
                 <span>
                   {disk.usedGb.toFixed(1)} GB / {disk.totalGb.toFixed(1)} GB
                 </span>
                 <span>{((disk.usedGb / disk.totalGb) * 100).toFixed(1)}%</span>
               </div>
               <div className="mt-1">
-                <div className="font-mono text-[10px]">
+                <div className="font-mono text-xs">
                   {createDiskProgressBar(disk.usedGb, disk.totalGb)}
                 </div>
               </div>

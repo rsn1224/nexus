@@ -22,7 +22,7 @@ function CoreCell({ index, type, selected, onToggle }: CoreCellProps): React.Rea
       type="button"
       data-testid={`core-cell-${index}`}
       onClick={() => onToggle(index)}
-      className={`w-8 h-8 rounded-[2px] flex items-center justify-center font-mono text-[9px] cursor-pointer border-none ${bgColor} ${textColor} hover:opacity-80`}
+      className={`w-8 h-8 rounded-[2px] flex items-center justify-center font-mono text-xs cursor-pointer border-none ${bgColor} ${textColor} hover:opacity-80`}
       title={`コア ${index}（${type === 'p-core' ? 'P-Core' : type === 'e-core' ? 'E-Core' : 'コア'}）${selected ? ' ✓' : ''}`}
     >
       {index}
@@ -68,7 +68,7 @@ export default function CoreSelector({
       </div>
 
       {cpuTopology.eCores.length > 0 && (
-        <div className="flex gap-3 text-[9px] text-text-muted">
+        <div className="flex gap-3 text-xs text-text-muted">
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 bg-accent-500 rounded-[1px] inline-block" />
             P-Core
@@ -80,7 +80,7 @@ export default function CoreSelector({
         </div>
       )}
 
-      <div className="text-[9px] text-text-muted">
+      <div className="text-xs text-text-muted">
         選択中: {selectedCores.length} / {cpuTopology.logicalCores} コア
         {selectedCores.length > 0 && <span> [{selectedCores.join(', ')}]</span>}
       </div>

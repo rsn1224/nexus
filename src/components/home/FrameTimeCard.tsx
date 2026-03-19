@@ -58,9 +58,9 @@ export default function FrameTimeCard() {
     <div className="p-4 bg-base-800 border border-border-subtle text-[12px] text-text-primary">
       {/* ヘッダー */}
       <div className="flex justify-between items-center mb-3">
-        <div className="font-bold text-[11px] text-accent-500">FRAME TIME</div>
+        <div className="font-bold text-xs text-accent-500">FRAME TIME</div>
         <div
-          className={`text-[9px] ${
+          className={`text-xs ${
             monitorState.type === 'running' ? 'text-success-500' : 'text-text-muted'
           }`}
         >
@@ -70,7 +70,7 @@ export default function FrameTimeCard() {
 
       {/* プロセス情報 */}
       {monitorState.type === 'running' && (
-        <div className="mb-3 text-[10px] text-text-secondary">
+        <div className="mb-3 text-xs text-text-secondary">
           <div>PID: {monitorState.pid}</div>
           <div>PROCESS: {monitorState.processName}</div>
         </div>
@@ -79,12 +79,12 @@ export default function FrameTimeCard() {
       {/* プロセス選択 */}
       {monitorState.type === 'stopped' && (
         <div className="mb-3">
-          <div className="text-[9px] text-text-muted mb-1">監視対象プロセス:</div>
+          <div className="text-xs text-text-muted mb-1">監視対象プロセス:</div>
           <select
             value={selectedProcessId}
             onChange={(e) => setSelectedProcessId(e.target.value)}
             aria-label="監視対象プロセスを選択"
-            className="w-full px-2 py-1 text-[10px] bg-base-700 border border-border-subtle rounded text-text-primary font-mono"
+            className="w-full px-2 py-1 text-xs bg-base-700 border border-border-subtle rounded-lg text-text-primary font-mono"
           >
             <option value="">プロセスを選択...</option>
             {availableProcesses.map((process: SystemProcess) => (
@@ -101,25 +101,25 @@ export default function FrameTimeCard() {
         <div className="mb-3">
           <div className="grid grid-cols-3 gap-2 mb-2">
             <div>
-              <div className="text-[9px] text-text-muted">AVG FPS</div>
+              <div className="text-xs text-text-muted">AVG FPS</div>
               <div className="text-[14px] font-bold text-accent-500">
                 {snapshot.avgFps.toFixed(1)}
               </div>
             </div>
             <div>
-              <div className="text-[9px] text-text-muted">1% LOW</div>
+              <div className="text-xs text-text-muted">1% LOW</div>
               <div className="text-[14px] font-bold text-accent-400">
                 {snapshot.pct1Low.toFixed(1)}
               </div>
             </div>
             <div>
-              <div className="text-[9px] text-text-muted">0.1% LOW</div>
+              <div className="text-xs text-text-muted">0.1% LOW</div>
               <div className="text-[14px] font-bold text-danger-500">
                 {snapshot.pct01Low.toFixed(1)}
               </div>
             </div>
           </div>
-          <div className="flex justify-between text-[9px]">
+          <div className="flex justify-between text-xs">
             <div className="text-text-muted">
               STUTTERS:{' '}
               <span className={snapshot.stutterCount > 0 ? 'text-danger-500' : 'text-success-500'}>
@@ -146,7 +146,7 @@ export default function FrameTimeCard() {
             onClick={handleStart}
             disabled={isLoading || !selectedProcess}
             aria-label="フレームタイム監視開始"
-            className={`flex-1 px-3 py-[6px] text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] text-xs font-bold border ${
               isLoading || !selectedProcess
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-accent-500 text-base-900 cursor-pointer border-accent-500 hover:bg-accent-600'
@@ -160,7 +160,7 @@ export default function FrameTimeCard() {
             onClick={handleStop}
             disabled={isLoading}
             aria-label="フレームタイム監視停止"
-            className={`flex-1 px-3 py-[6px] text-[10px] font-bold border ${
+            className={`flex-1 px-3 py-[6px] text-xs font-bold border ${
               isLoading
                 ? 'bg-base-800 text-text-muted cursor-not-allowed border-border-subtle'
                 : 'bg-danger-500 text-base-900 cursor-pointer border-danger-500 hover:bg-danger-600'
@@ -172,7 +172,7 @@ export default function FrameTimeCard() {
       </div>
 
       {/* エラー表示 */}
-      {error && <div className="mt-2 text-[9px] text-danger-500">{error}</div>}
+      {error && <div className="mt-2 text-xs text-danger-500">{error}</div>}
     </div>
   );
 }

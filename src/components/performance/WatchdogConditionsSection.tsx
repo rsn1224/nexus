@@ -3,7 +3,7 @@ import type { WatchdogCondition, WatchdogMetric, WatchdogOperator } from '../../
 import Button from '../ui/Button';
 
 const selectSmClass =
-  'px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[11px]';
+  'px-1 py-1 border border-border-subtle rounded-lg bg-base-800 text-text-primary font-mono text-xs';
 
 interface WatchdogConditionsSectionProps {
   conditions: WatchdogCondition[];
@@ -21,9 +21,7 @@ export default function WatchdogConditionsSection({
   return (
     <div>
       <div className="flex justify-between items-center mb-2">
-        <span className="text-[10px] font-bold uppercase text-text-secondary">
-          CONDITIONS (AND)
-        </span>
+        <span className="text-xs font-bold uppercase text-text-secondary">CONDITIONS (AND)</span>
         <Button variant="ghost" onClick={onAdd}>
           + ADD
         </Button>
@@ -32,7 +30,7 @@ export default function WatchdogConditionsSection({
       {conditions.map((condition, index) => (
         <div
           key={`${condition.metric}-${condition.operator}-${condition.threshold}`}
-          className="flex gap-2 items-center p-2 border border-border-subtle rounded mb-2"
+          className="flex gap-2 items-center p-2 border border-border-subtle rounded-lg mb-2"
         >
           <select
             value={condition.metric}
@@ -62,7 +60,7 @@ export default function WatchdogConditionsSection({
             value={condition.threshold}
             onChange={(e) => onUpdate(index, { threshold: parseFloat(e.target.value) || 0 })}
             aria-label="Condition threshold"
-            className="w-20 px-1 py-1 border border-border-subtle rounded bg-base-800 text-text-primary font-mono text-[11px]"
+            className="w-20 px-1 py-1 border border-border-subtle rounded-lg bg-base-800 text-text-primary font-mono text-xs"
           />
 
           <Button variant="danger" onClick={() => onRemove(index)}>

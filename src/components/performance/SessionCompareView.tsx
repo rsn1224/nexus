@@ -30,12 +30,12 @@ export default function SessionCompareView({
           const setter = side === 'A' ? onSetCompareAId : onSetCompareBId;
           return (
             <div key={side} className="flex-1">
-              <div className="text-[9px] text-text-muted mb-1">SESSION {side}</div>
+              <div className="text-xs text-text-muted mb-1">SESSION {side}</div>
               <select
                 aria-label={`Session ${side}`}
                 value={val}
                 onChange={(e) => setter(e.target.value)}
-                className="w-full px-2 py-1 font-mono text-[10px] bg-base-800 border border-border-subtle text-text-primary rounded"
+                className="w-full px-2 py-1 font-mono text-xs bg-base-800 border border-border-subtle text-text-primary rounded-lg"
               >
                 <option value="">選択...</option>
                 {sessionList.map((s) => (
@@ -51,7 +51,7 @@ export default function SessionCompareView({
           type="button"
           onClick={onCompare}
           disabled={!compareAId || !compareBId || compareAId === compareBId}
-          className="px-3 py-1 text-[10px] bg-accent-500 text-white rounded disabled:opacity-50"
+          className="px-3 py-1 text-xs bg-accent-500 text-white rounded-lg disabled:opacity-50"
         >
           COMPARE
         </button>
@@ -63,8 +63,8 @@ export default function SessionCompareView({
             <SummaryPanel summary={comparisonResult.sessionA} title="Session A" />
             <SummaryPanel summary={comparisonResult.sessionB} title="Session B" />
           </div>
-          <div className="bg-base-800 border border-border-subtle rounded p-2 space-y-1">
-            <div className="text-[9px] text-text-muted mb-1">DELTA</div>
+          <div className="bg-base-800 border border-border-subtle rounded-lg p-2 space-y-1">
+            <div className="text-xs text-text-muted mb-1">DELTA</div>
             {(
               [
                 ['FPS', comparisonResult.fpsDeltaPct, '%'],
@@ -73,7 +73,7 @@ export default function SessionCompareView({
                 ['STUTTER', comparisonResult.stutterDelta, ''],
               ] as [string, number, string][]
             ).map(([label, delta, unit]) => (
-              <div key={label} className="flex justify-between font-mono text-[11px]">
+              <div key={label} className="flex justify-between font-mono text-xs">
                 <span className="text-text-muted">{label}</span>
                 <span
                   className={
@@ -92,7 +92,7 @@ export default function SessionCompareView({
             ))}
           </div>
           {comparisonResult.autoSummary && (
-            <div className="text-[10px] text-text-secondary">{comparisonResult.autoSummary}</div>
+            <div className="text-xs text-text-secondary">{comparisonResult.autoSummary}</div>
           )}
         </div>
       )}

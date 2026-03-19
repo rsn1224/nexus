@@ -32,7 +32,7 @@ export default function KillConfirmModal({
         </>
       }
     >
-      <div className="text-[11px] text-text-primary">
+      <div className="text-xs text-text-primary">
         {killTarget && (
           <>
             「{killTarget.name}」(PID: {killTarget.pid}) を終了しますか？

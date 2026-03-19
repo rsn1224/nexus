@@ -22,7 +22,7 @@ const SettingsAdvisorPanel: React.FC = () => {
   if (advisorLoading) {
     return (
       <div className="p-4 text-center">
-        <div className="text-text-secondary text-[11px]">ANALYZING SETTINGS...</div>
+        <div className="text-text-secondary text-xs">ANALYZING SETTINGS...</div>
       </div>
     );
   }
@@ -30,7 +30,7 @@ const SettingsAdvisorPanel: React.FC = () => {
   if (advisorError) {
     return (
       <div className="p-4">
-        <div className="text-danger-500 text-[11px] mb-2">ERROR: {advisorError}</div>
+        <div className="text-danger-500 text-xs mb-2">ERROR: {advisorError}</div>
         <Button variant="primary" size="sm" onClick={fetchAdvisorResult}>
           RETRY
         </Button>
@@ -41,7 +41,7 @@ const SettingsAdvisorPanel: React.FC = () => {
   if (!advisorResult) {
     return (
       <div className="p-4 text-center">
-        <div className="text-text-secondary text-[11px]">NO DATA AVAILABLE</div>
+        <div className="text-text-secondary text-xs">NO DATA AVAILABLE</div>
       </div>
     );
   }

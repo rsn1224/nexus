@@ -106,16 +106,16 @@ export default function ProfileTab({
       {/* ヘッダー + リバートボタン + 新規ボタン */}
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] text-text-muted">{profiles.length} 件のプロファイル</span>
+          <span className="text-xs text-text-muted">{profiles.length} 件のプロファイル</span>
           <CurrentPowerPlanDisplay />
         </div>
         <div className="flex gap-2">
           {activeProfileId && (
-            <Button variant="secondary" onClick={() => void revertProfile()} className="text-[9px]">
+            <Button variant="secondary" onClick={() => void revertProfile()} className="text-xs">
               リバート
             </Button>
           )}
-          <Button variant="primary" onClick={handleNewProfile} className="text-[9px]">
+          <Button variant="primary" onClick={handleNewProfile} className="text-xs">
             + 新規プロファイル
           </Button>
         </div>
@@ -135,7 +135,7 @@ export default function ProfileTab({
 
       {/* 適用中インジケーター */}
       {isApplying && (
-        <div className="text-[10px] text-accent-500 text-center py-2">プロファイル適用中...</div>
+        <div className="text-xs text-accent-500 text-center py-2">プロファイル適用中...</div>
       )}
 
       {/* プロファイル一覧 */}

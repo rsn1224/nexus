@@ -48,8 +48,8 @@ export default function Table<T>({
   maxHeight,
 }: TableProps<T>): React.ReactElement {
   const sizeClasses = {
-    sm: 'text-[10px]',
-    md: 'text-[11px]',
+    sm: 'text-xs',
+    md: 'text-xs',
     lg: 'text-[12px]',
   };
 
@@ -109,7 +109,7 @@ export default function Table<T>({
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
-                  className="rounded border-border-subtle bg-base-700 text-accent-500 focus:ring-accent-500 focus:ring-opacity-50"
+                  className="rounded-lg border-border-subtle bg-base-700 text-accent-500 focus:ring-accent-500 focus:ring-opacity-50"
                 />
               </th>
             )}
@@ -149,7 +149,7 @@ export default function Table<T>({
                     type="checkbox"
                     checked={isRowSelected(row)}
                     onChange={(e) => handleSelectRow(row, e.target.checked)}
-                    className="rounded border-border-subtle bg-base-700 text-accent-500 focus:ring-accent-500 focus:ring-opacity-50"
+                    className="rounded-lg border-border-subtle bg-base-700 text-accent-500 focus:ring-accent-500 focus:ring-opacity-50"
                   />
                 </td>
               )}

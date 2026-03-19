@@ -25,7 +25,7 @@ export default function OpsCard(): React.ReactElement {
           アクティブ: <span className="text-accent-500">{activeProcessCount}</span>
         </div>
         {topProcesses.length > 0 && (
-          <div className="text-[10px] text-text-muted">
+          <div className="text-xs text-text-muted">
             CPU上位:
             {topProcesses.map((p: SystemProcess) => (
               <div key={p.pid} className="ml-2">

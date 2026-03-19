@@ -31,9 +31,9 @@ function QualityBadge({
     <div className="flex flex-col items-center gap-0.5">
       <span className={`font-mono text-[16px] font-bold tabular-nums ${color}`}>
         {value.toFixed(1)}
-        <span className="text-[10px] font-normal text-text-muted">{unit}</span>
+        <span className="text-xs font-normal text-text-muted">{unit}</span>
       </span>
-      <span className="text-[9px] text-text-muted">{label}</span>
+      <span className="text-xs text-text-muted">{label}</span>
     </div>
   );
 }
@@ -69,7 +69,7 @@ export default function NetworkQualityCard(): React.ReactElement {
               }
             }}
             disabled={isMeasuring}
-            className="bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-accent-500"
+            className="bg-base-900 border border-border-subtle font-mono text-xs text-text-primary px-2 py-1 outline-none focus:border-accent-500"
             aria-label="Ping ターゲット"
           >
             {PRESET_TARGETS.map((t) => (
@@ -87,7 +87,7 @@ export default function NetworkQualityCard(): React.ReactElement {
               onChange={(e) => setCustomTarget(e.target.value)}
               placeholder="IP アドレス / ドメイン"
               disabled={isMeasuring}
-              className="flex-1 bg-base-900 border border-border-subtle font-mono text-[10px] text-text-primary px-2 py-1 outline-none focus:border-accent-500"
+              className="flex-1 bg-base-900 border border-border-subtle font-mono text-xs text-text-primary px-2 py-1 outline-none focus:border-accent-500"
               aria-label="カスタム Ping ターゲット"
             />
           )}
@@ -104,11 +104,11 @@ export default function NetworkQualityCard(): React.ReactElement {
         </div>
 
         {/* 結果表示 */}
-        {error && <p className="text-[10px] text-red-400">{error}</p>}
+        {error && <p className="text-xs text-red-400">{error}</p>}
 
         {qualitySnapshot && (
           <div className="flex flex-col gap-2">
-            <div className="flex justify-around py-2 bg-base-900 border border-border-subtle rounded">
+            <div className="flex justify-around py-2 bg-base-900 border border-border-subtle rounded-lg">
               <QualityBadge
                 value={qualitySnapshot.avgLatencyMs}
                 unit="ms"
@@ -131,7 +131,7 @@ export default function NetworkQualityCard(): React.ReactElement {
                 danger={5}
               />
             </div>
-            <div className="flex justify-between text-[9px] text-text-muted">
+            <div className="flex justify-between text-xs text-text-muted">
               <span>TARGET: {qualitySnapshot.target}</span>
               <span>SAMPLES: {qualitySnapshot.sampleCount}</span>
             </div>
@@ -139,7 +139,7 @@ export default function NetworkQualityCard(): React.ReactElement {
         )}
 
         {!qualitySnapshot && !isMeasuring && (
-          <p className="text-[10px] text-text-muted text-center py-2">
+          <p className="text-xs text-text-muted text-center py-2">
             ▶ 測定 を押して Jitter / パケットロスを計測
           </p>
         )}

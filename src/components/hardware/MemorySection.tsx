@@ -32,8 +32,8 @@ export default function MemorySection({
           <span className="text-text-primary">{(memTotalGb - memUsedGb).toFixed(1)} GB</span>
         </div>
         <div className="mt-2">
-          <div className="text-text-muted text-[10px] mb-1">USAGE BAR:</div>
-          <div className="font-mono text-[10px]">{createProgressBar(memUsedGb, memTotalGb)}</div>
+          <div className="text-text-muted text-xs mb-1">USAGE BAR:</div>
+          <div className="font-mono text-xs">{createProgressBar(memUsedGb, memTotalGb)}</div>
         </div>
       </div>
     </Card>

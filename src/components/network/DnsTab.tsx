@@ -49,53 +49,53 @@ export default function DnsTab({
       {error && <ErrorBanner message={`ERROR: ${error}`} />}
 
       {/* ADAPTER Section */}
-      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-        <div className="text-[10px] text-text-muted mb-2">ADAPTER</div>
+      <div className="bg-base-800 border border-border-subtle rounded-lg p-3 mb-4">
+        <div className="text-xs text-text-muted mb-2">ADAPTER</div>
         {primaryAdapter ? (
           <div className="space-y-1">
             <div className="flex justify-between">
-              <span className="text-[11px] text-text-secondary">Name</span>
-              <span className="text-[11px] text-text-primary">{primaryAdapter.name}</span>
+              <span className="text-xs text-text-secondary">Name</span>
+              <span className="text-xs text-text-primary">{primaryAdapter.name}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[11px] text-text-secondary">IP</span>
-              <span className="font-mono text-[11px] text-text-primary">{primaryAdapter.ip}</span>
+              <span className="text-xs text-text-secondary">IP</span>
+              <span className="font-mono text-xs text-text-primary">{primaryAdapter.ip}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[11px] text-text-secondary">MAC</span>
-              <span className="font-mono text-[11px] text-text-primary">{primaryAdapter.mac}</span>
+              <span className="text-xs text-text-secondary">MAC</span>
+              <span className="font-mono text-xs text-text-primary">{primaryAdapter.mac}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[11px] text-text-secondary">Status</span>
+              <span className="text-xs text-text-secondary">Status</span>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-success-500" />
-                <span className="text-[11px] text-text-primary">CONNECTED</span>
+                <span className="text-xs text-text-primary">CONNECTED</span>
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-[11px] text-text-muted">No connected adapters found</div>
+          <div className="text-xs text-text-muted">No connected adapters found</div>
         )}
       </div>
 
       {/* DNS Section */}
-      <div className="bg-base-800 border border-border-subtle rounded p-3 mb-4">
-        <div className="text-[10px] text-text-muted mb-2">DNS</div>
+      <div className="bg-base-800 border border-border-subtle rounded-lg p-3 mb-4">
+        <div className="text-xs text-text-muted mb-2">DNS</div>
         <div className="space-y-2">
           <div className="flex justify-between">
-            <span className="text-[11px] text-text-secondary">Current</span>
-            <span className="font-mono text-[11px] text-text-primary">
+            <span className="text-xs text-text-secondary">Current</span>
+            <span className="font-mono text-xs text-text-primary">
               {currentDns.length > 0 ? currentDns.join(', ') : 'Not configured'}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-text-secondary">Preset</span>
+            <span className="text-xs text-text-secondary">Preset</span>
             <select
               value={selectedPreset}
               onChange={(e) => onSelectedPresetChange(e.target.value)}
               aria-label="DNS プリセット"
-              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-[11px] px-2 py-1 rounded"
+              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-xs px-2 py-1 rounded-lg"
             >
               {dnsPresets.map((preset) => (
                 <option key={preset.name} value={preset.name}>
@@ -114,20 +114,20 @@ export default function DnsTab({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-text-secondary">Custom</span>
+            <span className="text-xs text-text-secondary">Custom</span>
             <input
               type="text"
               value={customPrimary}
               onChange={(e) => onCustomPrimaryChange(e.target.value)}
               placeholder="Primary DNS"
-              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-[11px] px-2 py-1 rounded w-32"
+              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-xs px-2 py-1 rounded-lg w-32"
             />
             <input
               type="text"
               value={customSecondary}
               onChange={(e) => onCustomSecondaryChange(e.target.value)}
               placeholder="Secondary DNS"
-              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-[11px] px-2 py-1 rounded w-32"
+              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-xs px-2 py-1 rounded-lg w-32"
             />
             <Button
               variant="secondary"
@@ -142,17 +142,17 @@ export default function DnsTab({
       </div>
 
       {/* PING Section */}
-      <div className="bg-base-800 border border-border-subtle rounded p-3">
-        <div className="text-[10px] text-text-muted mb-2">PING</div>
+      <div className="bg-base-800 border border-border-subtle rounded-lg p-3">
+        <div className="text-xs text-text-muted mb-2">PING</div>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-text-secondary">Target</span>
+            <span className="text-xs text-text-secondary">Target</span>
             <input
               type="text"
               value={pingTarget}
               onChange={(e) => onPingTargetChange(e.target.value)}
               placeholder="8.8.8.8"
-              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-[11px] px-2 py-1 rounded flex-1"
+              className="bg-base-700 border border-border-subtle text-text-primary font-mono text-xs px-2 py-1 rounded-lg flex-1"
             />
             <Button variant="primary" size="sm" onClick={onPing} disabled={isLoading}>
               ▶ PING
@@ -161,17 +161,17 @@ export default function DnsTab({
 
           {pingResult && (
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-text-secondary">Result</span>
+              <span className="text-xs text-text-secondary">Result</span>
               {pingResult.success ? (
                 <>
-                  <span className="font-mono text-[11px] text-success-500">
+                  <span className="font-mono text-xs text-success-500">
                     {pingResult.latencyMs}ms
                   </span>
                   <div className="w-2 h-2 rounded-full bg-success-500" />
-                  <span className="text-[11px] text-success-500">OK</span>
+                  <span className="text-xs text-success-500">OK</span>
                 </>
               ) : (
-                <span className="text-[11px] text-danger-500">TIMEOUT</span>
+                <span className="text-xs text-danger-500">TIMEOUT</span>
               )}
             </div>
           )}

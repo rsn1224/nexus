@@ -45,7 +45,7 @@ export default function GameCard({
   const isBusy = autoBoostEnabled && isBoosting;
 
   return (
-    <div className="bg-base-800 border border-border-subtle rounded overflow-hidden flex flex-col transition-all duration-300 hover:border-accent-500/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent-500/10">
+    <div className="bg-base-800/80 border border-white/[0.06] rounded-xl overflow-hidden flex flex-col transition-all duration-300 hover:border-accent-500/40 hover:-translate-y-1 hover:shadow-lg hover:shadow-accent-500/10">
       {/* サムネイル */}
       {!imgError && (
         <div className="relative group/thumb overflow-hidden">
@@ -59,7 +59,7 @@ export default function GameCard({
         </div>
       )}
       {imgError && (
-        <div className="w-full h-[94px] bg-base-700 flex items-center justify-center text-[9px] text-text-muted">
+        <div className="w-full h-[94px] bg-base-700 flex items-center justify-center text-xs text-text-muted">
           NO IMAGE
         </div>
       )}
@@ -76,12 +76,12 @@ export default function GameCard({
             }}
             aria-label={isFavorite ? 'お気に入りから削除' : 'お気に入りに追加'}
             aria-pressed={isFavorite}
-            className={`bg-transparent border-none cursor-pointer text-[13px] p-0 leading-none shrink-0 ${isFavorite ? 'text-accent-500' : 'text-text-muted'}`}
+            className={`bg-transparent border-none cursor-pointer text-sm p-0 leading-none shrink-0 ${isFavorite ? 'text-accent-500' : 'text-text-muted'}`}
           >
             {isFavorite ? '\u2605' : '\u2606'}
           </button>
           <div
-            className="text-[10px] text-text-primary flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
+            className="text-xs text-text-primary flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
             title={game.name}
           >
             {game.name}
@@ -89,12 +89,12 @@ export default function GameCard({
         </div>
 
         {/* サイズ */}
-        <div className="text-[9px] text-text-muted">
+        <div className="text-xs text-text-muted">
           {game.size_gb === 0 ? '-- GB' : `${game.size_gb.toFixed(1)} GB`}
         </div>
 
         {/* 最終プレイ */}
-        <div className="text-[9px] text-text-muted">{formatLastPlayed(lastPlayedAt)}</div>
+        <div className="text-xs text-text-muted">{formatLastPlayed(lastPlayedAt)}</div>
 
         {/* プロファイルバッジ */}
         {profileName && (
@@ -107,7 +107,7 @@ export default function GameCard({
           onClick={() => handleLaunchGame(game.app_id)}
           disabled={isBusy}
           aria-label={`${game.name}を起動`}
-          className={`mt-auto text-[9px] py-1 border-none rounded-[2px] w-full ${
+          className={`mt-auto text-xs py-1 border-none rounded-[2px] w-full ${
             isBusy
               ? 'bg-base-600 text-text-muted cursor-default opacity-50'
               : 'bg-accent-500 text-base-900 cursor-pointer'

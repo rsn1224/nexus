@@ -48,51 +48,51 @@ export default function ProcessTable({
 }: ProcessTableProps): React.ReactElement {
   return (
     <div className="mb-6">
-      <div className="text-[10px] text-text-muted mb-2">
+      <div className="text-xs text-text-muted mb-2">
         {filterText
           ? `LIVE PROCESSES (表示 ${filteredProcesses.length} / 全 ${processes.length} 件 / BOOST対象: ${targetCount}件)`
           : `LIVE PROCESSES (${processes.length}件 / BOOST対象: ${targetCount}件)`}
       </div>
-      <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
+      <div className="bg-base-800 border border-border-subtle rounded-xl overflow-hidden">
         {isLoading ? (
           <LoadingState message="LOADING PROCESSES..." />
         ) : processes.length === 0 ? (
           <EmptyState message="NO DATA" action="PRESS REFRESH TO LOAD" />
         ) : (
-          <table className="w-full border-collapse font-mono text-[10px]">
+          <table className="w-full border-collapse font-mono text-xs">
             <thead className="sticky top-0 bg-base-800 border-b border-border-subtle">
               <tr>
                 <th
-                  className="px-3 py-[6px] text-[10px] font-semibold text-text-muted text-left cursor-pointer select-none"
+                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none"
                   onClick={() => onSort('name')}
                 >
                   NAME {sortKey === 'name' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] text-[10px] font-semibold text-text-muted text-left cursor-pointer select-none w-16"
+                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-16"
                   onClick={() => onSort('cpu')}
                 >
                   CPU% {sortKey === 'cpu' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] text-[10px] font-semibold text-text-muted text-left cursor-pointer select-none w-16"
+                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-16"
                   onClick={() => onSort('mem')}
                 >
                   MEM {sortKey === 'mem' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] text-[10px] font-semibold text-text-muted text-left cursor-pointer select-none w-20"
+                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-20"
                   onClick={() => onSort('diskRead')}
                 >
                   DISK R {sortKey === 'diskRead' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
                 <th
-                  className="px-3 py-[6px] text-[10px] font-semibold text-text-muted text-left cursor-pointer select-none w-20"
+                  className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left cursor-pointer select-none w-20"
                   onClick={() => onSort('diskWrite')}
                 >
                   DISK W {sortKey === 'diskWrite' && (sortDirection === 'asc' ? '▲' : '▼')}
                 </th>
-                <th className="px-3 py-[6px] text-[10px] font-semibold text-text-muted text-left w-20">
+                <th className="px-3 py-[6px] text-xs font-semibold text-text-muted text-left w-20">
                   STATUS
                 </th>
               </tr>

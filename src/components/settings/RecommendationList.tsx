@@ -60,30 +60,30 @@ export default function RecommendationList({
       </h4>
 
       {recommendations.length === 0 ? (
-        <div className="p-3 bg-base-800 rounded text-center">
-          <div className="text-success-500 text-[11px]">ALL SETTINGS OPTIMAL</div>
+        <div className="p-3 bg-base-800 rounded-lg text-center">
+          <div className="text-success-500 text-xs">ALL SETTINGS OPTIMAL</div>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
           {recommendations.map((rec) => (
             <div
               key={rec.settingId}
-              className={`p-3 rounded border border-base-800 border-l-4 ${importanceBorderClass(rec.importance)} ${rec.isOptimal ? 'bg-base-800' : 'bg-base-900'}`}
+              className={`p-3 rounded-lg border border-base-800 border-l-4 ${importanceBorderClass(rec.importance)} ${rec.isOptimal ? 'bg-base-800' : 'bg-base-900'}`}
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
-                  <div className="text-text-primary text-[11px] font-bold mb-1">
+                  <div className="text-text-primary text-xs font-bold mb-1">
                     {rec.label.toUpperCase()}
                   </div>
-                  <div className="text-text-secondary text-[10px]">{rec.reason}</div>
+                  <div className="text-text-secondary text-xs">{rec.reason}</div>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span
-                    className={`${safetyBadgeClass(rec.safetyLevel)} text-[9px] font-bold px-1.5 py-0.5 rounded`}
+                    className={`${safetyBadgeClass(rec.safetyLevel)} text-xs font-bold px-1.5 py-0.5 rounded-lg`}
                   >
                     {rec.safetyLevel.toUpperCase()}
                   </span>
-                  <span className={`${importanceTextClass(rec.importance)} text-[9px] font-bold`}>
+                  <span className={`${importanceTextClass(rec.importance)} text-xs font-bold`}>
                     {rec.importance.toUpperCase()}
                   </span>
                 </div>
@@ -91,17 +91,17 @@ export default function RecommendationList({
 
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-text-secondary text-[10px]">CURRENT:</span>
+                  <span className="text-text-secondary text-xs">CURRENT:</span>
                   <span
-                    className={`${rec.isOptimal ? 'text-success-500' : 'text-text-primary'} text-[10px] font-bold`}
+                    className={`${rec.isOptimal ? 'text-success-500' : 'text-text-primary'} text-xs font-bold`}
                   >
                     {rec.currentValue}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-text-secondary text-[10px]">RECOMMENDED:</span>
+                  <span className="text-text-secondary text-xs">RECOMMENDED:</span>
                   <span
-                    className={`${rec.isOptimal ? 'text-text-primary' : 'text-accent-500'} text-[10px] font-bold`}
+                    className={`${rec.isOptimal ? 'text-text-primary' : 'text-accent-500'} text-xs font-bold`}
                   >
                     {formatRecommendedValue(rec.recommendedValue)}
                   </span>

@@ -57,7 +57,7 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
   return (
     <div className={className}>
       {error && (
-        <div className="px-4 py-2 mb-4 bg-base-800 border-b border-danger-600 text-danger-500 text-[10px] rounded">
+        <div className="px-4 py-2 mb-4 bg-base-800 border-b border-danger-600 text-danger-500 text-xs rounded-lg">
           {error}
         </div>
       )}
@@ -83,13 +83,13 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
           >
             ▶ RUN BOOST
           </Button>
-          <span className="text-[10px] text-text-muted">
+          <span className="text-xs text-text-muted">
             AUTO-UPDATING · LAST: {formatTime(lastUpdated)}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="threshold-input" className="text-[11px] text-text-secondary">
+          <label htmlFor="threshold-input" className="text-xs text-text-secondary">
             CPU閾値:
           </label>
           <input
@@ -99,9 +99,9 @@ export default function ProcessTab({ className = '' }: ProcessTabProps): React.R
             max="100"
             value={threshold}
             onChange={(e) => setThreshold(Number(e.target.value))}
-            className="w-12 px-2 py-1 bg-base-800 text-text-primary border border-border-subtle rounded font-mono text-[11px]"
+            className="w-12 px-2 py-1 bg-base-800 text-text-primary border border-border-subtle rounded-lg font-mono text-xs"
           />
-          <span className="text-[11px] text-text-secondary">%</span>
+          <span className="text-xs text-text-secondary">%</span>
         </div>
       </div>
 

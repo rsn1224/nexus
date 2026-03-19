@@ -56,7 +56,7 @@ describe('ErrorBanner', () => {
     expect(alert).toHaveClass(
       'px-4',
       'py-2',
-      'text-[11px]',
+      'text-xs',
       'flex-shrink-0',
       'flex',
       'items-center',

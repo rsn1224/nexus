@@ -1,5 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
+import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
 import { extractErrorMessage } from '../lib/tauri';
 import type {
@@ -134,3 +135,24 @@ export const useBottleneckStore = create<BottleneckState & BottleneckActions>((s
     });
   },
 }));
+
+// Stable selectors
+export const useBottleneckState = () =>
+  useBottleneckStore(
+    useShallow((s) => ({
+      bottleneck: s.bottleneck,
+      isRunning: s.isRunning,
+      isAnalyzing: s.isAnalyzing,
+      error: s.error,
+    })),
+  );
+
+export const useBottleneckActions = () =>
+  useBottleneckStore(
+    useShallow((s) => ({
+      analyzeBottleneck: s.analyzeBottleneck,
+      startAutoAnalysis: s.startAutoAnalysis,
+      stopAutoAnalysis: s.stopAutoAnalysis,
+      reset: s.reset,
+    })),
+  );

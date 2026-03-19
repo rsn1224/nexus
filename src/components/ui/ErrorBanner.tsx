@@ -21,7 +21,7 @@ export default function ErrorBanner({
   return (
     <div
       role="alert"
-      className={`px-4 py-2 text-[11px] flex-shrink-0 flex items-center justify-between ${variantClasses[variant]}`}
+      className={`px-4 py-2 text-xs flex-shrink-0 flex items-center justify-between ${variantClasses[variant]}`}
     >
       <span>{message}</span>
       {onDismiss && (

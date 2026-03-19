@@ -12,16 +12,16 @@ export default function BoostResultsPanel({
   return (
     <div>
       {lastResult.isSimulation && (
-        <div className="text-[9px] text-text-muted bg-base-800 border border-border-subtle rounded-[3px] px-2 py-1 mb-2">
+        <div className="text-xs text-text-muted bg-base-800 border border-border-subtle rounded-[3px] px-2 py-1 mb-2">
           ⚠ シミュレーションモード — 実際のプロセス最適化は未実装です
         </div>
       )}
-      <div className="text-[10px] font-semibold text-text-secondary mb-2">
+      <div className="text-xs font-semibold text-text-secondary mb-2">
         BOOST COMPLETE · {lastResult.actions.length} ACTIONS ·{' '}
         {formatDurationMs(lastResult.durationMs)}
       </div>
-      <div className="bg-base-800 border border-border-subtle rounded overflow-hidden">
-        <table className="w-full border-collapse font-mono text-[10px]">
+      <div className="bg-base-800 border border-border-subtle rounded-xl overflow-hidden">
+        <table className="w-full border-collapse font-mono text-xs">
           <thead>
             <tr className="bg-base-700">
               <th className="p-2 text-left text-text-secondary border-b border-border-subtle">
@@ -45,7 +45,7 @@ export default function BoostResultsPanel({
                   {action.isProtected ? (
                     <span className="flex items-center gap-1">
                       SKIPPED
-                      <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-[9px]">
+                      <span className="inline-block px-1 py-0.5 border border-text-muted text-text-muted text-xs">
                         [PROT]
                       </span>
                     </span>

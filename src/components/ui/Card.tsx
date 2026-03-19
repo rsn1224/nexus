@@ -29,19 +29,19 @@ const Card = memo(function Card({
   tabIndex,
 }: CardProps): React.ReactElement {
   const variantClasses = {
-    default: 'bg-base-800 border border-border-subtle',
-    elevated: 'bg-base-800 border border-border-subtle shadow-lg',
+    default: 'bg-base-800/80 border border-white/[0.06] backdrop-blur-sm',
+    elevated: 'bg-base-800/90 border border-white/[0.08] shadow-lg backdrop-blur-md',
     outlined: 'bg-transparent border border-border-subtle',
-    glow: 'bg-base-800 border border-border-subtle card-glow',
-    glass: 'card-glass rounded-lg',
-    'glass-elevated': 'card-glass-elevated rounded-lg',
+    glow: 'bg-base-800/80 border border-white/[0.06] card-glow backdrop-blur-sm',
+    glass: 'card-glass',
+    'glass-elevated': 'card-glass-elevated',
   };
 
   const paddingClasses = {
     none: '',
-    sm: 'p-2',
-    md: 'p-3',
-    lg: 'p-4',
+    sm: 'p-3',
+    md: 'p-4',
+    lg: 'p-5',
   };
 
   const interactionClasses = `
@@ -53,7 +53,7 @@ const Card = memo(function Card({
     ${variantClasses[variant]}
     ${paddingClasses[padding]}
     ${interactionClasses}
-    rounded
+    ${variant === 'glass' || variant === 'glass-elevated' ? '' : 'rounded-xl'}
     ${className}
   `;
 
@@ -61,7 +61,7 @@ const Card = memo(function Card({
     <>
       {title && (
         <div className="flex items-center justify-between px-3 py-2 border-b border-border-subtle">
-          <div className="text-text-secondary text-[11px]">{title}</div>
+          <div className="text-text-secondary text-xs">{title}</div>
           {action && <div>{action}</div>}
         </div>
       )}

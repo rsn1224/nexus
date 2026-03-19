@@ -67,7 +67,7 @@ const EcoModePanel: React.FC = () => {
   if (error) {
     return (
       <div className="p-4">
-        <div className="text-danger-500 mb-2 text-[10px]">ERROR: {error}</div>
+        <div className="text-danger-500 mb-2 text-xs">ERROR: {error}</div>
         <Button
           variant="primary"
           size="sm"
@@ -86,7 +86,7 @@ const EcoModePanel: React.FC = () => {
   if (!config || !powerEstimate || !tempConfig) {
     return (
       <div className="p-4 text-center">
-        <div className="text-text-secondary text-[10px]">LOADING...</div>
+        <div className="text-text-secondary text-xs">LOADING...</div>
       </div>
     );
   }
@@ -124,9 +124,9 @@ const EcoModePanel: React.FC = () => {
 
       <div className="mb-4">
         <h4 className="text-text-primary text-[12px] mb-2">CONFIGURATION</h4>
-        <div className="p-3 bg-base-800 rounded">
+        <div className="p-3 bg-base-800 rounded-lg">
           <div className="mb-3">
-            <div className="text-text-secondary text-[10px] mb-1">ELECTRICITY RATE (¥/kWh)</div>
+            <div className="text-text-secondary text-xs mb-1">ELECTRICITY RATE (¥/kWh)</div>
             <input
               type="number"
               min="10"
@@ -135,7 +135,7 @@ const EcoModePanel: React.FC = () => {
               value={tempConfig.electricityRateYen}
               onChange={(e) => handleElectricityRateChange(Number(e.target.value))}
               aria-label="電気料金（円/kWh）"
-              className="w-full px-2 py-1 bg-base-900 text-text-primary border border-base-800 rounded text-[10px]"
+              className="w-full px-2 py-1 bg-base-900 text-text-primary border border-base-800 rounded-lg text-xs"
             />
           </div>
           <Button

@@ -46,7 +46,7 @@ describe('EmptyState', () => {
       'flex-col',
       'items-center',
       'justify-center',
-      'text-[11px]',
+      'text-xs',
       'text-text-muted',
     );
   });
@@ -55,6 +55,6 @@ describe('EmptyState', () => {
     render(<EmptyState message="TEST" action="ACTION" />);
 
     const action = screen.getByText('ACTION');
-    expect(action).toHaveClass('mt-1', 'text-[10px]', 'opacity-70');
+    expect(action).toHaveClass('mt-1', 'text-xs', 'opacity-70');
   });
 });

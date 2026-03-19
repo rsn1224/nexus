@@ -38,7 +38,7 @@ describe('LoadingState', () => {
       'flex',
       'items-center',
       'justify-center',
-      'text-[11px]',
+      'text-xs',
       'text-text-muted',
     );
   });
