@@ -1,6 +1,11 @@
 ---
 name: wrap-up
-description: セッション終了時のまとめと次回引き継ぎ準備。HANDOFF.md 更新・メモリ保存・git状態確認。
+description: >
+  セッション終了時のまとめと次回引き継ぎ準備。HANDOFF.md 更新・メモリ保存・
+  git 状態確認・コスト確認を一括実行。
+  Use when user says "終わり", "wrap up", "セッション終了", "今日はここまで",
+  or at the end of a work session.
+  Do NOT use mid-session or for partial progress updates.
 ---
 
 # Wrap-Up スキル

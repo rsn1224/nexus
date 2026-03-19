@@ -169,7 +169,7 @@ bash scripts/check-cost.sh blocks  # 現在の5時間ブロック
 
 | 内容 | ファイル |
 | ---- | ------- |
-| UIデザイン規約・Tailwindクラス | `DESIGN.md` / `.claude/skills/nexus-design.md` |
+| UIデザイン規約・Tailwindクラス | `DESIGN.md` / `.claude/skills/nexus-design/SKILL.md` |
 | Cascade協業・モデル使い分け | `.claude/skills/cascade-workflow/SKILL.md` |
 | Tauri v2 注意点 | `.claude/rules/tauri-v2-gotchas.md` |
 | メモリ管理ルール | `.claude/rules/memory-decisions.md` |

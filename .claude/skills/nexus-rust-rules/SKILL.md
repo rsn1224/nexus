@@ -1,3 +1,13 @@
+---
+name: nexus-rust-rules
+description: >
+  nexus の Rust/Tauri バックエンド実装規約。コマンド追加・Rust コード修正時に参照。
+  unwrap 禁止、AppError 統一、tracing ログ、IPC 型定義ルール。
+  Use when user says "Rust コマンド追加", "バックエンド修正", "cargo clippy",
+  "Tauri コマンド", or edits files in src-tauri/.
+  Do NOT use for frontend-only changes.
+---
+
 # nexus Rust 実装規約
 
 Rust コマンド追加・修正時に必ずこの規約に従うこと。

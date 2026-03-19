@@ -1,6 +1,11 @@
 ---
 name: explore-codebase
-description: コードベースの構造と依存関係を調査してレポート
+description: >
+  コードベースの構造・型定義・依存関係を調査してマークダウンレポートを生成。
+  Explore サブエージェントとして fork コンテキストで実行。
+  Use when user says "構造を調べて", "依存関係を確認", "コードベース調査",
+  "/explore-codebase", or before major refactoring.
+  Do NOT use for targeted single-file searches (use Grep/Glob directly).
 context: fork
 agent: Explore
 allowed-tools: Read, Grep, Glob

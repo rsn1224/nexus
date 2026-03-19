@@ -1,6 +1,11 @@
 ---
-name: claude-code-cascade-workflow
-description: Claude CodeとCascadeの最適ワークフロー。モデル使い分け、サブエージェント活用、MCP統合、並列開発パターン、ベストプラクティス。
+name: cascade-workflow
+description: >
+  Claude Code と Cascade の協業ワークフロー。モデル使い分け、サブエージェント活用、
+  品質ゲート、HANDOFF.md ステータス管理。
+  Use when user says "Cascade に依頼", "実装を任せる", "ワークフロー確認",
+  "HANDOFF 更新", or references Cascade/Windsurf collaboration.
+  Do NOT use for direct code implementation or Rust-only tasks.
 ---
 
 # Cascade エージェント定義

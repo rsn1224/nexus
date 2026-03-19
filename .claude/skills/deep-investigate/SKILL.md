@@ -1,6 +1,11 @@
 ---
 name: deep-investigate
-description: 原因不明のバグ・型エラー・パフォーマンス問題を体系的に調査する。Explore サブエージェントを活用。
+description: >
+  原因不明のバグ・型エラー・パフォーマンス問題を体系的に調査する。
+  Explore サブエージェントを活用した5段階調査プロセス。
+  Use when user says "原因調査", "なぜ動かない", "バグの根本原因",
+  "/deep-investigate", or when 2+ fix attempts have failed.
+  Do NOT use for simple typos, known fixes, or feature implementation.
 ---
 
 # Deep Investigate スキル
