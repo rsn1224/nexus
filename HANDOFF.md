@@ -48,8 +48,9 @@
 | **v3.0 Phase 1** | ✅ 完了（ワークフロー基盤構築: TESTING.md + BACKEND.md + 3 lint スクリプト + CI 更新、`212b958`） |
 | **v3.0 Phase 2** | ✅ 完了（2A: assertNever→lib/assert.ts, 2B: types 前半9分割, 2C: types 後半8分割, 2D: index.ts re-exportのみ化） |
 | **v3.0 Phase 3** | ✅ 完了（3-1〜3-7: Store ロジック→lib/ 抽出 + セレクター→hooks/ 移動 + check-file-size.mjs strict 昇格） |
+| **v3.0 Phase 4** | ✅ 完了（ドキュメント最終更新 + progressWidth ヘルパー + ミューテーション閾値 + リリース） |
 
-**最新コミット:** v3.0 Phase 3 完了
+**最新コミット:** v3.0.0
 **テスト:** TS 542 + Rust 230+ all green
 
 ---

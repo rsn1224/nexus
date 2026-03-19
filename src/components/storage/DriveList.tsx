@@ -1,5 +1,6 @@
 import type React from 'react';
 import { formatBytes, getUsagePercentage } from '../../lib/storage';
+import { progressWidth } from '../../lib/styles';
 import type { DiskDrive } from '../../types';
 import { Button } from '../ui';
 
@@ -73,7 +74,7 @@ export default function DriveList({
               <div className="w-full bg-base-800 rounded h-2 mt-1 overflow-hidden">
                 <div
                   className="bg-accent-500 h-2 transition-all duration-300"
-                  style={{ width: `${getUsagePercentage(drive.usedBytes, drive.sizeBytes)}%` }}
+                  style={progressWidth(getUsagePercentage(drive.usedBytes, drive.sizeBytes))}
                 />
               </div>
             </div>

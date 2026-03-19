@@ -1,4 +1,5 @@
 import { memo, useEffect } from 'react';
+import { progressWidth } from '../../lib/styles';
 import { useHardwareData } from '../../stores/useHardwareStore';
 import { usePulseStore } from '../../stores/usePulseStore';
 import GameReadinessPanel from './GameReadinessPanel';
@@ -39,7 +40,7 @@ function ResourceBar({
       <div className="flex-1 h-1.5 bg-base-700 overflow-hidden">
         <div
           className={`h-full transition-all duration-300 ${barColor}`}
-          style={{ width: `${Math.min(100, Math.max(0, pct ?? 0))}%` }}
+          style={progressWidth(pct ?? 0)}
         />
       </div>
       <span className={`font-mono text-[9px] w-7 text-right shrink-0 ${textColor}`}>

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useEffect } from 'react';
+import { progressWidth } from '../../lib/styles';
 import { useBottleneckStore } from '../../stores/useBottleneckStore';
 import { useFrameTimeState } from '../../stores/useFrameTimeStore';
 import { useNavStore } from '../../stores/useNavStore';
@@ -150,7 +151,7 @@ const BottleneckCard: React.FC = () => {
                 <div className="flex-1 h-2 bg-base-800 overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${getScoreBarColor(score)}`}
-                    style={{ width: `${Math.round(score * 100)}%` }}
+                    style={progressWidth(Math.round(score * 100))}
                   />
                 </div>
                 <span className="font-mono text-[10px] text-text-muted w-8 text-right">

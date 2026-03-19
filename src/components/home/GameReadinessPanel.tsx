@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { calcReadiness, type ReadinessInput } from '../../lib/gameReadiness';
+import { progressWidth } from '../../lib/styles';
 import { useFrameTimeState } from '../../stores/useFrameTimeStore';
 import { useGameProfileState } from '../../stores/useGameProfileStore';
 import { useHardwareData } from '../../stores/useHardwareStore';
@@ -82,7 +83,7 @@ export default function GameReadinessPanel() {
                   <div className="flex-1 h-1.5 bg-base-800 rounded overflow-hidden">
                     <div
                       className="h-full transition-all duration-300 bg-accent-500"
-                      style={{ width: `${Math.max(0, score)}%` }}
+                      style={progressWidth(score)}
                     />
                   </div>
                   <span className="font-mono text-[10px] text-text-primary w-[24px] text-right">

@@ -1,4 +1,5 @@
 import type React from 'react';
+import { progressWidth } from '../../lib/styles';
 import type { AdvisorResult } from '../../types';
 import Button from '../ui/Button';
 
@@ -43,7 +44,7 @@ export default function AdvisorScoreCard({
                   ? 'bg-accent-500'
                   : 'bg-danger-500'
             }`}
-            style={{ width: `${advisorResult.optimizationScore}%` }}
+            style={progressWidth(advisorResult.optimizationScore)}
           />
         </div>
       </div>

@@ -21,12 +21,6 @@ const SKIP_SUFFIXES = ['.test.tsx', '.spec.tsx'];
 // 行番号はリファクタリングで変わるため、ファイル名 + コメントマーカーで管理
 
 const ALLOWED_FILES_AND_REASONS = [
-  // 動的 width% — progressWidth ヘルパーで統一予定（Phase 4）
-  { file: 'src/components/home/BottleneckCard.tsx', reason: '動的 width%' },
-  { file: 'src/components/home/HeroSection.tsx', reason: '動的 width%' },
-  { file: 'src/components/home/GameReadinessPanel.tsx', reason: '動的 width%' },
-  { file: 'src/components/settings/AdvisorScoreCard.tsx', reason: '動的 width%' },
-  { file: 'src/components/storage/DriveList.tsx', reason: '動的 width%' },
   // canvas サイズ — 正当な使用
   { file: 'src/components/home/FpsTimelineGraph.tsx', reason: 'canvas サイズ指定' },
   { file: 'src/components/home/ReadinessGauge.tsx', reason: 'canvas サイズ指定' },
