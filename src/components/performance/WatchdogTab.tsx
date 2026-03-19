@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { formatTime } from '../../lib/formatters';
 import {
   useWatchdogActions,
   useWatchdogError,
@@ -14,6 +15,7 @@ import LoadingFallback from '../ui/LoadingFallback';
 import SectionHeader from '../ui/SectionHeader';
 import WatchdogEventLog from './WatchdogEventLog';
 import { WatchdogRuleModal } from './WatchdogRuleModal';
+import WatchdogRuleTable from './WatchdogRuleTable';
 
 export default function WatchdogTab() {
   const rules = useWatchdogRules();
@@ -69,15 +71,9 @@ export default function WatchdogTab() {
   };
 
   const formatAction = (action: WatchdogAction): string => {
-    if (typeof action === 'string') {
-      return action.toUpperCase();
-    }
-    if ('setPriority' in action) {
-      return `SET PRIORITY(${action.setPriority.level.toUpperCase()})`;
-    }
-    if ('setAffinity' in action) {
-      return `SET AFFINITY(${action.setAffinity.cores.join(',')})`;
-    }
+    if (typeof action === 'string') return action.toUpperCase();
+    if ('setPriority' in action) return `SET PRIORITY(${action.setPriority.level.toUpperCase()})`;
+    if ('setAffinity' in action) return `SET AFFINITY(${action.setAffinity.cores.join(',')})`;
     return 'UNKNOWN';
   };
 
@@ -85,10 +81,6 @@ export default function WatchdogTab() {
     conditions: { metric: string; operator: string; threshold: number }[],
   ): string => {
     return conditions.map((c) => `${c.metric} ${c.operator} ${c.threshold}`).join(' AND ');
-  };
-
-  const formatTime = (timestamp: number): string => {
-    return new Date(timestamp).toLocaleTimeString();
   };
 
   if (error) {
@@ -131,90 +123,14 @@ export default function WatchdogTab() {
             action="ADD RULE"
           />
         ) : (
-          <div className="border border-border overflow-hidden mb-6">
-            <table className="w-full border-collapse text-[12px]">
-              <thead>
-                <tr className="bg-base-800 border-b border-border">
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    NAME
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    STATUS
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    CONDITIONS
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    ACTION
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    PROFILE
-                  </th>
-                  <th className="px-3 py-[5px] text-right font-bold text-text-muted uppercase text-[10px]">
-                    ACTIONS
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {rules.map((rule: WatchdogRule) => (
-                  <tr
-                    key={rule.id}
-                    className="border-b border-border transition-colors duration-100 hover:bg-white/4"
-                  >
-                    <td className="px-3 py-[5px]">
-                      <div className="font-bold text-text-primary">{rule.name}</div>
-                      <div className="text-[10px] text-text-muted mt-[2px]">ID: {rule.id}</div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <Button
-                        variant={rule.enabled ? 'primary' : 'secondary'}
-                        size="sm"
-                        onClick={() => handleToggleRule(rule)}
-                        aria-label={`ルール「${rule.name}」を${rule.enabled ? '無効' : '有効'}にする`}
-                      >
-                        {rule.enabled ? 'ENABLED' : 'DISABLED'}
-                      </Button>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div className="text-text-primary text-[11px]">
-                        {formatConditions(rule.conditions)}
-                      </div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div className="text-accent-500 font-bold text-[11px]">
-                        {formatAction(rule.action)}
-                      </div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div className="text-text-primary text-[11px]">
-                        {rule.profileId || 'GLOBAL'}
-                      </div>
-                    </td>
-                    <td className="px-3 py-[5px] text-right">
-                      <div className="flex gap-1 justify-end">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleEditRule(rule)}
-                          aria-label={`ルール「${rule.name}」を編集`}
-                        >
-                          EDIT
-                        </Button>
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteRule(rule.id)}
-                          aria-label={`ルール「${rule.name}」を削除`}
-                        >
-                          DELETE
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <WatchdogRuleTable
+            rules={rules}
+            onToggle={handleToggleRule}
+            onEdit={handleEditRule}
+            onDelete={handleDeleteRule}
+            formatAction={formatAction}
+            formatConditions={formatConditions}
+          />
         ))}
 
       <WatchdogEventLog events={events} formatTime={formatTime} />
