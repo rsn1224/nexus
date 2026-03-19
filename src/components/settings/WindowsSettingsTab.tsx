@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import { PowerPlan, VisualEffects } from '../../types';
+import CoreParkingCard from '../performance/CoreParkingCard';
+import TimerSection from '../performance/TimerSection';
 import { Button, ErrorBanner, LoadingState } from '../ui';
 import GamingSection from './GamingSection';
 import PowerPlanSection from './PowerPlanSection';
@@ -93,7 +95,9 @@ export default function WindowsSettingsTab(): React.ReactElement {
           onPendingChange={setPendingVisualEffects}
           onApply={() => void setVisualEffects(pendingVisualEffects)}
         />
+        <TimerSection />
         <SettingsAdvisorPanel />
+        <CoreParkingCard />
       </div>
     </div>
   );

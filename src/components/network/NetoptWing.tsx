@@ -9,7 +9,7 @@ import TcpTuningTab from './TcpTuningTab';
 
 const netTabs = [
   { id: 'dns', label: 'DNS & Ping' },
-  { id: 'tcp', label: 'TCP チューニング' },
+  { id: 'tcp', label: 'TCP 最適化' },
 ];
 
 export default function NetoptWing(): React.ReactElement {

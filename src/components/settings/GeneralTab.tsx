@@ -84,13 +84,6 @@ export default function GeneralTab(): React.ReactElement {
     <div className="flex flex-col gap-4 flex-1 overflow-y-auto">
       {error && <ErrorBanner message={`ERROR: ${error}`} />}
 
-      {/* Save All */}
-      <div className="flex justify-end">
-        <Button variant="primary" size="sm" onClick={handleSaveApiKey} disabled={isLoading}>
-          SAVE ALL
-        </Button>
-      </div>
-
       {/* API Section */}
       <div className="bg-base-800 border border-border-subtle rounded-lg p-3">
         <div className="text-xs text-text-muted mb-2">API</div>

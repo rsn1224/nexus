@@ -1,6 +1,5 @@
 import type React from 'react';
 import { useNavStore } from '../../stores/useNavStore';
-import WinoptTab from '../performance/WinoptTab';
 import { ErrorBoundary, TabBar } from '../ui';
 import GeneralTab from './GeneralTab';
 import MaintenanceTab from './MaintenanceTab';
@@ -9,12 +8,11 @@ import WindowsSettingsTab from './WindowsSettingsTab';
 const settingsTabs = [
   { id: 'app', label: 'アプリ設定' },
   { id: 'windows', label: 'Windows 設定' },
-  { id: 'winopt', label: 'Windows 最適化' },
 ];
 
 export default function SettingsWing(): React.ReactElement {
   const activeTab = useNavStore(
-    (s) => (s.wingStates.settings.activeTab ?? 'app') as 'app' | 'windows' | 'winopt',
+    (s) => (s.wingStates.settings.activeTab ?? 'app') as 'app' | 'windows',
   );
 
   return (
@@ -39,14 +37,6 @@ export default function SettingsWing(): React.ReactElement {
         <ErrorBoundary name="Windows 設定">
           <div className="flex-1 overflow-hidden -m-4">
             <WindowsSettingsTab />
-          </div>
-        </ErrorBoundary>
-      )}
-
-      {activeTab === 'winopt' && (
-        <ErrorBoundary name="Windows 最適化">
-          <div className="flex-1 overflow-y-auto">
-            <WinoptTab />
           </div>
         </ErrorBoundary>
       )}
