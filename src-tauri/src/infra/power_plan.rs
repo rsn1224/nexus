@@ -266,6 +266,7 @@ pub fn get_current_power_plan() -> Result<Option<String>, AppError> {
 
 impl PowerPlanController {
     /// 電源プランのGUIDから名前を取得
+    #[allow(dead_code)]
     pub fn get_plan_name(&self, guid: &str) -> Result<String, AppError> {
         // Windows APIで電源プラン名を取得
         let output = std::process::Command::new("powercfg")

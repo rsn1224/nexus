@@ -7,24 +7,18 @@ interface WingHeaderProps {
 }
 
 const WING_ACCENT: Partial<Record<string, string>> = {
-  home: 'text-accent-500',
-  performance: 'text-warm-500',
-  games: 'text-warm-500',
-  hardware: 'text-purple-500',
-  network: 'text-info-500',
-  storage: 'text-purple-500',
-  log: 'text-info-500',
+  dashboard: 'text-accent-500',
+  gaming: 'text-warm-500',
+  monitor: 'text-info-500',
+  history: 'text-purple-500',
   settings: 'text-accent-500',
 };
 
 const WING_BAR: Partial<Record<string, string>> = {
-  home: 'bg-accent-500',
-  performance: 'bg-warm-500',
-  games: 'bg-warm-500',
-  hardware: 'bg-purple-500',
-  network: 'bg-info-500',
-  storage: 'bg-purple-500',
-  log: 'bg-info-500',
+  dashboard: 'bg-accent-500',
+  gaming: 'bg-warm-500',
+  monitor: 'bg-info-500',
+  history: 'bg-purple-500',
   settings: 'bg-accent-500',
 };
 

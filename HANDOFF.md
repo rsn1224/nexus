@@ -55,7 +55,7 @@
 | **v3.0.1 Phase 4** | ✅ 完了（ErrorBoundary name prop + BoostWing/HardwareWing/LauncherWing/SettingsWing 適用） |
 | **Design Refresh v2** | ✅ 完了（Phase 1-8: カラー拡張・glass card・タイポグラフィ・KpiCard・グラフグロー・サイドバー・GameCard・モーション） |
 | **v3.1 オンボーディング Phase 1** | 🔵 pending（Cascade 実装待ち） |
-| **NEXUS v2 Phase 1: クリーンアップ** | 🔵 pending（Cascade 実装待ち） |
+| **NEXUS v2 Phase 1: クリーンアップ** | ✅ 完了（8 Rust コマンド削除 + FE 削除 + 5 Wing 化） |
 
 **最新コミット:** `8134f0e`（v2 spec.md + 型定義）
 **ブランチ:** `feature/v2-optimize-core`
@@ -204,6 +204,25 @@ src/wings/SettingsWing.tsx     — "SETTINGS — Coming Soon"
 ```
 
 **コミット:** `refactor: NEXUS v2 Phase 1 — クリーンアップ（8 Rust + FE コンポーネント削除 + 5 Wing 化）`
+
+#### Phase 1 — Cascade 記入欄
+
+**ステータス:** `done`
+
+**実装内容:**
+
+- **1-A (Rust):** `commands/launcher.rs`, `launcher_settings.rs`, `profile.rs`, `watchdog.rs`, `script.rs`, `storage.rs`, `log.rs` を削除。`cleanup.rs` から `cleanup_app_data` を除去、`revert_all_settings` を保持。`mod.rs` + `lib.rs` の `invoke_handler![]` を更新。
+- **1-B (FE):** `src/components/games/`, `log/`, `storage/`, `performance/` を削除。ストア 7 本・lib 4 本・hooks 2 本・テスト群を削除。連鎖依存（`TcpTuningTab`, `WindowsSettingsTab`, `useProcessSort` 等）も修正。
+- **1-C (Nav):** `src/types/wing.ts` の WingId を 5 Wing に更新。`navigation.ts` / `useNavStore.ts` / `Shell.tsx` / `WingHeader.tsx` / `App.tsx` / keyboard shortcuts を全更新。
+- **1-D (Wings):** `src/wings/` に `DashboardWing.tsx`, `GamingWing.tsx`, `MonitorWing.tsx`, `HistoryWing.tsx` を新規作成（`memo()` プレースホルダー）。
+- **追加修正:** `parsers/log_parser.rs` が削除済み `commands::log` を参照していたため `LogEntry`/`LogLevel` をローカル定義に変更。`NetoptWing.tsx` の WingId `'network'` → `'monitor'` に修正。
+
+**品質ゲート結果:**
+
+- ✅ `cargo check` — clean（pre-existing dead code warnings のみ）
+- ✅ `tsc --noEmit` — clean
+- ✅ `npm run check` (Biome) — clean
+- ✅ `vitest run` — 510/510 tests passed（53 test files）
 
 ---
 

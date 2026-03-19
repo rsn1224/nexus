@@ -1,4 +1,4 @@
-import { Cpu, FileText, Gamepad2, Gauge, Globe, HardDrive, Settings, Zap } from 'lucide-react';
+import { Activity, Clock, Gamepad2, Gauge, Settings } from 'lucide-react';
 import type React from 'react';
 import { memo } from 'react';
 import type { WingId } from '../../types';
@@ -13,47 +13,29 @@ type SidebarItem =
 const WING_ACTIVE_CLASSES: Partial<
   Record<string, { text: string; bg: string; shadow: string; bar: string }>
 > = {
-  home: {
+  dashboard: {
     text: 'text-accent-500',
     bg: 'bg-accent-500/15',
     shadow: 'shadow-accent-500/20',
     bar: 'bg-accent-500',
   },
-  performance: {
+  gaming: {
     text: 'text-warm-500',
     bg: 'bg-warm-500/15',
     shadow: 'shadow-warm-500/20',
     bar: 'bg-warm-500',
   },
-  games: {
-    text: 'text-warm-500',
-    bg: 'bg-warm-500/15',
-    shadow: 'shadow-warm-500/20',
-    bar: 'bg-warm-500',
-  },
-  hardware: {
-    text: 'text-purple-500',
-    bg: 'bg-purple-500/15',
-    shadow: 'shadow-purple-500/20',
-    bar: 'bg-purple-500',
-  },
-  network: {
+  monitor: {
     text: 'text-info-500',
     bg: 'bg-info-500/15',
     shadow: 'shadow-info-500/20',
     bar: 'bg-info-500',
   },
-  storage: {
+  history: {
     text: 'text-purple-500',
     bg: 'bg-purple-500/15',
     shadow: 'shadow-purple-500/20',
     bar: 'bg-purple-500',
-  },
-  log: {
-    text: 'text-info-500',
-    bg: 'bg-info-500/15',
-    shadow: 'shadow-info-500/20',
-    bar: 'bg-info-500',
   },
   settings: {
     text: 'text-accent-500',
@@ -64,26 +46,20 @@ const WING_ACTIVE_CLASSES: Partial<
 };
 
 const WING_SHORTCUT: Partial<Record<string, string>> = {
-  home: 'Ctrl+1',
-  performance: 'Ctrl+2',
-  games: 'Ctrl+3',
-  hardware: 'Ctrl+4',
-  network: 'Ctrl+5',
-  storage: 'Ctrl+6',
-  settings: 'Ctrl+7',
+  dashboard: 'Ctrl+1',
+  gaming: 'Ctrl+2',
+  monitor: 'Ctrl+3',
+  history: 'Ctrl+4',
+  settings: 'Ctrl+5',
 };
 
 const SIDEBAR_ITEMS: SidebarItem[] = [
-  { id: 'home', label: 'ダッシュボード', icon: Gauge },
+  { id: 'dashboard', label: 'ダッシュボード', icon: Gauge },
   { id: 'sep-1' },
-  { id: 'performance', label: 'パフォーマンス', icon: Zap },
-  { id: 'games', label: 'ゲーム', icon: Gamepad2 },
+  { id: 'gaming', label: 'ゲーミング', icon: Gamepad2 },
+  { id: 'monitor', label: 'モニター', icon: Activity },
+  { id: 'history', label: '履歴', icon: Clock },
   { id: 'sep-2' },
-  { id: 'hardware', label: 'ハードウェア', icon: Cpu },
-  { id: 'network', label: 'ネットワーク', icon: Globe },
-  { id: 'storage', label: 'ストレージ', icon: HardDrive },
-  { id: 'sep-3' },
-  { id: 'log', label: 'ログ', icon: FileText },
   { id: 'settings', label: '設定', icon: Settings },
 ];
 

@@ -15,9 +15,8 @@ mod state;
 mod types;
 
 use crate::commands::{
-    ai, app_settings, boost, cleanup, core_parking, frame_time, hardware, health_check, launcher,
-    launcher_settings, log, memory, netopt, ops, profile, pulse, script, session, storage, timer,
-    watchdog,
+    ai, app_settings, boost, cleanup, core_parking, frame_time, hardware, health_check, memory,
+    netopt, ops, pulse, session, timer,
 };
 #[cfg(windows)]
 use crate::commands::{windows_settings, winopt};
@@ -112,13 +111,6 @@ macro_rules! invoke_handler {
             hardware::save_eco_mode_config,
             // BOOST
             boost::run_boost,
-            // LAUNCHER
-            launcher::scan_steam_games,
-            launcher::launch_game,
-            // LAUNCHER SETTINGS
-            launcher_settings::get_launcher_settings_cmd,
-            launcher_settings::save_launcher_settings_cmd,
-            launcher_settings::migrate_launcher_settings,
             // OPS
             ops::list_processes,
             ops::kill_process,
@@ -139,36 +131,9 @@ macro_rules! invoke_handler {
             netopt::apply_gaming_network_preset,
             netopt::reset_network_defaults,
             netopt::measure_network_quality,
-            // STORAGE
-            storage::get_storage_info,
-            storage::cleanup_temp_files,
-            storage::cleanup_recycle_bin,
-            storage::cleanup_system_cache,
-            storage::run_full_cleanup,
-            storage::analyze_disk_usage,
-            // LOG
-            log::get_system_logs,
-            log::get_application_logs,
-            log::analyze_logs,
-            log::export_logs,
             // APP SETTINGS
             app_settings::get_app_settings,
             app_settings::save_app_settings,
-            // GAME PROFILES
-            profile::list_game_profiles,
-            profile::get_game_profile,
-            profile::save_game_profile,
-            profile::delete_game_profile,
-            profile::apply_game_profile,
-            profile::revert_game_profile,
-            profile::start_game_monitor,
-            profile::stop_game_monitor,
-            profile::get_cpu_topology,
-            profile::set_process_affinity,
-            profile::get_process_affinity,
-            profile::get_suspend_candidates,
-            profile::export_game_profile,
-            profile::import_game_profile,
             // CORE PARKING
             core_parking::get_core_parking_state,
             core_parking::set_core_parking,
@@ -186,29 +151,14 @@ macro_rules! invoke_handler {
             session::delete_session,
             session::compare_sessions,
             session::update_session_note,
-            // WATCHDOG
-            watchdog::get_watchdog_rules,
-            watchdog::add_watchdog_rule,
-            watchdog::update_watchdog_rule,
-            watchdog::remove_watchdog_rule,
-            watchdog::get_watchdog_events,
-            watchdog::get_watchdog_presets,
             // CLEANUP
             cleanup::revert_all_settings,
-            cleanup::cleanup_app_data,
             // MEMORY CLEANER
             memory::get_memory_cleaner_config,
             memory::update_memory_cleaner_config,
             memory::manual_memory_cleanup,
             memory::start_auto_memory_cleanup,
             memory::stop_auto_memory_cleanup,
-            // SCRIPT
-            script::list_scripts,
-            script::add_script,
-            script::delete_script,
-            script::execute_script,
-            script::list_execution_logs,
-            script::clear_execution_logs,
             // ─── WINDOWS ONLY (渡された追加コマンド) ───
             $($windows_only,)*
         ]
@@ -237,8 +187,6 @@ fn build_invoke_handler() -> impl Fn(tauri::ipc::Invoke) -> bool {
         // SETTINGS ADVISOR
         windows_settings::get_settings_advice,
         windows_settings::apply_recommendation,
-        // POWER PLAN
-        profile::get_current_power_plan,
     ]
 }
 

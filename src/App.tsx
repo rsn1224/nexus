@@ -7,29 +7,23 @@ import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
 // ─── Lazy Wing imports ──────────────────────────────────────────────────────
-const HomeWing = lazy(() => import('./components/home/HomeWing'));
-const PerformanceWing = lazy(() => import('./components/performance/BoostWing'));
-const GamesWing = lazy(() => import('./components/games/LauncherWing'));
+const DashboardWing = lazy(() => import('./wings/DashboardWing'));
+const GamingWing = lazy(() => import('./wings/GamingWing'));
+const MonitorWing = lazy(() => import('./wings/MonitorWing'));
+const HistoryWing = lazy(() => import('./wings/HistoryWing'));
 const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
-const HardwareWing = lazy(() => import('./components/hardware/HardwareWing'));
-const LogWing = lazy(() => import('./components/log/LogWing'));
-const NetworkWing = lazy(() => import('./components/network/NetoptWing'));
-const StorageWing = lazy(() => import('./components/storage/StorageWing'));
 
 const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
-  home: HomeWing,
-  performance: PerformanceWing,
-  games: GamesWing,
+  dashboard: DashboardWing,
+  gaming: GamingWing,
+  monitor: MonitorWing,
+  history: HistoryWing,
   settings: SettingsWing,
-  hardware: HardwareWing,
-  log: LogWing,
-  network: NetworkWing,
-  storage: StorageWing,
 };
 
 export default function App(): React.ReactElement {
-  const [activeWing, setActiveWing] = useState<WingId>('home');
-  const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['home']));
+  const [activeWing, setActiveWing] = useState<WingId>('dashboard');
+  const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['dashboard']));
 
   useKeyboardShortcuts();
 

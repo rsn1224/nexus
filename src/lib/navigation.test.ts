@@ -4,17 +4,8 @@ import type { WingNavState } from '../types/navigation';
 import { ALL_WING_IDS, buildBreadcrumbs, makeInitialWingStates, WING_LABELS } from './navigation';
 
 describe('WING_LABELS', () => {
-  it('全8ウィングのラベルが定義されている', () => {
-    const expectedIds: WingId[] = [
-      'home',
-      'performance',
-      'games',
-      'hardware',
-      'network',
-      'storage',
-      'settings',
-      'log',
-    ];
+  it('全5ウィングのラベルが定義されている', () => {
+    const expectedIds: WingId[] = ['dashboard', 'gaming', 'monitor', 'history', 'settings'];
     for (const id of expectedIds) {
       expect(WING_LABELS[id]).toBeDefined();
       expect(typeof WING_LABELS[id]).toBe('string');
@@ -29,21 +20,12 @@ describe('WING_LABELS', () => {
 });
 
 describe('ALL_WING_IDS', () => {
-  it('8つのウィングIDを含む', () => {
-    expect(ALL_WING_IDS).toHaveLength(8);
+  it('5つのウィングIDを含む', () => {
+    expect(ALL_WING_IDS).toHaveLength(5);
   });
 
   it('全ての必須IDが含まれている', () => {
-    const required: WingId[] = [
-      'home',
-      'performance',
-      'games',
-      'hardware',
-      'network',
-      'storage',
-      'settings',
-      'log',
-    ];
+    const required: WingId[] = ['dashboard', 'gaming', 'monitor', 'history', 'settings'];
     for (const id of required) {
       expect(ALL_WING_IDS).toContain(id);
     }
@@ -51,9 +33,9 @@ describe('ALL_WING_IDS', () => {
 });
 
 describe('makeInitialWingStates', () => {
-  it('全8ウィングの初期状態を生成する', () => {
+  it('全5ウィングの初期状態を生成する', () => {
     const states = makeInitialWingStates();
-    expect(Object.keys(states)).toHaveLength(8);
+    expect(Object.keys(states)).toHaveLength(5);
   });
 
   it('各ウィングの初期状態が正しい構造を持つ', () => {
@@ -83,17 +65,17 @@ describe('buildBreadcrumbs', () => {
 
   it('ウィングのみ: ラベル1つ、onClickはnull', () => {
     const state: WingNavState = { activeTab: null, subpageStack: [] };
-    const crumbs = buildBreadcrumbs('home', state, mockActions);
+    const crumbs = buildBreadcrumbs('dashboard', state, mockActions);
     expect(crumbs).toHaveLength(1);
-    expect(crumbs[0].label).toBe('HOME');
+    expect(crumbs[0].label).toBe('DASHBOARD');
     expect(crumbs[0].onClick).toBeNull();
   });
 
   it('ウィング+タブ: ラベル2つ、ウィングにonClick、タブはnull', () => {
     const state: WingNavState = { activeTab: 'profiles', subpageStack: [] };
-    const crumbs = buildBreadcrumbs('performance', state, mockActions);
+    const crumbs = buildBreadcrumbs('gaming', state, mockActions);
     expect(crumbs).toHaveLength(2);
-    expect(crumbs[0].label).toBe('PERFORMANCE');
+    expect(crumbs[0].label).toBe('GAMING');
     expect(crumbs[0].onClick).not.toBeNull();
     expect(crumbs[1].label).toBe('PROFILES');
     expect(crumbs[1].onClick).toBeNull();
@@ -104,9 +86,9 @@ describe('buildBreadcrumbs', () => {
       activeTab: 'profiles',
       subpageStack: [{ title: 'Valorant', id: 'val', params: {} }],
     };
-    const crumbs = buildBreadcrumbs('performance', state, mockActions);
+    const crumbs = buildBreadcrumbs('gaming', state, mockActions);
     expect(crumbs).toHaveLength(3);
-    expect(crumbs[0].label).toBe('PERFORMANCE');
+    expect(crumbs[0].label).toBe('GAMING');
     expect(crumbs[1].label).toBe('PROFILES');
     expect(crumbs[2].label).toBe('VALORANT');
     expect(crumbs[2].onClick).toBeNull();
@@ -114,9 +96,9 @@ describe('buildBreadcrumbs', () => {
 
   it('ウィングのonClickがclearSubpagesを呼ぶ', () => {
     const state: WingNavState = { activeTab: 'tab1', subpageStack: [] };
-    const crumbs = buildBreadcrumbs('network', state, mockActions);
+    const crumbs = buildBreadcrumbs('monitor', state, mockActions);
     crumbs[0].onClick?.();
-    expect(mockActions.clearSubpages).toHaveBeenCalledWith('network');
+    expect(mockActions.clearSubpages).toHaveBeenCalledWith('monitor');
   });
 
   it('タブのonClickがサブページ有りのときclearSubpages+setTabを呼ぶ', () => {
@@ -124,11 +106,11 @@ describe('buildBreadcrumbs', () => {
       activeTab: 'overview',
       subpageStack: [{ title: 'Detail', id: 'd1', params: {} }],
     };
-    const crumbs = buildBreadcrumbs('hardware', state, mockActions);
+    const crumbs = buildBreadcrumbs('history', state, mockActions);
     expect(crumbs[1].onClick).not.toBeNull();
     crumbs[1].onClick?.();
-    expect(mockActions.clearSubpages).toHaveBeenCalledWith('hardware');
-    expect(mockActions.setTab).toHaveBeenCalledWith('hardware', 'overview');
+    expect(mockActions.clearSubpages).toHaveBeenCalledWith('history');
+    expect(mockActions.setTab).toHaveBeenCalledWith('history', 'overview');
   });
 
   it('複数サブページの中間クリックでpopSubpageが正しい回数呼ばれる', () => {
@@ -140,7 +122,7 @@ describe('buildBreadcrumbs', () => {
         { title: 'C', id: 'c', params: {} },
       ],
     };
-    const crumbs = buildBreadcrumbs('games', state, mockActions);
+    const crumbs = buildBreadcrumbs('gaming', state, mockActions);
     expect(crumbs).toHaveLength(5);
     // Click on 'A' (index 2), should pop 2 times (B and C)
     crumbs[2].onClick?.();

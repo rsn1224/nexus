@@ -1,12 +1,4 @@
-export type WingId =
-  | 'home'
-  | 'performance' // 旧 'boost'
-  | 'games' // 旧 'launcher'
-  | 'settings'
-  | 'hardware'
-  | 'log'
-  | 'network' // 旧 'netopt'
-  | 'storage';
+export type WingId = 'dashboard' | 'gaming' | 'monitor' | 'history' | 'settings';
 
 export interface WingStatus {
   id: WingId;

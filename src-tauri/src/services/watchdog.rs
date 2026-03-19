@@ -317,6 +317,7 @@ impl WatchdogEngine {
 }
 
 /// デフォルトプリセットルール
+#[allow(dead_code)]
 pub fn default_presets() -> Vec<WatchdogRule> {
     vec![
         WatchdogRule {

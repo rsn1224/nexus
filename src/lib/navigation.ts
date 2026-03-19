@@ -3,26 +3,14 @@ import type { Breadcrumb, SubpageEntry, WingNavState } from '../types/navigation
 
 /** Wing の表示名マップ（パンくず用） */
 export const WING_LABELS: Record<WingId, string> = {
-  home: 'HOME',
-  performance: 'PERFORMANCE',
-  games: 'GAMES',
-  hardware: 'HARDWARE',
-  network: 'NETWORK',
-  storage: 'STORAGE',
+  dashboard: 'DASHBOARD',
+  gaming: 'GAMING',
+  monitor: 'MONITOR',
+  history: 'HISTORY',
   settings: 'SETTINGS',
-  log: 'LOG',
 };
 
-export const ALL_WING_IDS: WingId[] = [
-  'home',
-  'performance',
-  'games',
-  'hardware',
-  'network',
-  'storage',
-  'settings',
-  'log',
-];
+export const ALL_WING_IDS: WingId[] = ['dashboard', 'gaming', 'monitor', 'history', 'settings'];
 
 export function makeInitialWingStates(): Record<WingId, WingNavState> {
   const states = {} as Record<WingId, WingNavState>;

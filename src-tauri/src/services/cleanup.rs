@@ -167,6 +167,7 @@ fn revert_game_profile(state: &State<'_, SharedState>, items: &mut Vec<RevertIte
 
 /// nexus データ削除（アンインストール用）
 /// バックアップ JSON + プロファイル JSON + アプリ設定 + keyring を削除
+#[allow(dead_code)]
 pub fn cleanup_app_data(app: tauri::AppHandle) -> Vec<RevertItem> {
     info!("cleanup_app_data: アプリデータ削除開始");
     let mut items: Vec<RevertItem> = Vec::new();
@@ -203,6 +204,7 @@ pub fn cleanup_app_data(app: tauri::AppHandle) -> Vec<RevertItem> {
     items
 }
 
+#[allow(dead_code)]
 fn get_backup_path() -> PathBuf {
     let local_app_data = std::env::var("LOCALAPPDATA").unwrap_or_default();
     PathBuf::from(local_app_data)
@@ -210,6 +212,7 @@ fn get_backup_path() -> PathBuf {
         .join("winopt_backup.json")
 }
 
+#[allow(dead_code)]
 fn delete_file_item(path: &std::path::Path, label: &str, items: &mut Vec<RevertItem>) {
     if path.exists() {
         match std::fs::remove_file(path) {
