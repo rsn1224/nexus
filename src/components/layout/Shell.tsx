@@ -143,8 +143,15 @@ const Shell = memo(function Shell({
                   <Icon size={20} />
                 </button>
                 {/* Tooltip */}
-                <div className="absolute left-full ml-2 top-1/2 -translate-y-1/2 px-3 py-1.5 card-glass-elevated rounded-lg text-xs text-text-primary whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
-                  {item.label}
+                <div className="absolute left-full ml-3 top-1/2 -translate-y-1/2 px-3 py-1.5 card-glass-elevated rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-150 pointer-events-none z-[200] border border-white/10 shadow-xl shadow-black/60">
+                  <div className="flex flex-col gap-0.5">
+                    <span className="text-xs font-bold text-text-primary">{item.label}</span>
+                    {WING_SHORTCUT[item.id] && (
+                      <span className="text-[10px] font-mono text-text-muted">
+                        {WING_SHORTCUT[item.id]}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             );
