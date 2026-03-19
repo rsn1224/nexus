@@ -216,19 +216,24 @@ pub fn get_power_estimate(
         .lock()
         .map_err(|e| AppError::Command(format!("Stateロックエラー: {}", e)))?;
 
-    // Get current CPU and GPU usage
     s.sys.refresh_cpu_all();
     let cpu_percent = s.sys.global_cpu_usage();
 
-    // Get hardware info for names
-    let hw_info = get_hardware_info(state.clone())?;
+    // CPU 名を軽量に取得（get_hardware_info の再帰呼び出しを回避）
+    let cpu_name = s
+        .sys
+        .cpus()
+        .first()
+        .map(|cpu: &sysinfo::Cpu| cpu.brand().to_string())
+        .unwrap_or_else(|| "Unknown CPU".to_string());
 
-    let estimate = estimate_power(
-        &hw_info.cpu_name,
-        hw_info.gpu_name.as_deref(),
-        cpu_percent,
-        hw_info.gpu_usage_percent,
-    );
+    // GPU 情報はキャッシュから取得（NVML 呼び出しを回避）
+    let gpu_name = s.gpu_static.as_ref().and_then(|g| g.name.clone());
+    let gpu_usage = crate::services::hardware::get_gpu_dynamic_info().usage_percent;
+
+    drop(s); // ロック早期解放
+
+    let estimate = estimate_power(&cpu_name, gpu_name.as_deref(), cpu_percent, gpu_usage);
 
     Ok(estimate)
 }
