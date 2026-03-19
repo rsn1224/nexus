@@ -1,7 +1,14 @@
-import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import log from '../lib/logger';
 import { formatBytes, getHealthColor, getUsagePercentage } from '../lib/storage';
+import {
+  analyzeDiskUsage as cmdAnalyzeDiskUsage,
+  cleanupRecycleBin as cmdCleanupRecycleBin,
+  cleanupSystemCache as cmdCleanupSystemCache,
+  cleanupTempFiles as cmdCleanupTempFiles,
+  fetchStorageInfo as cmdFetchStorageInfo,
+  runFullCleanup as cmdRunFullCleanup,
+} from '../lib/storageCommands';
 import { extractErrorMessage } from '../lib/tauri';
 import type { CleanupResult, StorageInfo } from '../types';
 
@@ -35,7 +42,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   fetchStorageInfo: async () => {
     set({ isLoading: true, error: null });
     try {
-      const info = await invoke<StorageInfo>('get_storage_info');
+      const info = await cmdFetchStorageInfo();
       set({
         storageInfo: info,
         isLoading: false,
@@ -56,7 +63,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   cleanupTempFiles: async () => {
     set({ isLoading: true, error: null });
     try {
-      const freedBytes = await invoke<number>('cleanup_temp_files');
+      const freedBytes = await cmdCleanupTempFiles();
       log.info('temp files cleanup freed: %d bytes', freedBytes);
 
       // クリーンアップ後にストレージ情報を再取得
@@ -81,7 +88,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   cleanupRecycleBin: async () => {
     set({ isLoading: true, error: null });
     try {
-      const freedBytes = await invoke<number>('cleanup_recycle_bin');
+      const freedBytes = await cmdCleanupRecycleBin();
       log.info('recycle bin cleanup freed: %d bytes', freedBytes);
 
       // クリーンアップ後にストレージ情報を再取得
@@ -106,7 +113,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   cleanupSystemCache: async () => {
     set({ isLoading: true, error: null });
     try {
-      const freedBytes = await invoke<number>('cleanup_system_cache');
+      const freedBytes = await cmdCleanupSystemCache();
       log.info('system cache cleanup freed: %d bytes', freedBytes);
 
       // クリーンアップ後にストレージ情報を再取得
@@ -131,7 +138,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   runFullCleanup: async () => {
     set({ isLoading: true, error: null });
     try {
-      const result = await invoke<CleanupResult>('run_full_cleanup');
+      const result = await cmdRunFullCleanup();
       log.info('full cleanup result: %O', result);
 
       // クリーンアップ後にストレージ情報を再取得
@@ -157,7 +164,7 @@ export const useStorageStore = create<StorageStore>((set, get) => ({
   analyzeDiskUsage: async (driveName: string) => {
     set({ isLoading: true, error: null });
     try {
-      const results = await invoke<string[]>('analyze_disk_usage', { driveName });
+      const results = await cmdAnalyzeDiskUsage(driveName);
       log.info('disk usage analysis for %s: %O', driveName, results);
 
       set({
