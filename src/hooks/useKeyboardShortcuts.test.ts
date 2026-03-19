@@ -17,8 +17,12 @@ describe('useKeyboardShortcuts', () => {
 
   beforeEach(() => {
     navigateMock = vi.fn() as unknown as (wing: WingId) => void;
-    useNavStore.setState({ navigate: navigateMock });
-    useModalStore.setState({ closeSignal: 0 });
+    useNavStore.setState({
+      navigate: navigateMock,
+      activeWing: 'home',
+      wingStates: useNavStore.getInitialState().wingStates,
+    });
+    useModalStore.setState({ closeSignal: 0, isOpen: false, openCount: 0 });
   });
 
   afterEach(() => {
@@ -55,11 +59,33 @@ describe('useKeyboardShortcuts', () => {
     expect(navigateMock).toHaveBeenCalledWith('settings');
   });
 
-  it('Escape → closeSignal がインクリメントされる', () => {
+  it('Escape: モーダルが開いているとき → closeSignal がインクリメントされる', () => {
+    useModalStore.setState({ isOpen: true, openCount: 1 });
     renderHook(() => useKeyboardShortcuts());
     const before = useModalStore.getState().closeSignal;
     fireKey('Escape');
     expect(useModalStore.getState().closeSignal).toBe(before + 1);
+  });
+
+  it('Escape: モーダルなし + サブページあり → popSubpage(activeWing) を呼ぶ', () => {
+    const entry = { id: 'profile-edit', params: {}, title: 'Edit' };
+    useNavStore.setState((s) => ({
+      activeWing: 'performance',
+      wingStates: {
+        ...s.wingStates,
+        performance: { activeTab: 'profiles', subpageStack: [entry] },
+      },
+    }));
+    renderHook(() => useKeyboardShortcuts());
+    fireKey('Escape');
+    expect(useNavStore.getState().wingStates.performance.subpageStack).toHaveLength(0);
+  });
+
+  it('Escape: モーダルなし + サブページなし → closeSignal は変化しない', () => {
+    renderHook(() => useKeyboardShortcuts());
+    const before = useModalStore.getState().closeSignal;
+    fireKey('Escape');
+    expect(useModalStore.getState().closeSignal).toBe(before);
   });
 
   it('input フォーカス中は navigate を呼ばない', () => {

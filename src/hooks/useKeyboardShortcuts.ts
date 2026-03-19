@@ -21,7 +21,15 @@ export function useKeyboardShortcuts(): void {
       if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
 
       if (e.key === 'Escape') {
-        useModalStore.getState().emitClose();
+        const { isOpen, emitClose } = useModalStore.getState();
+        if (isOpen) {
+          emitClose();
+        } else {
+          const { activeWing, wingStates, popSubpage } = useNavStore.getState();
+          if (wingStates[activeWing].subpageStack.length > 0) {
+            popSubpage(activeWing);
+          }
+        }
         return;
       }
 
