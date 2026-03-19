@@ -12,13 +12,16 @@ import EmptyState from '../ui/EmptyState';
 import ErrorBanner from '../ui/ErrorBanner';
 import LoadingFallback from '../ui/LoadingFallback';
 import SectionHeader from '../ui/SectionHeader';
+import WatchdogEventLog from './WatchdogEventLog';
+import { WatchdogRuleModal } from './WatchdogRuleModal';
 
 export default function WatchdogTab() {
   const rules = useWatchdogRules();
   const events = useWatchdogEvents();
   const isLoading = useWatchdogLoading();
   const error = useWatchdogError();
-  const { fetchRules, fetchEvents, removeRule, loadPresets, updateRule } = useWatchdogActions();
+  const { fetchRules, fetchEvents, removeRule, loadPresets, updateRule, addRule } =
+    useWatchdogActions();
 
   const [showModal, setShowModal] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
@@ -47,6 +50,16 @@ export default function WatchdogTab() {
   const handleAddRule = () => {
     setEditingRule(null);
     setShowModal(true);
+  };
+
+  const handleSaveRule = (rule: WatchdogRule) => {
+    if (editingRule) {
+      void updateRule(rule);
+    } else {
+      void addRule(rule);
+    }
+    setShowModal(false);
+    setEditingRule(null);
   };
 
   const handleLoadPresets = async () => {
@@ -88,7 +101,6 @@ export default function WatchdogTab() {
 
   return (
     <div className="p-4 font-mono text-[12px]">
-      {/* Header */}
       <SectionHeader title="▶ BOOST / WATCHDOG" color="accent">
         <div className="flex gap-2">
           <Button
@@ -112,7 +124,6 @@ export default function WatchdogTab() {
 
       {isLoading && <LoadingFallback />}
 
-      {/* Rules Table */}
       {!isLoading &&
         (rules.length === 0 ? (
           <EmptyState
@@ -206,91 +217,17 @@ export default function WatchdogTab() {
           </div>
         ))}
 
-      {/* Event Log */}
-      <div className="mt-6">
-        <h3 className="mb-4 text-[11px] font-bold uppercase text-text-primary">EVENT LOG</h3>
+      <WatchdogEventLog events={events} formatTime={formatTime} />
 
-        {events.length === 0 ? (
-          <EmptyState message="NO EVENTS YET — Watchdog events will appear here when rules are triggered" />
-        ) : (
-          <div className="border border-border overflow-hidden max-h-[300px] overflow-y-auto">
-            <table className="w-full border-collapse text-[12px]">
-              <thead>
-                <tr className="bg-base-800 border-b border-border sticky top-0">
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    TIME
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    RULE
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    PROCESS
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    ACTION
-                  </th>
-                  <th className="px-3 py-[5px] text-left font-bold text-text-muted uppercase text-[10px]">
-                    RESULT
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.slice(0, 50).map((event) => (
-                  <tr
-                    key={`${event.ruleId}-${event.timestamp}`}
-                    className={`border-b border-border ${event.success ? '' : 'bg-danger-50'}`}
-                  >
-                    <td className="px-3 py-[5px]">
-                      <div className="text-text-muted text-[10px]">
-                        {formatTime(event.timestamp)}
-                      </div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div className="text-text-primary text-[11px]">{event.ruleName}</div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div className="text-text-primary text-[11px]">
-                        {event.processName} ({event.pid})
-                      </div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div className="text-accent-500 font-bold text-[11px]">
-                        {event.actionTaken}
-                      </div>
-                    </td>
-                    <td className="px-3 py-[5px]">
-                      <div
-                        className={`font-bold text-[11px] ${event.success ? 'text-success-500' : 'text-danger-500'}`}
-                      >
-                        {event.success ? 'SUCCESS' : 'FAILED'}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
-      {/* Modals would be implemented here */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
-          <div className="bg-base-900 p-6 min-w-[600px] max-w-[80vw] max-h-[80vh] overflow-y-auto">
-            <h3 className="mb-4">{editingRule ? 'EDIT RULE' : 'ADD RULE'}</h3>
-            <p>Rule modal implementation would go here</p>
-            <div className="mt-4 flex gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setShowModal(false)}
-                aria-label="ルール編集をキャンセル"
-              >
-                CANCEL
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <WatchdogRuleModal
+        isOpen={showModal}
+        onClose={() => {
+          setShowModal(false);
+          setEditingRule(null);
+        }}
+        onSave={handleSaveRule}
+        editingRule={editingRule}
+      />
 
       {showPresets && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-1000">
