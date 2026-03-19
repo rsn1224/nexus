@@ -49,9 +49,144 @@
 | **v3.0 Phase 2** | ✅ 完了（2A: assertNever→lib/assert.ts, 2B: types 前半9分割, 2C: types 後半8分割, 2D: index.ts re-exportのみ化） |
 | **v3.0 Phase 3** | ✅ 完了（3-1〜3-7: Store ロジック→lib/ 抽出 + セレクター→hooks/ 移動 + check-file-size.mjs strict 昇格） |
 | **v3.0 Phase 4** | ✅ 完了（ドキュメント最終更新 + progressWidth ヘルパー + ミューテーション閾値 + リリース） |
+| **v3.0.1 Phase 1** | 🔄 進行中（クリティカルバグ修正: subscribe リーク + alert 除去 + 確認ダイアログ） |
 
-**最新コミット:** v3.0.0
+**最新コミット:** `7d9a641`（v3.0.0 + EcoModePanel hotfix）
 **テスト:** TS 542 + Rust 230+ all green
+
+---
+
+## v3.0.1 — 包括的バグ修正 + UX 改善（Cascade 向け実装指示）
+
+> **ステータス:** ⏳ Phase 1 実装待ち
+> **ベースコミット:** `7d9a641`
+> **コミット:** Phase ごとに 1 コミット（`fix: v3.0.1 Phase N — 概要`）
+
+### AI 開発ルール（全 Phase 共通）
+
+```
+1. テストが矛盾する場合は即停止して報告せよ
+2. 既存テストの書き換え禁止（新規追加のみ）
+3. 全ファイル 200 行以下
+4. console.log / any 型 禁止
+5. 各 Phase 後に vitest run + tsc --noEmit + npm run lint を実行
+```
+
+---
+
+### Phase 1: クリティカルバグ修正
+
+**1-1. ActionRow subscribe リーク修正**
+
+ファイル: `src/components/home/ActionRow.tsx`
+
+問題: `useEffect` 内で `subscribe()` を呼んでいるが `unsubscribe()` クリーンアップがない。
+
+修正: `useEventSubscription` を使用するか、クリーンアップを追加:
+```typescript
+useEffect(() => {
+  subscribe();
+  return () => { useOpsStore.getState().unsubscribe(); };
+}, [subscribe]);
+```
+
+**1-2. alert() を ErrorBanner に置換**
+
+ファイル: `src/hooks/useWatchdogRuleForm.ts:52`
+
+問題: `alert('Rule name is required')` がネイティブ alert でアプリをブロック。
+
+修正:
+- `validationError: string | null` state を追加
+- `alert()` → `setValidationError('...')` に置換
+- WatchdogRuleModal 側で ErrorBanner 表示
+- 入力変更時にクリア
+
+DoD: `grep -r "alert(" src/ --include="*.ts" --include="*.tsx"` が 0 件
+
+**1-3. 破壊的操作の確認ダイアログ追加**
+
+(a) `src/components/settings/MaintenanceTab.tsx` — 全設定リバート
+- `handleRevertAll` に確認ステップ追加（既存の「アプリデータ削除」確認 Modal と同様のパターン）
+
+(b) `src/components/performance/ProfileTab.tsx` — プロファイル削除
+- `handleDelete` に 2 段階確認追加（SessionTab の `deleteConfirmId` パターンを適用）
+
+---
+
+### Phase 2: Store エラーハンドリング統一
+
+**対象 10 Store:**
+useBoostStore, useBottleneckStore, useEcoModeStore, useFrameTimeStore, useLogStore, useModalStore, useNavStore, useScriptStore, useTimerStore, useWatchdogStore
+
+**統一パターン:**
+```typescript
+} catch (err) {
+  const msg = err instanceof Error ? err.message : '操作に失敗しました';
+  log.error({ err }, 'storeName: 操作名失敗: %s', msg);
+  set({ error: msg });
+}
+```
+
+**必須修正:**
+- `} catch {`（サイレント catch）を全て `} catch (err) {` に変更
+- `log` import がない Store に `import log from '../lib/logger'` を追加
+
+DoD:
+- `grep "} catch {" src/` が 0 件
+- `grep "} catch {" src/lib/` が 0 件
+
+---
+
+### Phase 3: アクセシビリティ改善
+
+**3-1. ボタンの aria-label 追加:**
+
+| ファイル | 対象 |
+|---------|------|
+| GameCard.tsx | お気に入り、LAUNCH |
+| LauncherControls.tsx | スキャン、ソート |
+| BottleneckCard.tsx | 分析開始/停止 |
+| FrameTimeCard.tsx | START/STOP |
+| PerformanceTimelineCard.tsx | タブ切替 |
+| QuickActionsCard.tsx | アクション |
+| RecommendationList.tsx | 適用 |
+
+aria-label は日本語: `aria-label="お気に入りに追加"` 等
+
+**3-2. Modal フォーカストラップ:**
+- Tab キーで Modal 内フォーカスが循環するように
+- `useKeyboardShortcuts.ts` と衝突しないこと
+
+---
+
+### Phase 4: ErrorBoundary 拡充
+
+**改善対象:**
+```
+BoostWing → ErrorBoundary per tab
+HardwareWing → ErrorBoundary per section (CpuSection, GpuSection, MemorySection, EcoModePanel)
+LauncherWing → ErrorBoundary for game list
+SettingsWing → ErrorBoundary per tab
+```
+
+ルール:
+- fallback に Wing 名 + エラーメッセージ + 再試行ボタン
+- 200 行超えないこと
+
+---
+
+### 品質ゲート（全 Phase）
+
+```
+✅ npm run typecheck — zero errors
+✅ npm run lint — zero errors
+✅ npm run test — all pass
+✅ node scripts/check-file-size.mjs — all pass
+✅ grep "console\.(log|debug)" src/ --include="*.ts" --include="*.tsx" -r — 0 件
+✅ grep "} catch {" src/ — 0 件（Phase 2 以降）
+✅ grep "alert(" src/ --include="*.ts" --include="*.tsx" — 0 件（Phase 1 以降）
+```
 
 ---
 
