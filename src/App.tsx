@@ -27,11 +27,13 @@ const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
 
 export default function App(): React.ReactElement {
   const [activeWing, setActiveWing] = useState<WingId>('home');
+  const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['home']));
 
   const setNavigate = useNavStore((s) => s.setNavigate);
 
   const handleWingChange = useCallback((wing: WingId): void => {
     setActiveWing(wing);
+    setVisitedWings((prev) => new Set([...prev, wing]));
   }, []);
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function App(): React.ReactElement {
   return (
     <Shell activeWing={activeWing} onWingChange={handleWingChange}>
       {(Object.keys(WING_COMPONENTS) as WingId[]).map((wingId) => {
+        if (!visitedWings.has(wingId)) return null;
         const WingComponent = WING_COMPONENTS[wingId];
         return (
           <div

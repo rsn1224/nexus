@@ -10,7 +10,7 @@ import WinoptTab from '../performance/WinoptTab';
 import { ErrorBanner, TabBar } from '../ui';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
-import WindowsSettingsTab from '../windows/WindowsSettingsTab';
+import WindowsSettingsTab from './WindowsSettingsTab';
 
 const settingsTabs = [
   { id: 'app', label: 'アプリ設定' },
