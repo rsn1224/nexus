@@ -31,3 +31,6 @@ reports/
 *.njsproj
 *.sln
 *.sw?
+
+# MCP server database
+sqlite_mcp_server.db
