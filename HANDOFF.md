@@ -64,7 +64,7 @@
 | **NEXUS v2 Phase 8: HISTORY Wing** | ✅ 完了（HistoryWing + SessionList + TrendChart） |
 | **NEXUS v2 Phase 10: UT** | ✅ 完了（healthScore.test + suggestionEngine.test + useHealthStore.test + useOptimizeStore.test） |
 | **NEXUS v2 WingId リネーム** | ✅ 完了（dashboard→core, gaming→arsenal, monitor→tactics, history→logs） |
-| **NEXUS v2 Stitch デザイン実装** | 🔵 pending（Cascade 実装待ち） |
+| **NEXUS v2 Stitch デザイン実装** | � review（Phase D-1 完了、レビュー待ち） |
 
 **最新コミット:** `9b21268`（Stitch デザイン WingId 変更 + 仕様書）
 **ブランチ:** `feature/v2-optimize-core`
