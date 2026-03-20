@@ -59,7 +59,7 @@ const ScanStep = memo(function ScanStep({ onNext, onSkip }: Props): React.ReactE
             ),
           );
         }
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           setTasks((prev) =>
             prev.map((t, i) => (i === 0 ? { ...t, status: 'error', detail: 'Scan failed' } : t)),
