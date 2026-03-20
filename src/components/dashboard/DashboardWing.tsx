@@ -7,13 +7,13 @@ import { usePulseStore } from '../../stores/usePulseStore';
 import type { TcpTuningState, TimerResolutionState, WindowsSettings } from '../../types';
 import { PowerPlan, VisualEffects } from '../../types';
 import type { HealthInput } from '../../types/v2';
-import { AiAdvisorLog } from './AiAdvisorLog';
-import { HardwareTelemetry } from './HardwareTelemetry';
-import { IntegrityRing } from './IntegrityRing';
-import { SuggestionCard } from './SuggestionCard';
+import FooterMetrics from './FooterMetrics';
+import RingCore from './RingCore';
+import StitchAiPanel from './StitchAiPanel';
+import TelemetryBentoCard from './TelemetryBentoCard';
 
 // =============================================================================
-// DashboardWing — 3-column Stitch HUD layout
+// DashboardWing — Stitch HUD layout
 // =============================================================================
 
 async function buildHealthInput(): Promise<HealthInput> {
@@ -67,16 +67,35 @@ export const DashboardWing = memo(function DashboardWing() {
     void refresh();
   }, [refresh]);
 
-  const handleOptimizeNow = useCallback((): void => {
-    const pending = suggestions.filter(
-      (s) => !s.isApplied && s.actions.length > 0 && s.priority === 'critical',
-    );
-    for (const s of pending) {
-      void applySuggestion(s.id);
-    }
-  }, [suggestions, applySuggestion]);
+  const handleApplySuggestion = useCallback(
+    (suggestionText: string) => {
+      const suggestion = suggestions.find((s) => !s.isApplied && s.title.includes(suggestionText));
+      if (suggestion) {
+        void applySuggestion(suggestion.id);
+      }
+    },
+    [suggestions, applySuggestion],
+  );
 
-  const topSuggestions = suggestions.filter((s) => !s.isApplied).slice(0, 2);
+  const handleRollback = useCallback(() => {
+    const applied = suggestions.filter((s) => s.isApplied);
+    for (const s of applied) {
+      void rollbackSuggestion(s.id);
+    }
+  }, [suggestions, rollbackSuggestion]);
+
+  const suggestionTexts = suggestions
+    .filter((s) => !s.isApplied)
+    .slice(0, 2)
+    .map((s) => s.title);
+
+  // Prepare telemetry data
+  const cpuUsage = latestSnapshot?.cpuPercent ?? 0;
+  const cpuTemp = latestSnapshot?.cpuTempC ?? 0;
+  const memUsed = latestSnapshot ? (latestSnapshot.memUsedMb / 1024).toFixed(1) : '0';
+  const memTotal = latestSnapshot ? (latestSnapshot.memTotalMb / 1024).toFixed(0) : '16';
+
+  const score = typeof healthScore === 'number' ? healthScore : 0;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -94,36 +113,89 @@ export const DashboardWing = memo(function DashboardWing() {
       )}
 
       <div className="grid grid-cols-12 gap-6 p-6 flex-1 overflow-y-auto">
-        {/* Left: Hardware Telemetry */}
-        <div className="col-span-3">
-          <HardwareTelemetry snapshot={latestSnapshot} />
-        </div>
-
-        {/* Center: Integrity Ring + Suggestion Cards */}
-        <div className="col-span-6 flex flex-col">
-          <IntegrityRing
-            healthScore={healthScore}
+        {/* Top: Ring Core spanning full width */}
+        <div className="col-span-12">
+          <RingCore
+            score={score}
             loading={loading}
-            onOptimizeNow={handleOptimizeNow}
+            statusLabel={score >= 80 ? 'OPTIMAL' : score >= 60 ? 'GOOD' : 'NEEDS ATTENTION'}
           />
-          {topSuggestions.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 mt-8">
-              {topSuggestions.map((s) => (
-                <SuggestionCard
-                  key={s.id}
-                  suggestion={s}
-                  onApply={applySuggestion}
-                  onRollback={rollbackSuggestion}
-                  loading={loading}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
-        {/* Right: AI Advisor */}
-        <div className="col-span-3">
-          <AiAdvisorLog suggestions={suggestions} />
+        {/* Middle: Telemetry Cards */}
+        <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <TelemetryBentoCard
+            icon="memory"
+            category="Processor"
+            title="CPU LOAD"
+            value={cpuUsage.toFixed(0)}
+            unit="%"
+            barPercent={cpuUsage}
+            barColor={
+              cpuUsage > 80 ? 'bg-danger-500' : cpuUsage > 60 ? 'bg-warning-500' : 'bg-accent-500'
+            }
+            glowClass={cpuUsage > 80 ? 'glow-red' : cpuUsage > 60 ? 'glow-warm' : 'glow-green'}
+            detail="CORE_01: 4.2GHz"
+            status={cpuUsage > 80 ? 'HIGH LOAD' : cpuUsage > 60 ? 'MODERATE' : 'OPTIMAL'}
+            statusColor={
+              cpuUsage > 80
+                ? 'text-danger-500'
+                : cpuUsage > 60
+                  ? 'text-warning-500'
+                  : 'text-accent-500'
+            }
+          />
+
+          <TelemetryBentoCard
+            icon="device_thermostat"
+            category="Graphics"
+            title="GPU TEMP"
+            value={cpuTemp.toFixed(0)}
+            unit="C"
+            barPercent={(cpuTemp / 100) * 100}
+            barColor={
+              cpuTemp > 80 ? 'bg-danger-500' : cpuTemp > 70 ? 'bg-warning-500' : 'bg-accent-500'
+            }
+            glowClass={cpuTemp > 80 ? 'glow-red' : cpuTemp > 70 ? 'glow-warm' : 'glow-green'}
+            detail="GPU_01: 1.8GHz"
+            status={cpuTemp > 80 ? 'OVERHEAT' : cpuTemp > 70 ? 'WARM' : 'HEALTHY'}
+            statusColor={
+              cpuTemp > 80
+                ? 'text-danger-500'
+                : cpuTemp > 70
+                  ? 'text-warning-500'
+                  : 'text-accent-500'
+            }
+          />
+
+          <TelemetryBentoCard
+            icon="storage"
+            category="Memory"
+            title="RAM USAGE"
+            value={memUsed}
+            unit="GB"
+            barPercent={(parseFloat(memUsed) / parseFloat(memTotal)) * 100}
+            barColor="bg-accent-500"
+            glowClass="glow-green"
+            detail={`Total: ${memTotal}GB`}
+            status="HEALTHY"
+            statusColor="text-accent-500"
+          />
+        </div>
+
+        {/* Bottom: AI Panel */}
+        <div className="col-span-12">
+          <StitchAiPanel
+            suggestions={suggestionTexts}
+            onApply={handleApplySuggestion}
+            onRollback={handleRollback}
+            loading={loading}
+          />
+        </div>
+
+        {/* Footer */}
+        <div className="col-span-12">
+          <FooterMetrics />
         </div>
       </div>
     </div>
