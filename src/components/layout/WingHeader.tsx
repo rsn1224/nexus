@@ -10,7 +10,7 @@ const WING_ACCENT: Partial<Record<string, string>> = {
   dashboard: 'text-accent-500',
   gaming: 'text-warm-500',
   monitor: 'text-info-500',
-  history: 'text-purple-500',
+  history: 'text-amber-500',
   settings: 'text-accent-500',
 };
 
@@ -18,7 +18,7 @@ const WING_BAR: Partial<Record<string, string>> = {
   dashboard: 'bg-accent-500',
   gaming: 'bg-warm-500',
   monitor: 'bg-info-500',
-  history: 'bg-purple-500',
+  history: 'bg-amber-500',
   settings: 'bg-accent-500',
 };
 

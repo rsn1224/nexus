@@ -34,11 +34,11 @@ export const StitchLogPanel = memo(function StitchLogPanel(): React.ReactElement
   const [inputValue, setInputValue] = useState('');
 
   return (
-    <div className="w-80 border-l border-nexus-border bg-nexus-surface flex flex-col h-full">
+    <div className="w-80 border-l border-border-subtle bg-base-700 flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-nexus-border">
-        <div className="text-sm text-nexus-text font-bold mb-1">AI アドバイザー</div>
-        <div className="text-xs text-nexus-label font-mono uppercase tracking-widest">
+      <div className="p-4 border-b border-border-subtle">
+        <div className="text-sm text-text-primary font-bold mb-1">AI アドバイザー</div>
+        <div className="text-xs text-text-secondary font-mono uppercase tracking-widest">
           STITCH_INTERACTION_LOG
         </div>
       </div>
@@ -46,29 +46,29 @@ export const StitchLogPanel = memo(function StitchLogPanel(): React.ReactElement
       {/* Log entries */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {MOCK_LOGS.map((log) => (
-          <div key={log.id} className="bg-nexus-surface2 rounded p-3">
+          <div key={log.id} className="bg-base-600 rounded p-3">
             {/* Timestamp */}
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-1.5 h-1.5 bg-nexus-green rounded-full pulse-node" />
-              <div className="text-nexus-green font-mono text-xs">
+              <div className="w-1.5 h-1.5 bg-accent-500 rounded-full pulse-node" />
+              <div className="text-accent-500 font-mono text-xs">
                 STITCH {/* */}
                 {log.timestamp}
               </div>
             </div>
 
             {/* Title */}
-            <div className="text-sm text-nexus-text font-medium mb-1">{log.title}</div>
+            <div className="text-sm text-text-primary font-medium mb-1">{log.title}</div>
 
             {/* Message */}
-            <div className="text-xs text-nexus-muted">{log.message}</div>
+            <div className="text-xs text-text-muted">{log.message}</div>
           </div>
         ))}
       </div>
 
       {/* Input section */}
-      <div className="p-4 border-t border-nexus-border">
+      <div className="p-4 border-t border-border-subtle">
         <div className="flex items-center gap-2 mb-2">
-          <div className="text-xs text-nexus-green font-mono">REPLY_LINK_ACTIVE</div>
+          <div className="text-xs text-accent-500 font-mono">REPLY_LINK_ACTIVE</div>
         </div>
 
         <div className="flex gap-2">
@@ -77,12 +77,12 @@ export const StitchLogPanel = memo(function StitchLogPanel(): React.ReactElement
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="> INPUT_SYSTEM_COMMAND_"
-            className="flex-1 bg-nexus-surface2 border border-nexus-border rounded px-3 py-2 text-xs text-nexus-text font-mono placeholder-nexus-muted focus:outline-none focus:border-nexus-cyan"
+            className="flex-1 bg-base-600 border border-border-subtle rounded px-3 py-2 text-xs text-text-primary font-mono placeholder-text-muted focus:outline-none focus:border-info-500"
           />
           <button
             type="button"
             title="コマンドを送信"
-            className="p-2 bg-nexus-cyan text-black rounded hover:bg-nexus-green transition-colors"
+            className="p-2 bg-info-500 text-black rounded hover:bg-accent-500 transition-colors"
           >
             <Send size={14} />
           </button>

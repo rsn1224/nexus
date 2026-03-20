@@ -21,7 +21,7 @@ export const ArsenalTabBar = memo(function ArsenalTabBar({
 
   return (
     <div className="px-6 pb-4">
-      <div className="flex gap-6 border-b border-nexus-border">
+      <div className="flex gap-6 border-b border-border-subtle">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -29,8 +29,8 @@ export const ArsenalTabBar = memo(function ArsenalTabBar({
             onClick={() => onTabChange(tab.id)}
             className={`pb-3 px-1 border-b-2 transition-all font-mono text-xs uppercase tracking-widest ${
               activeTab === tab.id
-                ? 'border-nexus-cyan text-nexus-cyan'
-                : 'border-transparent text-nexus-muted hover:text-nexus-text hover:border-nexus-border'
+                ? 'border-info-500 text-info-500'
+                : 'border-transparent text-text-muted hover:text-text-primary hover:border-border-subtle'
             }`}
           >
             {tab.label}

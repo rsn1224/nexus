@@ -25,10 +25,10 @@
   --color-warm-300: #eef5ff;
 
   /* Warning/Amber — 黄色警告 */
-  --color-purple-600: #c87800;
-  --color-purple-500: #ffd700;
-  --color-purple-400: #fbbf24;
-  --color-purple-300: #fde68a;
+  --color-amber-600: #c87800;
+  --color-amber-500: #ffd700;
+  --color-amber-400: #fbbf24;
+  --color-amber-300: #fde68a;
 
   /* Info: Cyan/Teal — 情報 */
   --color-info-600: #0099cc;
@@ -58,7 +58,7 @@
 
   /* ─── TYPOGRAPHIC ARRAY（Stitch 確定値） ───────────── */
   --font-sans: "Inter", "system-ui", sans-serif; /* PRIMARY: Inter */
-  --font-mono: "Inter", ui-monospace, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 * {
@@ -139,14 +139,14 @@
     color: var(--color-text-secondary);
   }
 
-  /* DATA_STREAM: B612 Mono 700 / Telemetry Display */
+  /* DATA_STREAM: Monospace 700 / Telemetry Display */
   .type-data {
     font-family: var(--font-mono);
     font-weight: 700;
     color: var(--color-accent-500);
   }
 
-  /* System Output: B612 Mono 400 */
+  /* System Output: Monospace 400 */
   .type-system {
     font-family: var(--font-mono);
     font-weight: 400;

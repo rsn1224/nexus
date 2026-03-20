@@ -21,12 +21,12 @@ export const ControlInput = memo(function ControlInput({
   className = '',
 }: ControlInputProps): React.ReactElement {
   const baseInput =
-    'bg-nexus-surface border border-nexus-border text-nexus-green font-mono text-sm px-3 py-2 w-full focus:border-nexus-green/60 focus:outline-none focus:shadow-[0_0_8px_rgba(68,214,44,0.2)] transition-all duration-150';
+    'bg-base-700 border border-border-subtle text-accent-500 font-mono text-sm px-3 py-2 w-full focus:border-accent-500/60 focus:outline-none focus:shadow-[0_0_8px_rgba(68,214,44,0.2)] transition-all duration-150';
 
   return (
     <div className={className}>
       {/* Label */}
-      <div className="font-mono text-xs text-nexus-label uppercase mb-1">{label}</div>
+      <div className="font-mono text-xs text-text-secondary uppercase mb-1">{label}</div>
 
       {/* Input Field */}
       {type === 'select' ? (
@@ -45,7 +45,7 @@ export const ControlInput = memo(function ControlInput({
           {/* Dropdown Arrow */}
           <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none">
             <svg
-              className="w-4 h-4 text-nexus-green"
+              className="w-4 h-4 text-accent-500"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

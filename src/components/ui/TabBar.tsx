@@ -1,6 +1,6 @@
 import type React from 'react';
 
-type AccentColor = 'accent' | 'warm' | 'purple' | 'info';
+type AccentColor = 'accent' | 'warm' | 'amber' | 'info';
 
 interface TabBarProps {
   tabs: { id: string; label: string }[];
@@ -20,7 +20,7 @@ export default function TabBar({
   const activePillClasses: Record<AccentColor, string> = {
     accent: 'bg-accent-500/15 text-accent-400 shadow-sm shadow-accent-500/20',
     warm: 'bg-warm-500/15 text-warm-400 shadow-sm shadow-warm-500/20',
-    purple: 'bg-purple-500/15 text-purple-400 shadow-sm shadow-purple-500/20',
+    amber: 'bg-amber-500/15 text-amber-400 shadow-sm shadow-amber-500/20',
     info: 'bg-info-500/15 text-info-400 shadow-sm shadow-info-500/20',
   };
 

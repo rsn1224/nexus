@@ -11,13 +11,13 @@ export const NetworkTrafficCard = memo(function NetworkTrafficCard({
   maxTraffic = 100,
 }: Props): React.ReactElement {
   return (
-    <div className="bg-nexus-surface rounded-sm border border-nexus-border p-4">
+    <div className="bg-base-700 rounded-sm border border-border-subtle p-4">
       {/* Header */}
       <div className="mb-4">
-        <div className="text-xs text-nexus-label font-mono uppercase tracking-widest">
+        <div className="text-xs text-text-secondary font-mono uppercase tracking-widest">
           NETWORK_TRAFFIC
         </div>
-        <div className="text-sm text-nexus-green font-mono uppercase tracking-wider mt-1">
+        <div className="text-sm text-accent-500 font-mono uppercase tracking-wider mt-1">
           STABLE
         </div>
       </div>
@@ -30,7 +30,7 @@ export const NetworkTrafficCard = memo(function NetworkTrafficCard({
           return (
             <div
               key={`traffic-${value}-${barIndex}`}
-              className="flex-1 bg-nexus-cyan rounded-t transition-all duration-300"
+              className="flex-1 bg-info-500 rounded-t transition-all duration-300"
               style={{ height: `${height}%` }}
             />
           );
@@ -39,8 +39,8 @@ export const NetworkTrafficCard = memo(function NetworkTrafficCard({
 
       {/* Status indicator */}
       <div className="flex items-center gap-2 mt-3">
-        <div className="w-1.5 h-1.5 bg-nexus-green rounded-full pulse-node" />
-        <div className="text-xs text-nexus-muted font-mono">All channels operational</div>
+        <div className="w-1.5 h-1.5 bg-accent-500 rounded-full pulse-node" />
+        <div className="text-xs text-text-muted font-mono">All channels operational</div>
       </div>
     </div>
   );

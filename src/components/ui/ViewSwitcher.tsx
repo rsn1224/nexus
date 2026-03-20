@@ -81,10 +81,10 @@ export const ViewSwitcher = memo(function ViewSwitcher({
             px-3 py-2 transition-colors duration-150
             ${
               active === view.type
-                ? 'bg-nexus-green/20 border border-nexus-green/40 text-nexus-green'
-                : 'text-nexus-muted hover:text-nexus-text'
+                ? 'bg-accent-500/20 border border-accent-500/40 text-accent-500'
+                : 'text-text-muted hover:text-text-primary'
             }
-            ${index < views.length - 1 ? 'border-r border-nexus-border' : ''}
+            ${index < views.length - 1 ? 'border-r border-border-subtle' : ''}
           `}
         >
           {view.icon}

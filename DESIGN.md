@@ -144,7 +144,7 @@ export type WingId =
 ### フォント
 
 ```tsx
-className="font-mono"  // var(--font-mono) = B612 Mono
+className="font-mono"  // var(--font-mono) = JetBrains Mono
 ```
 
 ### サイズ体系

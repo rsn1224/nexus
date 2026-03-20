@@ -23,7 +23,7 @@ export const NEXUS_TOKENS = {
       400: '#ddeaf4',
       300: '#eef5ff',
     },
-    purple: {
+    amber: {
       600: '#c87800',
       500: '#ffd700',
       400: '#fbbf24',
@@ -50,7 +50,7 @@ export const NEXUS_TOKENS = {
   typography: {
     fontFamily: {
       sans: '"Inter", "Noto Sans JP", "Segoe UI", ui-sans-serif, system-ui, sans-serif',
-      mono: '"Inter", ui-monospace, monospace',
+      mono: '"JetBrains Mono", ui-monospace, monospace',
     },
     fontSize: {
       xs: { size: '12px', lineHeight: '1.5' },

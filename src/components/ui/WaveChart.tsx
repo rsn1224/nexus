@@ -18,9 +18,9 @@ export const WaveChart = memo(function WaveChart({
   const intensity = data.reduce((sum, val) => sum + val, 0) / data.length / maxValue;
 
   return (
-    <div className={`bg-nexus-surface border border-nexus-border p-4 ${className}`}>
+    <div className={`bg-base-700 border border-border-subtle p-4 ${className}`}>
       {/* Header */}
-      <div className="font-mono text-xs text-nexus-label uppercase mb-3">
+      <div className="font-mono text-xs text-text-secondary uppercase mb-3">
         {label}: {intensity.toFixed(2)}A
       </div>
 
@@ -33,7 +33,7 @@ export const WaveChart = memo(function WaveChart({
           return (
             <div
               key={`bar-${height.toFixed(2)}`}
-              className="flex-1 bg-nexus-green rounded-t transition-all duration-300"
+              className="flex-1 bg-accent-500 rounded-t transition-all duration-300"
               style={{
                 height: `${height}%`,
                 backgroundColor: `rgba(68, 214, 44, ${opacity})`,
@@ -58,7 +58,7 @@ export const WaveChart = memo(function WaveChart({
             y1={`${y}%`}
             x2="100%"
             y2={`${y}%`}
-            stroke="var(--color-nexus-border)"
+            stroke="var(--color-border-subtle)"
             strokeWidth="1"
             opacity="0.3"
           />
@@ -74,7 +74,7 @@ export const WaveChart = memo(function WaveChart({
               y1="0"
               x2={`${x}%`}
               y2="100%"
-              stroke="var(--color-nexus-border)"
+              stroke="var(--color-border-subtle)"
               strokeWidth="1"
               opacity="0.3"
             />
@@ -123,7 +123,7 @@ export const CircularGauge = memo(function CircularGauge({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="var(--color-nexus-border)"
+          stroke="var(--color-border-subtle)"
           strokeWidth="4"
           fill="none"
         />
@@ -133,7 +133,7 @@ export const CircularGauge = memo(function CircularGauge({
           cx={size / 2}
           cy={size / 2}
           r={radius}
-          stroke="var(--color-nexus-green)"
+          stroke="var(--color-accent-500)"
           strokeWidth="4"
           fill="none"
           strokeDasharray={strokeDasharray}
@@ -143,10 +143,10 @@ export const CircularGauge = memo(function CircularGauge({
 
       {/* Center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="font-mono font-bold text-sm text-nexus-green">
+        <span className="font-mono font-bold text-sm text-accent-500">
           {Math.round(percentage)}%
         </span>
-        {label && <span className="font-mono text-xs text-nexus-label uppercase">{label}</span>}
+        {label && <span className="font-mono text-xs text-text-secondary uppercase">{label}</span>}
       </div>
     </div>
   );
@@ -162,8 +162,8 @@ export const DecryptingSpinner = memo(function DecryptingSpinner({
 }: DecryptingSpinnerProps): React.ReactElement {
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <span className="font-mono text-xs text-nexus-label animate-pulse">DECRYPTING...</span>
-      <div className="w-2 h-2 bg-nexus-green rounded-full animate-pulse" />
+      <span className="font-mono text-xs text-text-secondary animate-pulse">DECRYPTING...</span>
+      <div className="w-2 h-2 bg-accent-500 rounded-full animate-pulse" />
     </div>
   );
 });

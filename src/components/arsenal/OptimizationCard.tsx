@@ -15,19 +15,19 @@ interface Props {
 
 const levelColors = {
   SAFE: {
-    bg: 'bg-nexus-green/20',
-    text: 'text-nexus-green',
-    border: 'border-nexus-green/40',
+    bg: 'bg-accent-500/20',
+    text: 'text-accent-500',
+    border: 'border-accent-500/40',
   },
   MEDIUM: {
-    bg: 'bg-nexus-yellow/20',
-    text: 'text-nexus-yellow',
-    border: 'border-nexus-yellow/40',
+    bg: 'bg-warning-500/20',
+    text: 'text-warning-500',
+    border: 'border-warning-500/40',
   },
   HIGH: {
-    bg: 'bg-nexus-red/20',
-    text: 'text-nexus-red',
-    border: 'border-nexus-red/40',
+    bg: 'bg-danger-500/20',
+    text: 'text-danger-500',
+    border: 'border-danger-500/40',
   },
 };
 
@@ -43,11 +43,13 @@ export const OptimizationCard = memo(function OptimizationCard({
   const colors = levelColors[level];
 
   return (
-    <div className="bg-nexus-surface rounded-sm border border-nexus-border p-4">
+    <div className="bg-base-700 rounded-sm border border-border-subtle p-4">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
-          <div className="text-xs text-nexus-label font-mono uppercase tracking-widest">{code}</div>
+          <div className="text-xs text-text-secondary font-mono uppercase tracking-widest">
+            {code}
+          </div>
           <div
             className={`px-2 py-1 rounded text-xs font-mono uppercase tracking-wider ${colors.bg} ${colors.text} ${colors.border} border`}
           >
@@ -57,15 +59,17 @@ export const OptimizationCard = memo(function OptimizationCard({
       </div>
 
       {/* Title */}
-      <div className="font-bold text-lg uppercase text-nexus-text tracking-tight mb-1">{title}</div>
+      <div className="font-bold text-lg uppercase text-text-primary tracking-tight mb-1">
+        {title}
+      </div>
 
       {/* Subtitle */}
-      <div className="font-mono text-xs text-nexus-label uppercase tracking-widest mb-2">
+      <div className="font-mono text-xs text-text-secondary uppercase tracking-widest mb-2">
         {subtitle}
       </div>
 
       {/* Description */}
-      <div className="text-xs text-nexus-muted mb-4">{description}</div>
+      <div className="text-xs text-text-muted mb-4">{description}</div>
 
       {/* Toggle */}
       <button
@@ -73,8 +77,8 @@ export const OptimizationCard = memo(function OptimizationCard({
         onClick={onToggle}
         className={`w-full py-2 font-mono text-xs uppercase tracking-widest transition-all rounded ${
           enabled
-            ? 'bg-nexus-green text-black font-bold'
-            : 'bg-nexus-surface2 text-nexus-muted border border-nexus-border hover:text-nexus-text'
+            ? 'bg-accent-500 text-black font-bold'
+            : 'bg-base-600 text-text-muted border border-border-subtle hover:text-text-primary'
         }`}
       >
         {enabled ? 'ON' : 'OFF'}

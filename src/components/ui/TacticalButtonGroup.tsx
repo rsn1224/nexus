@@ -15,7 +15,7 @@ export const TacticalButtonGroup = memo(function TacticalButtonGroup({
   className = '',
 }: TacticalButtonGroupProps): React.ReactElement {
   return (
-    <div className={`flex border border-nexus-border ${className}`}>
+    <div className={`flex border border-border-subtle ${className}`}>
       {options.map((option, index) => (
         <button
           type="button"
@@ -25,10 +25,10 @@ export const TacticalButtonGroup = memo(function TacticalButtonGroup({
             flex-1 px-3 py-2 font-mono text-xs uppercase transition-colors duration-150
             ${
               active === option
-                ? 'bg-nexus-green/20 text-nexus-green border-nexus-green/40'
-                : 'text-nexus-label hover:text-nexus-text'
+                ? 'bg-accent-500/20 text-accent-500 border-accent-500/40'
+                : 'text-text-secondary hover:text-text-primary'
             }
-            ${index < options.length - 1 ? 'border-r border-nexus-border' : ''}
+            ${index < options.length - 1 ? 'border-r border-border-subtle' : ''}
           `}
         >
           {option}

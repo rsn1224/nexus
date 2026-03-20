@@ -16,23 +16,20 @@ export const GpuThermalCard = memo(function GpuThermalCard({
 
   return (
     <div
-      className={`bg-nexus-surface rounded-sm border p-4 ${
-        isWarning ? 'border-nexus-yellow/60 bg-yellow-500/5' : 'border-nexus-border'
+      className={`bg-base-700 rounded-sm border p-4 ${
+        isWarning ? 'border-warning-500/60 bg-yellow-500/5' : 'border-border-subtle'
       }`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2">
-          <AlertTriangle
-            size={16}
-            className={isWarning ? 'text-nexus-yellow' : 'text-nexus-muted'}
-          />
+          <AlertTriangle size={16} className={isWarning ? 'text-warning-500' : 'text-text-muted'} />
           <div>
-            <div className="text-xs text-nexus-label font-mono uppercase tracking-widest">
+            <div className="text-xs text-text-secondary font-mono uppercase tracking-widest">
               GPU_THERMAL_LIMIT
             </div>
             <div
-              className={`font-mono text-2xl ${isWarning ? 'text-nexus-yellow' : 'text-nexus-text'}`}
+              className={`font-mono text-2xl ${isWarning ? 'text-warning-500' : 'text-text-primary'}`}
             >
               {temperature}℃
             </div>
@@ -40,20 +37,20 @@ export const GpuThermalCard = memo(function GpuThermalCard({
         </div>
 
         {isWarning && (
-          <div className="text-xs text-nexus-yellow font-mono uppercase tracking-widest">警告</div>
+          <div className="text-xs text-warning-500 font-mono uppercase tracking-widest">警告</div>
         )}
       </div>
 
       {/* Warning message */}
       {isWarning && (
-        <div className="text-xs text-nexus-yellow/70 mb-3">警告：温度が上限に近づいています</div>
+        <div className="text-xs text-warning-500/70 mb-3">警告：温度が上限に近づいています</div>
       )}
 
       {/* Progress bar */}
-      <div className="w-full bg-nexus-surface2 rounded-full h-1">
+      <div className="w-full bg-base-600 rounded-full h-1">
         <div
           className={`h-1 rounded-full transition-all duration-500 ${
-            isWarning ? 'bg-nexus-yellow' : 'bg-nexus-cyan'
+            isWarning ? 'bg-warning-500' : 'bg-info-500'
           }`}
           style={{ width: `${Math.min(percentage, 100)}%` }}
         />

@@ -65,13 +65,13 @@ export const SystemIntegrityGauge = memo(function SystemIntegrityGauge({
       {/* Center content */}
       <div className="text-center flex flex-col items-center justify-center">
         <div className="font-black text-6xl text-white tracking-tighter">{value}</div>
-        <div className="text-xs text-nexus-label uppercase tracking-widest mt-1">
+        <div className="text-xs text-text-secondary uppercase tracking-widest mt-1">
           システム整合性
         </div>
 
         {/* Status badge */}
-        <div className="mt-4 px-3 py-1 bg-nexus-surface2 text-nexus-green font-mono text-xs rounded-full flex items-center gap-2">
-          <span className="w-1.5 h-1.5 bg-nexus-green rounded-full pulse-node" />
+        <div className="mt-4 px-3 py-1 bg-base-600 text-accent-500 font-mono text-xs rounded-full flex items-center gap-2">
+          <span className="w-1.5 h-1.5 bg-accent-500 rounded-full pulse-node" />
           OPTIMIZED
         </div>
       </div>

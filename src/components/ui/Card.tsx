@@ -14,13 +14,13 @@ interface CardProps {
   onClick?: () => void;
   ariaLabel?: string;
   tabIndex?: number;
-  accentColor?: 'accent' | 'warm' | 'purple' | 'info' | 'muted';
+  accentColor?: 'accent' | 'warm' | 'amber' | 'info' | 'muted';
 }
 
 const ACCENT_BAR: Record<string, string> = {
   accent: 'bg-accent-500',
   warm: 'bg-warm-500',
-  purple: 'bg-purple-500',
+  amber: 'bg-amber-500',
   info: 'bg-info-500',
   muted: 'bg-text-muted',
 };

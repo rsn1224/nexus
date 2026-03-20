@@ -15,11 +15,11 @@ export const NexusStatusBadge = memo(function NexusStatusBadge({
   className = '',
 }: NexusStatusBadgeProps): React.ReactElement {
   const styles = {
-    online: 'bg-nexus-green/15 text-nexus-green border border-nexus-green/40',
-    throttle: 'bg-nexus-yellow/15 text-nexus-yellow border border-nexus-yellow/40',
-    critical: 'bg-nexus-red/15 text-nexus-red border border-nexus-red/40',
-    active: 'bg-nexus-green text-black font-bold',
-    security: 'bg-nexus-red/8 border border-nexus-red/40 text-nexus-red',
+    online: 'bg-accent-500/15 text-accent-500 border border-accent-500/40',
+    throttle: 'bg-warning-500/15 text-warning-500 border border-warning-500/40',
+    critical: 'bg-danger-500/15 text-danger-500 border border-danger-500/40',
+    active: 'bg-accent-500 text-black font-bold',
+    security: 'bg-danger-500/8 border border-danger-500/40 text-danger-500',
   };
 
   return (
@@ -40,11 +40,11 @@ export const SecurityAlertCard = memo(function SecurityAlertCard({
   className = '',
 }: SecurityAlertCardProps): React.ReactElement {
   return (
-    <div className={`border border-nexus-red/40 bg-nexus-red/8 p-3 ${className}`}>
+    <div className={`border border-danger-500/40 bg-danger-500/8 p-3 ${className}`}>
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-nexus-red font-mono text-xs font-bold">▲ SECURITY ALERT</span>
+        <span className="text-danger-500 font-mono text-xs font-bold">▲ SECURITY ALERT</span>
       </div>
-      <div className="text-xs text-nexus-text">{message}</div>
+      <div className="text-xs text-text-primary">{message}</div>
     </div>
   );
 });
