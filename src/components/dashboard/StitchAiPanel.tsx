@@ -53,9 +53,15 @@ const StitchAiPanel = memo(function StitchAiPanel({
 
             {/* Message */}
             <div className="text-sm text-text-primary mb-6 leading-relaxed">
-              System performance analysis complete. CPU utilization within optimal parameters.
-              Memory allocation stable. Thermal management operating efficiently. No critical issues
-              detected.
+              {suggestions.length > 0
+                ? suggestions.map((s, i) => (
+                    <span key={s}>
+                      {i > 0 && ' '}
+                      <span className="text-warning-500">{s}</span>
+                      {i < suggestions.length - 1 ? '.' : ' — recommended for optimal performance.'}
+                    </span>
+                  ))
+                : 'All systems nominal. No optimization suggestions at this time.'}
             </div>
 
             {/* Action Buttons */}
@@ -94,8 +100,9 @@ const StitchAiPanel = memo(function StitchAiPanel({
 
           {/* Alert Content */}
           <div className="text-sm text-text-primary mb-6 leading-relaxed">
-            Firmware discrepancy detected in Primary Input Hub. Update required for full haptic
-            synchronization.
+            {suggestions.length > 0
+              ? `${suggestions.length} optimization(s) pending. Apply now to improve system performance.`
+              : 'No critical alerts. System operating within normal parameters.'}
           </div>
 
           {/* Resolve Button */}

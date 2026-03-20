@@ -26,6 +26,7 @@ const BottomTabBar = memo(function BottomTabBar({
             key={id}
             type="button"
             onClick={() => onWingChange(id)}
+            aria-label={label}
             className={`flex flex-col items-center justify-center space-y-1 py-2 px-3 rounded-sm transition-colors ${
               activeWing === id ? 'text-accent-500' : 'text-white/60'
             }`}
