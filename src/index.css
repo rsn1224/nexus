@@ -56,28 +56,9 @@
   --color-border-subtle: #1a1a1e;
   --color-border-active: #44d62c;
 
-  /* ─── NEXUS v2: Stitch 確定カラーパレット ───────────── */
-  --color-piano-black: #030305; /* SURFACE-DIM / SATIN DEPTH THRESHOLD */
-  --color-razer-green: #44d62c; /* SUCCESS-EMIT / LUMINOUS BLOOM HIGH */
-  --color-cyberpunk-red: #ef4444; /* ERROR-CRITICAL / LUMINOUS BLOOM MAX */
-  --color-tactical-yellow: #fcee0a; /* WARN-STATE / LUMINOUS BLOOM WARNING */
-
-  /* ─── NEXUS v2: エイリアス（コンポーネント用） ─────────── */
-  --color-nexus-bg: #030305; /* piano-black そのまま */
-  --color-nexus-surface: #111113; /* piano-black + 少し明るい */
-  --color-nexus-surface2: #1a1a1e; /* ネストカード */
-  --color-nexus-border: #1f1f25;
-  --color-nexus-green: #44d62c; /* razer-green */
-  --color-nexus-red: #ef4444; /* cyberpunk-red */
-  --color-nexus-yellow: #fcee0a; /* tactical-yellow */
-  --color-nexus-cyan: #00e5ff; /* シアン（Stitch UI から目視） */
-  --color-nexus-text: #e0e0e0;
-  --color-nexus-muted: #4a4a55;
-  --color-nexus-label: #6b7280;
-
   /* ─── TYPOGRAPHIC ARRAY（Stitch 確定値） ───────────── */
   --font-sans: "Inter", "system-ui", sans-serif; /* PRIMARY: Inter */
-  --font-mono: "B612 Mono", "JetBrains Mono", monospace; /* SECONDARY: B612 Mono */
+  --font-mono: "Inter", ui-monospace, monospace;
 }
 
 * {
@@ -287,9 +268,6 @@ body,
 .bloom-razer {
   filter: drop-shadow(0 0 10px rgba(68, 214, 44, 0.9));
 }
-.bloom-red {
-  filter: drop-shadow(0 0 10px rgba(255, 49, 49, 0.8));
-}
 
 /* ─── Pulse Node ───────────────────────────────────── */
 .pulse-node {
@@ -408,7 +386,7 @@ body,
 }
 
 /* ─── Accent Glow（強化版） ──────────────────────────── */
-.glow-cyan {
+.glow-green {
   box-shadow:
     0 0 20px rgba(68, 214, 44, 0.22),
     0 0 60px rgba(68, 214, 44, 0.08);
