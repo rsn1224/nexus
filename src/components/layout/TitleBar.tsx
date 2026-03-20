@@ -1,7 +1,6 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
-import { Bell, Minus, Radio, Settings, Square, X } from 'lucide-react';
 import type React from 'react';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback } from 'react';
 
 const TitleBar = memo(function TitleBar(): React.ReactElement {
   const appWindow = (() => {
@@ -11,34 +10,6 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
       return null;
     }
   })();
-
-  const [blink, setBlink] = useState(true);
-  const [clock, setClock] = useState(() =>
-    new Date().toLocaleTimeString('ja-JP', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    }),
-  );
-
-  useEffect(() => {
-    const clockId = setInterval(() => {
-      setClock(
-        new Date().toLocaleTimeString('ja-JP', {
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        }),
-      );
-    }, 1000);
-    const blinkId = setInterval(() => {
-      setBlink((b) => !b);
-    }, 800);
-    return () => {
-      clearInterval(clockId);
-      clearInterval(blinkId);
-    };
-  }, []);
 
   const handleMinimize = useCallback(() => {
     void appWindow?.minimize();
@@ -53,92 +24,65 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
   }, [appWindow]);
 
   return (
-    <div
-      data-tauri-drag-region
-      className="h-16 flex items-center justify-between bg-base-950 border-b border-white/5 select-none shrink-0 px-4"
-    >
-      {/* Logo */}
+    <header className="fixed top-0 w-full z-50 h-16 bg-[#030305]/80 backdrop-blur-xl border-b-[0.5px] border-white/10 flex items-center justify-between px-4 select-none">
+      {/* Left: NEXUS Logo */}
       <div className="flex items-center gap-3" data-tauri-drag-region>
-        <span
-          className="text-2xl font-black tracking-tighter text-accent-500 bloom-razer"
+        <h1
+          className="text-2xl font-black tracking-tighter text-accent-500 drop-shadow-[0_0_8px_rgba(68,214,44,0.5)]"
           data-tauri-drag-region
         >
           NEXUS
-        </span>
-        <span
-          className="text-[10px] font-black tracking-[0.4em] text-accent-500/60 mt-1"
-          data-tauri-drag-region
-        >
-          V2
-        </span>
+        </h1>
       </div>
 
-      {/* Drag area */}
+      {/* Center: Drag Area */}
       <div className="flex-1 h-full" data-tauri-drag-region />
 
-      {/* Clock */}
-      <div
-        className="font-mono text-[11px] text-white/30 tracking-[0.2em] mr-4"
-        data-tauri-drag-region
-      >
-        {clock}
-      </div>
-
-      {/* Action icons */}
-      <div className="flex items-center gap-1 mr-2">
-        <button
-          type="button"
-          className={`w-8 h-8 flex items-center justify-center rounded transition-colors hover:bg-white/5 ${
-            blink ? 'text-accent-500' : 'text-accent-500/30'
-          }`}
-          aria-label="センサー状態"
-        >
-          <Radio size={14} />
-        </button>
+      {/* Right: Notifications + Settings + Window Controls */}
+      <div className="flex items-center gap-2">
+        {/* Material Symbols */}
         <button
           type="button"
           className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
           aria-label="通知"
         >
-          <Bell size={14} />
+          <span className="material-symbols-outlined text-[16px]">notifications</span>
         </button>
         <button
           type="button"
-          className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors hover:rotate-45"
+          className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
           aria-label="設定"
         >
-          <Settings size={14} />
+          <span className="material-symbols-outlined text-[16px]">settings</span>
         </button>
-      </div>
 
-      {/* Window controls */}
-      <div className="flex items-center h-full">
+        {/* Window Controls */}
         <button
           type="button"
           onClick={handleMinimize}
-          className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors rounded"
+          className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
           aria-label="最小化"
         >
-          <Minus size={12} />
+          <span className="material-symbols-outlined text-[14px]">remove</span>
         </button>
         <button
           type="button"
           onClick={handleMaximize}
-          className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors rounded"
+          className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
           aria-label="最大化"
         >
-          <Square size={10} />
+          <span className="material-symbols-outlined text-[14px]">check_box_outline_blank</span>
         </button>
         <button
           type="button"
           onClick={handleClose}
-          className="w-10 h-10 flex items-center justify-center text-white/30 hover:text-danger-500 hover:bg-danger-500/10 transition-colors rounded"
+          className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-danger-500 hover:bg-danger-500/10 transition-colors"
           aria-label="閉じる"
         >
-          <X size={12} />
+          <span className="material-symbols-outlined text-[14px]">close</span>
         </button>
       </div>
-    </div>
+    </header>
   );
 });
 
