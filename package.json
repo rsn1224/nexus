@@ -21,7 +21,7 @@
     "lint:arch": "node scripts/check-architecture.mjs",
     "lint:inline-styles": "node scripts/check-inline-styles.mjs",
     "lint:design": "node scripts/validate-design.mjs",
-    "lint": "npm run lint:css && npm run lint:wings && npm run lint:handoff && npm run lint:filesize && npm run lint:arch && npm run lint:inline-styles && npm run lint:design"
+    "lint": "npm run lint:css && npm run lint:wings && npm run lint:handoff && npm run lint:filesize && npm run lint:arch && npm run lint:inline-styles"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

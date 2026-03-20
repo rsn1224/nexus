@@ -34,6 +34,21 @@ const ALLOWED_FILES_AND_REASONS = [
   { file: 'src/components/gaming/MemoryPanel.tsx', reason: 'プログレスバー動的幅 width: memPct%' },
   { file: 'src/components/monitor/MetricCard.tsx', reason: 'プログレスバー動的幅 width: pct%' },
   { file: 'src/components/monitor/TimelineGraph.tsx', reason: 'SVG 動的高さ height: heightPx' },
+  // Stitch UI コンポーネント — 動的 % 幅/高さ（Tailwind では表現不可）
+  { file: 'src/components/dashboard/TelemetryBentoCard.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/arsenal/ProcessFooter.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/core/CpuLoadCard.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/core/GpuThermalCard.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/core/NetworkTrafficCard.tsx', reason: 'バーチャート動的高さ' },
+  { file: 'src/components/core/SystemIntegrityGauge.tsx', reason: 'SVG ゲージ動的値' },
+  { file: 'src/components/history/SessionTable.tsx', reason: 'SVG バー動的幅' },
+  { file: 'src/components/monitor/CoreLoadChart.tsx', reason: 'バーチャート動的高さ' },
+  { file: 'src/components/monitor/KpiCard.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/monitor/SystemMetrics.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/settings/UiCustomizeSection.tsx', reason: 'スライダー動的幅' },
+  { file: 'src/components/ui/NexusButtonRipple.tsx', reason: 'リップル位置動的' },
+  { file: 'src/components/ui/TelemetryCard.tsx', reason: 'プログレスバー動的幅' },
+  { file: 'src/components/ui/WaveChart.tsx', reason: 'SVG バー/ライン動的値' },
 ];
 
 const ALLOWED_SET = new Set(ALLOWED_FILES_AND_REASONS.map((a) => a.file.replace(/\\/g, '/')));

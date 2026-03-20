@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
+import log from '../../lib/logger';
 import GameLauncher from './GameLauncher';
 import GamingOptimizations from './GamingOptimizations';
 import GamingPresets from './GamingPresets';
@@ -61,7 +62,7 @@ export default function GamingWing(): React.ReactElement {
   };
 
   const handleLaunchGame = (gameId: string) => {
-    console.log(`Launching game: ${gameId}`);
+    log.info({ gameId }, 'gaming: launching game');
   };
 
   return (

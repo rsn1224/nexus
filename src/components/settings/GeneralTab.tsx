@@ -5,6 +5,7 @@ import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
 import { ErrorBanner } from '../ui';
 import Button from '../ui/Button';
+import AppToggleSection from './AppToggleSection';
 
 const APP_VERSION = '0.1.0';
 
@@ -139,58 +140,13 @@ export default function GeneralTab(): React.ReactElement {
       </div>
 
       {/* APPLICATION Section */}
-      <div className="glass-panel bloom-border p-6">
-        <div className="flex items-center gap-3 mb-4">
-          <span className="material-symbols-outlined text-white/30">settings_applications</span>
-          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">APPLICATION</h3>
-        </div>
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-            <div>
-              <div className="text-xs text-white/60 font-data">Start with Windows</div>
-              <div className="text-[9px] text-white/40 mt-1">Launch NEXUS on system startup</div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-2 h-2 rounded-full ${settings?.startWithWindows ? 'bg-accent-500' : 'bg-white/30'}`}
-              />
-              <span className="text-xs text-text-primary font-data">
-                {settings?.startWithWindows ? 'ENABLED' : 'DISABLED'}
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleToggleStartWithWindows}
-                disabled={isLoading}
-              >
-                TOGGLE
-              </Button>
-            </div>
-          </div>
-          <div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-            <div>
-              <div className="text-xs text-white/60 font-data">Minimize to Tray</div>
-              <div className="text-[9px] text-white/40 mt-1">Keep running in system tray</div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-2 h-2 rounded-full ${settings?.minimizeToTray ? 'bg-accent-500' : 'bg-white/30'}`}
-              />
-              <span className="text-xs text-text-primary font-data">
-                {settings?.minimizeToTray ? 'ENABLED' : 'DISABLED'}
-              </span>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleToggleMinimizeToTray}
-                disabled={isLoading}
-              >
-                TOGGLE
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <AppToggleSection
+        startWithWindows={settings?.startWithWindows ?? false}
+        minimizeToTray={settings?.minimizeToTray ?? true}
+        isLoading={isLoading}
+        onToggleStartWithWindows={handleToggleStartWithWindows}
+        onToggleMinimizeToTray={handleToggleMinimizeToTray}
+      />
 
       {/* ABOUT Section */}
       <div className="glass-panel bloom-border p-6">
