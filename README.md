@@ -21,7 +21,7 @@ Tauri v2 + React 19 + TypeScript + Rust で構築。
 | フレームワーク | Tauri v2 |
 | フロントエンド | React 19 + TypeScript + Tailwind CSS v4 |
 | 状態管理 | Zustand v5 |
-| バックエンド | Rust (edition 2024) |
+| バックエンド | Rust (edition 2021) |
 | テスト | Vitest + Playwright + cargo test |
 | CI/CD | GitHub Actions |
 

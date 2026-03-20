@@ -35,6 +35,7 @@ pub fn load_api_key(key_name: &str) -> Result<Option<String>, AppError> {
 }
 
 /// API キーを Windows 資格情報マネージャーから削除する
+#[allow(dead_code)]
 pub fn delete_api_key(key_name: &str) -> Result<(), AppError> {
     let entry = keyring::Entry::new(SERVICE_NAME, key_name)
         .map_err(|e| AppError::Keyring(format!("Entry作成エラー: {}", e)))?;

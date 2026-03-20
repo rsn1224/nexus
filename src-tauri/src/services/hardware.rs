@@ -145,6 +145,39 @@ mod tests {
     }
 
     #[test]
+    fn test_gpu_dynamic_info_fields() {
+        let info = get_gpu_dynamic_info();
+        // None でもエラーにならないことを確認
+        // GPU がない環境でもパニックしない
+        match info.usage_percent {
+            Some(usage) => {
+                assert!(usage >= 0.0 && usage <= 100.0, "GPU 使用率が異常値: {}%", usage);
+            }
+            None => {
+                // GPU がない場合（正常）
+            }
+        }
+        
+        match info.temperature_c {
+            Some(temp) => {
+                assert!(temp > -50.0 && temp < 150.0, "GPU 温度が異常値: {}℃", temp);
+            }
+            None => {
+                // GPU がない場合（正常）
+            }
+        }
+        
+        match info.vram_used_mb {
+            Some(vram) => {
+                assert!(vram > 0, "VRAM 使用量が異常値: {}MB", vram);
+            }
+            None => {
+                // GPU がない場合（正常）
+            }
+        }
+    }
+
+    #[test]
     fn test_get_gpu_full_info_smoke() {
         // NVIDIA GPU があるかどうかに関わらず、パニックしないことを確認
         let result = get_gpu_full_info();

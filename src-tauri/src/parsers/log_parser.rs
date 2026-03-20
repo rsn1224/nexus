@@ -1,7 +1,23 @@
 #![allow(dead_code)]
 
-use crate::commands::log::{LogEntry, LogLevel};
 use chrono::Utc;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub enum LogLevel {
+    Error,
+    Warn,
+    Info,
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct LogEntry {
+    pub timestamp: String,
+    pub level: LogLevel,
+    pub message: String,
+    pub source: String,
+    pub process_id: Option<u32>,
+    pub thread_id: Option<u32>,
+}
 
 /// Windows イベントログ JSON エントリをパースする
 pub fn parse_windows_log_value(json: &serde_json::Value) -> Option<LogEntry> {

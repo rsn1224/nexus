@@ -14,13 +14,13 @@ interface CardProps {
   onClick?: () => void;
   ariaLabel?: string;
   tabIndex?: number;
-  accentColor?: 'accent' | 'warm' | 'purple' | 'info' | 'muted';
+  accentColor?: 'accent' | 'warm' | 'amber' | 'info' | 'muted';
 }
 
 const ACCENT_BAR: Record<string, string> = {
   accent: 'bg-accent-500',
   warm: 'bg-warm-500',
-  purple: 'bg-purple-500',
+  amber: 'bg-amber-500',
   info: 'bg-info-500',
   muted: 'bg-text-muted',
 };
@@ -45,7 +45,7 @@ const Card = memo(function Card({
     elevated: 'bg-base-800/90 border border-white/[0.08] shadow-md backdrop-blur-md',
     outlined: 'bg-transparent border border-border-subtle',
     glow: 'bg-base-800/80 border border-white/[0.06] card-glow backdrop-blur-sm',
-    glass: 'card-glass',
+    glass: 'piano-surface',
     'glass-elevated': 'card-glass-elevated',
   };
 

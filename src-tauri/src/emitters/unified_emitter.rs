@@ -105,6 +105,9 @@ pub async fn start(app: AppHandle) {
                 .map(|d| d.as_millis() as u64)
                 .unwrap_or(0);
 
+            // GPU 動的データを取得
+            let gpu_dynamic = crate::services::hardware::get_gpu_dynamic_info();
+
             let snap = ResourceSnapshot {
                 timestamp,
                 cpu_percent,
@@ -115,6 +118,10 @@ pub async fn start(app: AppHandle) {
                 disk_write_kb,
                 net_recv_kb,
                 net_sent_kb,
+                // ── GPU データ ──
+                gpu_usage_percent: gpu_dynamic.usage_percent,
+                gpu_temp_c: gpu_dynamic.temperature_c,
+                gpu_vram_used_mb: gpu_dynamic.vram_used_mb,
             };
 
             let procs: ProcData = if need_processes {

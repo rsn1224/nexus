@@ -2,7 +2,7 @@ import type React from 'react';
 
 interface SectionHeaderProps {
   title: string; // 例: '▶ HOME / OVERVIEW'
-  color?: 'accent' | 'muted' | 'warm' | 'purple' | 'info'; // デフォルト: 'accent'
+  color?: 'accent' | 'muted' | 'warm' | 'amber' | 'info'; // デフォルト: 'accent'
   children?: React.ReactNode; // 右側のボタン群
 }
 
@@ -15,7 +15,7 @@ export default function SectionHeader({
     accent: 'text-accent-500',
     muted: 'text-text-muted',
     warm: 'text-warm-500',
-    purple: 'text-purple-500',
+    amber: 'text-amber-500',
     info: 'text-info-500',
   };
 

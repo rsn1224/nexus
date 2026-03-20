@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEXUS_V2 | GAMING_WING</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #E5E1E7;
+            overflow-x: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-piano-black {
+            background: radial-gradient(circle at 50% 0%, #0D0D0F 0%, #050505 100%);
+            box-shadow: inset 0 1px 1px rgba(255,255,255,0.02);
+        }
+        .panel-gloss {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+        .scanning-line {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanning-line::after {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(68, 214, 44, 0.03), rgba(68, 214, 44, 0.08), transparent);
+            pointer-events: none;
+            animation: scan 6s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        .hud-btn-scan::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.15) 2px, rgba(0, 0, 0, 0.15) 4px);
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        .neon-bloom-green {
+            box-shadow: 0 0 25px rgba(68, 214, 44, 0.5), inset 0 0 10px rgba(68, 214, 44, 0.2);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .neon-bloom-green:hover {
+            box-shadow: 0 0 45px rgba(68, 214, 44, 0.7), inset 0 0 15px rgba(68, 214, 44, 0.3);
+            transform: translateY(-1px);
+        }
+        .backdrop-glow {
+            box-shadow: 0 0 30px rgba(68, 214, 44, 0.03);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #44D62C22;
+        }
+        @keyframes pulse-ready {
+            0%, 100% { opacity: 1; filter: brightness(1) drop-shadow(0 0 10px rgba(68, 214, 44, 0.4)); }
+            50% { opacity: 0.95; filter: brightness(1.2) drop-shadow(0 0 25px rgba(68, 214, 44, 0.8)); }
+        }
+        .animate-pulse-ready {
+            animation: pulse-ready 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "razer-green": "#44D62C",
+                "warning-yellow": "#FCEE0A",
+                "danger-red": "#FF3E3E",
+                "on-surface-variant": "#94A3A8",
+                "background": "#050505",
+                "surface-container": "#0F0F12",
+                "surface-container-low": "#0A0A0C",
+                "surface-container-high": "#16161A",
+              },
+              fontFamily: {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+              animation: {
+                'spin-slow': 'spin 20s linear infinite',
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-piano-black min-h-screen text-[#E5E1E7] custom-scrollbar">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-[#050505]/90 backdrop-blur-3xl border-b border-razer-green/20">
+<div class="flex flex-col">
+<div class="text-2xl font-black tracking-tighter text-razer-green drop-shadow-[0_0_12px_rgba(68,214,44,0.4)]">NEXUS_V2</div>
+<span class="text-[8px] font-mono text-razer-green/30 leading-none">[0x44D62C_LINK]</span>
+</div>
+<nav class="hidden md:flex space-x-10">
+<a class="text-razer-green border-b border-razer-green pb-1 font-label text-[10px] uppercase tracking-[0.15em] font-bold" href="#">システム</a>
+<a class="text-on-surface-variant/60 hover:text-razer-green/80 transition-all font-label text-[10px] uppercase tracking-[0.15em]" href="#">ネットワーク</a>
+<a class="text-on-surface-variant/60 hover:text-razer-green/80 transition-all font-label text-[10px] uppercase tracking-[0.15em]" href="#">コア</a>
+<a class="text-on-surface-variant/60 hover:text-razer-green/80 transition-all font-label text-[10px] uppercase tracking-[0.15em]" href="#">センサー</a>
+</nav>
+<div class="flex items-center space-x-6">
+<button class="text-on-surface-variant hover:text-razer-green transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+</button>
+<button class="text-on-surface-variant hover:text-danger-red transition-colors">
+<span class="material-symbols-outlined text-[20px]" data-icon="power_settings_new">power_settings_new</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center py-10 z-40 bg-[#050505] border-r border-razer-green/10">
+<div class="mb-12 flex flex-col items-center">
+<div class="w-10 h-10 rounded-sm bg-[#16161A] border border-razer-green/20 flex items-center justify-center overflow-hidden mb-2 relative ring-1 ring-white/5">
+<img alt="ユーザープロフィール" class="w-full h-full object-cover grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgsSIk-aKS-0ZUOISQH8nKBKmtAxZy7pHGMGhYRiqiSVLaVgKwAVEaMD4tUg1sR_gQKLX4X1GEr3E_hyhxkH92Asdzk7yr4w4DHeZLg9mDXnIryGp_3Mw2LFRGZ1eGoV_lfD-mLThhCHkOW2n8FxjahNi2fnnFeqaZks6RpB1MxXYSiuUnrKCNsVlbrLoJsX9Ndc0fFTZI28U0b2DDjIthRWxEu3Fkg-psRpboEnW2GiuQIyKzUI7UAYF_gGPqXaRj5wEicnvPWP4"/>
+<div class="absolute inset-0 bg-razer-green/5 pointer-events-none"></div>
+</div>
+<span class="text-[7px] font-mono text-on-surface-variant/40 tracking-tighter">OP_01</span>
+</div>
+<nav class="flex flex-col space-y-9">
+<button class="text-razer-green shadow-[0_0_20px_rgba(68,214,44,0.2)] bg-razer-green/5 p-2.5 border-l-[3px] border-razer-green transition-all hover:translate-x-0.5 relative group">
+<span class="material-symbols-outlined text-[22px]" data-icon="grid_view">grid_view</span>
+<span class="absolute left-full ml-5 px-2 py-0.5 bg-razer-green/10 text-razer-green text-[9px] font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-razer-green/20">MAP_INIT</span>
+</button>
+<button class="text-on-surface-variant/40 hover:text-razer-green hover:bg-razer-green/5 p-2.5 transition-all duration-300 hover:translate-x-0.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="shield">shield</span>
+</button>
+<button class="text-on-surface-variant/40 hover:text-razer-green hover:bg-razer-green/5 p-2.5 transition-all duration-300 hover:translate-x-0.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="hub">hub</span>
+</button>
+<button class="text-on-surface-variant/40 hover:text-razer-green hover:bg-razer-green/5 p-2.5 transition-all duration-300 hover:translate-x-0.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="lock">lock</span>
+</button>
+<button class="text-on-surface-variant/40 hover:text-razer-green hover:bg-razer-green/5 p-2.5 transition-all duration-300 hover:translate-x-0.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="terminal">terminal</span>
+</button>
+<button class="text-on-surface-variant/40 hover:text-razer-green hover:bg-razer-green/5 p-2.5 transition-all duration-300 hover:translate-x-0.5">
+<span class="material-symbols-outlined text-[22px]" data-icon="folder_open">folder_open</span>
+</button>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-20 mt-16 pb-20 p-10">
+<!-- Dashboard Header -->
+<div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-8">
+<div class="max-w-2xl relative">
+<div class="absolute -top-6 -left-1 text-[9px] font-mono text-razer-green/40 tracking-widest">[CORE_INIT_SYS_V2.0.4]</div>
+<h1 class="text-7xl font-black tracking-tighter uppercase text-white leading-none mb-3">Gaming Wing</h1>
+<p class="text-[11px] font-label tracking-[0.3em] text-on-surface-variant uppercase flex items-center gap-3">
+                    システム最適化プロセスを実行中 — STATUS: <span class="text-razer-green font-black drop-shadow-[0_0_8px_rgba(68,214,44,0.4)]">READY</span>
+</p>
+</div>
+<div class="relative group">
+<div class="absolute -top-4 right-0 text-[10px] font-mono text-razer-green tracking-tighter opacity-80">[CMD_READY]</div>
+<button class="relative px-14 py-6 bg-razer-green text-[#050505] font-black text-lg tracking-tighter uppercase transition-all duration-500 neon-bloom-green hud-btn-scan animate-pulse-ready overflow-hidden border border-white/20">
+                    すべて適用 / Apply All
+                    <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#050505]/30"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#050505]/30"></div>
+</button>
+<div class="absolute -bottom-4 left-0 text-[9px] font-mono text-white/10 tracking-widest">0x44D62C_EXECUTE_PRIORITY_HIGH</div>
+</div>
+</div>
+<!-- Centered Preset Tabs -->
+<div class="flex justify-center mb-10">
+<div class="inline-flex bg-surface-container-low p-1.5 border border-white/5 backdrop-blur-3xl rounded-sm shadow-2xl">
+<button class="px-10 py-2.5 text-xs font-black tracking-[0.2em] uppercase transition-all bg-razer-green/10 text-razer-green border border-razer-green/40 shadow-[0_0_15px_rgba(68,214,44,0.15)]">
+                    Gaming
+                </button>
+<button class="px-10 py-2.5 text-xs font-bold tracking-[0.2em] uppercase transition-all text-on-surface-variant/50 hover:text-white hover:bg-white/5">
+                    Power Save
+                </button>
+<button class="px-10 py-2.5 text-xs font-bold tracking-[0.2em] uppercase transition-all text-on-surface-variant/50 hover:text-white hover:bg-white/5">
+                    Streaming
+                </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Preset Info Section -->
+<div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+<!-- Gaming Preset Detail -->
+<div class="group relative bg-surface-container-low p-6 border-l-[3px] border-razer-green hover:bg-razer-green/5 transition-all duration-700 cursor-pointer overflow-hidden backdrop-glow panel-gloss">
+<div class="flex justify-between items-start mb-8">
+<span class="material-symbols-outlined text-razer-green text-3xl drop-shadow-[0_0_12px_rgba(68,214,44,0.6)]" data-icon="sports_esports">sports_esports</span>
+<span class="text-[9px] font-mono font-bold text-razer-green border border-razer-green/40 bg-razer-green/5 px-2.5 py-1 uppercase">Active</span>
+</div>
+<h3 class="text-xl font-black text-white mb-2 uppercase tracking-tight">ゲーミング</h3>
+<p class="text-[10px] text-on-surface-variant font-label leading-relaxed opacity-80">低遅延・高フレームレート優先<br/>FPS / MOBA プロファイル適用済</p>
+<div class="mt-6 h-1 w-full bg-white/5 relative overflow-hidden rounded-full">
+<div class="h-full bg-razer-green w-full shadow-[0_0_12px_rgba(68,214,44,0.8)]"></div>
+</div>
+<div class="absolute bottom-1 right-2 text-[8px] font-mono text-razer-green/20">PROSET_GX_01</div>
+</div>
+<!-- Power Preset Detail -->
+<div class="group relative bg-surface-container-low p-6 border-l-[3px] border-transparent hover:border-warning-yellow/40 hover:bg-warning-yellow/5 transition-all duration-700 cursor-pointer overflow-hidden panel-gloss">
+<div class="flex justify-between items-start mb-8">
+<span class="material-symbols-outlined text-on-surface-variant/40 text-3xl group-hover:text-warning-yellow group-hover:drop-shadow-[0_0_10px_rgba(252,238,10,0.4)] transition-all duration-500" data-icon="bolt">bolt</span>
+<span class="text-[9px] font-mono text-on-surface-variant/20 border border-white/5 px-2.5 py-1 uppercase group-hover:text-warning-yellow/60 group-hover:border-warning-yellow/20">Standby</span>
+</div>
+<h3 class="text-xl font-black text-white/60 group-hover:text-white mb-2 uppercase tracking-tight transition-colors">パワーセーブ</h3>
+<p class="text-[10px] text-on-surface-variant font-label leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">効率的な電力管理・熱抑制<br/>バックグラウンド・タスク制限</p>
+<div class="mt-6 h-1 w-full bg-white/5 overflow-hidden relative rounded-full">
+<div class="h-full bg-warning-yellow w-[60%] opacity-20 group-hover:opacity-100 transition-all duration-700"></div>
+</div>
+<div class="absolute bottom-1 right-2 text-[8px] font-mono text-white/5 group-hover:text-warning-yellow/20 transition-colors">PROSET_PS_02</div>
+</div>
+<!-- Streaming Preset Detail -->
+<div class="group relative bg-surface-container-low p-6 border-l-[3px] border-transparent hover:border-razer-green/40 hover:bg-razer-green/5 transition-all duration-700 cursor-pointer overflow-hidden panel-gloss">
+<div class="flex justify-between items-start mb-8">
+<span class="material-symbols-outlined text-on-surface-variant/40 text-3xl group-hover:text-razer-green group-hover:drop-shadow-[0_0_10px_rgba(68,214,44,0.4)] transition-all duration-500" data-icon="broadcast_on_home">broadcast_on_home</span>
+</div>
+<h3 class="text-xl font-black text-white/60 group-hover:text-white mb-2 uppercase tracking-tight transition-colors">ストリーミング</h3>
+<p class="text-[10px] text-on-surface-variant font-label leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">エンコード負荷分散・優先度高<br/>ネットワーク帯域リザーブ</p>
+<div class="mt-6 h-1 w-full bg-white/5 overflow-hidden relative rounded-full">
+<div class="h-full bg-razer-green w-[40%] opacity-20 group-hover:opacity-100 transition-all duration-700"></div>
+</div>
+<div class="absolute bottom-1 right-2 text-[8px] font-mono text-white/5 group-hover:text-razer-green/20 transition-colors">PROSET_ST_03</div>
+</div>
+</div>
+<!-- System Metrics -->
+<div class="md:col-span-4 bg-surface-container-low p-6 border border-razer-green/10 scanning-line relative panel-gloss flex flex-col justify-between">
+<div class="absolute top-2 right-3 p-1 text-[8px] font-mono text-razer-green/30 tracking-widest">[SENS_GPU_NODE_01]</div>
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="text-xs font-black tracking-[0.2em] text-on-surface-variant uppercase">GPU 温度 / TEMP</span>
+<span class="text-razer-green font-black text-2xl drop-shadow-[0_0_10px_rgba(68,214,44,0.4)]">42°C</span>
+</div>
+<div class="space-y-5">
+<div class="flex justify-between items-center group/metric">
+<span class="text-[10px] font-label text-on-surface-variant/70 uppercase tracking-widest">クロックスピード</span>
+<span class="text-xs font-bold text-white group-hover:text-razer-green transition-colors">2.4 GHz</span>
+</div>
+<div class="flex justify-between items-center group/metric">
+<span class="text-[10px] font-label text-on-surface-variant/70 uppercase tracking-widest">VRAM 使用量</span>
+<span class="text-xs font-bold text-white group-hover:text-razer-green transition-colors">4.8 GB</span>
+</div>
+</div>
+</div>
+<div class="mt-8">
+<div class="w-full bg-black/40 h-24 rounded-sm relative overflow-hidden border border-white/5 group">
+<img alt="周波数波形" class="w-full h-full object-cover opacity-20 group-hover:opacity-40 transition-opacity duration-1000" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVZOcGQRWxSv4Xh7TeFXkrza1OXdT2X56ET8z9Ti7193z3SmJRJ7H9y58Jp44FBfXmmYAR4gmKtFmqP3q-BJIrqwLlPTVrXHDjDC1SOQCkY-ZQ1KDzC67i-KKd2niNL3rajzRB1YKImbNoigB4aaUNYpoemhtjqRKdcahX8IbB4jxnx6g8gAlvc4OcmEwbbFtZLmIyzXEy4mEiryx9YHWCm47b2fsvTUDy_LS3yuYaJXninRptb30dVVC_mE2WmFzZo0USK3PJboo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background to-transparent opacity-80"></div>
+<div class="absolute inset-0 flex items-center justify-center opacity-40">
+<div class="w-full h-[1px] bg-razer-green/30 blur-[1px]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Optimization Checklist Section -->
+<div class="md:col-span-12 lg:col-span-7 bg-surface-container-low p-6 border border-razer-green/10 scanning-line relative panel-gloss">
+<div class="absolute top-3 left-4 text-[9px] font-mono text-razer-green/30">[TASK_QUEUE_v2.0.PRIORITY_ALL]</div>
+<div class="flex items-center justify-between mb-8">
+<h2 class="text-2xl font-black text-white tracking-tight uppercase">最適化チェックリスト / Checklist</h2>
+<div class="flex items-center gap-3">
+<span class="text-[11px] font-bold text-razer-green animate-pulse tracking-widest uppercase">SCANNING...</span>
+<span class="text-[9px] font-mono text-razer-green/40">[0x7F_FF]</span>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-3">
+<!-- Checklist Items -->
+<div class="flex items-center justify-between p-5 bg-black/20 border border-white/5 hover:border-razer-green/30 hover:bg-razer-green/5 transition-all group relative overflow-hidden">
+<div class="flex items-center space-x-5 z-10">
+<div class="w-6 h-6 border border-razer-green flex items-center justify-center bg-razer-green/10 shadow-[0_0_10px_rgba(68,214,44,0.3)]">
+<span class="material-symbols-outlined text-[16px] text-razer-green" data-icon="check" data-weight="fill">check</span>
+</div>
+<span class="text-sm font-bold text-white/90 group-hover:text-white transition-colors">バックグラウンド・テレメトリの完全無効化</span>
+</div>
+<span class="text-[10px] font-black text-razer-green z-10 px-3 py-1 bg-razer-green/10 border border-razer-green/30 uppercase tracking-widest">Completed</span>
+</div>
+<div class="flex items-center justify-between p-5 bg-black/20 border border-white/5 hover:border-warning-yellow/30 hover:bg-warning-yellow/5 transition-all group relative overflow-hidden">
+<div class="flex items-center space-x-5 z-10">
+<button class="w-6 h-6 border border-on-surface-variant/40 flex items-center justify-center hover:border-warning-yellow/60 hover:bg-warning-yellow/10 transition-all"></button>
+<span class="text-sm font-bold text-white/70 group-hover:text-white transition-colors">CPU 割り込み優先度の高度な最適化</span>
+</div>
+<span class="text-[10px] font-black text-warning-yellow z-10 uppercase tracking-widest">Ready to Apply</span>
+</div>
+<div class="flex items-center justify-between p-5 bg-black/20 border border-white/5 hover:border-danger-red/30 hover:bg-danger-red/5 transition-all group relative overflow-hidden">
+<div class="flex items-center space-x-5 z-10">
+<button class="w-6 h-6 border border-on-surface-variant/40 flex items-center justify-center hover:border-danger-red/60 transition-all"></button>
+<span class="text-sm font-bold text-white/70 group-hover:text-white transition-colors">VRAM オーバーロードキャッシュの強制消去</span>
+</div>
+<span class="text-[10px] font-black text-danger-red z-10 uppercase tracking-widest">High Risk / Pending</span>
+</div>
+<div class="flex items-center justify-between p-5 bg-black/20 border border-white/5 hover:border-warning-yellow/30 hover:bg-warning-yellow/5 transition-all group relative overflow-hidden">
+<div class="flex items-center space-x-5 z-10">
+<button class="w-6 h-6 border border-on-surface-variant/40 flex items-center justify-center hover:border-warning-yellow/60 transition-all"></button>
+<span class="text-sm font-bold text-white/70 group-hover:text-white transition-colors">アグレッシブ・コアパーキング制御 (UNPARK)</span>
+</div>
+<span class="text-[10px] font-black text-warning-yellow z-10 uppercase tracking-widest">Ready to Apply</span>
+</div>
+</div>
+</div>
+<!-- Visualization / Graphic Section -->
+<div class="md:col-span-12 lg:col-span-5 bg-[#0F0F12] relative min-h-[350px] overflow-hidden border border-white/5 panel-gloss p-6">
+<div class="absolute inset-0 bg-gradient-to-br from-razer-green/5 to-transparent"></div>
+<div class="absolute top-4 left-6 text-[10px] font-mono text-razer-green/40 tracking-[0.3em] uppercase font-bold">[CORE_STABILITY_MONITOR]</div>
+<div class="absolute inset-0 flex items-center justify-center scale-110">
+<div class="relative w-64 h-64 border border-razer-green/10 rounded-full flex items-center justify-center">
+<div class="absolute inset-2 border border-razer-green/5 rounded-full animate-spin-slow" style="animation-direction: reverse;"></div>
+<div class="absolute inset-6 border border-razer-green/10 rounded-full animate-spin-slow"></div>
+<div class="absolute inset-14 border border-razer-green/40 rounded-full shadow-[0_0_30px_rgba(68,214,44,0.1)]"></div>
+<div class="absolute inset-16 bg-razer-green/10 rounded-full blur-3xl opacity-50"></div>
+<img alt="セントラルHUD" class="w-44 h-44 opacity-90 mix-blend-screen scale-110" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIsM8VlhXIV0D0fORGK3l3DKyIDTAdOohnGiJgKQM487YzL2esEewHQ8qMDb5vB9NzbskPQWVjWCSeKUpawWZGtQPBaDohEKmm9IxZEKfNbOT2zBsRIfX6AqJG-y67sx-5vi68oH9pmFNRWjG-nsLl74mrzK5e5Q2LVHVZ-aolMMO-vO-lmK7g0r-201u_HzF4LfqBX6mDMfM72puMaomQrVWF9SAKRHBeVQGMQ-d0q4bgyAE6RBocrgIO955q1odf_rEojCjlF3U"/>
+<div class="absolute text-center">
+<span class="block text-5xl font-black text-razer-green drop-shadow-[0_0_20px_rgba(68,214,44,0.7)] animate-pulse mb-1">98%</span>
+<span class="text-[9px] font-black tracking-widest text-white/60 uppercase">System Integrity</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-6 left-6 right-6 flex justify-between">
+<div class="text-[9px] font-mono text-razer-green/40 flex items-center gap-2">
+<div class="w-1.5 h-1.5 rounded-full bg-razer-green shadow-[0_0_5px_rgba(68,214,44,0.5)]"></div>
+                        LATENCY: 12ms [0x0C]
+                    </div>
+<div class="text-[9px] font-mono text-razer-green/40 flex items-center gap-2">
+                         JITTER: 0.02% [0x01]
+                         <div class="w-1.5 h-1.5 rounded-full bg-razer-green shadow-[0_0_5px_rgba(68,214,44,0.5)]"></div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shell -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-6 h-12 bg-[#050505]/95 backdrop-blur-3xl border-t border-razer-green/20 shadow-[0_-15px_30px_rgba(0,0,0,0.8)]">
+<div class="flex items-center space-x-3 group cursor-default">
+<span class="material-symbols-outlined text-[16px] text-razer-green group-hover:animate-spin" data-icon="memory">memory</span>
+<span class="text-[10px] font-black tracking-[0.1em] text-razer-green/60 group-hover:text-razer-green transition-colors uppercase">CPU: 22%</span>
+</div>
+<div class="flex items-center space-x-3 group cursor-default">
+<span class="material-symbols-outlined text-[16px] text-razer-green" data-icon="analytics">analytics</span>
+<span class="text-[10px] font-black tracking-[0.1em] text-razer-green/60 group-hover:text-razer-green transition-colors uppercase">RAM: 4.2GB</span>
+</div>
+<div class="flex items-center space-x-3 group cursor-default bg-warning-yellow/10 px-4 py-1.5 border-x border-warning-yellow/30 shadow-[0_0_15px_rgba(252,238,10,0.1)]">
+<span class="material-symbols-outlined text-[16px] text-warning-yellow animate-pulse" data-icon="speed">speed</span>
+<span class="text-[10px] font-black tracking-[0.1em] text-warning-yellow uppercase">NET: 1.2 GBPS</span>
+</div>
+<div class="flex items-center space-x-3 group cursor-default">
+<span class="material-symbols-outlined text-[16px] text-razer-green" data-icon="thermostat">thermostat</span>
+<span class="text-[10px] font-black tracking-[0.1em] text-razer-green/60 group-hover:text-razer-green transition-colors uppercase">TEMP: 42°C</span>
+</div>
+</footer>
+</body></html>

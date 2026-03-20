@@ -1,7 +1,5 @@
 import React from 'react';
 import { useWinoptStore } from '../../stores/useWinoptStore';
-import NetworkQualityCard from '../performance/NetworkQualityCard';
-import TcpTuningCard from '../performance/TcpTuningCard';
 import { Button, LoadingState } from '../ui';
 
 interface TcpTuningTabProps {
@@ -93,10 +91,6 @@ export default function TcpTuningTab({ className = '' }: TcpTuningTabProps): Rea
           ))}
         </div>
       )}
-      <div className="flex flex-col gap-3 mt-3">
-        <TcpTuningCard />
-        <NetworkQualityCard />
-      </div>
     </div>
   );
 }

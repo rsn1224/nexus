@@ -26,6 +26,14 @@ const ALLOWED_FILES_AND_REASONS = [
   { file: 'src/components/home/ReadinessGauge.tsx', reason: 'canvas サイズ指定' },
   // Table の maxHeight / column width — 正当な使用
   { file: 'src/components/ui/Table.tsx', reason: 'Table maxHeight/column.width' },
+  // v2 コンポーネント — 動的幅/高さ（Tailwind では表現不可）
+  {
+    file: 'src/components/dashboard/HealthScoreBar.tsx',
+    reason: 'プログレスバー動的幅 width: pct%',
+  },
+  { file: 'src/components/gaming/MemoryPanel.tsx', reason: 'プログレスバー動的幅 width: memPct%' },
+  { file: 'src/components/monitor/MetricCard.tsx', reason: 'プログレスバー動的幅 width: pct%' },
+  { file: 'src/components/monitor/TimelineGraph.tsx', reason: 'SVG 動的高さ height: heightPx' },
 ];
 
 const ALLOWED_SET = new Set(ALLOWED_FILES_AND_REASONS.map((a) => a.file.replace(/\\/g, '/')));

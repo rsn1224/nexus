@@ -18,7 +18,7 @@ function getTempColor(temp: number): { text: string; bar: string } {
 function getUsageColor(pct: number): { text: string; bar: string } {
   if (pct >= 90) return { text: 'text-danger-500', bar: 'bg-danger-500' };
   if (pct >= 70) return { text: 'text-warm-500', bar: 'bg-warm-500' };
-  return { text: 'text-purple-400', bar: 'bg-purple-500' };
+  return { text: 'text-amber-400', bar: 'bg-amber-500' };
 }
 
 export default function GpuSection({
@@ -31,7 +31,7 @@ export default function GpuSection({
   const usageStyle = gpuUsagePercent !== null ? getUsageColor(gpuUsagePercent) : null;
 
   return (
-    <Card title="GPU" accentColor="purple" className="mb-4">
+    <Card title="GPU" accentColor="amber" className="mb-4">
       <div className="text-xs text-text-secondary space-y-2">
         <div className="flex justify-between">
           <span className="text-text-muted">MODEL</span>

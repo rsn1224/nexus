@@ -1,35 +1,27 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Shell from './components/layout/Shell';
-import WingHeader from './components/layout/WingHeader';
 import { ErrorBoundary, LoadingFallback } from './components/ui';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useNavStore } from './stores/useNavStore';
 import type { WingId } from './types';
 
 // ─── Lazy Wing imports ──────────────────────────────────────────────────────
-const HomeWing = lazy(() => import('./components/home/HomeWing'));
-const PerformanceWing = lazy(() => import('./components/performance/BoostWing'));
-const GamesWing = lazy(() => import('./components/games/LauncherWing'));
+const DashboardWing = lazy(() => import('./wings/DashboardWing'));
+const GamingWing = lazy(() => import('./wings/GamingWing'));
+const MonitorWing = lazy(() => import('./wings/MonitorWing'));
+const HistoryWing = lazy(() => import('./wings/HistoryWing'));
 const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
-const HardwareWing = lazy(() => import('./components/hardware/HardwareWing'));
-const LogWing = lazy(() => import('./components/log/LogWing'));
-const NetworkWing = lazy(() => import('./components/network/NetoptWing'));
-const StorageWing = lazy(() => import('./components/storage/StorageWing'));
 
 const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
-  home: HomeWing,
-  performance: PerformanceWing,
-  games: GamesWing,
+  core: DashboardWing,
+  arsenal: GamingWing,
+  tactics: MonitorWing,
+  logs: HistoryWing,
   settings: SettingsWing,
-  hardware: HardwareWing,
-  log: LogWing,
-  network: NetworkWing,
-  storage: StorageWing,
 };
 
 export default function App(): React.ReactElement {
-  const [activeWing, setActiveWing] = useState<WingId>('home');
-  const [visitedWings, setVisitedWings] = useState<Set<WingId>>(new Set<WingId>(['home']));
+  const [activeWing, setActiveWing] = useState<WingId>('core');
 
   useKeyboardShortcuts();
 
@@ -37,34 +29,23 @@ export default function App(): React.ReactElement {
 
   const handleWingChange = useCallback((wing: WingId): void => {
     setActiveWing(wing);
-    setVisitedWings((prev) => new Set([...prev, wing]));
   }, []);
 
   useEffect(() => {
     setNavigate(handleWingChange);
   }, [setNavigate, handleWingChange]);
 
+  const WingComponent = WING_COMPONENTS[activeWing];
+
   return (
     <Shell activeWing={activeWing} onWingChange={handleWingChange}>
-      {(Object.keys(WING_COMPONENTS) as WingId[]).map((wingId) => {
-        if (!visitedWings.has(wingId)) return null;
-        const WingComponent = WING_COMPONENTS[wingId];
-        return (
-          <div
-            key={wingId}
-            className={
-              wingId === activeWing ? 'flex flex-col h-full overflow-hidden wing-enter' : 'hidden'
-            }
-          >
-            <WingHeader wingId={wingId} />
-            <ErrorBoundary>
-              <Suspense fallback={<LoadingFallback />}>
-                <WingComponent />
-              </Suspense>
-            </ErrorBoundary>
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <div data-testid={`wing-${activeWing}`}>
+            <WingComponent />
           </div>
-        );
-      })}
+        </Suspense>
+      </ErrorBoundary>
     </Shell>
   );
 }

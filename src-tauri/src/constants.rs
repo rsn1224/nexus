@@ -13,6 +13,7 @@ pub const PROTECTED_PROCESSES: &[&str] = &[
 /// デフォルトのサスペンド候補プロセスリスト
 /// ゲーム起動時に自動でサスペンドが推奨されるバックグラウンドプロセス
 /// 拡張子なしの正規化名で管理（比較時に .exe を除去して小文字化）
+#[allow(dead_code)]
 pub const DEFAULT_SUSPEND_CANDIDATES: &[&str] = &[
     // Webブラウザ
     "chrome",

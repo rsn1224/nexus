@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEXUS v2 | Universal Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;family=B612+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-high": "#2a292e",
+                        "outline-variant": "#3b494b",
+                        "primary-fixed-dim": "#00dbe9",
+                        "primary-container": "#00f0ff",
+                        "surface-tint": "#00dbe9",
+                        "on-background": "#e5e1e7",
+                        "surface-container-low": "#1b1b1f",
+                        "on-primary-fixed": "#002022",
+                        "inverse-primary": "#006970",
+                        "tertiary": "#faf3ff",
+                        "surface-dim": "#030305",
+                        "primary": "#dbfcff",
+                        "on-tertiary-container": "#7213ff",
+                        "secondary-fixed-dim": "#d6ca00",
+                        "tertiary-fixed-dim": "#d1bcff",
+                        "surface-container": "#201f23",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed-variant": "#004f54",
+                        "background": "#030305",
+                        "on-secondary-container": "#6d6600",
+                        "on-tertiary-fixed": "#23005b",
+                        "on-tertiary-fixed-variant": "#5700c9",
+                        "tertiary-fixed": "#e9ddff",
+                        "surface-container-highest": "#353438",
+                        "secondary-container": "#f4e700",
+                        "on-surface-variant": "#b9cacb",
+                        "on-secondary": "#353100",
+                        "tertiary-container": "#e1d2ff",
+                        "error-container": "#93000a",
+                        "secondary": "#ffffff",
+                        "on-surface": "#e5e1e7",
+                        "surface-container-lowest": "#0e0e11",
+                        "surface": "#131317",
+                        "secondary-fixed": "#f4e700",
+                        "on-error-container": "#ffdad6",
+                        "surface-variant": "#353438",
+                        "inverse-on-surface": "#313034",
+                        "outline": "#849495",
+                        "on-secondary-fixed": "#1f1c00",
+                        "surface-bright": "#39393d",
+                        "on-primary-container": "#006970",
+                        "on-error": "#690005",
+                        "primary-fixed": "#7df4ff",
+                        "on-secondary-fixed-variant": "#4d4800",
+                        "on-primary": "#00363a",
+                        "inverse-surface": "#e5e1e7",
+                        "on-tertiary": "#3c0090"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"],
+                        "data": ["B612 Mono"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #030305;
+            background-image: radial-gradient(circle at 50% -20%, #0e0e11 0%, #030305 100%);
+            color: #e5e1e7;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bloom-border {
+            box-shadow: 0 0 0 0.5px rgba(185, 202, 203, 0.15);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+        .glow-yellow {
+            box-shadow: 0 0 15px rgba(252, 238, 10, 0.2);
+        }
+        .glass-panel {
+            background: rgba(53, 52, 56, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .ring-core {
+            border: 2px solid rgba(0, 240, 255, 0.1);
+            border-top-color: #00F0FF;
+            border-radius: 50%;
+        }
+        .accent-razer { color: #44D62C; }
+        .bg-razer { background-color: #44D62C; }
+    </style>
+</head>
+<body class="antialiased overflow-x-hidden">
+<!-- Top Navigation -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#030305]/80 backdrop-blur-xl border-b-[0.5px] border-white/10">
+<div class="flex items-center space-x-4">
+<span class="text-2xl font-black tracking-tighter text-[#00F0FF] drop-shadow-[0_0_8px_rgba(0,240,255,0.5)]">NEXUS v2</span>
+</div>
+<nav class="hidden md:flex space-x-8">
+<a class="Inter Black tracking-tighter uppercase text-sm text-[#00F0FF] border-b-2 border-[#00F0FF] pb-1" href="#">STREAMS</a>
+<a class="Inter Black tracking-tighter uppercase text-sm text-[#B9CACB] hover:text-white transition-colors" href="#">LOBBY</a>
+<a class="Inter Black tracking-tighter uppercase text-sm text-[#B9CACB] hover:text-white transition-colors" href="#">GEAR</a>
+</nav>
+<div class="flex items-center space-x-4">
+<button class="material-symbols-outlined text-[#B9CACB] hover:text-[#00F0FF] transition-all">notifications</button>
+<button class="material-symbols-outlined text-[#B9CACB] hover:text-[#00F0FF] transition-all">settings</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-[#00F0FF]/30">
+<img alt="User Profile Avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcDaZKcONcksCYzQk0Sa1db72qjX--f9AJcPE4NY3sjXhS9lsV09CvkyVpjP-DT3_ygM_BgaTjtNAdq53U8VWah8NxpFFq758_wjSF-rhvKM-YMZq1BZul9_PnWE8KOt2xRMyPuLS52ro2aFuJoD7tJT-cQy35rQsarxXmftiPpLwpb_2ItAPpqGJpdjjFn7l14_cWyPsXOlwOVOL0W3VjOnEgu_lfoPXVF1R4-2vvMtvgrO4cBnHwLS8mzlhQDyyxGRIivEReKyo"/>
+</div>
+</div>
+</header>
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-16 h-[calc(100vh-4rem)] hidden md:flex flex-col z-40 w-64 bg-[#030305] border-r-[0.5px] border-white/5 shadow-[20px_0_40px_rgba(0,0,0,0.8)]">
+<div class="p-6 flex flex-col space-y-1">
+<span class="text-[10px] Inter Light tracking-[0.2em] text-[#B9CACB]/40 uppercase">System Status</span>
+<div class="flex items-center space-x-2">
+<span class="font-black text-[#FCEE0A] tracking-tighter text-xl">SYSTEM</span>
+<span class="text-[10px] bg-[#44D62C]/20 text-[#44D62C] px-1.5 py-0.5 rounded-sm font-bold">ONLINE</span>
+</div>
+</div>
+<nav class="flex-1 px-4 space-y-1 py-4">
+<a class="flex items-center space-x-4 bg-[#00F0FF]/10 text-[#00F0FF] border-r-2 border-[#00F0FF] px-4 py-3 shadow-[inset_0_0_15px_rgba(0,240,255,0.1)] transition-all duration-200" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="Inter Medium tracking-wide uppercase text-xs">Dashboard</span>
+</a>
+<a class="flex items-center space-x-4 text-[#B9CACB]/60 px-4 py-3 hover:bg-white/5 hover:text-[#B9CACB] transition-all duration-200" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="Inter Medium tracking-wide uppercase text-xs">Library</span>
+</a>
+<a class="flex items-center space-x-4 text-[#B9CACB]/60 px-4 py-3 hover:bg-white/5 hover:text-[#B9CACB] transition-all duration-200" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="Inter Medium tracking-wide uppercase text-xs">Friends</span>
+</a>
+<a class="flex items-center space-x-4 text-[#B9CACB]/60 px-4 py-3 hover:bg-white/5 hover:text-[#B9CACB] transition-all duration-200" href="#">
+<span class="material-symbols-outlined">workspace_premium</span>
+<span class="Inter Medium tracking-wide uppercase text-xs">Achievements</span>
+</a>
+<a class="flex items-center space-x-4 text-[#B9CACB]/60 px-4 py-3 hover:bg-white/5 hover:text-[#B9CACB] transition-all duration-200" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="Inter Medium tracking-wide uppercase text-xs">Store</span>
+</a>
+</nav>
+<div class="p-4 border-t border-white/5">
+<button class="w-full py-3 bg-gradient-to-r from-[#DBFCFF] to-[#00F0FF] text-[#00363a] font-black text-xs tracking-widest uppercase rounded-sm hover:brightness-110 transition-all">
+                LAUNCH GAME
+            </button>
+</div>
+<div class="p-4 space-y-1">
+<a class="flex items-center space-x-4 text-[#B9CACB]/40 px-4 py-2 text-[10px] uppercase tracking-widest hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span>Support</span>
+</a>
+<a class="flex items-center space-x-4 text-[#B9CACB]/40 px-4 py-2 text-[10px] uppercase tracking-widest hover:text-[#FFB4AB] transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Canvas -->
+<main class="md:ml-64 pt-20 pb-24 md:pb-10 px-4 md:px-10 min-h-screen">
+<!-- Ring Core Section -->
+<section class="flex flex-col items-center justify-center py-10 relative overflow-hidden">
+<div class="absolute inset-0 flex items-center justify-center opacity-20">
+<div class="w-[500px] h-[500px] rounded-full border border-[#44D62C]/20 animate-pulse"></div>
+</div>
+<div class="relative w-48 h-48 md:w-72 md:h-72 flex items-center justify-center">
+<div class="absolute inset-0 ring-core animate-[spin_10s_linear_infinite]"></div>
+<div class="absolute inset-4 ring-core border-dashed opacity-30 animate-[spin_15s_linear_infinite_reverse]"></div>
+<div class="absolute inset-10 flex flex-col items-center justify-center text-center">
+<span class="text-[10px] md:text-xs Inter Light tracking-[0.3em] text-[#B9CACB] uppercase">Power Core</span>
+<span class="text-4xl md:text-6xl font-data font-bold accent-razer">98.4<span class="text-lg md:text-2xl">%</span></span>
+<span class="text-[8px] md:text-[10px] Inter Medium text-[#44D62C] bg-[#44D62C]/10 px-2 py-0.5 mt-2 rounded-full uppercase">STABLE</span>
+</div>
+</div>
+</section>
+<!-- Bento Grid Telemetry Cards -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+<!-- CPU Card -->
+<div class="glass-panel bloom-border p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2">
+<span class="material-symbols-outlined text-[#B9CACB]/30 group-hover:text-[#00F0FF] transition-colors">memory</span>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col">
+<span class="text-[10px] Inter Light tracking-widest text-[#B9CACB]/60 uppercase">Processor</span>
+<h3 class="text-lg font-bold tracking-tight">CPU LOAD</h3>
+</div>
+<div class="flex items-baseline space-x-2">
+<span class="text-4xl font-data text-white">42</span>
+<span class="text-xl font-data text-[#B9CACB]/40">%</span>
+</div>
+<div class="w-full bg-white/5 h-1 relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full bg-[#00F0FF] glow-cyan" style="width: 42%;"></div>
+</div>
+<div class="flex justify-between text-[10px] font-data text-[#B9CACB]/40">
+<span>CORE_01: 4.2GHz</span>
+<span class="text-[#44D62C]">OPTIMAL</span>
+</div>
+</div>
+</div>
+<!-- GPU Card -->
+<div class="glass-panel bloom-border p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2">
+<span class="material-symbols-outlined text-[#B9CACB]/30 group-hover:text-[#FCEE0A] transition-colors">speed</span>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col">
+<span class="text-[10px] Inter Light tracking-widest text-[#B9CACB]/60 uppercase">Graphics</span>
+<h3 class="text-lg font-bold tracking-tight">GPU TEMP</h3>
+</div>
+<div class="flex items-baseline space-x-2">
+<span class="text-4xl font-data text-[#FCEE0A]">74</span>
+<span class="text-xl font-data text-[#B9CACB]/40">&deg;C</span>
+</div>
+<div class="w-full bg-white/5 h-1 relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full bg-[#FCEE0A] glow-yellow" style="width: 74%;"></div>
+</div>
+<div class="flex justify-between text-[10px] font-data text-[#B9CACB]/40">
+<span>VRAM: 8.2GB / 12GB</span>
+<span class="text-[#FCEE0A]">HIGH LOAD</span>
+</div>
+</div>
+</div>
+<!-- RAM Card -->
+<div class="glass-panel bloom-border p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2">
+<span class="material-symbols-outlined text-[#B9CACB]/30 group-hover:text-[#44D62C] transition-colors">storage</span>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col">
+<span class="text-[10px] Inter Light tracking-widest text-[#B9CACB]/60 uppercase">Memory</span>
+<h3 class="text-lg font-bold tracking-tight">RAM USAGE</h3>
+</div>
+<div class="flex items-baseline space-x-2">
+<span class="text-4xl font-data text-white">12.8</span>
+<span class="text-xl font-data text-[#B9CACB]/40">GB</span>
+</div>
+<div class="w-full bg-white/5 h-1 relative overflow-hidden">
+<div class="absolute left-0 top-0 h-full bg-[#44D62C]" style="width: 65%;"></div>
+</div>
+<div class="flex justify-between text-[10px] font-data text-[#B9CACB]/40">
+<span>PAGING: ACTIVE</span>
+<span class="accent-razer">HEALTHY</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Stitch AI Advisor Panel -->
+<section class="mt-8 grid grid-cols-1 md:grid-cols-12 gap-6">
+<div class="md:col-span-8 glass-panel bloom-border overflow-hidden">
+<div class="flex flex-col md:flex-row">
+<div class="md:w-1/3 bg-[#00F0FF]/5 p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-white/5">
+<div class="w-24 h-24 rounded-full border-2 border-[#00F0FF]/30 p-1 mb-4 relative">
+<img alt="AI Advisor Avatar" class="w-full h-full rounded-full object-cover grayscale brightness-125" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6fuegCtdmwRiy1N8PAv_jt5EAt_b_XMHu8fG7_tvcFjVg6vWiJ50PlYf8VtFWzmQCFfRV3NyiPFbhD-DqADIh4spHbpGiHza7o0BSMiVffLpMkNEhpXQ2HYRBpRg9_CErPOiva50bfy2HOvy10AlPPwaXUDBWJXoMN5PDYd2vTmW84EF-kQYSXPfOOyZQ6p6Hm6e6KzaGB2r5duRnNCQjnE5vfSSrAMwHRFf5l048dyqSd8oFHDyhp_U7ed2il6G1NlBbHxHOSyw"/>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#44D62C] rounded-full border-4 border-[#030305] animate-pulse"></div>
+</div>
+<h4 class="font-black tracking-tighter text-center">STITCH AI</h4>
+<span class="text-[10px] Inter Light text-[#B9CACB]/60 uppercase tracking-widest">Active Liaison</span>
+</div>
+<div class="md:w-2/3 p-8">
+<div class="space-y-4">
+<div class="flex items-start space-x-3">
+<span class="text-[10px] font-data text-[#00F0FF] mt-1">[09:42:01]</span>
+<p class="text-sm Inter Medium leading-relaxed text-[#B9CACB]">
+                                    System thermals are trending upwards. I recommend initiating <span class="text-[#FCEE0A]">Adaptive Cool-Down</span> before launching your next session. Your latency in "Nexus Arena" is currently 14ms—optimal for competitive play.
+                                </p>
+</div>
+<div class="pt-4 border-t border-white/5 flex flex-wrap gap-2">
+<button class="px-3 py-1.5 text-[10px] border border-[#00F0FF]/30 text-[#00F0FF] uppercase tracking-widest hover:bg-[#00F0FF]/10 transition-all">Optimize Performance</button>
+<button class="px-3 py-1.5 text-[10px] border border-white/10 text-[#B9CACB] uppercase tracking-widest hover:bg-white/5 transition-all">Run Diagnostics</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md:col-span-4 glass-panel bloom-border p-6 bg-[#FCEE0A]/5 relative overflow-hidden group">
+<div class="absolute top-0 right-0 px-3 py-1 bg-[#FCEE0A] text-black text-[10px] font-black tracking-widest uppercase">Critical Alert</div>
+<div class="mt-4 space-y-4">
+<div class="flex items-center space-x-3 text-[#FCEE0A]">
+<span class="material-symbols-outlined fill" style="font-variation-settings: 'FILL' 1;">warning</span>
+<h4 class="font-bold uppercase text-xs tracking-widest">Driver Mismatch</h4>
+</div>
+<p class="text-xs text-[#B9CACB] leading-relaxed">
+                        Nexus v2 has detected a firmware discrepancy in your Primary Input Hub. Update required for full haptic synchronization.
+                    </p>
+<button class="w-full py-2 bg-[#FCEE0A] text-black font-black text-[10px] tracking-widest uppercase hover:brightness-110 transition-all">RESOLVE NOW</button>
+</div>
+</div>
+</section>
+<!-- Footer Metrics -->
+<footer class="mt-8 flex flex-col md:flex-row justify-between items-start md:items-center p-6 glass-panel bloom-border space-y-4 md:space-y-0">
+<div class="flex items-center space-x-6">
+<div>
+<span class="block text-[8px] text-[#B9CACB]/40 uppercase tracking-[0.2em]">Session Time</span>
+<span class="font-data text-sm">04:12:44</span>
+</div>
+<div class="w-px h-8 bg-white/5"></div>
+<div>
+<span class="block text-[8px] text-[#B9CACB]/40 uppercase tracking-[0.2em]">Network Link</span>
+<span class="font-data text-sm text-[#44D62C]">SYMMETRICAL_GIG</span>
+</div>
+</div>
+<div class="text-[10px] text-[#B9CACB]/40 uppercase tracking-[0.3em]">
+                &copy; 2024 NEXUS INDUSTRIES // CORE_REL_02.9
+            </div>
+</footer>
+</main>
+<!-- Mobile Bottom Navigation -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 flex justify-around items-center px-4 h-16 bg-[#030305]/90 backdrop-blur-2xl border-t-[0.5px] border-white/10">
+<a class="flex flex-col items-center space-y-1 text-[#00F0FF]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+<span class="text-[8px] font-black tracking-widest uppercase">HUD</span>
+</a>
+<a class="flex flex-col items-center space-y-1 text-[#B9CACB]/60" href="#">
+<span class="material-symbols-outlined">sports_esports</span>
+<span class="text-[8px] font-black tracking-widest uppercase">PLAY</span>
+</a>
+<a class="flex flex-col items-center space-y-1 text-[#B9CACB]/60" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="text-[8px] font-black tracking-widest uppercase">SQUAD</span>
+</a>
+<a class="flex flex-col items-center space-y-1 text-[#B9CACB]/60" href="#">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="text-[8px] font-black tracking-widest uppercase">GEAR</span>
+</a>
+</nav>
+</body></html>

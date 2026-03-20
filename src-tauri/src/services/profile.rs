@@ -41,6 +41,7 @@ pub fn load_profiles(app_data_dir: &Path) -> Result<Vec<GameProfile>, AppError> 
 }
 
 /// 指定 ID のプロファイルを取得する
+#[allow(dead_code)]
 pub fn get_profile(app_data_dir: &Path, id: &str) -> Result<Option<GameProfile>, AppError> {
     let profiles = load_profiles(app_data_dir)?;
     Ok(profiles.into_iter().find(|p| p.id == id))
@@ -50,6 +51,7 @@ pub fn get_profile(app_data_dir: &Path, id: &str) -> Result<Option<GameProfile>,
 /// - `id` が空の場合は UUID v4 を自動生成
 /// - `created_at` が 0 の場合は現在時刻を設定
 /// - `updated_at` は常に現在時刻で上書き
+#[allow(dead_code)]
 pub fn save_profile(
     app_data_dir: &Path,
     mut profile: GameProfile,
@@ -88,6 +90,7 @@ pub fn save_profile(
 }
 
 /// プロファイルを削除
+#[allow(dead_code)]
 pub fn delete_profile(app_data_dir: &Path, id: &str) -> Result<(), AppError> {
     let mut profiles = load_profiles(app_data_dir)?;
     let before_len = profiles.len();
