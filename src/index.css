@@ -59,6 +59,33 @@
   /* ─── TYPOGRAPHIC ARRAY（Stitch 確定値） ───────────── */
   --font-sans: "Inter", "system-ui", sans-serif; /* PRIMARY: Inter */
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-data: "B612 Mono", monospace;
+}
+
+/* ─── Material Symbols & Stitch Classes ───────────────── */
+.material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.bloom-border {
+  box-shadow: 0 0 0 0.5px rgba(185, 202, 203, 0.15);
+}
+
+.ring-core {
+  border: 2px solid rgba(68, 214, 44, 0.1);
+  border-top-color: #44d62c;
+  border-radius: 50%;
+}
+
+/* ─── Glass Panel (Stitch 版) ───────────────────────── */
+.glass-panel {
+  background: rgba(53, 52, 56, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 * {

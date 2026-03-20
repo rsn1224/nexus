@@ -51,6 +51,7 @@ export const NEXUS_TOKENS = {
     fontFamily: {
       sans: '"Inter", "Noto Sans JP", "Segoe UI", ui-sans-serif, system-ui, sans-serif',
       mono: '"JetBrains Mono", ui-monospace, monospace',
+      data: '"B612 Mono", monospace',
     },
     fontSize: {
       xs: { size: '12px', lineHeight: '1.5' },
