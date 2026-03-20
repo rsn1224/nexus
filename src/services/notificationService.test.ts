@@ -22,6 +22,10 @@ function makeSnapshot(overrides: Partial<ResourceSnapshot> = {}): ResourceSnapsh
     diskWriteKb: 0,
     netRecvKb: 0,
     netSentKb: 0,
+    // ── GPU データ ──
+    gpuUsagePercent: null,
+    gpuTempC: null,
+    gpuVramUsedMb: null,
     ...overrides,
   };
 }

@@ -41,7 +41,9 @@ export default function App(): React.ReactElement {
     <Shell activeWing={activeWing} onWingChange={handleWingChange}>
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          <WingComponent />
+          <div data-testid={`wing-${activeWing}`}>
+            <WingComponent />
+          </div>
         </Suspense>
       </ErrorBoundary>
     </Shell>

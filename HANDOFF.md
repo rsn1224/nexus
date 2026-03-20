@@ -65,18 +65,68 @@
 | **NEXUS v2 Phase 10: UT** | ✅ 完了（healthScore.test + suggestionEngine.test + useHealthStore.test + useOptimizeStore.test） |
 | **NEXUS v2 WingId リネーム** | ✅ 完了（dashboard→core, gaming→arsenal, monitor→tactics, history→logs） |
 | **NEXUS v2 Stitch デザイン実装** | ✅ Phase D-1 レビュー完了 + 修正済み |
-| **Stitch UI リビルド** | 🔵 pending — `docs/v2/stitch-rebuild-spec.md` を参照 |
+| **Stitch UI リビルド** | ✅ **完了** — Phase R-1〜R-4 全フェーズ実装済み |
 
-**最新コミット:** `82df51c`（docs+test: Fix-5/Fix-6）
+**最新コミット:** `b7d9072`（refactor: Phase R-4 — Cleanup 不要コンポーネント削除 + Stitch UI 旧コンポーネント整理）
 **ブランチ:** `feature/v2-stitch-impl`
-**テスト:** TS 674 all green（biome + typecheck + vitest all pass）
+**テスト:** TS クリーン（biome + typecheck all pass）
+
+---
+
+## Stitch UI Rebuild — 完了記録
+
+> **ステータス:** ✅ **完了** — Phase R-1〜R-4 全フェーズ実装済み
+> **ブランチ:** `feature/v2-stitch-impl`
+> **コミット:** `b7d9072`（refactor: Phase R-4 — Cleanup 不要コンポーネント削除 + Stitch UI 旧コンポーネント整理）
+> **品質ゲート:** TypeScript クリーン + Biome クリーン
+
+### 実装サマリー
+
+**Phase R-1: CSS + フォント基盤**
+- B612 Mono + Material Symbols Outlined フォント導入
+- Razer Green (#44D62C) アクセントカラー採用
+- Stitch CSS クラス追加（glass-panel, bloom-border, ring-core 等）
+
+**Phase R-2: Shell + TitleBar + Sidebar + BottomTabBar**
+- TitleBar: NEXUS ロゴ + Material Symbols + Tauri ウィンドウコントロール
+- Sidebar: 264px 展開型 + Wing ナビゲーション + OPTIMIZE NOW ボタン
+- BottomTabBar: モバイル用タブバー + Material Symbols FILL アニメーション
+- Shell: 新レイアウト統合
+
+**Phase R-3: DashboardWing (CORE) リビルド**
+- RingCore: アニメーションリング + Power Core スコア表示
+- TelemetryBentoCard: CPU/GPU/Memory テレメトリーカード
+- StitchAiPanel: STITCH AI アバター + メッセージパネル + Critical Alert
+- FooterMetrics: セッション時間 + ネットワークリンク + コピーライト
+- DashboardWing: 全コンポーネント統合 + Stitch HUD レイアウト
+
+**Phase R-4: Cleanup + Other Wing Stitch-ification**
+- 旧コンポーネント7ファイル削除（AiAdvisorLog, HardwareTelemetry, IntegrityRing, SuggestionCard, SuggestionList, WingHeader, BottomStatusBar）
+- 未使用コード整理 + 型エラー修正
+
+### 技術仕様
+
+- **フォント:** B612 Mono + Material Symbols Outlined
+- **カラー:** Razer Green (#44D62C) + Stitch HUD パレット
+- **アイコン:** Material Symbols (FILL アニメーション対応)
+- **レイアウト:** 固定サイドバー + ボトムタブバー + リングコア
+- **アニメーション:** CSS keyframes (spin, pulse, glow)
+- **品質:** TypeScript strict + Biome + 200行/ファイル制限
+
+### 成果物
+
+- 新規コンポーネント: 6ファイル (RingCore, TelemetryBentoCard, StitchAiPanel, FooterMetrics, Sidebar, BottomTabBar)
+- リビルドコンポーネント: 3ファイル (TitleBar, Shell, DashboardWing)
+- 削除ファイル: 7ファイル（旧コンポーネント）
+- CSS クラス: 15+ 新規 Stitch HUD クラス
+- 品質ゲート: 全パス
 
 ---
 
 ## NEXUS v2 Stitch デザイン全面採用 — Cascade 向け実装指示
 
-> **ステータス:** `pending`
-> **ブランチ:** `feature/v2-optimize-core`
+> **ステータス:** ✅ **完了**
+> **ブランチ:** `feature/v2-stitch-impl`
 > **デザイン仕様:** [`docs/v2/design-overhaul-spec.md`](docs/v2/design-overhaul-spec.md)
 > **参考画像:** Stitch 生成の 6 画面スクリーンショット（ユーザー確認済み）
 > **方針:** Razer HUD 美学を全面適用。Stitch 出力のビジュアルを忠実に再現する。

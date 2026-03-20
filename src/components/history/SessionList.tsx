@@ -52,7 +52,7 @@ export const SessionList = memo(function SessionList({
   }
 
   return (
-    <div className="glass-panel overflow-hidden">
+    <div className="glass-panel bloom-border overflow-hidden">
       {/* Progress bar */}
       <div className="h-0.5 w-full bg-white/2 relative">
         <div className="absolute inset-y-0 left-0 w-1/4 bg-accent-500 shadow-[0_0_15px_rgba(68,214,44,0.6)] progress-flow" />
@@ -62,7 +62,7 @@ export const SessionList = memo(function SessionList({
       <div className="px-6 py-4 border-b border-white/3 flex justify-between items-center bg-white/1">
         <div>
           <h3 className="font-black text-[10px] tracking-[0.3em] text-accent-500 uppercase flex items-center gap-3">
-            <span className="rotate-gear glow-green-icon">⟳</span>
+            <span className="material-symbols-outlined text-[16px]">history</span>
             SESSION TRANSACTION LOG / 取引履歴
           </h3>
           <p className="text-text-muted text-[8px] tracking-[0.2em] mt-1.5 uppercase font-light">
@@ -137,17 +137,17 @@ const SessionRow = memo(function SessionRow({
       <td className="px-6 py-3 text-[9px] tracking-[0.2em] text-text-secondary">
         <div className="flex items-center gap-3">
           <span className="w-1.5 h-1.5 bg-accent-500 rounded-full pulse-node" />
-          {`${dateStr} // ${timeStr}`}
+          <span className="font-data">{`${dateStr} // ${timeStr}`}</span>
         </div>
       </td>
-      <td className="px-6 py-3 text-[10px] font-black text-accent-500 tracking-tighter">
+      <td className="px-6 py-3 text-[10px] font-black text-accent-500 tracking-tighter font-data">
         {session.gameName}
       </td>
-      <td className="px-6 py-3 text-[9px] text-text-muted tracking-widest font-light">
+      <td className="px-6 py-3 text-[9px] text-text-muted tracking-widest font-light font-data">
         {durationStr}
       </td>
       <td className="px-6 py-3">
-        <span className="text-accent-500 font-black text-[10px]">
+        <span className="text-accent-500 font-black text-[10px] font-data">
           {session.summary.avgFps.toFixed(0)} FPS
         </span>
       </td>
@@ -155,7 +155,7 @@ const SessionRow = memo(function SessionRow({
         <button
           type="button"
           onClick={(e) => onDeleteClick(session.id, e)}
-          className={`text-[8px] px-3 py-1.5 border font-black uppercase tracking-[0.3em] transition-all ${
+          className={`text-[8px] px-3 py-1.5 border font-black uppercase tracking-[0.3em] transition-all font-data ${
             confirmDelete
               ? 'border-danger-500/40 text-danger-500 bg-danger-500/10'
               : 'border-white/10 text-text-muted hover:border-danger-500/40 hover:text-danger-500'

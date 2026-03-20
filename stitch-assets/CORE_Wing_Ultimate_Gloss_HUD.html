@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ja"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>NEXUS_V2 | GAMING_WING</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #030305;
+            color: #E5E1E7;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(68, 214, 44, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.02) 0%, transparent 40%),
+                linear-gradient(135deg, #050507 0%, #030305 100%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-piano-black {
+            background: linear-gradient(180deg, #0a0a0c 0%, #030305 100%);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        }
+        .glass-panel {
+            background: rgba(13, 13, 15, 0.7);
+            backdrop-filter: blur(12px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+        .scanning-line {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanning-line::after {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent, rgba(68, 214, 44, 0.08), rgba(68, 214, 44, 0.15), transparent);
+            pointer-events: none;
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 100%; }
+        }
+        .hud-btn-scan::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.15) 2px, rgba(0, 0, 0, 0.15) 4px);
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        /* High Intensity Bloom Effects */
+        .glow-green {
+            filter: drop-shadow(0 0 12px rgba(68, 214, 44, 0.9));
+            animation: pulse-bloom-green 3s infinite ease-in-out;
+        }
+        .glow-cyan {
+            filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.8));
+            animation: pulse-bloom-cyan 4s infinite ease-in-out;
+        }
+        .glow-yellow {
+            filter: drop-shadow(0 0 12px rgba(252, 238, 10, 0.8));
+            animation: pulse-bloom-yellow 2.5s infinite ease-in-out;
+        }
+        .glow-red {
+            filter: drop-shadow(0 0 12px rgba(255, 50, 50, 0.8));
+            animation: pulse-bloom-red 2s infinite ease-in-out;
+        }
+        .glow-muted {
+            filter: drop-shadow(0 0 4px rgba(185, 202, 203, 0.2));
+            transition: all 0.3s ease;
+        }
+        .group:hover .glow-muted {
+            filter: drop-shadow(0 0 10px rgba(0, 240, 255, 0.7));
+            color: #00f0ff;
+        }
+
+        @keyframes pulse-bloom-green {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(68, 214, 44, 0.6)); }
+            50% { filter: drop-shadow(0 0 18px rgba(68, 214, 44, 1.0)); }
+        }
+        @keyframes pulse-bloom-cyan {
+            0%, 100% { filter: drop-shadow(0 0 8px rgba(0, 240, 255, 0.5)); }
+            50% { filter: drop-shadow(0 0 20px rgba(0, 240, 255, 0.9)); }
+        }
+        @keyframes pulse-bloom-yellow {
+            0%, 100% { filter: drop-shadow(0 0 7px rgba(252, 238, 10, 0.5)); }
+            50% { filter: drop-shadow(0 0 15px rgba(252, 238, 10, 1.0)); }
+        }
+        @keyframes pulse-bloom-red {
+            0%, 100% { filter: drop-shadow(0 0 6px rgba(255, 50, 50, 0.4)); }
+            50% { filter: drop-shadow(0 0 15px rgba(255, 50, 50, 0.9)); }
+        }
+
+        .neon-bloom-green {
+            box-shadow: 0 0 20px rgba(68, 214, 44, 0.5), inset 0 0 10px rgba(68, 214, 44, 0.3);
+        }
+        .neon-bloom-green:hover {
+            box-shadow: 0 0 35px rgba(68, 214, 44, 0.8), inset 0 0 15px rgba(68, 214, 44, 0.4);
+        }
+        .backdrop-glow {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.5);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #44D62C66;
+            border-radius: 10px;
+        }
+        @keyframes pulse-ready {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.9; filter: brightness(1.3) drop-shadow(0 0 15px rgba(68, 214, 44, 0.9)); }
+        }
+        .animate-pulse-ready {
+            animation: pulse-ready 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .reflective-overlay {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 50%, rgba(255,255,255,0.02) 100%);
+            pointer-events: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              colors: {
+                "tertiary-fixed-dim": "#d1bcff",
+                "on-tertiary-fixed-variant": "#5700c9",
+                "on-surface-variant": "#b9cacb",
+                "inverse-primary": "#006970",
+                "on-error": "#690005",
+                "on-primary-fixed-variant": "#004f54",
+                "on-primary-container": "#006970",
+                "tertiary-container": "#e1d2ff",
+                "surface-bright": "#39393d",
+                "on-tertiary": "#3c0090",
+                "tertiary": "#faf3ff",
+                "error-container": "#93000a",
+                "surface-container-lowest": "#050507",
+                "background": "#030305",
+                "on-surface": "#e5e1e7",
+                "surface-container-low": "#0b0b0e",
+                "secondary": "#ffffff",
+                "secondary-fixed": "#f4e700",
+                "primary-container": "#00f0ff",
+                "primary": "#dbfcff",
+                "on-secondary-fixed-variant": "#4d4800",
+                "outline": "#849495",
+                "outline-variant": "#3b494b",
+                "on-secondary-fixed": "#1f1c00",
+                "on-primary": "#00363a",
+                "surface-container-high": "#121216",
+                "on-tertiary-fixed": "#23005b",
+                "tertiary-fixed": "#e9ddff",
+                "on-background": "#e5e1e7",
+                "on-tertiary-container": "#7213ff",
+                "on-primary-fixed": "#002022",
+                "surface-container-highest": "#1a1a1f",
+                "primary-fixed": "#7df4ff",
+                "error": "#ffb4ab",
+                "surface-dim": "#030305",
+                "surface": "#030305",
+                "secondary-container": "#f4e700",
+                "on-error-container": "#ffdad6",
+                "on-secondary": "#353100",
+                "secondary-fixed-dim": "#d6ca00",
+                "surface-variant": "#1a1a1f",
+                "surface-container": "#0e0e12",
+                "surface-tint": "#00dbe9",
+                "inverse-on-surface": "#313034",
+                "primary-fixed-dim": "#00dbe9",
+                "inverse-surface": "#e5e1e7",
+                "on-secondary-container": "#6d6600"
+              },
+              fontFamily: {
+                "headline": ["Inter"],
+                "body": ["Inter"],
+                "label": ["Inter"]
+              },
+              borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+              animation: {
+                'spin-slow': 'spin 12s linear infinite',
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background min-h-screen text-on-surface custom-scrollbar">
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-[#030305]/90 backdrop-blur-2xl border-b-[0.5px] border-[#44D62C]/30 shadow-2xl">
+<div class="flex flex-col">
+<div class="text-2xl font-black tracking-tighter text-[#44D62C] drop-shadow-[0_0_12px_rgba(68,214,44,0.6)]">NEXUS_V2</div>
+<span class="text-[8px] font-mono text-[#44D62C]/50 leading-none">[0x44D62C_LINK]</span>
+</div>
+<nav class="hidden md:flex space-x-10">
+<a class="text-[#44D62C] border-b-2 border-[#44D62C] pb-1 animate-pulse font-label text-xs tracking-[0.1em] drop-shadow-[0_0_8px_rgba(68,214,44,0.4)]" href="#">SYSTEM</a>
+<a class="text-[#B9CACB]/50 hover:text-[#44D62C] transition-all duration-300 font-label text-xs tracking-[0.1em] hover:drop-shadow-[0_0_8px_rgba(68,214,44,0.4)]" href="#">NETWORK</a>
+<a class="text-[#B9CACB]/50 hover:text-[#44D62C] transition-all duration-300 font-label text-xs tracking-[0.1em] hover:drop-shadow-[0_0_8px_rgba(68,214,44,0.4)]" href="#">CORES</a>
+<a class="text-[#B9CACB]/50 hover:text-[#44D62C] transition-all duration-300 font-label text-xs tracking-[0.1em] hover:drop-shadow-[0_0_8px_rgba(68,214,44,0.4)]" href="#">SENSORS</a>
+</nav>
+<div class="flex items-center space-x-6">
+<button class="text-[#B9CACB] hover:text-[#00f0ff] transition-all group">
+<span class="material-symbols-outlined glow-muted" data-icon="settings">settings</span>
+</button>
+<button class="text-[#B9CACB] hover:text-red-500 transition-all group">
+<span class="material-symbols-outlined glow-muted group-hover:!text-red-500 group-hover:!filter group-hover:!drop-shadow-[0_0_12px_rgba(255,50,50,0.8)]" data-icon="power_settings_new">power_settings_new</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar Shell -->
+<aside class="fixed left-0 top-16 bottom-0 w-20 flex flex-col items-center py-8 z-40 bg-[#030305] border-r-[0.5px] border-[#44D62C]/20 shadow-2xl">
+<div class="mb-10 flex flex-col items-center">
+<div class="w-10 h-10 rounded-sm bg-[#121216] border border-[#44D62C]/40 flex items-center justify-center overflow-hidden mb-2 relative shadow-lg">
+<img alt="User HUD Profile" class="w-full h-full object-cover" data-alt="Cyberpunk style user avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgsSIk-aKS-0ZUOISQH8nKBKmtAxZy7pHGMGhYRiqiSVLaVgKwAVEaMD4tUg1sR_gQKLX4X1GEr3E_hyhxkH92Asdzk7yr4w4DHeZLg9mDXnIryGp_3Mw2LFRGZ1eGoV_lfD-mLThhCHkOW2n8FxjahNi2fnnFeqaZks6RpB1MxXYSiuUnrKCNsVlbrLoJsX9Ndc0fFTZI28U0b2DDjIthRWxEu3Fkg-psRpboEnW2GiuQIyKzUI7UAYF_gGPqXaRj5wEicnvPWP4"/>
+<div class="absolute inset-0 bg-[#44D62C]/10 pointer-events-none"></div>
+</div>
+<span class="text-[8px] font-label text-[#B9CACB] opacity-50">OP_01</span>
+</div>
+<nav class="flex flex-col space-y-8">
+<button class="text-[#44D62C] shadow-[0_0_20px_rgba(68,214,44,0.4)] bg-[#44D62C]/10 p-2 border-l-2 border-[#44D62C] transition-all hover:translate-x-1 relative group">
+<span class="material-symbols-outlined glow-green" data-icon="grid_view">grid_view</span>
+<span class="absolute left-full ml-4 px-2 py-1 bg-[#44D62C]/20 text-[#44D62C] text-[9px] font-mono opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap border border-[#44D62C]/30 backdrop-blur-md">MAP_INIT</span>
+</button>
+<button class="text-[#B9CACB] opacity-40 hover:opacity-100 hover:text-[#44D62C] p-2 transition-all duration-300 hover:translate-x-1 group">
+<span class="material-symbols-outlined glow-muted group-hover:glow-green" data-icon="shield">shield</span>
+</button>
+<button class="text-[#B9CACB] opacity-40 hover:opacity-100 hover:text-[#44D62C] p-2 transition-all duration-300 hover:translate-x-1 group">
+<span class="material-symbols-outlined glow-muted group-hover:glow-green" data-icon="hub">hub</span>
+</button>
+<button class="text-[#B9CACB] opacity-40 hover:opacity-100 hover:text-[#44D62C] p-2 transition-all duration-300 hover:translate-x-1 group">
+<span class="material-symbols-outlined glow-muted group-hover:glow-green" data-icon="lock">lock</span>
+</button>
+<button class="text-[#B9CACB] opacity-40 hover:opacity-100 hover:text-[#44D62C] p-2 transition-all duration-300 hover:translate-x-1 group">
+<span class="material-symbols-outlined glow-muted group-hover:glow-green" data-icon="terminal">terminal</span>
+</button>
+</nav>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-20 mt-16 pb-20 p-8">
+<!-- Dashboard Header -->
+<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
+<div class="max-w-2xl relative">
+<div class="absolute -top-6 -left-2 text-[10px] font-mono text-[#44D62C]/60 tracking-widest">[CORE_INIT_SYS_V2]</div>
+<h1 class="text-7xl font-black tracking-tighter uppercase text-white leading-none mb-3 drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">Gaming Wing</h1>
+<p class="text-xs font-label tracking-[0.3em] text-[#B9CACB] uppercase flex items-center gap-3">
+                システム最適化プロセスを実行中 — STATUS: <span class="text-[#44D62C] animate-pulse drop-shadow-[0_0_10px_rgba(68,214,44,0.6)]">READY</span>
+</p>
+</div>
+<div class="relative group">
+<div class="absolute -top-4 right-0 text-[10px] font-mono text-[#44D62C] tracking-tighter">[CMD_READY]</div>
+<button class="relative px-12 py-5 bg-[#44D62C] text-[#00363a] font-black text-sm tracking-widest uppercase transition-all duration-300 hover:scale-95 neon-bloom-green hud-btn-scan animate-pulse-ready overflow-hidden border border-[#44D62C]/70">
+                Apply All / すべて適用
+                <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#00363a]"></div>
+<div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#00363a]"></div>
+</button>
+<div class="absolute -bottom-4 left-0 text-[9px] font-mono text-[#44D62C]/30">0x44D62C_EXECUTE</div>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Preset Cards Section -->
+<div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-6">
+<!-- Gaming Preset -->
+<div class="group relative glass-panel p-8 border-l-4 border-[#44D62C] hover:bg-[#44D62C]/10 transition-all duration-500 cursor-pointer overflow-hidden backdrop-glow">
+<div class="reflective-overlay absolute inset-0"></div>
+<div class="flex justify-between items-start mb-10 relative z-10">
+<span class="material-symbols-outlined text-[#44D62C] text-5xl glow-green" data-icon="sports_esports">sports_esports</span>
+<span class="text-[10px] font-bold text-[#44D62C] border border-[#44D62C]/50 px-2 py-0.5 animate-pulse bg-[#44D62C]/10">ACTIVE</span>
+</div>
+<h3 class="text-2xl font-black text-white mb-2 relative z-10">Gaming</h3>
+<p class="text-xs text-[#B9CACB] font-label leading-relaxed relative z-10">低遅延・高フレームレート優先<br/>FPS / MOBA 最適化</p>
+<div class="mt-8 h-1.5 w-full bg-black/50 relative overflow-hidden rounded-full z-10">
+<div class="h-full bg-[#44D62C] w-full shadow-[0_0_15px_#44D62C] animate-pulse"></div>
+<div class="absolute inset-0 hud-btn-scan opacity-30"></div>
+</div>
+<div class="absolute bottom-2 right-3 text-[9px] font-mono text-[#44D62C]/40">PROSET_01</div>
+</div>
+<!-- Power Preset -->
+<div class="group relative glass-panel p-8 border-l-4 border-transparent hover:border-primary-container/60 hover:bg-primary-container/10 transition-all duration-500 cursor-pointer overflow-hidden">
+<div class="reflective-overlay absolute inset-0"></div>
+<div class="flex justify-between items-start mb-10 relative z-10">
+<span class="material-symbols-outlined text-[#B9CACB] text-5xl group-hover:text-primary-container glow-muted group-hover:glow-cyan transition-all" data-icon="bolt">bolt</span>
+</div>
+<h3 class="text-2xl font-black text-white mb-2 relative z-10">Power</h3>
+<p class="text-xs text-[#B9CACB] font-label leading-relaxed relative z-10">最大パフォーマンス出力<br/>ワークロード集中型</p>
+<div class="mt-8 h-1.5 w-full bg-black/50 overflow-hidden relative rounded-full z-10">
+<div class="h-full bg-primary-container w-[65%] opacity-40 group-hover:opacity-100 transition-all duration-500 shadow-[0_0_10px_rgba(0,240,255,0.5)]"></div>
+<div class="absolute inset-0 hud-btn-scan opacity-20"></div>
+</div>
+<div class="absolute bottom-2 right-3 text-[9px] font-mono text-white/10 group-hover:text-primary-container/40 transition-colors">PROSET_02</div>
+</div>
+<!-- Streaming Preset -->
+<div class="group relative glass-panel p-8 border-l-4 border-transparent hover:border-primary-container/60 hover:bg-primary-container/10 transition-all duration-500 cursor-pointer overflow-hidden">
+<div class="reflective-overlay absolute inset-0"></div>
+<div class="flex justify-between items-start mb-10 relative z-10">
+<span class="material-symbols-outlined text-[#B9CACB] text-5xl group-hover:text-primary-container glow-muted group-hover:glow-cyan transition-all" data-icon="broadcast_on_home">broadcast_on_home</span>
+</div>
+<h3 class="text-2xl font-black text-white mb-2 relative z-10">Streaming</h3>
+<p class="text-xs text-[#B9CACB] font-label leading-relaxed relative z-10">エンコード負荷分散<br/>ネットワーク帯域確保</p>
+<div class="mt-8 h-1.5 w-full bg-black/50 overflow-hidden relative rounded-full z-10">
+<div class="h-full bg-primary-container w-[45%] opacity-40 group-hover:opacity-100 transition-all duration-500 shadow-[0_0_10px_rgba(0,240,255,0.5)]"></div>
+<div class="absolute inset-0 hud-btn-scan opacity-20"></div>
+</div>
+<div class="absolute bottom-2 right-3 text-[9px] font-mono text-white/10 group-hover:text-primary-container/40 transition-colors">PROSET_03</div>
+</div>
+</div>
+<!-- System Metrics Small Bento -->
+<div class="md:col-span-4 glass-panel p-8 border border-[#44D62C]/20 flex flex-col justify-between scanning-line relative">
+<div class="reflective-overlay absolute inset-0"></div>
+<div class="absolute top-2 right-3 p-1 text-[8px] font-mono text-[#44D62C]/50">[SENS_GPU_01]</div>
+<div class="flex items-center justify-between mb-6 relative z-10">
+<span class="text-sm font-black tracking-[0.2em] text-[#B9CACB]">GPU THERMALS</span>
+<span class="text-[#44D62C] font-black text-3xl drop-shadow-[0_0_12px_rgba(68,214,44,0.6)]">42°C</span>
+</div>
+<div class="space-y-6 relative z-10">
+<div class="flex justify-between items-center">
+<span class="text-xs font-label opacity-60 tracking-widest">CLOCK SPEED</span>
+<span class="text-sm font-black text-primary-container glow-cyan">2.4 GHz</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-xs font-label opacity-60 tracking-widest">VRAM USAGE</span>
+<span class="text-sm font-black text-primary-container glow-cyan">4.8 GB</span>
+</div>
+<div class="w-full bg-black/40 h-24 rounded-sm relative overflow-hidden border border-white/5">
+<img alt="Frequency Waveform" class="w-full h-full object-cover opacity-50 mix-blend-screen" data-alt="Abstract green cyan wave chart pattern" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVZOcGQRWxSv4Xh7TeFXkrza1OXdT2X56ET8z9Ti7193z3SmJRJ7H9y58Jp44FBfXmmYAR4gmKtFmqP3q-BJIrqwLlPTVrXHDjDC1SOQCkY-ZQ1KDzC67i-KKd2niNL3rajzRB1YKImbNoigB4aaUNYpoemhtjqRKdcahX8IbB4jxnx6g8gAlvc4OcmEwbbFtZLmIyzXEy4mEiryx9YHWCm47b2fsvTUDy_LS3yuYaJXninRptb30dVVC_mE2WmFzZo0USK3PJboo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#030305] to-transparent"></div>
+</div>
+</div>
+</div>
+<!-- Optimization Checklist Section -->
+<div class="md:col-span-12 lg:col-span-7 glass-panel p-10 border-t-2 border-[#44D62C]/30 scanning-line relative">
+<div class="reflective-overlay absolute inset-0"></div>
+<div class="absolute top-4 left-4 text-[9px] font-mono text-[#44D62C]/40">[TASK_QUEUE_v2.0]</div>
+<div class="flex items-center justify-between mb-10 relative z-10">
+<h2 class="text-3xl font-black text-white tracking-tight">Optimization Checklist / 最適化項目</h2>
+<div class="flex items-center gap-4">
+<span class="text-[11px] font-black text-[#44D62C] animate-pulse tracking-[0.2em]">SCANNING...</span>
+<span class="text-[9px] font-mono text-[#44D62C]/50">[0x7F_FF]</span>
+</div>
+</div>
+<div class="space-y-2 relative z-10">
+<!-- Checklist Item -->
+<div class="flex items-center justify-between p-5 bg-black/40 hover:bg-[#44D62C]/10 transition-all duration-300 group relative overflow-hidden border border-white/5">
+<div class="flex items-center space-x-5 z-10">
+<div class="w-6 h-6 border border-[#44D62C] flex items-center justify-center bg-[#44D62C]/30 shadow-[0_0_12px_rgba(68,214,44,0.5)]">
+<span class="material-symbols-outlined text-[16px] text-[#44D62C] glow-green" data-icon="check" data-weight="fill">check</span>
+</div>
+<span class="text-base font-bold text-white/90">Disable Background Telemetry</span>
+</div>
+<span class="text-[10px] font-black text-[#44D62C] z-10 px-3 py-1 bg-[#44D62C]/20 border border-[#44D62C]/40 glow-green">COMPLETED</span>
+<div class="absolute inset-0 hud-btn-scan opacity-0 group-hover:opacity-20 transition-opacity"></div>
+</div>
+<div class="flex items-center justify-between p-5 bg-black/40 hover:bg-primary-container/10 transition-all duration-300 group relative overflow-hidden border border-white/5">
+<div class="flex items-center space-x-5 z-10">
+<button class="w-6 h-6 border border-white/20 flex items-center justify-center hover:border-primary-container hover:bg-primary-container/20 transition-all"></button>
+<span class="text-base font-bold text-white/90">Prioritize CPU Interrupts</span>
+</div>
+<div class="flex items-center gap-3 z-10">
+<span class="text-[9px] font-mono text-primary-container/60 opacity-0 group-hover:opacity-100">[CMD:0x02]</span>
+<span class="text-[11px] font-black text-[#B9CACB] group-hover:text-primary-container transition-colors group-hover:glow-cyan">READY TO DEPLOY</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-5 bg-black/40 hover:bg-primary-container/10 transition-all duration-300 group relative overflow-hidden border border-white/5">
+<div class="flex items-center space-x-5 z-10">
+<button class="w-6 h-6 border border-white/20 flex items-center justify-center hover:border-primary-container/50 transition-all"></button>
+<span class="text-base font-bold text-white/90">Clear VRAM Overload Cache</span>
+</div>
+<span class="text-[11px] font-black text-[#B9CACB]/50 z-10 tracking-widest">PENDING</span>
+</div>
+<div class="flex items-center justify-between p-5 bg-black/40 hover:bg-primary-container/10 transition-all duration-300 group relative overflow-hidden border border-white/5">
+<div class="flex items-center space-x-5 z-10">
+<button class="w-6 h-6 border border-white/20 flex items-center justify-center hover:border-primary-container/50 transition-all"></button>
+<span class="text-base font-bold text-white/90">Aggressive Core Parking</span>
+</div>
+<span class="text-[11px] font-black text-[#B9CACB] group-hover:text-primary-container transition-colors z-10 tracking-widest group-hover:glow-cyan">READY TO DEPLOY</span>
+</div>
+</div>
+</div>
+<!-- Visualization / Graphic Section -->
+<div class="md:col-span-12 lg:col-span-5 glass-panel relative min-h-[400px] overflow-hidden border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)]">
+<div class="reflective-overlay absolute inset-0 z-20"></div>
+<div class="absolute inset-0 bg-gradient-to-br from-[#44D62C]/15 via-transparent to-[#00f0ff]/10"></div>
+<div class="absolute top-6 left-6 text-[11px] font-mono text-[#44D62C]/60 tracking-widest z-10">[CORE_STABILITY_MONITOR]</div>
+<div class="absolute inset-0 flex items-center justify-center z-10">
+<div class="relative w-80 h-80 border border-[#44D62C]/20 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(68,214,44,0.1)]">
+<div class="absolute inset-6 border border-primary-container/20 rounded-full animate-spin-slow"></div>
+<div class="absolute inset-16 border border-[#44D62C]/50 rounded-full"></div>
+<div class="absolute inset-20 bg-[#44D62C]/10 rounded-full blur-3xl animate-pulse"></div>
+<img alt="Central HUD" class="w-48 h-48 opacity-90 mix-blend-screen" data-alt="Futuristic holographic ring interface with data points" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAIsM8VlhXIV0D0fORGK3l3DKyIDTAdOohnGiJgKQM487YzL2esEewHQ8qMDb5vB9NzbskPQWVjWCSeKUpawWZGtQPBaDohEKmm9IxZEKfNbOT2zBsRIfX6AqJG-y67sx-5vi68oH9pmFNRWjG-nsLl74mrzK5e5Q2LVHVZ-aolMMO-vO-lmK7g0r-201u_HzF4LfqBX6mDMfM72puMaomQrVWF9SAKRHBeVQGMQ-d0q4bgyAE6RBocrgIO955q1odf_rEojCjlF3U"/>
+<div class="absolute text-center">
+<span class="block text-5xl font-black text-[#44D62C] drop-shadow-[0_0_20px_rgba(68,214,44,0.9)] animate-pulse">98%</span>
+<span class="text-[9px] font-black tracking-widest text-white/80 uppercase">SYSTEM STABILITY</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-6 left-8 right-8 flex justify-between z-10">
+<div class="text-[10px] font-mono text-[#44D62C]/70 bg-black/40 px-3 py-1 rounded-sm border border-[#44D62C]/20">LATENCY: 12ms [0x0C]</div>
+<div class="text-[10px] font-mono text-primary-container/70 bg-black/40 px-3 py-1 rounded-sm border border-primary-container/20">JITTER: 0.02% [0x01]</div>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar Shell -->
+<footer class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-12 bg-[#030305]/95 backdrop-blur-xl border-t border-[#44D62C]/30 shadow-[0_-20px_40px_rgba(0,0,0,0.9)]">
+<div class="flex items-center space-x-3 group cursor-default">
+<span class="material-symbols-outlined text-[16px] text-[#44D62C] glow-green group-hover:animate-spin" data-icon="memory">memory</span>
+<span class="text-[11px] font-black tracking-[0.1em] text-[#44D62C]/80 group-hover:text-[#44D62C] transition-colors uppercase">CPU: 22%</span>
+</div>
+<div class="flex items-center space-x-3 group cursor-default">
+<span class="material-symbols-outlined text-[16px] text-[#44D62C] glow-green" data-icon="analytics">analytics</span>
+<span class="text-[11px] font-black tracking-[0.1em] text-[#44D62C]/80 group-hover:text-[#44D62C] transition-colors uppercase">RAM: 4.2GB</span>
+</div>
+<div class="flex items-center space-x-3 group cursor-default bg-[#FCEE0A]/10 px-4 py-1.5 border-x border-[#FCEE0A]/30">
+<span class="material-symbols-outlined text-[16px] text-[#FCEE0A] glow-yellow animate-pulse" data-icon="speed">speed</span>
+<span class="text-[11px] font-black tracking-[0.15em] text-[#FCEE0A] drop-shadow-[0_0_8px_rgba(252,238,10,0.4)]">NET: 1GBPS</span>
+</div>
+<div class="flex items-center space-x-3 group cursor-default">
+<span class="material-symbols-outlined text-[16px] text-[#44D62C] glow-green" data-icon="thermostat">thermostat</span>
+<span class="text-[11px] font-black tracking-[0.1em] text-[#44D62C]/80 group-hover:text-[#44D62C] transition-colors uppercase">TEMP: 42°C</span>
+</div>
+</footer>
+</body></html>

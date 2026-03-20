@@ -6,42 +6,42 @@ test.describe('Navigation', () => {
     await page.waitForLoadState('networkidle');
   });
 
-  test('HOMEからBOOSTへの遷移', async ({ page }) => {
-    // HOMEが表示されていることを確認
-    await expect(page.getByTestId('wing-home')).toBeVisible();
+  test('HOMEからARSENALへの遷移', async ({ page }) => {
+    // COREが表示されていることを確認
+    await expect(page.getByTestId('wing-core')).toBeVisible();
 
-    // BOOSTナビゲーションをクリック
-    await page.getByTestId('nav-boost').click();
+    // ARSENALナビゲーションをクリック
+    await page.getByTestId('nav-arsenal').click();
 
-    // BOOST Wingが表示されることを確認
-    await expect(page.getByTestId('wing-boost')).toBeVisible();
+    // ARSENAL Wingが表示されることを確認
+    await expect(page.getByTestId('wing-arsenal')).toBeVisible();
   });
 
-  test('HOMEからLAUNCHERへの遷移', async ({ page }) => {
-    // HOMEが表示されていることを確認
-    await expect(page.getByTestId('wing-home')).toBeVisible();
+  test('COREからTACTICSへの遷移', async ({ page }) => {
+    // COREが表示されていることを確認
+    await expect(page.getByTestId('wing-core')).toBeVisible();
 
-    // LAUNCHERナビゲーションをクリック
-    await page.getByTestId('nav-launcher').click();
+    // TACTICSナビゲーションをクリック
+    await page.getByTestId('nav-tactics').click();
 
-    // LAUNCHER Wingが表示されることを確認
-    await expect(page.getByTestId('wing-launcher')).toBeVisible();
+    // TACTICS Wingが表示されることを確認
+    await expect(page.getByTestId('wing-tactics')).toBeVisible();
   });
 
-  test('HOMEからHARDWAREへの遷移', async ({ page }) => {
-    // HOMEが表示されていることを確認
-    await expect(page.getByTestId('wing-home')).toBeVisible();
+  test('COREからLOGSへの遷移', async ({ page }) => {
+    // COREが表示されていることを確認
+    await expect(page.getByTestId('wing-core')).toBeVisible();
 
-    // HARDWAREナビゲーションをクリック
-    await page.getByTestId('nav-hardware').click();
+    // LOGSナビゲーションをクリック
+    await page.getByTestId('nav-logs').click();
 
-    // HARDWARE Wingが表示されることを確認
-    await expect(page.getByTestId('wing-hardware')).toBeVisible();
+    // LOGS Wingが表示されることを確認
+    await expect(page.getByTestId('wing-logs')).toBeVisible();
   });
 
-  test('HOMEからSETTINGSへの遷移', async ({ page }) => {
-    // HOMEが表示されていることを確認
-    await expect(page.getByTestId('wing-home')).toBeVisible();
+  test('COREからSETTINGSへの遷移', async ({ page }) => {
+    // COREが表示されていることを確認
+    await expect(page.getByTestId('wing-core')).toBeVisible();
 
     // SETTINGSナビゲーションをクリック
     await page.getByTestId('nav-settings').click();
@@ -51,42 +51,38 @@ test.describe('Navigation', () => {
   });
 
   test('遷移後に元のWingに戻れること', async ({ page }) => {
-    // HOMEが表示されていることを確認
-    await expect(page.getByTestId('wing-home')).toBeVisible();
+    // COREが表示されていることを確認
+    await expect(page.getByTestId('wing-core')).toBeVisible();
 
-    // BOOSTに移動
-    await page.getByTestId('nav-boost').click();
-    await expect(page.getByTestId('wing-boost')).toBeVisible();
+    // ARSENALに移動
+    await page.getByTestId('nav-arsenal').click();
+    await expect(page.getByTestId('wing-arsenal')).toBeVisible();
 
-    // HOMEに戻る
-    await page.getByTestId('nav-home').click();
-    await expect(page.getByTestId('wing-home')).toBeVisible();
+    // COREに戻る
+    await page.getByTestId('nav-core').click();
+    await expect(page.getByTestId('wing-core')).toBeVisible();
   });
 
   test('サイドバーの全ナビゲーションアイテムが表示される', async ({ page }) => {
     // 全てのナビゲーションアイテムが存在することを確認
-    await expect(page.getByTestId('nav-home')).toBeVisible();
-    await expect(page.getByTestId('nav-boost')).toBeVisible();
-    await expect(page.getByTestId('nav-launcher')).toBeVisible();
-    await expect(page.getByTestId('nav-hardware')).toBeVisible();
-    await expect(page.getByTestId('nav-windows')).toBeVisible();
-    await expect(page.getByTestId('nav-log')).toBeVisible();
-    await expect(page.getByTestId('nav-netopt')).toBeVisible();
-    await expect(page.getByTestId('nav-storage')).toBeVisible();
+    await expect(page.getByTestId('nav-core')).toBeVisible();
+    await expect(page.getByTestId('nav-arsenal')).toBeVisible();
+    await expect(page.getByTestId('nav-tactics')).toBeVisible();
+    await expect(page.getByTestId('nav-logs')).toBeVisible();
     await expect(page.getByTestId('nav-settings')).toBeVisible();
   });
 
   test('アクティブなナビゲーションアイテムがハイライトされる', async ({ page }) => {
-    // HOMEがアクティブ状態であることを確認
-    const homeNav = page.getByTestId('nav-home');
-    await expect(homeNav).toHaveClass(/border-\[var\(--color-cyan-500\)\]/);
+    // COREがアクティブ状態であることを確認
+    const coreNav = page.getByTestId('nav-core');
+    await expect(coreNav).toHaveClass(/bg-accent-500\/10/);
 
-    // BOOSTに移動してアクティブ状態が変わることを確認
-    await page.getByTestId('nav-boost').click();
-    const boostNav = page.getByTestId('nav-boost');
-    await expect(boostNav).toHaveClass(/border-\[var\(--color-cyan-500\)\]/);
+    // ARSENALに移動してアクティブ状態が変わることを確認
+    await page.getByTestId('nav-arsenal').click();
+    const arsenalNav = page.getByTestId('nav-arsenal');
+    await expect(arsenalNav).toHaveClass(/bg-accent-500\/10/);
 
-    // HOMEのハイライトが解除されることを確認
-    await expect(homeNav).not.toHaveClass(/border-\[var\(--color-cyan-500\)\]/);
+    // COREのハイライトが解除されることを確認
+    await expect(coreNav).not.toHaveClass(/bg-accent-500\/10/);
   });
 });

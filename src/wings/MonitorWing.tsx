@@ -1,1 +1,1 @@
-export { MonitorWing as default } from '../components/monitor/MonitorWing';
+export { default } from '../components/monitor/MonitorWing';

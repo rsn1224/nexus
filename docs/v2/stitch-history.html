@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS - HISTORY Wing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-user-select: none;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #06060a;
+            color: #e0e0ec;
+            overflow: hidden;
+        }
+
+        .app-container {
+            width: 1280px;
+            height: 800px;
+            display: flex;
+            background: #06060a;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 48px;
+            height: 100%;
+            background: #0a0a10;
+            border-right: 1px solid #1e1e2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 8px;
+        }
+
+        .nav-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: #9090aa;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: rgba(68, 214, 44, 0.1);
+            color: #44D62C;
+        }
+
+        .nav-item.active {
+            background: rgba(68, 214, 44, 0.15);
+            color: #44D62C;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: #44D62C;
+            border-radius: 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #06060a;
+        }
+
+        /* Titlebar */
+        .titlebar {
+            height: 32px;
+            background: #0a0a10;
+            border-bottom: 1px solid #1e1e2e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .app-title {
+            color: #44D62C;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .window-btn:hover {
+            opacity: 0.8;
+        }
+
+        .window-btn.minimize { background: #f59e0b; }
+        .window-btn.maximize { background: #22c55e; }
+        .window-btn.close { background: #ef4444; }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Glass Panel */
+        .glass-panel {
+            background: rgba(10, 10, 16, 0.8);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 30, 46, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(68, 214, 44, 0.3), 
+                transparent
+            );
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Trend Chart */
+        .trend-container {
+            height: 320px;
+            background: rgba(10, 10, 16, 0.8);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 30, 46, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trend-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .trend-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(68, 214, 44, 0.8);
+        }
+
+        .trend-toggle {
+            display: flex;
+            gap: 4px;
+            background: rgba(10, 10, 16, 0.5);
+            padding: 4px;
+            border-radius: 6px;
+        }
+
+        .toggle-option {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9090aa;
+        }
+
+        .toggle-option:hover {
+            color: #e0e0ec;
+            background: rgba(68, 214, 44, 0.1);
+        }
+
+        .toggle-option.active {
+            background: rgba(68, 214, 44, 0.15);
+            color: #44D62C;
+            border: 1px solid rgba(68, 214, 44, 0.3);
+        }
+
+        .chart-canvas {
+            width: 100%;
+            height: 240px;
+            background: rgba(6, 6, 10, 0.5);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(30, 30, 46, 0.2) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(30, 30, 46, 0.2) 1px, transparent 1px);
+            background-size: 60px 40px;
+        }
+
+        .trend-line {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(68, 214, 44, 0.3), rgba(68, 214, 44, 0.8));
+            border-radius: 4px 4px 0 0;
+            animation: trendAnimation 3s ease-in-out infinite;
+        }
+
+        @keyframes trendAnimation {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .chart-labels {
+            position: absolute;
+            bottom: 8px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 9px;
+            color: #6b6b82;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Session List */
+        .session-container {
+            flex: 1;
+            background: rgba(10, 10, 16, 0.8);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 30, 46, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .session-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(68, 214, 44, 0.8);
+        }
+
+        .session-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 10px;
+            color: #9090aa;
+        }
+
+        .session-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .session-row {
+            background: rgba(10, 10, 16, 0.5);
+            border: 1px solid rgba(30, 30, 46, 0.3);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .session-row:hover {
+            border-color: rgba(68, 214, 44, 0.3);
+            background: rgba(68, 214, 44, 0.05);
+        }
+
+        .session-row.selected {
+            border-color: #44D62C;
+            background: rgba(68, 214, 44, 0.1);
+        }
+
+        .session-row::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: transparent;
+            border-radius: 3px 0 0 3px;
+            transition: all 0.2s;
+        }
+
+        .session-row:hover::before,
+        .session-row.selected::before {
+            background: #44D62C;
+        }
+
+        .session-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .session-indicator {
+            width: 8px;
+            height: 8px;
+            background: #44D62C;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .session-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .session-time {
+            font-size: 11px;
+            font-weight: 600;
+            color: #e0e0ec;
+            font-family: 'Courier New', monospace;
+        }
+
+        .session-duration {
+            font-size: 10px;
+            color: #9090aa;
+            font-family: 'Courier New', monospace;
+        }
+
+        .session-score {
+            font-size: 11px;
+            font-weight: 600;
+            color: #44D62C;
+            font-family: 'Courier New', monospace;
+        }
+
+        .session-optimizations {
+            font-size: 10px;
+            color: #22c55e;
+        }
+
+        .session-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .session-btn {
+            padding: 4px 8px;
+            border: 1px solid rgba(30, 30, 46, 0.5);
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9090aa;
+            background: transparent;
+        }
+
+        .session-btn:hover {
+            border-color: #44D62C;
+            color: #44D62C;
+            background: rgba(68, 214, 44, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .section-icon {
+            color: rgba(68, 214, 44, 0.6);
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(68, 214, 44, 0.8);
+        }
+
+        .font-mono {
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="nav-item">⊙</div>
+            <div class="nav-item">⚡</div>
+            <div class="nav-item">📊</div>
+            <div class="nav-item active">📋</div>
+            <div class="nav-item">⚙</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Titlebar -->
+            <div class="titlebar">
+                <div class="app-title">NEXUS</div>
+                <div class="window-controls">
+                    <div class="window-btn minimize"></div>
+                    <div class="window-btn maximize"></div>
+                    <div class="window-btn close"></div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Trend Chart -->
+                <div class="trend-container">
+                    <div class="trend-header">
+                        <div class="section-header">
+                            <span class="section-icon">📈</span>
+                            <span class="section-title">ヘルススコア推移</span>
+                        </div>
+                        <div class="trend-toggle">
+                            <div class="toggle-option active">7d</div>
+                            <div class="toggle-option">30d</div>
+                        </div>
+                    </div>
+                    <div class="chart-canvas">
+                        <div class="grid-lines"></div>
+                        <div class="trend-line" style="height: 65%;"></div>
+                        <div class="chart-labels">
+                            <span>03/13</span>
+                            <span>03/15</span>
+                            <span>03/17</span>
+                            <span>03/19</span>
+                            <span>03/21</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session List -->
+                <div class="session-container">
+                    <div class="session-header">
+                        <div class="section-header">
+                            <span class="section-icon">📋</span>
+                            <span class="section-title">セッション履歴</span>
+                        </div>
+                        <div class="session-stats">
+                            <span class="font-mono">Total: 24</span>
+                            <span class="font-mono">This week: 8</span>
+                        </div>
+                    </div>
+                    <div class="session-list">
+                        <div class="session-row selected">
+                            <div class="session-left">
+                                <div class="session-indicator"></div>
+                                <div class="session-info">
+                                    <div class="session-time font-mono">2026-03-21 19:30</div>
+                                    <div class="session-duration font-mono">2h15m</div>
+                                    <div class="session-score font-mono">Score 72→88</div>
+                                    <div class="session-optimizations">+3 最適化</div>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="session-btn">詳細</button>
+                                <button class="session-btn">比較</button>
+                            </div>
+                        </div>
+
+                        <div class="session-row">
+                            <div class="session-left">
+                                <div class="session-indicator"></div>
+                                <div class="session-info">
+                                    <div class="session-time font-mono">2026-03-21 16:45</div>
+                                    <div class="session-duration font-mono">1h30m</div>
+                                    <div class="session-score font-mono">Score 65→72</div>
+                                    <div class="session-optimizations">+2 最適化</div>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="session-btn">詳細</button>
+                                <button class="session-btn">比較</button>
+                            </div>
+                        </div>
+
+                        <div class="session-row">
+                            <div class="session-left">
+                                <div class="session-indicator"></div>
+                                <div class="session-info">
+                                    <div class="session-time font-mono">2026-03-20 21:15</div>
+                                    <div class="session-duration font-mono">3h20m</div>
+                                    <div class="session-score font-mono">Score 58→65</div>
+                                    <div class="session-optimizations">+4 最適化</div>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="session-btn">詳細</button>
+                                <button class="session-btn">比較</button>
+                            </div>
+                        </div>
+
+                        <div class="session-row">
+                            <div class="session-left">
+                                <div class="session-indicator"></div>
+                                <div class="session-info">
+                                    <div class="session-time font-mono">2026-03-20 14:00</div>
+                                    <div class="session-duration font-mono">45m</div>
+                                    <div class="session-score font-mono">Score 55→58</div>
+                                    <div class="session-optimizations">+1 最適化</div>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="session-btn">詳細</button>
+                                <button class="session-btn">比較</button>
+                            </div>
+                        </div>
+
+                        <div class="session-row">
+                            <div class="session-left">
+                                <div class="session-indicator"></div>
+                                <div class="session-info">
+                                    <div class="session-time font-mono">2026-03-19 20:30</div>
+                                    <div class="session-duration font-mono">2h45m</div>
+                                    <div class="session-score font-mono">Score 48→55</div>
+                                    <div class="session-optimizations">+3 最適化</div>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="session-btn">詳細</button>
+                                <button class="session-btn">比較</button>
+                            </div>
+                        </div>
+
+                        <div class="session-row">
+                            <div class="session-left">
+                                <div class="session-indicator"></div>
+                                <div class="session-info">
+                                    <div class="session-time font-mono">2026-03-19 17:15</div>
+                                    <div class="session-duration font-mono">1h15m</div>
+                                    <div class="session-score font-mono">Score 42→48</div>
+                                    <div class="session-optimizations">+2 最適化</div>
+                                </div>
+                            </div>
+                            <div class="session-actions">
+                                <button class="session-btn">詳細</button>
+                                <button class="session-btn">比較</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

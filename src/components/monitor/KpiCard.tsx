@@ -43,19 +43,33 @@ export const KpiCard = memo(function KpiCard({
 
   return (
     <div
-      className={`piano-surface p-4 relative overflow-hidden h-24 flex flex-col justify-between hover:bg-white/[0.02] transition-all ${c.border}`}
+      className={`glass-panel bloom-border p-6 relative overflow-hidden h-32 flex flex-col justify-between group ${c.border}`}
     >
-      <div className="flex justify-between items-start">
-        <p className={`text-[9px] tracking-[0.2em] uppercase ${c.labelClass}`}>{label}</p>
-        {moduleId && <span className="text-[6px] text-accent-500/20">{moduleId}</span>}
+      {/* Top Right Icon */}
+      <div className="absolute top-6 right-6">
+        <span
+          className="material-symbols-outlined text-[20px] text-white/30 group-hover:text-accent-500 transition-colors"
+          aria-hidden="true"
+        >
+          {color === 'accent' ? 'speed' : color === 'info' ? 'network_check' : 'warning'}
+        </span>
       </div>
-      <span className="text-3xl font-black text-text-primary">
-        {value}
-        <span className="text-sm text-text-muted font-medium ml-1">{unit}</span>
-      </span>
-      <div className="h-1 bg-white/[0.03] overflow-hidden rounded-full mt-2">
+
+      <div className="flex justify-between items-start">
+        <p className={`text-[10px] tracking-widest text-white/60 uppercase ${c.labelClass}`}>
+          {label}
+        </p>
+        {moduleId && <span className="text-[6px] text-accent-500/20 font-data">{moduleId}</span>}
+      </div>
+
+      <div className="flex items-baseline gap-1">
+        <span className="text-4xl font-data text-text-primary">{value}</span>
+        <span className="text-xl font-data text-white/40">{unit}</span>
+      </div>
+
+      <div className="w-full bg-white/5 h-1 rounded-full overflow-hidden">
         <div
-          className={`h-full ${c.bar} transition-all duration-300`}
+          className={`h-full ${c.bar} transition-all duration-500`}
           style={{ width: `${pct}%` }}
         />
       </div>

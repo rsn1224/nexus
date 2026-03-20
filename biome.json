@@ -48,7 +48,8 @@
       "!!**/node_modules",
       "!!**/dist",
       "!!**/src-tauri/target",
-      "!!docs/v2/stitch-generated.html"
+      "!!docs/v2/stitch-*.html",
+      "!!stitch-assets"
     ]
   }
 }

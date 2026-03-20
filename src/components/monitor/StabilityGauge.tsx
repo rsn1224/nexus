@@ -25,14 +25,14 @@ export const StabilityGauge = memo(function StabilityGauge({
   const label = pct >= 90 ? '最適化済み / OPTIMIZED' : pct >= 60 ? 'DEGRADED' : 'CRITICAL';
 
   return (
-    <div className="piano-surface p-6 flex flex-col justify-between items-center relative overflow-hidden min-h-[400px]">
+    <div className="glass-panel bloom-border p-6 flex flex-col justify-between items-center relative overflow-hidden min-h-[400px]">
       <div className="absolute inset-0 grid-bg opacity-20" />
 
       <div className="w-full flex justify-between items-start opacity-30 relative z-10">
-        <span className="text-[7px] text-accent-500 tracking-tighter uppercase">
+        <span className="text-[7px] text-accent-500 tracking-tighter uppercase font-data">
           REF_STRM_X009 / 安定性スコア
         </span>
-        <span className="text-[7px] text-accent-500 tracking-tighter">BUFFER_OK</span>
+        <span className="text-[7px] text-accent-500 tracking-tighter font-data">BUFFER_OK</span>
       </div>
 
       <div className="relative z-10 text-center flex-1 flex flex-col justify-center">
@@ -53,7 +53,7 @@ export const StabilityGauge = memo(function StabilityGauge({
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-7xl font-black text-text-primary tracking-tighter">
+            <span className="text-7xl font-black text-text-primary tracking-tighter font-data">
               {pct}
               <span className="text-2xl text-accent-500 bloom-razer ml-1">%</span>
             </span>
@@ -69,7 +69,7 @@ export const StabilityGauge = memo(function StabilityGauge({
           <p className="text-[9px] text-text-muted tracking-widest mb-1.5 uppercase">
             稼働時間 / UPTIME
           </p>
-          <p className="text-base font-bold text-text-primary tracking-tight">
+          <p className="text-base font-bold text-text-primary tracking-tight font-data">
             {formatUptime(uptimeSeconds)}
           </p>
         </div>
@@ -78,7 +78,7 @@ export const StabilityGauge = memo(function StabilityGauge({
           <p className="text-[9px] text-text-muted tracking-widest mb-1.5 uppercase">
             レイテンシ / LATENCY
           </p>
-          <p className="text-base font-bold text-text-primary tracking-tight">
+          <p className="text-base font-bold text-text-primary tracking-tight font-data">
             {latencyMs.toFixed(2)}ms
           </p>
         </div>

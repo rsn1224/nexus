@@ -1,1 +1,1 @@
-export { GamingWing as default } from '../components/gaming/GamingWing';
+export { default } from '../components/gaming/GamingWing';

@@ -153,6 +153,8 @@ macro_rules! invoke_handler {
             session::update_session_note,
             // CLEANUP
             cleanup::revert_all_settings,
+            cleanup::scan_temp_files,
+            cleanup::delete_temp_files,
             // MEMORY CLEANER
             memory::get_memory_cleaner_config,
             memory::update_memory_cleaner_config,

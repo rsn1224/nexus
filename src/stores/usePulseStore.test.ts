@@ -23,6 +23,10 @@ const MOCK_SNAPSHOT: ResourceSnapshot = {
   diskWriteKb: 2048,
   netRecvKb: 0,
   netSentKb: 0,
+  // ── GPU データ ──
+  gpuUsagePercent: 45,
+  gpuTempC: 72,
+  gpuVramUsedMb: 4096,
 };
 
 function resetStore(): void {

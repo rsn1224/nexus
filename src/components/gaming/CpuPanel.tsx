@@ -58,49 +58,73 @@ export const CpuPanel = memo(function CpuPanel() {
   return (
     <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1">
       {error && (
-        <div className="px-3 py-2 bg-danger-500/10 border border-danger-500/30 rounded text-xs font-mono text-danger-500">
-          {error}
+        <div className="glass-panel bloom-border p-4 border-l-4 border-l-danger-500">
+          <div className="flex items-center justify-between">
+            <span className="text-danger-500 text-xs font-data">{error}</span>
+            <button
+              type="button"
+              onClick={() => setError(null)}
+              className="text-danger-500 text-xs font-data hover:text-text-primary"
+            >
+              ✕
+            </button>
+          </div>
         </div>
       )}
 
-      <div className="piano-surface rounded p-4 flex flex-col gap-2">
-        <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          CORE PARKING
-        </p>
+      <div className="glass-panel bloom-border p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="material-symbols-outlined text-white/30">memory</span>
+          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">CORE PARKING</h3>
+        </div>
         {parking && (
-          <div className="text-text-secondary text-xs font-mono space-y-1">
-            <div className="flex justify-between">
-              <span>AC MIN CORES</span>
-              <span className="text-text-primary">{parking.minCoresPercentAc}%</span>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-data text-white/60">AC MIN CORES</span>
+              <span className="text-lg font-data text-accent-500">
+                {parking.minCoresPercentAc}%
+              </span>
             </div>
-            <div className="flex justify-between">
-              <span>DC MIN CORES</span>
-              <span className="text-text-primary">{parking.minCoresPercentDc}%</span>
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-data text-white/60">DC MIN CORES</span>
+              <span className="text-lg font-data text-accent-500">
+                {parking.minCoresPercentDc}%
+              </span>
             </div>
           </div>
         )}
       </div>
 
-      <div className="piano-surface rounded p-3 flex flex-col gap-2">
-        <p className="text-text-secondary text-xs font-mono uppercase tracking-widest mb-1">
-          PRESETS
-        </p>
-        {PRESETS.map((p) => (
-          <button
-            key={p.value}
-            type="button"
-            onClick={() => void setMin(p.value)}
-            disabled={applying || parking?.minCoresPercentAc === p.value}
-            className={`flex items-center justify-between px-3 py-2 rounded border transition-colors text-xs font-mono ${
-              parking?.minCoresPercentAc === p.value
-                ? 'border-accent-500 bg-accent-500/10 text-accent-500'
-                : 'border-border-subtle text-text-secondary hover:border-accent-500/50 hover:text-text-primary disabled:opacity-40'
-            }`}
-          >
-            <span className="font-bold">{p.label}</span>
-            <span className="opacity-60">{p.desc}</span>
-          </button>
-        ))}
+      <div className="glass-panel bloom-border p-6">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="material-symbols-outlined text-white/30">tune</span>
+          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">PRESETS</h3>
+        </div>
+        <div className="space-y-3">
+          {PRESETS.map((p) => (
+            <button
+              key={p.value}
+              type="button"
+              onClick={() => void setMin(p.value)}
+              disabled={applying || parking?.minCoresPercentAc === p.value}
+              className={`glass-panel p-4 text-left transition-all ${
+                parking?.minCoresPercentAc === p.value
+                  ? 'bg-accent-500/10 border-accent-500'
+                  : 'hover:bg-white/5 border-white/10'
+              } disabled:opacity-40`}
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="font-bold text-sm">{p.label}</span>
+                  <p className="text-xs text-white/60 mt-1">{p.desc}</p>
+                </div>
+                {parking?.minCoresPercentAc === p.value && (
+                  <span className="text-accent-500 text-xs font-data">ACTIVE</span>
+                )}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );

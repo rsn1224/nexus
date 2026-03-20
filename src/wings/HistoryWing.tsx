@@ -1,1 +1,1 @@
-export { HistoryWing as default } from '../components/history/HistoryWing';
+export { default } from '../components/history/HistoryWing';

@@ -1,104 +1,155 @@
-import { memo, useState } from 'react';
-import { usePulseStore } from '../../stores/usePulseStore';
-import type { GamingSection } from '../../types/v2';
-import { CpuPanel } from './CpuPanel';
-import { MemoryPanel } from './MemoryPanel';
-import { NetworkPanel } from './NetworkPanel';
-import { OptimizeNowPanel } from './OptimizeNowPanel';
-import { ProcessPanel } from './ProcessPanel';
-import { TimerPanel } from './TimerPanel';
-import { WindowsSettingsPanel } from './WindowsSettingsPanel';
+import type React from 'react';
+import { useState } from 'react';
+import GameLauncher from './GameLauncher';
+import GamingOptimizations from './GamingOptimizations';
+import GamingPresets from './GamingPresets';
 
-const TABS: { id: GamingSection; label: string; jpLabel: string; icon: string }[] = [
-  { id: 'optimize_all', label: 'OPTIMIZE', jpLabel: '最適化', icon: 'bolt' },
-  { id: 'windows', label: 'WINDOWS', jpLabel: 'ウィンドウズ', icon: 'window' },
-  { id: 'process', label: 'PROCESS', jpLabel: 'プロセス', icon: 'memory' },
-  { id: 'network', label: 'NETWORK', jpLabel: 'ネットワーク', icon: 'lan' },
-  { id: 'memory', label: 'MEMORY', jpLabel: 'メモリ', icon: 'developer_board' },
-  { id: 'timer', label: 'TIMER', jpLabel: 'タイマー', icon: 'timer' },
-  { id: 'cpu', label: 'CPU', jpLabel: 'プロセッサ', icon: 'speed' },
-];
+export default function GamingWing(): React.ReactElement {
+  const [activePreset, setActivePreset] = useState('balanced');
+  const [optimizations, setOptimizations] = useState([
+    {
+      id: 'gpu',
+      label: 'GPU 最適化',
+      description: 'GPUクロックとメモリを最適化',
+      icon: 'gpu',
+      enabled: true,
+    },
+    {
+      id: 'network',
+      label: 'ネットワーク最適化',
+      description: 'レイテンシを最小化',
+      icon: 'network',
+      enabled: false,
+    },
+    {
+      id: 'storage',
+      label: 'ストレージ最適化',
+      description: 'SSDパフォーマンスを最大化',
+      icon: 'storage',
+      enabled: true,
+    },
+  ]);
 
-export const GamingWing = memo(function GamingWing() {
-  const [activeSection, setActiveSection] = useState<GamingSection>('optimize_all');
-  const snapshots = usePulseStore((s) => s.snapshots);
-  const latest = snapshots[snapshots.length - 1];
-  const cpuTemp = latest?.cpuTempC ?? null;
-  const memPct = latest ? Math.round((latest.memUsedMb / latest.memTotalMb) * 100) : 0;
+  const recentGames = [
+    {
+      id: 'game1',
+      name: 'Cyberpunk 2077',
+      icon: 'sports_esports',
+      lastPlayed: '2日前',
+      hours: 124,
+    },
+    {
+      id: 'game2',
+      name: 'Valorant',
+      icon: 'sports_esports',
+      lastPlayed: '1時間前',
+      hours: 89,
+    },
+    {
+      id: 'game3',
+      name: 'Elden Ring',
+      icon: 'sports_esports',
+      lastPlayed: '3日前',
+      hours: 156,
+    },
+  ];
+
+  const handleToggleOptimization = (id: string) => {
+    setOptimizations((prev) =>
+      prev.map((opt) => (opt.id === id ? { ...opt, enabled: !opt.enabled } : opt)),
+    );
+  };
+
+  const handleLaunchGame = (gameId: string) => {
+    console.log(`Launching game: ${gameId}`);
+  };
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Hero Header */}
-      <header className="flex items-end justify-between px-6 pt-6 pb-4 border-b border-white/5">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <span className="text-[10px] text-accent-500 font-light tracking-[0.3em] uppercase">
-              Tactical_Advantage_Module
-            </span>
-            <div className="h-px grow bg-linear-to-r from-accent-500/50 to-transparent" />
-          </div>
-          <h1 className="text-5xl font-black tracking-tighter text-text-primary uppercase leading-none">
-            ARSENAL <span className="text-info-500">WING</span>
-          </h1>
-        </div>
-        <div className="flex flex-col items-end gap-1">
-          <span className="text-[10px] text-accent-500 tracking-[0.2em] blink-fast uppercase">
-            {'CMD_READY // SYSTEM_STABLE'}
-          </span>
-        </div>
-      </header>
+    <div className="min-h-screen bg-base-900 p-6 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="scanline-overlay"></div>
+        <div className="scanning-line animate-pulse opacity-20"></div>
+        <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full bg-accent-500/2 blur-3xl"></div>
+        <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full bg-warning-500/1 blur-3xl"></div>
+      </div>
 
-      {/* Horizontal Tab Bar */}
-      <div className="flex items-center gap-6 px-6 pt-4 pb-2 overflow-x-auto">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setActiveSection(t.id)}
-            className={`flex items-center gap-2 pb-3 px-1 border-b-2 transition-all whitespace-nowrap ${
-              activeSection === t.id
-                ? 'border-info-500 text-text-primary'
-                : 'border-transparent text-text-secondary hover:text-text-primary hover:border-white/20'
-            }`}
-          >
-            <span className="text-sm font-bold tracking-tight uppercase">{t.label}</span>
-            <span className="text-[10px] text-text-muted font-light">{t.jpLabel}</span>
-          </button>
-        ))}
+      {/* Header */}
+      <div className="mb-14 relative">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+          <div>
+            <div className="flex items-center gap-4 mb-2">
+              <div className="h-px w-12 bg-accent-500"></div>
+              <span className="font-label text-accent-500 text-[10px] tracking-[0.3em] font-bold">
+                GAMING_MODULE_03
+              </span>
+            </div>
+            <h1 className="text-6xl font-black tracking-tighter text-text-primary mb-2">
+              ARSENAL{' '}
+              <span className="text-accent-500 drop-shadow-[0_0_15px_rgba(68,214,44,0.3)]">
+                WING
+              </span>
+            </h1>
+            <p className="font-label text-text-secondary/40 text-[10px] tracking-[0.2em] uppercase">
+              Gaming Preset: {activePreset.toUpperCase()} {/* */} {/* Status: OPTIMIZED */}
+            </p>
+          </div>
+          <div className="flex gap-4">
+            <div className="relative group">
+              <span className="absolute -top-5 right-0 font-label text-[8px] text-warning-500/70 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap tracking-widest">
+                [ゲーム検出中]
+              </span>
+              <button
+                type="button"
+                className="relative group px-6 py-2.5 border border-text-secondary/20 text-text-secondary/60 hover:text-warning-500 hover:border-warning-500/50 font-label text-[10px] tracking-widest uppercase transition-all bg-white/2 glass-panel"
+              >
+                <div className="hud-btn-scan"></div>
+                ゲームを検索
+              </button>
+            </div>
+            <div className="relative group">
+              <span className="absolute -top-5 right-0 font-label text-[8px] text-accent-500 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse whitespace-nowrap tracking-widest">
+                [最適化適用済み]
+              </span>
+              <button
+                type="button"
+                className="relative px-8 py-2.5 bg-accent-500/10 border border-accent-500 text-accent-500 font-black text-[10px] tracking-widest uppercase transition-all hover:bg-accent-500/20 glass-panel"
+              >
+                <div className="scanning-line animate-pulse opacity-20"></div>
+                適用
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-hidden flex flex-col">
-        {activeSection === 'optimize_all' && <OptimizeNowPanel />}
-        {activeSection === 'windows' && <WindowsSettingsPanel />}
-        {activeSection === 'process' && <ProcessPanel />}
-        {activeSection === 'network' && <NetworkPanel />}
-        {activeSection === 'memory' && <MemoryPanel />}
-        {activeSection === 'timer' && <TimerPanel />}
-        {activeSection === 'cpu' && <CpuPanel />}
-      </div>
+      <div className="relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Gaming Presets */}
+          <div className="md:col-span-12">
+            <GamingPresets activePreset={activePreset} setActivePreset={setActivePreset} />
+          </div>
 
-      {/* Bottom Telemetry Bar */}
-      <div className="grid grid-cols-2 gap-3 px-6 py-3 border-t border-white/5">
-        <div className="piano-surface p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[9px] text-warning-500 font-light tracking-[0.2em] uppercase mb-1">
-            CORE_TEMP
-          </span>
-          <span className="text-2xl font-black text-text-primary tracking-tighter">
-            {cpuTemp != null ? cpuTemp.toFixed(0) : '—'}
-            <span className="text-sm">°C</span>
-          </span>
-        </div>
-        <div className="piano-surface p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[9px] text-accent-500 font-light tracking-[0.2em] uppercase mb-1">
-            MEM_UTIL
-          </span>
-          <span className="text-2xl font-black text-text-primary tracking-tighter">
-            {memPct}
-            <span className="text-sm">%</span>
-          </span>
+          {/* Optimizations */}
+          <div className="md:col-span-12 lg:col-span-8">
+            <div className="glass-panel border border-white/10 relative overflow-hidden shadow-2xl">
+              <div className="reflective-overlay absolute inset-0"></div>
+              <div className="p-8 relative z-10">
+                <GamingOptimizations
+                  optimizations={optimizations}
+                  onToggleOptimization={handleToggleOptimization}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Game Launcher */}
+          <div className="md:col-span-12 lg:col-span-4">
+            <GameLauncher recentGames={recentGames} onLaunchGame={handleLaunchGame} />
+          </div>
         </div>
       </div>
     </div>
   );
-});
+}

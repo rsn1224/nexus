@@ -1,134 +1,182 @@
-import { memo, useCallback, useEffect } from 'react';
-import { useHistoryActions, useHistoryState } from '../../stores/useHistoryStore';
-import { SessionList } from './SessionList';
+import type React from 'react';
+import { useEffect } from 'react';
+import { useHistoryActions } from '../../stores/useHistoryStore';
+import SessionTable from './SessionTable';
+import TacticalAiInsight from './TacticalAiInsight';
 import { TrendChart } from './TrendChart';
 
-export const HistoryWing = memo(function HistoryWing() {
-  const { sessions, selectedSession, trendRange, loading, error } = useHistoryState();
-  const { fetchSessions, selectSession, deleteSession, setTrendRange, clearError } =
-    useHistoryActions();
+interface SessionRow {
+  id: string;
+  timestamp: string;
+  duration: string;
+  status: string;
+  statusColor: string;
+  performance: string;
+  notes: string;
+}
+
+export default function HistoryWing(): React.ReactElement {
+  const { fetchSessions } = useHistoryActions();
 
   useEffect(() => {
     void fetchSessions();
   }, [fetchSessions]);
 
-  const handleSelect = useCallback(
-    (id: string): void => {
-      void selectSession(id);
+  const sessionData: SessionRow[] = [
+    {
+      id: '#SN-998122',
+      timestamp: '2024.05.24 // 14:02:44',
+      duration: '42M 12S',
+      status: 'completed',
+      statusColor: 'green',
+      performance: 'optimal',
+      notes: 'CPU使用率: 45%',
     },
-    [selectSession],
-  );
-
-  return (
-    <div className="flex flex-col h-full overflow-y-auto p-6 gap-6">
-      {/* Header */}
-      <div className="flex justify-between items-end border-b border-white/3 pb-6">
-        <div>
-          <h1 className="text-5xl font-black tracking-tighter">
-            HISTORY{' '}
-            <span className="text-accent-500 hover-glitch inline-block bloom-razer">WING</span>
-          </h1>
-          <p className="text-text-muted font-light tracking-[0.6em] text-[9px] uppercase mt-2">
-            {'ANALYSIS PROTOCOL // DATA-DENSE MODE'}
-          </p>
-        </div>
-        <div className="glass-panel px-6 py-4 text-right border-l-[3px] border-l-accent-500">
-          <p className="text-[8px] font-black text-text-muted tracking-[0.3em] uppercase flex items-center justify-end gap-3 mb-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-500 pulse-node" />
-            SYNC COHERENCE / 同期率
-          </p>
-          <p className="text-accent-500 font-black text-2xl tracking-tighter bloom-razer">
-            {sessions.length}
-            <span className="text-sm opacity-60 ml-1">SESSIONS</span>
-          </p>
-        </div>
-      </div>
-
-      {error && (
-        <div className="flex items-center justify-between px-4 py-2 bg-danger-500/10 border border-danger-500/30">
-          <span className="text-danger-500 text-xs">{error}</span>
-          <button
-            type="button"
-            onClick={clearError}
-            className="text-danger-500 text-xs hover:text-text-primary"
-          >
-            ✕
-          </button>
-        </div>
-      )}
-
-      {/* Bento Grid: Trend + Detail */}
-      <div className="grid grid-cols-12 gap-6">
-        {/* Trend Chart */}
-        <div className="col-span-12 lg:col-span-8">
-          <TrendChart sessions={sessions} range={trendRange} onRangeChange={setTrendRange} />
-        </div>
-
-        {/* Session Detail or Info */}
-        <div className="col-span-12 lg:col-span-4 glass-panel p-6 border-l-4 border-l-warning-500">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="glow-yellow-icon">🧠</span>
-            <h3 className="font-black text-[10px] tracking-[0.3em] text-warning-500 uppercase">
-              SESSION DETAIL
-            </h3>
-          </div>
-          {selectedSession ? (
-            <SessionDetail session={selectedSession} />
-          ) : (
-            <p className="text-text-muted text-xs">← テーブルからセッションを選択</p>
-          )}
-        </div>
-      </div>
-
-      {/* Session Table */}
-      <SessionList
-        sessions={sessions}
-        selectedId={selectedSession?.id ?? null}
-        onSelect={handleSelect}
-        onDelete={(id) => void deleteSession(id)}
-        loading={loading}
-      />
-    </div>
-  );
-});
-
-// ─── Session Detail sub-component ────────────────────────
-
-import type { GameSession } from '../../types/v2';
-
-const SessionDetail = memo(function SessionDetail({ session }: { session: GameSession }) {
-  const stats = [
-    { label: 'AVG FPS', value: session.summary.avgFps.toFixed(0) },
-    { label: '1% LOW', value: session.summary.pct1Low.toFixed(0) },
-    { label: 'STUTTER', value: String(session.summary.totalStutterCount) },
-    { label: 'MAX FT', value: `${session.summary.maxFrameTimeMs.toFixed(1)}ms` },
+    {
+      id: '#SN-998121',
+      timestamp: '2024.05.24 // 13:15:32',
+      duration: '38M 45S',
+      status: 'completed',
+      statusColor: 'green',
+      performance: 'good',
+      notes: 'GPU温度: 72°C',
+    },
+    {
+      id: '#SN-998120',
+      timestamp: '2024.05.24 // 12:28:19',
+      duration: '55M 03S',
+      status: 'warning',
+      statusColor: 'amber',
+      performance: 'moderate',
+      notes: 'メモリ使用率: 82%',
+    },
+    {
+      id: '#SN-998119',
+      timestamp: '2024.05.24 // 11:41:07',
+      duration: '29M 18S',
+      status: 'completed',
+      statusColor: 'green',
+      performance: 'optimal',
+      notes: 'ネットワーク: 安定',
+    },
+    {
+      id: '#SN-998118',
+      timestamp: '2024.05.24 // 10:53:55',
+      duration: '47M 36S',
+      status: 'error',
+      statusColor: 'red',
+      performance: 'poor',
+      notes: 'ドライバクラッシュ',
+    },
   ];
 
+  const getStatusColor = (color: string) => {
+    switch (color) {
+      case 'green':
+        return 'bg-accent-500/10 text-accent-500 border-accent-500/30';
+      case 'amber':
+        return 'bg-warning-500/10 text-warning-500 border-warning-500/30';
+      default:
+        return 'bg-text-secondary/10 text-text-secondary border-text-secondary/30';
+    }
+  };
+
+  const insight = {
+    title: 'CRITICAL INSIGHT',
+    content:
+      'ピーク時の戦闘負荷においてニューラルインターフェースのボトルネックを検出。セクター7への熱分離プロトコルの適用を強く推奨。',
+    type: 'critical' as const,
+  };
+
   return (
-    <div className="space-y-4">
-      <div>
-        <h4 className="text-text-primary text-sm font-bold">{session.gameName}</h4>
-        <p className="text-text-muted text-[9px] mt-1">
-          {new Date(session.startedAt).toLocaleString('ja-JP')} — {session.durationMinutes}分
-        </p>
+    <div className="min-h-screen bg-base-900 p-6 relative overflow-hidden">
+      {/* Background effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="scanline-overlay"></div>
+        <div className="scanning-line animate-pulse opacity-20"></div>
+        <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full bg-accent-500/2 blur-3xl"></div>
+        <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full bg-warning-500/1 blur-3xl"></div>
       </div>
-      <div className="space-y-2.5">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="flex justify-between items-center text-[9px] tracking-[0.3em] uppercase"
-          >
-            <span className="text-text-muted">{stat.label}</span>
-            <span className="text-warning-500 font-black">{stat.value}</span>
+
+      {/* Header */}
+      <div className="mb-14 relative">
+        <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+          <div>
+            <div className="flex items-center gap-4 mb-2">
+              <div className="h-px w-12 bg-accent-500"></div>
+              <span className="font-label text-accent-500 text-[10px] tracking-[0.3em] font-bold">
+                LOGS_MODULE_05
+              </span>
+            </div>
+            <h1 className="text-6xl font-black tracking-tighter text-text-primary mb-2">
+              LOGS{' '}
+              <span className="text-accent-500 drop-shadow-[0_0_15px_rgba(68,214,44,0.3)]">
+                WING
+              </span>
+            </h1>
+            <p className="font-label text-text-secondary/40 text-[10px] tracking-[0.2em] uppercase">
+              Total Sessions: {sessionData.length} {/* */} {/* Last Sync: JUST_NOW */}
+            </p>
           </div>
-        ))}
+          <div className="flex gap-4">
+            <div className="relative group">
+              <span className="absolute -top-5 right-0 font-label text-[8px] text-warning-500/70 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap tracking-widest">
+                [同期中]
+              </span>
+              <button
+                type="button"
+                className="relative group px-6 py-2.5 border border-text-secondary/20 text-text-secondary/60 hover:text-warning-500 hover:border-warning-500/50 font-label text-[10px] tracking-widest uppercase transition-all bg-white/2 glass-panel"
+              >
+                <div className="hud-btn-scan"></div>
+                同期
+              </button>
+            </div>
+            <div className="relative group">
+              <span className="absolute -top-5 right-0 font-label text-[8px] text-accent-500 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse whitespace-nowrap tracking-widest">
+                [クリア可能]
+              </span>
+              <button
+                type="button"
+                className="relative px-8 py-2.5 bg-accent-500/10 border border-accent-500 text-accent-500 font-black text-[10px] tracking-widest uppercase transition-all hover:bg-accent-500/20 glass-panel"
+              >
+                <div className="scanning-line animate-pulse opacity-20"></div>
+                クリア
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="flex justify-between text-[9px] tracking-[0.2em] uppercase pt-4 border-t border-white/5">
-        <span className="text-text-muted">HEALTH</span>
-        <span className="text-accent-500 font-black">
-          {session.healthScoreStart} → {session.healthScoreEnd}
-        </span>
+
+      {/* Content */}
+      <div className="relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
+          {/* Trend Chart */}
+          <div className="md:col-span-12 lg:col-span-8">
+            <div className="glass-panel border border-white/10 relative overflow-hidden shadow-2xl">
+              <div className="reflective-overlay absolute inset-0"></div>
+              <div className="p-8 relative z-10">
+                <div className="flex items-center gap-4 mb-10">
+                  <span className="material-symbols-outlined text-accent-500">trending_up</span>
+                  <h2 className="text-xl font-bold text-text-primary tracking-tight">
+                    パフォーマンストレンド
+                  </h2>
+                </div>
+                <TrendChart sessions={[]} range="7d" onRangeChange={() => {}} />
+              </div>
+            </div>
+          </div>
+
+          {/* AI Insight */}
+          <div className="md:col-span-12 lg:col-span-4">
+            <TacticalAiInsight insight={insight} />
+          </div>
+
+          {/* Session Table */}
+          <div className="md:col-span-12">
+            <SessionTable sessionData={sessionData} getStatusColor={getStatusColor} />
+          </div>
+        </div>
       </div>
     </div>
   );
-});
+}

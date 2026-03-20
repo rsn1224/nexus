@@ -8,4 +8,8 @@ export interface ResourceSnapshot {
   diskWriteKb: number;
   netRecvKb: number;
   netSentKb: number;
+  // ── GPU データ追加 ──
+  gpuUsagePercent: number | null;
+  gpuTempC: number | null;
+  gpuVramUsedMb: number | null;
 }

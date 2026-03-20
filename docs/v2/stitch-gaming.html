@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS - GAMING Wing</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #06060a;
+            color: #e0e0ec;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .app-container {
+            width: 1280px;
+            height: 800px;
+            display: flex;
+            background: #06060a;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 48px;
+            height: 100%;
+            background: #0a0a10;
+            border-right: 1px solid #1e1e2e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 8px;
+        }
+
+        .nav-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            color: #9090aa;
+            font-size: 16px;
+        }
+
+        .nav-item:hover {
+            background: rgba(68, 214, 44, 0.1);
+            color: #44D62C;
+        }
+
+        .nav-item.active {
+            background: rgba(68, 214, 44, 0.15);
+            color: #44D62C;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: #44D62C;
+            border-radius: 2px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #06060a;
+        }
+
+        /* Titlebar */
+        .titlebar {
+            height: 32px;
+            background: #0a0a10;
+            border-bottom: 1px solid #1e1e2e;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+        }
+
+        .app-title {
+            color: #44D62C;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .window-btn:hover {
+            opacity: 0.8;
+        }
+
+        .window-btn.minimize { background: #f59e0b; }
+        .window-btn.maximize { background: #22c55e; }
+        .window-btn.close { background: #ef4444; }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* Glass Panel */
+        .glass-panel {
+            background: rgba(10, 10, 16, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 30, 46, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(68, 214, 44, 0.3), 
+                transparent
+            );
+            animation: glow 3s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Optimize Panel */
+        .optimize-panel {
+            background: rgba(10, 10, 16, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(30, 30, 46, 0.5);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .preset-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            background: rgba(10, 10, 16, 0.5);
+            padding: 4px;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        .preset-tab {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9090aa;
+            border: 1px solid transparent;
+        }
+
+        .preset-tab:hover {
+            color: #e0e0ec;
+            background: rgba(68, 214, 44, 0.1);
+        }
+
+        .preset-tab.active {
+            background: #44D62C;
+            color: #06060a;
+            box-shadow: 0 0 20px rgba(68, 214, 44, 0.3);
+        }
+
+        .optimization-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .optimization-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: rgba(10, 10, 16, 0.5);
+            border: 1px solid rgba(30, 30, 46, 0.3);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .optimization-item:hover {
+            border-color: rgba(68, 214, 44, 0.3);
+            background: rgba(68, 214, 44, 0.05);
+        }
+
+        .opt-checkbox {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #44D62C;
+            border-radius: 3px;
+            margin-right: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .opt-checkbox.checked {
+            background: #44D62C;
+        }
+
+        .opt-checkbox.checked::after {
+            content: '✓';
+            color: #06060a;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .opt-content {
+            flex: 1;
+        }
+
+        .opt-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #e0e0ec;
+            margin-bottom: 2px;
+        }
+
+        .opt-status {
+            font-size: 10px;
+            color: #6b6b82;
+            margin-bottom: 2px;
+        }
+
+        .opt-description {
+            font-size: 10px;
+            color: #9090aa;
+        }
+
+        .opt-impact {
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .opt-impact.safe {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .opt-impact.medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .apply-all-btn {
+            background: #44D62C;
+            color: #06060a;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 20px rgba(68, 214, 44, 0.3);
+        }
+
+        .apply-all-btn:hover {
+            background: #3bc520;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 30px rgba(68, 214, 44, 0.4);
+        }
+
+        /* Section Tabs */
+        .section-tabs {
+            display: flex;
+            gap: 2px;
+            background: rgba(10, 10, 16, 0.5);
+            padding: 4px;
+            border-radius: 8px;
+            width: fit-content;
+            margin-bottom: 16px;
+        }
+
+        .section-tab {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #9090aa;
+        }
+
+        .section-tab:hover {
+            color: #e0e0ec;
+            background: rgba(68, 214, 44, 0.1);
+        }
+
+        .section-tab.active {
+            background: rgba(68, 214, 44, 0.15);
+            color: #44D62C;
+            border: 1px solid rgba(68, 214, 44, 0.3);
+        }
+
+        /* Settings Items */
+        .settings-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .setting-item {
+            background: rgba(10, 10, 16, 0.5);
+            border: 1px solid rgba(30, 30, 46, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+
+        .setting-item:hover {
+            border-color: rgba(68, 214, 44, 0.3);
+            background: rgba(68, 214, 44, 0.05);
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .setting-icon {
+            width: 32px;
+            height: 32px;
+            background: rgba(68, 214, 44, 0.1);
+            border: 1px solid rgba(68, 214, 44, 0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #44D62C;
+            font-size: 14px;
+        }
+
+        .setting-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .setting-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #e0e0ec;
+        }
+
+        .setting-description {
+            font-size: 10px;
+            color: #6b6b82;
+        }
+
+        .toggle-switch {
+            width: 44px;
+            height: 24px;
+            background: rgba(30, 30, 46, 0.5);
+            border: 1px solid rgba(30, 30, 46, 0.8);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: rgba(68, 214, 44, 0.2);
+            border-color: #44D62C;
+            box-shadow: 0 0 10px rgba(68, 214, 44, 0.3);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 18px;
+            height: 18px;
+            background: #6b6b82;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 22px;
+            background: #44D62C;
+        }
+
+        .font-mono {
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .section-icon {
+            color: rgba(68, 214, 44, 0.6);
+            font-size: 16px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(68, 214, 44, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="nav-item">⊙</div>
+            <div class="nav-item active">⚡</div>
+            <div class="nav-item">📊</div>
+            <div class="nav-item">📋</div>
+            <div class="nav-item">⚙</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Titlebar -->
+            <div class="titlebar">
+                <div class="app-title">NEXUS</div>
+                <div class="window-controls">
+                    <div class="window-btn minimize"></div>
+                    <div class="window-btn maximize"></div>
+                    <div class="window-btn close"></div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content">
+                <!-- Optimize Now Panel -->
+                <div class="optimize-panel">
+                    <div class="section-header">
+                        <span class="section-icon">⚡</span>
+                        <span class="section-title">最適化コントロール</span>
+                    </div>
+                    
+                    <div class="preset-tabs">
+                        <div class="preset-tab active">Gaming</div>
+                        <div class="preset-tab">Power Save</div>
+                        <div class="preset-tab">Streaming</div>
+                    </div>
+
+                    <div class="optimization-list">
+                        <div class="optimization-item">
+                            <div class="opt-checkbox checked"></div>
+                            <div class="opt-content">
+                                <div class="opt-title">Game Mode</div>
+                                <div class="opt-status">現在の状態: 有効</div>
+                                <div class="opt-description">ゲーム優先モードを有効化し、バックグラウンドプロセスを制限</div>
+                            </div>
+                            <div class="opt-impact safe">SAFE</div>
+                        </div>
+
+                        <div class="optimization-item">
+                            <div class="opt-checkbox checked"></div>
+                            <div class="opt-content">
+                                <div class="opt-title">高パフォーマンス電源プラン</div>
+                                <div class="opt-status">現在の状態: 有効</div>
+                                <div class="opt-description">CPU パフォーマンスを最大化し、省電力機能を無効化</div>
+                            </div>
+                            <div class="opt-impact safe">SAFE</div>
+                        </div>
+
+                        <div class="optimization-item">
+                            <div class="opt-checkbox"></div>
+                            <div class="opt-content">
+                                <div class="opt-title">Nagle アルゴリズム無効化</div>
+                                <div class="opt-status">現在の状態: 無効</div>
+                                <div class="opt-description">ネットワーク遅延を削減し、オンラインゲームの応答性向上</div>
+                            </div>
+                            <div class="opt-impact safe">SAFE</div>
+                        </div>
+
+                        <div class="optimization-item">
+                            <div class="opt-checkbox"></div>
+                            <div class="opt-content">
+                                <div class="opt-title">Timer Resolution 0.5ms</div>
+                                <div class="opt-status">現在の状態: 無効</div>
+                                <div class="opt-description">システムタイマー解像度を向上させ、入力遅延を削減</div>
+                            </div>
+                            <div class="opt-impact medium">MEDIUM</div>
+                        </div>
+
+                        <div class="optimization-item">
+                            <div class="opt-checkbox"></div>
+                            <div class="opt-content">
+                                <div class="opt-title">視覚効果無効化</div>
+                                <div class="opt-status">現在の状態: 無効</div>
+                                <div class="opt-description">アニメーションと透過効果を無効化し、システム応答性向上</div>
+                            </div>
+                            <div class="opt-impact safe">SAFE</div>
+                        </div>
+                    </div>
+
+                    <button class="apply-all-btn">すべて適用</button>
+                </div>
+
+                <!-- Section Tabs -->
+                <div class="section-tabs">
+                    <div class="section-tab active">Windows</div>
+                    <div class="section-tab">Process</div>
+                    <div class="section-tab">Network</div>
+                    <div class="section-tab">Memory</div>
+                    <div class="section-tab">Timer</div>
+                    <div class="section-tab">CPU</div>
+                </div>
+
+                <!-- Settings Grid -->
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <div class="setting-left">
+                            <div class="setting-icon">⚡</div>
+                            <div class="setting-info">
+                                <div class="setting-name">Game Mode</div>
+                                <div class="setting-description">Windows Game Mode を有効化</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-left">
+                            <div class="setting-icon">🔧</div>
+                            <div class="setting-info">
+                                <div class="setting-name">Core Parking</div>
+                                <div class="setting-description">CPU コアのパーキングを無効化</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-left">
+                            <div class="setting-icon">🌐</div>
+                            <div class="setting-info">
+                                <div class="setting-name">Nagle Algorithm</div>
+                                <div class="setting-description">ネットワークバッファリングを無効化</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-left">
+                            <div class="setting-icon">⏱️</div>
+                            <div class="setting-info">
+                                <div class="setting-name">Timer Resolution</div>
+                                <div class="setting-description font-mono">0.5ms → 1.0ms</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-left">
+                            <div class="setting-icon">🎨</div>
+                            <div class="setting-info">
+                                <div class="setting-name">Visual Effects</div>
+                                <div class="setting-description">アニメーションと透過効果</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-left">
+                            <div class="setting-icon">🔋</div>
+                            <div class="setting-info">
+                                <div class="setting-name">Power Plan</div>
+                                <div class="setting-description">高パフォーマンスモード</div>
+                            </div>
+                        </div>
+                        <div class="toggle-switch active"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

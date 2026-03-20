@@ -17,6 +17,10 @@ pub struct ResourceSnapshot {
     pub disk_write_kb: u64,
     pub net_recv_kb: u64,
     pub net_sent_kb: u64,
+    // ── GPU データ追加 ──
+    pub gpu_usage_percent: Option<f32>,
+    pub gpu_temp_c: Option<f32>,
+    pub gpu_vram_used_mb: Option<u64>,
 }
 
 // ─── Commands ─────────────────────────────────────────────────────────────────
@@ -28,6 +32,9 @@ pub fn get_resource_snapshot(
     info!("get_resource_snapshot: collecting system metrics");
 
     let data = crate::services::system_monitor::collect_snapshot(&state)?;
+    
+    // GPU 動的データを取得
+    let gpu_dynamic = crate::services::hardware::get_gpu_dynamic_info();
 
     Ok(ResourceSnapshot {
         timestamp: data.timestamp,
@@ -39,6 +46,10 @@ pub fn get_resource_snapshot(
         disk_write_kb: data.disk_write_kb,
         net_recv_kb: data.net_recv_kb,
         net_sent_kb: data.net_sent_kb,
+        // ── GPU データ ──
+        gpu_usage_percent: gpu_dynamic.usage_percent,
+        gpu_temp_c: gpu_dynamic.temperature_c,
+        gpu_vram_used_mb: gpu_dynamic.vram_used_mb,
     })
 }
 
@@ -60,15 +71,21 @@ mod tests {
             disk_write_kb: 2048,
             net_recv_kb: 0,
             net_sent_kb: 0,
+            // ── GPU データ ──
+            gpu_usage_percent: Some(45.0),
+            gpu_temp_c: Some(72.0),
+            gpu_vram_used_mb: Some(4096),
         };
 
         let json = serde_json::to_string(&snapshot).expect("snapshot should be serializable");
         assert!(json.contains("timestamp"));
         assert!(json.contains("cpuPercent"));
+        assert!(json.contains("gpuUsagePercent"));
 
         let deserialized: ResourceSnapshot =
             serde_json::from_str(&json).expect("json should be deserializable");
         assert_eq!(deserialized.timestamp, snapshot.timestamp);
         assert_eq!(deserialized.cpu_percent, snapshot.cpu_percent);
+        assert_eq!(deserialized.gpu_usage_percent, snapshot.gpu_usage_percent);
     }
 }
