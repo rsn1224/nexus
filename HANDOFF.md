@@ -64,11 +64,12 @@
 | **NEXUS v2 Phase 8: HISTORY Wing** | ✅ 完了（HistoryWing + SessionList + TrendChart） |
 | **NEXUS v2 Phase 10: UT** | ✅ 完了（healthScore.test + suggestionEngine.test + useHealthStore.test + useOptimizeStore.test） |
 | **NEXUS v2 WingId リネーム** | ✅ 完了（dashboard→core, gaming→arsenal, monitor→tactics, history→logs） |
-| **NEXUS v2 Stitch デザイン実装** | � review（Phase D-1 完了、レビュー待ち） |
+| **NEXUS v2 Stitch デザイン実装** | ✅ Phase D-1 レビュー完了 + 修正済み |
+| **Stitch UI リビルド** | 🔵 pending — `docs/v2/stitch-rebuild-spec.md` を参照 |
 
-**最新コミット:** `9b21268`（Stitch デザイン WingId 変更 + 仕様書）
-**ブランチ:** `feature/v2-optimize-core`
-**テスト:** TS 650 all green（biome + typecheck + vitest all pass）
+**最新コミット:** `82df51c`（docs+test: Fix-5/Fix-6）
+**ブランチ:** `feature/v2-stitch-impl`
+**テスト:** TS 674 all green（biome + typecheck + vitest all pass）
 
 ---
 
