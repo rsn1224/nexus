@@ -19,7 +19,7 @@ const BottomTabBar = memo(function BottomTabBar({
   onWingChange,
 }: BottomTabBarProps): React.ReactElement {
   return (
-    <nav className="fixed bottom-0 w-full z-50 h-16 md:hidden bg-[#030305]/90 backdrop-blur-2xl border-t-[0.5px] border-white/10">
+    <nav className="fixed bottom-0 w-full z-50 h-16 md:hidden bg-base-900/90 backdrop-blur-2xl border-t-[0.5px] border-white/10">
       <div className="flex items-center justify-around h-full px-2">
         {TAB_CONFIG.map(({ id, icon, label }) => (
           <button

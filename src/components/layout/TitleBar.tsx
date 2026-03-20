@@ -24,7 +24,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
   }, [appWindow]);
 
   return (
-    <header className="fixed top-0 w-full z-50 h-16 bg-[#030305]/80 backdrop-blur-xl border-b-[0.5px] border-white/10 flex items-center justify-between px-4 select-none">
+    <header className="fixed top-0 w-full z-50 h-16 bg-base-900/80 backdrop-blur-xl border-b-[0.5px] border-white/10 flex items-center justify-between px-4 select-none">
       {/* Left: NEXUS Logo */}
       <div className="flex items-center gap-3" data-tauri-drag-region>
         <h1

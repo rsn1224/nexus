@@ -17,7 +17,7 @@ const Shell = memo(function Shell({
   children,
 }: ShellProps): React.ReactElement {
   return (
-    <div className="min-h-screen bg-[#030305]">
+    <div className="min-h-screen bg-base-900">
       <TitleBar />
       <Sidebar activeWing={activeWing} onWingChange={onWingChange} />
       <main className="md:ml-64 pt-20 pb-24 md:pb-10 px-4 md:px-10 min-h-screen">{children}</main>

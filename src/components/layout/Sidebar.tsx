@@ -20,7 +20,7 @@ const Sidebar = memo(function Sidebar({
   onWingChange,
 }: SidebarProps): React.ReactElement {
   return (
-    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 z-40 hidden md:flex flex-col bg-[#030305] border-r-[0.5px] border-white/5 shadow-[20px_0_40px_rgba(0,0,0,0.8)]">
+    <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 z-40 hidden md:flex flex-col bg-base-900 border-r-[0.5px] border-white/5 shadow-[20px_0_40px_rgba(0,0,0,0.8)]">
       {/* System Status Panel */}
       <div className="p-6 space-y-3">
         <div className="text-[10px] tracking-[0.2em] text-white/40 uppercase">SYSTEM STATUS</div>
@@ -46,7 +46,9 @@ const Sidebar = memo(function Sidebar({
             }`}
             data-testid={`nav-${id}`}
           >
-            <span className="material-symbols-outlined text-[18px]">{icon}</span>
+            <span className="material-symbols-outlined text-[18px]" aria-hidden="true">
+              {icon}
+            </span>
             <span className="text-xs uppercase tracking-wide font-bold">{label}</span>
           </button>
         ))}
@@ -56,7 +58,7 @@ const Sidebar = memo(function Sidebar({
       <div className="p-4">
         <button
           type="button"
-          className="w-full py-3 bg-gradient-to-r from-[#88ec78] to-[#44D62C] text-[#030305] font-black text-xs tracking-widest uppercase rounded-sm hover:brightness-110 transition-all"
+          className="w-full py-3 bg-linear-to-r from-accent-300 to-accent-500 text-base-900 font-black text-xs tracking-widest uppercase rounded-sm hover:brightness-110 transition-all"
         >
           OPTIMIZE NOW
         </button>

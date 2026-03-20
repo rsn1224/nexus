@@ -33,7 +33,8 @@ const TelemetryBentoCard = memo(function TelemetryBentoCard({
       {/* Top Right Icon */}
       <div className="absolute top-6 right-6">
         <span
-          className={`material-symbols-outlined text-[20px] text-white/30 group-hover:${statusColor} transition-colors`}
+          className="material-symbols-outlined text-[20px] text-white/30 group-hover:text-accent-500 transition-colors"
+          aria-hidden="true"
         >
           {icon}
         </span>
