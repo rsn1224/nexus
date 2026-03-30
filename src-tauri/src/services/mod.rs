@@ -6,7 +6,6 @@ pub mod credentials;
 pub mod frame_time;
 pub mod game_monitor;
 pub mod hardware;
-pub mod health_check;
 pub mod memory_cleaner;
 pub mod network_monitor;
 pub mod network_tuning;

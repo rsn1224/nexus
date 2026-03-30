@@ -15,8 +15,7 @@ mod state;
 mod types;
 
 use crate::commands::{
-    ai, app_settings, boost, cleanup, core_parking, frame_time, hardware, health_check, memory,
-    netopt, ops, pulse, session, timer,
+    ai, app_settings, boost, cleanup, core_parking, hardware, memory, netopt, ops, session, timer,
 };
 #[cfg(windows)]
 use crate::commands::{windows_settings, winopt};
@@ -97,10 +96,6 @@ macro_rules! invoke_handler {
             ai::get_optimization_suggestions,
             ai::test_api_key,
             ai::analyze_bottleneck_ai,
-            // HEALTH CHECK
-            health_check::run_health_check,
-            // PULSE
-            pulse::get_resource_snapshot,
             // HARDWARE
             hardware::get_hardware_info,
             // POWER ESTIMATOR
@@ -141,10 +136,6 @@ macro_rules! invoke_handler {
             timer::get_timer_resolution,
             timer::set_timer_resolution,
             timer::restore_timer_resolution,
-            // FRAME TIME
-            frame_time::start_frame_time_monitor,
-            frame_time::stop_frame_time_monitor,
-            frame_time::get_frame_time_status,
             // SESSION
             session::list_sessions,
             session::get_session,

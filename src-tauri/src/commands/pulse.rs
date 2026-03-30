@@ -1,7 +1,4 @@
-use crate::error::AppError;
 use serde::{Deserialize, Serialize};
-use tauri::State;
-use tracing::info;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -21,36 +18,6 @@ pub struct ResourceSnapshot {
     pub gpu_usage_percent: Option<f32>,
     pub gpu_temp_c: Option<f32>,
     pub gpu_vram_used_mb: Option<u64>,
-}
-
-// ─── Commands ─────────────────────────────────────────────────────────────────
-
-#[tauri::command]
-pub fn get_resource_snapshot(
-    state: State<'_, crate::SharedState>,
-) -> Result<ResourceSnapshot, AppError> {
-    info!("get_resource_snapshot: collecting system metrics");
-
-    let data = crate::services::system_monitor::collect_snapshot(&state)?;
-    
-    // GPU 動的データを取得
-    let gpu_dynamic = crate::services::hardware::get_gpu_dynamic_info();
-
-    Ok(ResourceSnapshot {
-        timestamp: data.timestamp,
-        cpu_percent: data.cpu_percent,
-        cpu_temp_c: data.cpu_temp_c,
-        mem_used_mb: data.mem_used_mb,
-        mem_total_mb: data.mem_total_mb,
-        disk_read_kb: data.disk_read_kb,
-        disk_write_kb: data.disk_write_kb,
-        net_recv_kb: data.net_recv_kb,
-        net_sent_kb: data.net_sent_kb,
-        // ── GPU データ ──
-        gpu_usage_percent: gpu_dynamic.usage_percent,
-        gpu_temp_c: gpu_dynamic.temperature_c,
-        gpu_vram_used_mb: gpu_dynamic.vram_used_mb,
-    })
 }
 
 // ─── Tests ────────────────────────────────────────────────────────────────────

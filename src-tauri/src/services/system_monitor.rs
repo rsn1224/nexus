@@ -4,6 +4,7 @@ use crate::state::SharedState;
 use sysinfo::Process;
 use tauri::State;
 
+#[allow(dead_code)]
 pub struct SnapshotData {
     pub timestamp: u64,
     pub cpu_percent: f32,
@@ -18,6 +19,7 @@ pub struct SnapshotData {
 
 /// リソーススナップショットを収集する
 /// CPU 使用率の正確な計測のため、2回 refresh の間に sleep を挟む
+#[allow(dead_code)]
 pub fn collect_snapshot(state: &State<'_, SharedState>) -> Result<SnapshotData, AppError> {
     // 1st lock: CPU refresh 1回目
     {
