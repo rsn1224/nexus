@@ -1,11 +1,13 @@
 import type React from 'react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import Button from '../ui/Button';
 import AdvisorScoreCard from './AdvisorScoreCard';
 import RecommendationList from './RecommendationList';
 
 const SettingsAdvisorPanel: React.FC = () => {
+  const { t } = useTranslation(['settings', 'common']);
   const {
     advisorResult,
     advisorLoading,
@@ -22,7 +24,7 @@ const SettingsAdvisorPanel: React.FC = () => {
   if (advisorLoading) {
     return (
       <div className="p-4 text-center">
-        <div className="text-text-secondary text-xs">ANALYZING SETTINGS...</div>
+        <div className="text-text-secondary text-xs">{t('settings:advisor.analyzing')}</div>
       </div>
     );
   }
@@ -32,7 +34,7 @@ const SettingsAdvisorPanel: React.FC = () => {
       <div className="p-4">
         <div className="text-danger-500 text-xs mb-2">ERROR: {advisorError}</div>
         <Button variant="primary" size="sm" onClick={fetchAdvisorResult}>
-          RETRY
+          {t('common:retry')}
         </Button>
       </div>
     );
@@ -41,7 +43,7 @@ const SettingsAdvisorPanel: React.FC = () => {
   if (!advisorResult) {
     return (
       <div className="p-4 text-center">
-        <div className="text-text-secondary text-xs">NO DATA AVAILABLE</div>
+        <div className="text-text-secondary text-xs">{t('settings:advisor.noData')}</div>
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface HardwareNode {
   id: string;
@@ -11,6 +12,7 @@ interface HardwareNode {
 }
 
 export default function HardwareConfigTree(): React.ReactElement {
+  const { t } = useTranslation('settings');
   const hardwareNodes: HardwareNode[] = [
     {
       id: 'core_proc_01',
@@ -76,7 +78,7 @@ export default function HardwareConfigTree(): React.ReactElement {
       <div className="p-8 relative z-10">
         <h2 className="text-xl font-bold mb-10 flex items-center gap-3 tracking-tight">
           <span className="material-symbols-outlined text-accent-500">memory</span>
-          ハードウェア構成ツリー
+          {t('hardware.title')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {hardwareNodes.map((node) => (
@@ -128,7 +130,7 @@ export default function HardwareConfigTree(): React.ReactElement {
               [NODE_ACTIVE_LINK_04]
             </span>
             <div className="px-10 py-4 border border-accent-500/50 bg-accent-500/10 text-accent-500 font-label text-[11px] tracking-[0.5em] font-black hover:bg-accent-500/20 transition-all shadow-[0_0_12px_rgba(68,214,44,0.35)] uppercase">
-              統合ハブ V4.0
+              {t('hardware.integratedHub')}
             </div>
           </div>
         </div>

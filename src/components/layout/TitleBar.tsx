@@ -1,6 +1,7 @@
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import type React from 'react';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const TitleBar = memo(function TitleBar(): React.ReactElement {
   const appWindow = (() => {
@@ -23,6 +24,8 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
     void appWindow?.close();
   }, [appWindow]);
 
+  const { t } = useTranslation('layout');
+
   return (
     <header className="fixed top-0 w-full z-50 h-16 bg-base-900/80 backdrop-blur-xl border-b-[0.5px] border-white/10 flex items-center justify-between px-4 select-none">
       {/* Left: NEXUS Logo */}
@@ -31,7 +34,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
           className="text-2xl font-black tracking-tighter text-accent-500 drop-shadow-[0_0_8px_rgba(68,214,44,0.5)]"
           data-tauri-drag-region
         >
-          NEXUS
+          {t('titleBar.nexus')}
         </h1>
       </div>
 
@@ -44,14 +47,14 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
         <button
           type="button"
           className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
-          aria-label="通知"
+          aria-label={t('titleBar.notifications')}
         >
           <span className="material-symbols-outlined text-[16px]">notifications</span>
         </button>
         <button
           type="button"
           className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
-          aria-label="設定"
+          aria-label={t('titleBar.settings')}
         >
           <span className="material-symbols-outlined text-[16px]">settings</span>
         </button>
@@ -61,7 +64,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
           type="button"
           onClick={handleMinimize}
           className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
-          aria-label="最小化"
+          aria-label={t('titleBar.minimize')}
         >
           <span className="material-symbols-outlined text-[14px]">remove</span>
         </button>
@@ -69,7 +72,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
           type="button"
           onClick={handleMaximize}
           className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-text-primary hover:bg-white/5 transition-colors"
-          aria-label="最大化"
+          aria-label={t('titleBar.maximize')}
         >
           <span className="material-symbols-outlined text-[14px]">check_box_outline_blank</span>
         </button>
@@ -77,7 +80,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
           type="button"
           onClick={handleClose}
           className="w-8 h-8 flex items-center justify-center rounded text-white/30 hover:text-danger-500 hover:bg-danger-500/10 transition-colors"
-          aria-label="閉じる"
+          aria-label={t('titleBar.close')}
         >
           <span className="material-symbols-outlined text-[14px]">close</span>
         </button>

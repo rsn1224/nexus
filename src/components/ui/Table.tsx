@@ -1,4 +1,5 @@
 ﻿import type React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LoadingState } from './index';
 import { getSortIcon, renderCell, type TableColumn } from './tableHelpers';
 
@@ -47,6 +48,7 @@ export default function Table<T>({
   stickyHeader: _stickyHeader = false,
   maxHeight,
 }: TableProps<T>): React.ReactElement {
+  const { t } = useTranslation();
   const sizeClasses = {
     sm: 'text-xs',
     md: 'text-xs',
@@ -79,7 +81,7 @@ export default function Table<T>({
   if (loading) {
     return (
       <div className={`flex items-center justify-center py-8 ${className}`}>
-        <LoadingState message="読み込み中..." />
+        <LoadingState message={t('loading')} />
       </div>
     );
   }

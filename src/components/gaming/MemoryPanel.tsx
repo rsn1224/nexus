@@ -1,9 +1,11 @@
 import { invoke } from '@tauri-apps/api/core';
 import { memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { extractErrorMessage } from '../../lib/tauri';
 import { usePulseStore } from '../../stores/usePulseStore';
 
 export const MemoryPanel = memo(function MemoryPanel() {
+  const { t } = useTranslation('tactics');
   const [applying, setApplying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastClean, setLastClean] = useState<number | null>(null);
@@ -31,7 +33,7 @@ export const MemoryPanel = memo(function MemoryPanel() {
     <div className="flex flex-col gap-4 p-4 overflow-y-auto flex-1">
       <div className="piano-surface rounded p-4 flex flex-col gap-3">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          MEMORY USAGE
+          {t('memory.memoryUsage')}
         </p>
         <div className="flex items-end gap-2">
           <span className="text-text-primary text-2xl font-mono font-bold">{memUsedGb}</span>
@@ -58,7 +60,7 @@ export const MemoryPanel = memo(function MemoryPanel() {
 
       {lastClean && (
         <div className="px-3 py-2 bg-success-500/10 border border-success-500/30 rounded text-xs font-mono text-success-500">
-          CLEANED AT {new Date(lastClean).toLocaleTimeString()}
+          {t('memory.cleanedAt', { time: new Date(lastClean).toLocaleTimeString() })}
         </div>
       )}
 
@@ -68,7 +70,7 @@ export const MemoryPanel = memo(function MemoryPanel() {
         disabled={applying}
         className="px-4 py-2 text-xs font-mono rounded border border-accent-500 text-accent-500 bg-accent-500/10 hover:bg-accent-500/20 transition-colors disabled:opacity-40"
       >
-        {applying ? 'CLEANING...' : 'CLEAN MEMORY ▶'}
+        {applying ? t('memory.cleaning') : t('memory.cleanMemory')}
       </button>
     </div>
   );

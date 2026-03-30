@@ -1,6 +1,29 @@
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 
+// i18n mock — returns translation keys as-is for testing
+vi.mock('react-i18next', () => ({
+  useTranslation: (ns?: string | string[]) => {
+    const defaultNs = Array.isArray(ns) ? ns[0] : (ns ?? 'common');
+    return {
+      t: (key: string, opts?: Record<string, unknown>) => {
+        // Strip namespace prefix if present (e.g., "settings:general.apiKey" → "general.apiKey")
+        const stripped = key.includes(':') ? key.split(':').slice(1).join(':') : key;
+        if (opts?.defaultValue) return opts.defaultValue as string;
+        return stripped;
+      },
+      i18n: {
+        language: 'en',
+        changeLanguage: vi.fn(),
+        exists: vi.fn(() => true),
+      },
+      ready: true,
+    };
+  },
+  Trans: ({ children }: { children: React.ReactNode }) => children,
+  initReactI18next: { type: '3rdParty', init: vi.fn() },
+}));
+
 // Tauri API mock
 vi.mock('@tauri-apps/api/core', () => ({
   invoke: vi.fn(),

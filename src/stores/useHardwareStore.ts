@@ -156,8 +156,6 @@ export const useGpuVram = () =>
     })),
   );
 
-export { useHardwareData } from '../hooks/hardwareHooks';
-
 // 後方互換 re-export
 export { createDiskProgressBar } from '../lib/hardwareFormatters';
 

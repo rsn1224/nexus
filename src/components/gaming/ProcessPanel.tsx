@@ -1,10 +1,12 @@
 import { invoke } from '@tauri-apps/api/core';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import log from '../../lib/logger';
 import { extractErrorMessage } from '../../lib/tauri';
 import type { SystemProcess } from '../../types';
 
 export const ProcessPanel = memo(function ProcessPanel() {
+  const { t } = useTranslation('tactics');
   const [processes, setProcesses] = useState<SystemProcess[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,7 +52,7 @@ export const ProcessPanel = memo(function ProcessPanel() {
     <div className="flex flex-col gap-3 p-4 overflow-y-auto flex-1">
       <div className="flex items-center justify-between">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          TOP PROCESSES
+          {t('process.topProcesses')}
         </p>
         <button
           type="button"
@@ -58,7 +60,7 @@ export const ProcessPanel = memo(function ProcessPanel() {
           disabled={loading}
           className="text-xs font-mono text-accent-500 hover:text-text-primary transition-colors disabled:opacity-40"
         >
-          REFRESH
+          {t('process.refresh')}
         </button>
       </div>
 
@@ -70,7 +72,14 @@ export const ProcessPanel = memo(function ProcessPanel() {
 
       <div className="piano-surface rounded overflow-hidden">
         <div className="grid grid-cols-[1fr_4rem_5rem_5rem] gap-2 px-3 py-1.5 border-b border-border-subtle">
-          {(['PROCESS', 'CPU%', 'MEM MB', ''] as const).map((h) => (
+          {(
+            [
+              t('process.processHeader'),
+              t('process.cpuHeader'),
+              t('process.memHeader'),
+              '',
+            ] as const
+          ).map((h) => (
             <span key={h} className="text-text-secondary text-xs font-mono uppercase">
               {h}
             </span>
@@ -97,7 +106,7 @@ export const ProcessPanel = memo(function ProcessPanel() {
                   : 'border-border-subtle text-text-secondary hover:border-danger-500/50 hover:text-danger-500'
               }`}
             >
-              {confirmKill === p.pid ? 'SURE?' : 'KILL'}
+              {confirmKill === p.pid ? t('process.confirmKill') : t('process.kill')}
             </button>
           </div>
         ))}

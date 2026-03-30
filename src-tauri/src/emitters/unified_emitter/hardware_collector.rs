@@ -1,0 +1,158 @@
+//! ハードウェア情報収集（5秒ごと）
+
+use sysinfo::{DiskKind, Disks, System};
+use tauri::{AppHandle, Manager};
+use tracing::warn;
+
+use crate::commands::hardware::{DiskInfo, HardwareInfo};
+use crate::state::AppState;
+
+pub(super) fn collect_hardware_info(app: &AppHandle) -> Result<HardwareInfo, String> {
+    let (cpu_name, cpu_cores, cpu_threads, cpu_base_ghz, mem_total_gb, mem_used_gb, uptime_secs) = {
+        let state = app.state::<std::sync::Mutex<AppState>>();
+        let mut s = state
+            .lock()
+            .map_err(|e| format!("Stateロックエラー: {}", e))?;
+        s.sys.refresh_memory();
+        s.sys.refresh_cpu_all();
+
+        let cpu_name = s
+            .sys
+            .cpus()
+            .first()
+            .map(|cpu: &sysinfo::Cpu| cpu.brand().to_string())
+            .unwrap_or_else(|| "Unknown CPU".to_string());
+
+        let (cpu_cores, cpu_threads) = if let Some(ref topology) = s.cpu_topology {
+            (
+                topology.physical_cores as u32,
+                topology.logical_cores as u32,
+            )
+        } else {
+            match crate::services::cpu_topology::detect_topology() {
+                Ok(topology) => {
+                    let cores = topology.physical_cores as u32;
+                    let threads = topology.logical_cores as u32;
+                    s.cpu_topology = Some(topology);
+                    (cores, threads)
+                }
+                Err(_) => {
+                    let logical = s.sys.cpus().len() as u32;
+                    (logical, logical)
+                }
+            }
+        };
+
+        let cpu_base_ghz = s
+            .sys
+            .cpus()
+            .first()
+            .map(|cpu: &sysinfo::Cpu| cpu.frequency() as f32 / 1000.0)
+            .unwrap_or(0.0);
+
+        let total_memory = s.sys.total_memory();
+        let used_memory = s.sys.used_memory();
+        let mem_total_gb = total_memory as f32 / (1024.0 * 1024.0 * 1024.0);
+        let mem_used_gb = used_memory as f32 / (1024.0 * 1024.0 * 1024.0);
+        let uptime_secs = System::uptime();
+
+        (
+            cpu_name,
+            cpu_cores,
+            cpu_threads,
+            cpu_base_ghz,
+            mem_total_gb,
+            mem_used_gb,
+            uptime_secs,
+        )
+    };
+
+    let cpu_temp_c = crate::services::hardware::get_cpu_temperature();
+    let os_name = System::name().unwrap_or_else(|| "Unknown".to_string());
+    let os_version = System::os_version().unwrap_or_else(|| "Unknown".to_string());
+    let hostname = System::host_name().unwrap_or_else(|| "Unknown".to_string());
+    let boot_time_unix = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs()
+        - uptime_secs;
+
+    let mut disks = Vec::new();
+    let disks_sys = Disks::new_with_refreshed_list();
+    for disk in disks_sys.list() {
+        let total = disk.total_space();
+        let available = disk.available_space();
+        let used = total.saturating_sub(available);
+        if total == 0 {
+            continue;
+        }
+        let kind = match disk.kind() {
+            DiskKind::SSD => "SSD",
+            DiskKind::HDD => "HDD",
+            _ => "Unknown",
+        }
+        .to_string();
+        disks.push(DiskInfo {
+            mount: disk.mount_point().to_string_lossy().to_string(),
+            kind,
+            total_gb: total as f32 / (1024.0_f32.powi(3)),
+            used_gb: used as f32 / (1024.0_f32.powi(3)),
+        });
+    }
+    disks.sort_by(|a, b| a.mount.cmp(&b.mount));
+
+    let gpu_static = {
+        let state = app.state::<std::sync::Mutex<AppState>>();
+        let mut s = state
+            .lock()
+            .map_err(|e| format!("Stateロックエラー: {}", e))?;
+
+        if let Some(ref cached) = s.gpu_static {
+            cached.clone()
+        } else {
+            let info = crate::services::hardware::get_gpu_static_info();
+            s.gpu_static = Some(info.clone());
+            info
+        }
+    };
+
+    let gpu_static = if gpu_static.name.is_none() {
+        warn!("unified_emitter: GPU名がNoneのため再取得を試みます");
+        let info = crate::services::hardware::get_gpu_static_info();
+
+        let state = app.state::<std::sync::Mutex<AppState>>();
+        if let Ok(mut s) = state.lock() {
+            s.gpu_static = Some(info.clone());
+        }
+
+        if info.name.is_none() {
+            warn!("unified_emitter: GPU情報の取得に失敗しました");
+        }
+        info
+    } else {
+        gpu_static
+    };
+
+    let gpu_dynamic = crate::services::hardware::get_gpu_dynamic_info();
+
+    Ok(HardwareInfo {
+        cpu_name,
+        cpu_cores,
+        cpu_threads,
+        cpu_base_ghz,
+        cpu_temp_c,
+        mem_total_gb,
+        mem_used_gb,
+        os_name,
+        os_version,
+        hostname,
+        uptime_secs,
+        boot_time_unix,
+        disks,
+        gpu_name: gpu_static.name,
+        gpu_vram_total_mb: gpu_static.vram_total_mb,
+        gpu_vram_used_mb: gpu_dynamic.vram_used_mb,
+        gpu_temp_c: gpu_dynamic.temperature_c,
+        gpu_usage_percent: gpu_dynamic.usage_percent,
+    })
+}

@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { buildHealthInput } from '../../lib/buildHealthInput';
 import log from '../../lib/logger';
 import { extractErrorMessage } from '../../lib/tauri';
@@ -10,6 +11,7 @@ import StitchAiPanel from './StitchAiPanel';
 import TelemetrySection from './TelemetrySection';
 
 export const DashboardWing = memo(function DashboardWing() {
+  const { t } = useTranslation('core');
   const { healthScore, loading, error } = useHealthState();
   const { recalculate, applySuggestion, rollbackSuggestion, clearError } = useHealthActions();
   const suggestions = useHealthState().suggestions;
@@ -54,6 +56,13 @@ export const DashboardWing = memo(function DashboardWing() {
   const memTotal = latestSnapshot ? (latestSnapshot.memTotalMb / 1024).toFixed(0) : '16';
   const score = typeof healthScore === 'number' ? healthScore : 0;
 
+  const statusLabel =
+    score >= 80
+      ? t('dashboard.optimal')
+      : score >= 60
+        ? t('dashboard.good')
+        : t('dashboard.needsAttention');
+
   return (
     <div className="min-h-screen bg-base-900 p-6 relative overflow-hidden">
       <div className="mb-12 relative">
@@ -61,7 +70,8 @@ export const DashboardWing = memo(function DashboardWing() {
           DASHBOARD
         </h1>
         <p className="text-xs tracking-[0.3em] text-text-secondary uppercase">
-          System Overview — STATUS: <span className="text-accent-500 animate-pulse">READY</span>
+          {t('dashboard.systemOverview')} —{' '}
+          <span className="text-accent-500 animate-pulse">{t('dashboard.statusReady')}</span>
         </p>
       </div>
 
@@ -77,11 +87,7 @@ export const DashboardWing = memo(function DashboardWing() {
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 relative z-10">
         <div className="col-span-12">
           <div className="glass-panel p-6">
-            <RingCore
-              score={score}
-              loading={loading}
-              statusLabel={score >= 80 ? 'OPTIMAL' : score >= 60 ? 'GOOD' : 'NEEDS ATTENTION'}
-            />
+            <RingCore score={score} loading={loading} statusLabel={statusLabel} />
           </div>
         </div>
 

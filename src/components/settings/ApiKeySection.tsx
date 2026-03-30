@@ -1,6 +1,8 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 export default function ApiKeySection(): React.ReactElement {
+  const { t } = useTranslation('settings');
   return (
     <div className="glass-panel border border-white/10 flex flex-col shadow-2xl">
       <div className="reflective-overlay absolute inset-0"></div>
@@ -8,14 +10,14 @@ export default function ApiKeySection(): React.ReactElement {
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-xl font-bold flex items-center gap-3 tracking-tight">
             <span className="material-symbols-outlined text-warning-500">security</span>
-            API キー設定
+            {t('apiKey.title')}
           </h2>
           <div className="flex items-center gap-4">
             <button
               type="button"
               className="font-label text-[9px] text-text-secondary/40 hover:text-accent-500 tracking-[0.2em] transition-colors uppercase font-bold"
             >
-              [ 整合性チェック ]
+              {t('apiKey.integrityCheck')}
             </button>
             <span className="px-3 py-1 bg-accent-500/10 border border-accent-500/30 text-accent-500 font-label text-[9px] tracking-[0.2em] font-bold">
               SECURE
@@ -28,7 +30,7 @@ export default function ApiKeySection(): React.ReactElement {
               htmlFor="system-access-key"
               className="block font-label text-[9px] text-text-secondary/60 mb-3 uppercase tracking-[0.2em]"
             >
-              System Access Key
+              {t('apiKey.systemAccessKey')}
             </label>
             <div className="relative">
               <input
@@ -68,7 +70,7 @@ export default function ApiKeySection(): React.ReactElement {
               className="hud-button-effect w-full py-5 bg-white/3 border border-white/10 text-text-primary hover:text-accent-500 hover:border-accent-500/50 font-black text-xs tracking-[0.3em] uppercase transition-all active:scale-[0.99] glass-panel"
             >
               <div className="scanning-line animate-pulse opacity-20"></div>
-              認証キーを更新
+              {t('apiKey.updateAuthKey')}
             </button>
           </div>
         </div>

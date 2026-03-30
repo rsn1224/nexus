@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getOptimizationSuggestions } from '../../services/perplexityService';
 
 interface PerplexityPanelProps {
@@ -15,11 +16,12 @@ type PanelState =
 export default function PerplexityPanel({
   processNames,
 }: PerplexityPanelProps): React.ReactElement {
+  const { t } = useTranslation();
   const [panelState, setPanelState] = useState<PanelState>({ status: 'idle' });
 
   const handleAsk = async () => {
     if (processNames.length === 0) {
-      setPanelState({ status: 'error', error: '先に RUN BOOST を実行してください' });
+      setPanelState({ status: 'error', error: t('runBoostFirst') });
       return;
     }
 
@@ -35,7 +37,7 @@ export default function PerplexityPanel({
     } catch (err) {
       setPanelState({
         status: 'error',
-        error: err instanceof Error ? err.message : '不明なエラー',
+        error: err instanceof Error ? err.message : t('unknownError'),
       });
     }
   };
@@ -49,19 +51,19 @@ export default function PerplexityPanel({
         onClick={handleAsk}
         disabled={panelState.status === 'loading'}
         className={`w-full flex items-center justify-between px-3 py-[10px] bg-transparent border-none ${isDisabled ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
-        title={processNames.length === 0 ? '先に RUN BOOST を実行してください' : undefined}
+        title={processNames.length === 0 ? t('runBoostFirst') : undefined}
       >
         <div className="flex items-center gap-[6px]">
-          <span className="text-xs font-bold text-accent-500">AI に聞く</span>
+          <span className="text-xs font-bold text-accent-500">{t('askAiLabel')}</span>
         </div>
         <span className="text-xs text-text-muted">
-          {panelState.status === 'loading' ? 'ASKING...' : '▶ ASK AI'}
+          {panelState.status === 'loading' ? t('asking') : t('askAi')}
         </span>
       </button>
 
       {panelState.status === 'loading' && (
         <div className="px-3 py-2 bg-base-900 text-xs text-text-muted mt-2">
-          Perplexity に問い合わせ中...
+          {t('askingPerplexity')}
         </div>
       )}
 

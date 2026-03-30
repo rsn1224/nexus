@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "arsenal": "アーセナル",
+    "tactics": "タクティクス",
+    "logs": "ログ",
+    "settings": "設定"
+  },
+  "sidebar": {
+    "systemStatus": "システム状態",
+    "system": "システム",
+    "optimizeNow": "最適化を実行"
+  },
+  "titleBar": {
+    "nexus": "NEXUS",
+    "notifications": "通知",
+    "settings": "設定",
+    "minimize": "最小化",
+    "maximize": "最大化",
+    "close": "閉じる"
+  },
+  "bottomTab": {
+    "hud": "HUD",
+    "play": "プレイ",
+    "monitor": "モニター",
+    "gear": "設定"
+  }
+}

@@ -1,11 +1,13 @@
 import { invoke } from '@tauri-apps/api/core';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import log from '../../lib/logger';
 import { extractErrorMessage } from '../../lib/tauri';
 import type { WindowsSettings } from '../../types';
 import { PowerPlan, VisualEffects } from '../../types';
 
 export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
+  const { t } = useTranslation('tactics');
   const [settings, setSettings] = useState<WindowsSettings | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
   if (loading && !settings) {
     return (
       <div className="flex-1 flex items-center justify-center text-text-secondary text-xs font-mono">
-        LOADING...
+        {t('windows.loading')}
       </div>
     );
   }
@@ -57,10 +59,12 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
       )}
 
       <div className="piano-surface rounded p-3 flex flex-col gap-2">
-        <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">GAME MODE</p>
+        <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
+          {t('windows.gameMode')}
+        </p>
         <div className="flex items-center justify-between">
           <span className="text-text-primary text-xs font-mono">
-            {settings?.gameMode ? 'ENABLED' : 'DISABLED'}
+            {settings?.gameMode ? t('windows.enabled') : t('windows.disabled')}
           </span>
           <button
             type="button"
@@ -71,14 +75,14 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
                 : 'border-accent-500 text-accent-500 hover:bg-accent-500/10'
             }`}
           >
-            {settings?.gameMode ? 'DISABLE' : 'ENABLE'}
+            {settings?.gameMode ? t('windows.disable') : t('windows.enable')}
           </button>
         </div>
       </div>
 
       <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          POWER PLAN
+          {t('windows.powerPlan')}
         </p>
         <div className="flex gap-2">
           {[PowerPlan.HighPerformance, PowerPlan.Balanced, PowerPlan.PowerSaver].map((plan) => (
@@ -93,10 +97,10 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
               }`}
             >
               {plan === PowerPlan.HighPerformance
-                ? 'HIGH'
+                ? t('windows.high')
                 : plan === PowerPlan.Balanced
-                  ? 'BALANCED'
-                  : 'SAVER'}
+                  ? t('windows.balanced')
+                  : t('windows.saver')}
             </button>
           ))}
         </div>
@@ -104,7 +108,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
 
       <div className="piano-surface rounded p-3 flex flex-col gap-2">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          VISUAL EFFECTS
+          {t('windows.visualEffects')}
         </p>
         <div className="flex gap-2">
           {[
@@ -123,10 +127,10 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
               }`}
             >
               {fx === VisualEffects.BestPerformance
-                ? 'PERF'
+                ? t('windows.perf')
                 : fx === VisualEffects.Balanced
-                  ? 'BALANCED'
-                  : 'BEST'}
+                  ? t('windows.balanced')
+                  : t('windows.best')}
             </button>
           ))}
         </div>
@@ -135,10 +139,10 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
       <div className="piano-surface rounded p-3 flex items-center justify-between">
         <div>
           <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-            HW GPU SCHEDULING
+            {t('windows.hwGpuScheduling')}
           </p>
           <p className="text-text-primary text-xs font-mono mt-0.5">
-            {settings?.hardwareGpuScheduling ? 'ENABLED' : 'DISABLED'}
+            {settings?.hardwareGpuScheduling ? t('windows.enabled') : t('windows.disabled')}
           </p>
         </div>
         <button
@@ -146,7 +150,7 @@ export const WindowsSettingsPanel = memo(function WindowsSettingsPanel() {
           onClick={() => void toggle('toggle_hardware_gpu_scheduling')}
           className="px-3 py-1 text-xs font-mono rounded border border-accent-500 text-accent-500 hover:bg-accent-500/10 transition-colors"
         >
-          TOGGLE
+          {t('windows.toggle')}
         </button>
       </div>
     </div>

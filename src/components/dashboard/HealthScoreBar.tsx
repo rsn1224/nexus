@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { HealthGrade, HealthScore } from '../../types/v2';
 
 interface Props {
@@ -28,11 +29,13 @@ export const HealthScoreBar = memo(function HealthScoreBar({
   loading,
   onOptimizeNow,
 }: Props) {
+  const { t } = useTranslation('core');
+
   if (!healthScore) {
     return (
       <div className="flex items-center justify-between px-4 h-14 shrink-0 piano-surface border-b border-border-subtle">
         <span className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          {loading ? 'LOADING...' : 'SYSTEM HEALTH: —'}
+          {loading ? t('dashboard.loading') : `${t('dashboard.systemHealth')}: —`}
         </span>
       </div>
     );
@@ -47,7 +50,7 @@ export const HealthScoreBar = memo(function HealthScoreBar({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-            SYSTEM HEALTH
+            {t('dashboard.systemHealth')}
           </span>
           <span className="text-text-primary text-sm font-mono font-bold">
             {healthScore.score}
@@ -60,7 +63,7 @@ export const HealthScoreBar = memo(function HealthScoreBar({
           onClick={onOptimizeNow}
           className="text-xs font-mono uppercase tracking-widest px-3 py-1 border border-accent-500 text-accent-500 hover:bg-accent-500/10 transition-colors rounded"
         >
-          OPTIMIZE NOW ▶
+          {t('dashboard.optimizeNow')}
         </button>
       </div>
       <div className="flex items-center gap-3">

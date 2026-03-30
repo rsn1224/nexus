@@ -1,0 +1,29 @@
+{
+  "header": {
+    "wingTitle": "アーセナルウィング",
+    "moduleLabel": "Tactical_Advantage_Module",
+    "subtitle": "システム全体の同期とパフォーマンス最適化",
+    "applyAll": "[すべて適用]"
+  },
+  "tabs": {
+    "windows": "ウィンドウズ",
+    "process": "プロセス",
+    "network": "ネットワーク",
+    "memory": "メモリ"
+  },
+  "analytics": {
+    "title": "ANALYTICS ENGINE",
+    "projectedLatencyGain": "予測レイテンシ改善",
+    "projectedLatencyLoss": "予測レイテンシ悪化",
+    "optimizationDetected": "最適化を検出",
+    "performanceImpact": "パフォーマンスへの影響"
+  },
+  "optimization": {
+    "on": "ON",
+    "off": "OFF"
+  },
+  "footer": {
+    "coreTemp": "コア温度:",
+    "memUtil": "メモリ使用率"
+  }
+}

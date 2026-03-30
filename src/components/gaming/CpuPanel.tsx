@@ -1,9 +1,11 @@
 import { invoke } from '@tauri-apps/api/core';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { extractErrorMessage } from '../../lib/tauri';
 import type { CoreParkingState } from '../../types';
 
 export const CpuPanel = memo(function CpuPanel() {
+  const { t } = useTranslation('tactics');
   const [parking, setParking] = useState<CoreParkingState | null>(null);
   const [loading, setLoading] = useState(false);
   const [applying, setApplying] = useState(false);
@@ -42,15 +44,15 @@ export const CpuPanel = memo(function CpuPanel() {
   );
 
   const PRESETS = [
-    { label: '0% (ALL ACTIVE)', value: 0, desc: 'すべてのコアを常時稼働' },
-    { label: '25% (DEFAULT)', value: 25, desc: 'Windows デフォルト' },
-    { label: '50%', value: 50, desc: 'バランスモード' },
+    { label: '0% (ALL ACTIVE)', value: 0, desc: t('cpu.allActive') },
+    { label: '25% (DEFAULT)', value: 25, desc: t('cpu.windowsDefault') },
+    { label: '50%', value: 50, desc: t('cpu.balancedMode') },
   ];
 
   if (loading && !parking) {
     return (
       <div className="flex-1 flex items-center justify-center text-text-secondary text-xs font-mono">
-        LOADING...
+        {t('cpu.loading')}
       </div>
     );
   }
@@ -75,18 +77,20 @@ export const CpuPanel = memo(function CpuPanel() {
       <div className="glass-panel bloom-border p-6">
         <div className="flex items-center gap-3 mb-4">
           <span className="material-symbols-outlined text-white/30">memory</span>
-          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">CORE PARKING</h3>
+          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">
+            {t('cpu.coreParking')}
+          </h3>
         </div>
         {parking && (
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-data text-white/60">AC MIN CORES</span>
+              <span className="text-xs font-data text-white/60">{t('cpu.acMinCores')}</span>
               <span className="text-lg font-data text-accent-500">
                 {parking.minCoresPercentAc}%
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-xs font-data text-white/60">DC MIN CORES</span>
+              <span className="text-xs font-data text-white/60">{t('cpu.dcMinCores')}</span>
               <span className="text-lg font-data text-accent-500">
                 {parking.minCoresPercentDc}%
               </span>
@@ -98,7 +102,9 @@ export const CpuPanel = memo(function CpuPanel() {
       <div className="glass-panel bloom-border p-6">
         <div className="flex items-center gap-3 mb-4">
           <span className="material-symbols-outlined text-white/30">tune</span>
-          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">PRESETS</h3>
+          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">
+            {t('cpu.presets')}
+          </h3>
         </div>
         <div className="space-y-3">
           {PRESETS.map((p) => (
@@ -119,7 +125,7 @@ export const CpuPanel = memo(function CpuPanel() {
                   <p className="text-xs text-white/60 mt-1">{p.desc}</p>
                 </div>
                 {parking?.minCoresPercentAc === p.value && (
-                  <span className="text-accent-500 text-xs font-data">ACTIVE</span>
+                  <span className="text-accent-500 text-xs font-data">{t('cpu.active')}</span>
                 )}
               </div>
             </button>

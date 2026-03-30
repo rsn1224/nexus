@@ -58,13 +58,13 @@ describe('WindowsSettingsTab', () => {
   it('renders loading state when isLoading and no settings', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, isLoading: true });
     render(<WindowsSettingsTab />);
-    expect(screen.getByText(/LOADING/i)).toBeTruthy();
+    expect(screen.getByText('loading')).toBeTruthy();
   });
 
   it('renders header when settings loaded', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
     render(<WindowsSettingsTab />);
-    expect(screen.getByText(/WINDOWS.*SETTINGS/i)).toBeTruthy();
+    expect(screen.getByText(/windows\.header/)).toBeTruthy();
   });
 
   it('renders error banner when error is set', () => {
@@ -80,31 +80,31 @@ describe('WindowsSettingsTab', () => {
   it('renders POWER section with power plan selector', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
     render(<WindowsSettingsTab />);
-    expect(screen.getByText('POWER')).toBeTruthy();
-    expect(screen.getByText('Power Plan')).toBeTruthy();
+    expect(screen.getByText('windows.power')).toBeTruthy();
+    expect(screen.getByText('windows.powerPlan')).toBeTruthy();
   });
 
   it('renders GAMING section with game mode toggle', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
     render(<WindowsSettingsTab />);
-    expect(screen.getByText('GAMING')).toBeTruthy();
-    expect(screen.getByText('Game Mode')).toBeTruthy();
-    expect(screen.getByText('Fullscreen Opt.')).toBeTruthy();
-    expect(screen.getByText('Hardware GPU Sched')).toBeTruthy();
+    expect(screen.getByText('windows.gaming')).toBeTruthy();
+    expect(screen.getByText('windows.gameMode')).toBeTruthy();
+    expect(screen.getByText('windows.fullscreenOpt')).toBeTruthy();
+    expect(screen.getByText('windows.gpuScheduling')).toBeTruthy();
   });
 
-  it('shows ENABLED for active game mode', () => {
+  it('shows enabled status for active game mode', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
     render(<WindowsSettingsTab />);
-    const enabledElements = screen.getAllByText('ENABLED');
+    const enabledElements = screen.getAllByText('enabled');
     expect(enabledElements.length).toBeGreaterThan(0);
   });
 
   it('renders VISUAL section', () => {
     mockUseWindowsSettings.mockReturnValue({ ...BASE_STORE, settings: MOCK_SETTINGS });
     render(<WindowsSettingsTab />);
-    expect(screen.getByText('VISUAL')).toBeTruthy();
-    expect(screen.getByText('Visual Effects')).toBeTruthy();
+    expect(screen.getByText('windows.visual')).toBeTruthy();
+    expect(screen.getByText('windows.visualEffects')).toBeTruthy();
   });
 
   it('renders advisor panel', () => {

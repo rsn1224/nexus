@@ -126,12 +126,12 @@ describe('getRankStyle', () => {
   it('READY ランクのスタイルを返す', () => {
     const style = getRankStyle('READY');
     expect(style.label).toBe('GAME READY');
-    expect(style.color).toContain('success');
+    expect(style.className).toContain('success');
   });
 
   it('NOT_READY ランクのスタイルを返す', () => {
     const style = getRankStyle('NOT_READY');
     expect(style.label).toBe('NOT READY');
-    expect(style.color).toContain('danger');
+    expect(style.className).toContain('danger');
   });
 });

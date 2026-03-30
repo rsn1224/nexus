@@ -46,6 +46,7 @@ const ALLOWED_FILES_AND_REASONS = [
   { file: 'src/components/monitor/KpiCard.tsx', reason: 'プログレスバー動的幅' },
   { file: 'src/components/monitor/SystemMetrics.tsx', reason: 'プログレスバー動的幅' },
   { file: 'src/components/settings/UiCustomizeSection.tsx', reason: 'スライダー動的幅' },
+  { file: 'src/components/onboarding/ReadinessSummaryStep.tsx', reason: 'プログレスバー動的幅 width: pct%' },
   { file: 'src/components/ui/NexusButtonRipple.tsx', reason: 'リップル位置動的' },
   { file: 'src/components/ui/TelemetryCard.tsx', reason: 'プログレスバー動的幅' },
   { file: 'src/components/ui/WaveChart.tsx', reason: 'SVG バー/ライン動的値' },

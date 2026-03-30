@@ -1,4 +1,5 @@
 ﻿import type React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { RecommendedValue, SettingRecommendation } from '../../types';
 import Button from '../ui/Button';
 
@@ -53,13 +54,16 @@ export default function RecommendationList({
   recommendations,
   onApply,
 }: RecommendationListProps): React.ReactElement {
+  const { t } = useTranslation(['settings', 'common']);
   return (
     <div>
-      <h4 className="text-text-primary text-xs mb-2">RECOMMENDATIONS ({recommendations.length})</h4>
+      <h4 className="text-text-primary text-xs mb-2">
+        {t('settings:advisor.recommendations')} ({recommendations.length})
+      </h4>
 
       {recommendations.length === 0 ? (
         <div className="p-3 bg-base-800 rounded-lg text-center">
-          <div className="text-success-500 text-xs">ALL SETTINGS OPTIMAL</div>
+          <div className="text-success-500 text-xs">{t('settings:advisor.allOptimal')}</div>
         </div>
       ) : (
         <div className="flex flex-col gap-2">
@@ -89,7 +93,7 @@ export default function RecommendationList({
 
               <div className="flex justify-between items-center mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-text-secondary text-xs">CURRENT:</span>
+                  <span className="text-text-secondary text-xs">{t('common:current')}</span>
                   <span
                     className={`${rec.isOptimal ? 'text-success-500' : 'text-text-primary'} text-xs font-bold`}
                   >
@@ -97,7 +101,7 @@ export default function RecommendationList({
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-text-secondary text-xs">RECOMMENDED:</span>
+                  <span className="text-text-secondary text-xs">{t('common:recommended')}</span>
                   <span
                     className={`${rec.isOptimal ? 'text-text-primary' : 'text-accent-500'} text-xs font-bold`}
                   >
@@ -112,7 +116,7 @@ export default function RecommendationList({
                   size="sm"
                   onClick={() => onApply(rec.settingId)}
                 >
-                  {rec.safetyLevel === 'safe' ? 'APPLY' : 'APPLY (ADVANCED)'}
+                  {rec.safetyLevel === 'safe' ? t('common:apply') : t('common:applyAdvanced')}
                 </Button>
               )}
             </div>

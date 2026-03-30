@@ -1,12 +1,7 @@
 import { memo, useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useOptimizeActions, useOptimizeState } from '../../stores/useOptimizeStore';
 import type { OptimizePreset } from '../../types/v2';
-
-const PRESETS: { id: OptimizePreset; label: string; desc: string }[] = [
-  { id: 'gaming', label: 'GAMING', desc: 'ゲーム向け最大パフォーマンス' },
-  { id: 'powerSave', label: 'POWER SAVE', desc: '消費電力最小化' },
-  { id: 'streaming', label: 'STREAMING', desc: '配信最適化' },
-];
 
 const RISK_CLASS: Record<string, string> = {
   safe: 'text-success-500',
@@ -15,12 +10,19 @@ const RISK_CLASS: Record<string, string> = {
 };
 
 export const OptimizeNowPanel = memo(function OptimizeNowPanel() {
+  const { t } = useTranslation('tactics');
   const { activePreset, steps, stepEnabled, lastResult, applying, error } = useOptimizeState();
   const { selectPreset, toggleStep, applyPreset, rollbackPreset, clearError } =
     useOptimizeActions();
 
   const [confirmRollback, setConfirmRollback] = useState(false);
   const rollbackTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
+
+  const PRESETS: { id: OptimizePreset; label: string; desc: string }[] = [
+    { id: 'gaming', label: t('optimize.gaming'), desc: t('optimize.gamingDesc') },
+    { id: 'powerSave', label: t('optimize.powerSave'), desc: t('optimize.powerSaveDesc') },
+    { id: 'streaming', label: t('optimize.streaming'), desc: t('optimize.streamingDesc') },
+  ];
 
   const handleRollbackClick = useCallback((): void => {
     if (confirmRollback) {
@@ -56,7 +58,7 @@ export const OptimizeNowPanel = memo(function OptimizeNowPanel() {
       {activePreset && steps.length > 0 && (
         <div className="piano-surface rounded p-3 flex flex-col gap-1.5">
           <p className="text-text-secondary text-xs font-mono uppercase tracking-widest mb-1">
-            STEPS
+            {t('optimize.steps')}
           </p>
           {steps.map((step) => (
             <label
@@ -102,7 +104,7 @@ export const OptimizeNowPanel = memo(function OptimizeNowPanel() {
                 : 'border-border-subtle text-text-secondary hover:border-warning-500 hover:text-warning-500'
             }`}
           >
-            {confirmRollback ? '⚠ CONFIRM ROLLBACK' : 'ROLLBACK'}
+            {confirmRollback ? t('optimize.confirmRollback') : t('optimize.rollback')}
           </button>
         )}
         <button
@@ -111,7 +113,7 @@ export const OptimizeNowPanel = memo(function OptimizeNowPanel() {
           disabled={!activePreset || applying}
           className="flex-1 px-3 py-2 text-xs font-mono rounded border border-accent-500 text-accent-500 bg-accent-500/10 hover:bg-accent-500/20 transition-colors disabled:opacity-40"
         >
-          {applying ? 'APPLYING...' : 'APPLY ALL ▶'}
+          {applying ? t('optimize.applying') : t('optimize.applyAll')}
         </button>
       </div>
     </div>

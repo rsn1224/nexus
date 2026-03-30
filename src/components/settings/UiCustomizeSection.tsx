@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ToggleV2 } from '../ui/ToggleV2';
 
 interface UiCustomizeSectionProps {
@@ -18,6 +19,7 @@ export default function UiCustomizeSection({
   autoPowerOpt,
   setAutoPowerOpt,
 }: UiCustomizeSectionProps): React.ReactElement {
+  const { t } = useTranslation('settings');
   return (
     <div className="glass-panel border border-white/10 relative overflow-hidden group shadow-2xl">
       <div className="reflective-overlay absolute inset-0"></div>
@@ -27,7 +29,7 @@ export default function UiCustomizeSection({
         </div>
         <h2 className="text-xl font-bold mb-10 flex items-center gap-3 tracking-tight">
           <span className="material-symbols-outlined text-accent-500">palette</span>
-          UI カスタマイズ
+          {t('ui.title')}
         </h2>
         <div className="space-y-12">
           {/* Neon Intensity Slider */}
@@ -38,10 +40,10 @@ export default function UiCustomizeSection({
                   htmlFor="neon-intensity"
                   className="block font-label text-[9px] text-text-secondary/60 mb-1 uppercase tracking-[0.2em]"
                 >
-                  Neon Intensity
+                  {t('ui.neonIntensity')}
                 </label>
                 <span className="text-2xl font-black text-accent-500 tracking-tighter">
-                  ネオン発光強度
+                  {t('ui.neonIntensityLabel')}
                 </span>
               </div>
               <span className="font-black text-accent-500 text-4xl font-mono">
@@ -74,7 +76,7 @@ export default function UiCustomizeSection({
             <div className="grid grid-cols-1 gap-3">
               <div className="flex items-center justify-between p-5 bg-black/40 border border-white/5 hover:border-accent-500/30 transition-colors group">
                 <span className="text-sm font-medium tracking-tight text-text-primary/80 group-hover:text-accent-500 transition-colors">
-                  AI 適応レンダリング
+                  {t('ui.aiRendering')}
                 </span>
                 <div className="flex items-center gap-6">
                   <div className="h-1 w-32 bg-white/5 relative hidden sm:block">
@@ -89,7 +91,7 @@ export default function UiCustomizeSection({
               </div>
               <div className="flex items-center justify-between p-5 bg-black/40 border border-white/5 hover:border-warning-500/30 transition-colors group">
                 <span className="text-sm font-medium tracking-tight text-text-primary/80 group-hover:text-warning-500 transition-colors">
-                  自動電力最適化 [低電力]
+                  {t('ui.autoPowerOpt')}
                 </span>
                 <div className="flex items-center gap-6">
                   <div className="h-1 w-32 bg-white/5 relative hidden sm:block">

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { useWindowsSettings } from '../../stores/useWindowsSettingsStore';
 import { PowerPlan, VisualEffects } from '../../types';
@@ -10,6 +11,7 @@ import SettingsAdvisorPanel from './SettingsAdvisorPanel';
 import VisualEffectsSection from './VisualEffectsSection';
 
 export default function WindowsSettingsTab(): React.ReactElement {
+  const { t } = useTranslation(['settings', 'common']);
   const {
     settings,
     isLoading,
@@ -41,14 +43,14 @@ export default function WindowsSettingsTab(): React.ReactElement {
       <div className="p-4 h-full flex flex-col">
         <div className="mb-4 flex justify-between items-center">
           <div className="text-xs font-bold text-accent-500 shrink-0 pb-2 border-b border-border-subtle">
-            ▶ WINDOWS / SETTINGS
+            ▶ {t('settings:windows.header')}
           </div>
           <Button variant="ghost" size="sm" disabled loading>
-            ↻ REFRESH
+            ↻ {t('common:refresh')}
           </Button>
         </div>
         <div className="flex-1 flex items-center justify-center">
-          <LoadingState message="LOADING..." />
+          <LoadingState message={t('common:loading')} />
         </div>
       </div>
     );
@@ -60,7 +62,7 @@ export default function WindowsSettingsTab(): React.ReactElement {
 
       <div className="mb-4 flex justify-between items-center">
         <div className="text-xs font-bold text-accent-500 shrink-0 pb-2 border-b border-border-subtle">
-          ▶ WINDOWS / SETTINGS
+          ▶ {t('settings:windows.header')}
         </div>
         <Button
           variant="ghost"
@@ -69,7 +71,7 @@ export default function WindowsSettingsTab(): React.ReactElement {
           disabled={isLoading}
           loading={isLoading}
         >
-          ↻ REFRESH
+          ↻ {t('common:refresh')}
         </Button>
       </div>
 

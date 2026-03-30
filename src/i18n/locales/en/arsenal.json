@@ -1,0 +1,29 @@
+{
+  "header": {
+    "wingTitle": "ARSENAL WING",
+    "moduleLabel": "Tactical_Advantage_Module",
+    "subtitle": "System-wide synchronization and performance optimization",
+    "applyAll": "[APPLY ALL]"
+  },
+  "tabs": {
+    "windows": "WINDOWS",
+    "process": "PROCESS",
+    "network": "NETWORK",
+    "memory": "MEMORY"
+  },
+  "analytics": {
+    "title": "ANALYTICS ENGINE",
+    "projectedLatencyGain": "PROJECTED LATENCY GAIN",
+    "projectedLatencyLoss": "PROJECTED LATENCY LOSS",
+    "optimizationDetected": "OPTIMIZATION DETECTED",
+    "performanceImpact": "PERFORMANCE IMPACT"
+  },
+  "optimization": {
+    "on": "ON",
+    "off": "OFF"
+  },
+  "footer": {
+    "coreTemp": "CORE_TEMP:",
+    "memUtil": "MEM_UTIL"
+  }
+}

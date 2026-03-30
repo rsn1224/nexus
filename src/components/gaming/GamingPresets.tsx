@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PresetCardProps {
   id: string;
@@ -6,6 +7,7 @@ interface PresetCardProps {
   description: string;
   color: string;
   icon: string;
+  presetLabel: string;
   isActive?: boolean;
   onClick: () => void;
 }
@@ -16,6 +18,7 @@ function PresetCard({
   description,
   color,
   icon,
+  presetLabel,
   isActive,
   onClick,
 }: PresetCardProps): React.ReactElement {
@@ -41,7 +44,7 @@ function PresetCard({
             <div
               className={`px-2 py-1 text-[8px] font-black uppercase tracking-widest ${color === 'green' ? 'bg-accent-500/10 text-accent-500' : color === 'amber' ? 'bg-warning-500/10 text-warning-500' : 'bg-white/10 text-text-secondary'}`}
             >
-              PRESET
+              {presetLabel}
             </div>
           </div>
           <h3
@@ -72,32 +75,34 @@ export default function GamingPresets({
   activePreset,
   setActivePreset,
 }: GamingPresetsProps): React.ReactElement {
+  const { t } = useTranslation('tactics');
+
   const presets = [
     {
       id: 'ultra',
-      name: 'ULTRA PERFORMANCE',
-      description: '最高パフォーマンス。すべてのリソースをゲームに集中。',
+      name: t('presets.ultra'),
+      description: t('presets.ultraDesc'),
       color: 'green',
       icon: 'speed',
     },
     {
       id: 'balanced',
-      name: 'BALANCED',
-      description: 'バランス重視。パフォーマンスと安定性の最適な組み合わせ。',
+      name: t('presets.balanced'),
+      description: t('presets.balancedDesc'),
       color: 'amber',
       icon: 'balance',
     },
     {
       id: 'streaming',
-      name: 'STREAMING MODE',
-      description: '配信最適化。安定したフレームレートと低遅延を維持。',
+      name: t('presets.streaming'),
+      description: t('presets.streamingDesc'),
       color: 'neutral',
       icon: 'live_tv',
     },
     {
       id: 'powersave',
-      name: 'POWER SAVE',
-      description: '省電力モード。バッテリー駆動時の最適設定。',
+      name: t('presets.powersave'),
+      description: t('presets.powersaveDesc'),
       color: 'neutral',
       icon: 'eco',
     },
@@ -110,7 +115,7 @@ export default function GamingPresets({
         <div className="flex items-center gap-4 mb-8">
           <span className="material-symbols-outlined text-accent-500 text-2xl">sports_esports</span>
           <h2 className="text-xl font-bold text-text-primary tracking-tight">
-            ゲーミングプリセット
+            {t('gaming.gamingPresets')}
           </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -122,6 +127,7 @@ export default function GamingPresets({
               description={preset.description}
               color={preset.color}
               icon={preset.icon}
+              presetLabel={t('presets.preset')}
               isActive={activePreset === preset.id}
               onClick={() => setActivePreset(preset.id)}
             />

@@ -1,9 +1,11 @@
 import { invoke } from '@tauri-apps/api/core';
 import { memo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { extractErrorMessage } from '../../lib/tauri';
 import type { TcpTuningState } from '../../types';
 
 export const NetworkPanel = memo(function NetworkPanel() {
+  const { t } = useTranslation('tactics');
   const [state, setState] = useState<TcpTuningState | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export const NetworkPanel = memo(function NetworkPanel() {
   if (loading && !state) {
     return (
       <div className="flex-1 flex items-center justify-center text-text-secondary text-xs font-mono">
-        LOADING...
+        {t('network.loading')}
       </div>
     );
   }
@@ -55,14 +57,14 @@ export const NetworkPanel = memo(function NetworkPanel() {
 
       <div className="piano-surface rounded p-3 flex flex-col gap-3">
         <p className="text-text-secondary text-xs font-mono uppercase tracking-widest">
-          TCP TUNING
+          {t('network.tcpTuning')}
         </p>
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-text-primary text-xs font-mono">NAGLE ALGORITHM</p>
+            <p className="text-text-primary text-xs font-mono">{t('network.nagle')}</p>
             <p className="text-text-secondary text-xs font-mono mt-0.5">
-              {state?.nagleDisabled ? 'DISABLED (optimal)' : 'ENABLED'}
+              {state?.nagleDisabled ? t('network.nagleDisabled') : t('network.nagleEnabled')}
             </p>
           </div>
           <button
@@ -74,15 +76,17 @@ export const NetworkPanel = memo(function NetworkPanel() {
                 : 'border-accent-500 text-accent-500 hover:bg-accent-500/10'
             }`}
           >
-            {state?.nagleDisabled ? 'ENABLE' : 'DISABLE'}
+            {state?.nagleDisabled ? t('network.enable') : t('network.disable')}
           </button>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-text-primary text-xs font-mono">DELAYED ACK</p>
+            <p className="text-text-primary text-xs font-mono">{t('network.delayedAck')}</p>
             <p className="text-text-secondary text-xs font-mono mt-0.5">
-              {state?.delayedAckDisabled ? 'DISABLED (optimal)' : 'ENABLED'}
+              {state?.delayedAckDisabled
+                ? t('network.delayedAckDisabled')
+                : t('network.delayedAckEnabled')}
             </p>
           </div>
           <button
@@ -96,7 +100,7 @@ export const NetworkPanel = memo(function NetworkPanel() {
                 : 'border-accent-500 text-accent-500 hover:bg-accent-500/10'
             }`}
           >
-            {state?.delayedAckDisabled ? 'ENABLE' : 'DISABLE'}
+            {state?.delayedAckDisabled ? t('network.enable') : t('network.disable')}
           </button>
         </div>
       </div>
@@ -107,14 +111,14 @@ export const NetworkPanel = memo(function NetworkPanel() {
           onClick={() => void run('apply_gaming_network_preset')}
           className="flex-1 px-3 py-2 text-xs font-mono rounded border border-accent-500 text-accent-500 hover:bg-accent-500/10 transition-colors"
         >
-          GAMING PRESET
+          {t('network.gamingPreset')}
         </button>
         <button
           type="button"
           onClick={() => void run('reset_network_defaults')}
           className="flex-1 px-3 py-2 text-xs font-mono rounded border border-border-subtle text-text-secondary hover:border-warning-500 hover:text-warning-500 transition-colors"
         >
-          RESET DEFAULTS
+          {t('network.resetDefaults')}
         </button>
       </div>
     </div>

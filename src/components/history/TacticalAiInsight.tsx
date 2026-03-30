@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TacticalAiInsightProps {
   insight: {
@@ -9,6 +10,8 @@ interface TacticalAiInsightProps {
 }
 
 export default function TacticalAiInsight({ insight }: TacticalAiInsightProps): React.ReactElement {
+  const { t } = useTranslation('logs');
+
   const getColorClasses = (type: string) => {
     switch (type) {
       case 'critical':
@@ -47,7 +50,7 @@ export default function TacticalAiInsight({ insight }: TacticalAiInsightProps): 
             type="button"
             className="px-6 py-2.5 bg-warning-500/10 border border-warning-500/30 text-warning-500 font-label text-[9px] tracking-[0.3em] font-black hover:bg-warning-500/20 transition-all"
           >
-            AI 分析レポートを表示
+            {t('history.aiReport')}
           </button>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePulseStore } from '../../stores/usePulseStore';
 import { KpiCard } from './KpiCard';
 import ProcessList from './ProcessList';
@@ -15,6 +16,7 @@ interface ProcessItem {
 }
 
 export default function MonitorWing(): React.ReactElement {
+  const { t } = useTranslation('logs');
   const snapshots = usePulseStore((s) => s.snapshots);
   const subscribe = usePulseStore((s) => s.subscribe);
   const unsubscribe = usePulseStore((s) => s.unsubscribe);
@@ -84,7 +86,7 @@ export default function MonitorWing(): React.ReactElement {
             <div className="flex items-center gap-4 mb-2">
               <div className="h-px w-12 bg-accent-500"></div>
               <span className="font-label text-accent-500 text-[10px] tracking-[0.3em] font-bold">
-                MONITOR_MODULE_02
+                {t('monitor.moduleLabel')}
               </span>
             </div>
             <h1 className="text-6xl font-black tracking-tighter text-text-primary mb-2">
@@ -94,33 +96,33 @@ export default function MonitorWing(): React.ReactElement {
               </span>
             </h1>
             <p className="font-label text-text-secondary/40 text-[10px] tracking-[0.2em] uppercase">
-              System Status: OPTIMAL {/* */} {/* Uptime: */}
+              {t('monitor.systemStatus')} {/* */} {/* Uptime: */}
               {Math.floor(uptimeSeconds / 3600)}H
             </p>
           </div>
           <div className="flex gap-4">
             <div className="relative group">
               <span className="absolute -top-5 right-0 font-label text-[8px] text-warning-500/70 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap tracking-widest">
-                [リフレッシュ中]
+                {t('monitor.refreshing')}
               </span>
               <button
                 type="button"
                 className="relative group px-6 py-2.5 border border-text-secondary/20 text-text-secondary/60 hover:text-warning-500 hover:border-warning-500/50 font-label text-[10px] tracking-widest uppercase transition-all bg-white/2 glass-panel"
               >
                 <div className="hud-btn-scan"></div>
-                リフレッシュ
+                {t('monitor.refresh')}
               </button>
             </div>
             <div className="relative group">
               <span className="absolute -top-5 right-0 font-label text-[8px] text-accent-500 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse whitespace-nowrap tracking-widest">
-                [最適化済み]
+                {t('monitor.optimized')}
               </span>
               <button
                 type="button"
                 className="relative px-8 py-2.5 bg-accent-500/10 border border-accent-500 text-accent-500 font-black text-[10px] tracking-widest uppercase transition-all hover:bg-accent-500/20 glass-panel"
               >
                 <div className="scanning-line animate-pulse opacity-20"></div>
-                最適化
+                {t('monitor.optimize')}
               </button>
             </div>
           </div>
@@ -134,7 +136,7 @@ export default function MonitorWing(): React.ReactElement {
           <div className="md:col-span-12">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <KpiCard
-                label="CPU Usage"
+                label={t('monitor.cpuUsage')}
                 value={`${cpuPct}`}
                 unit="%"
                 percent={cpuPct}
@@ -142,7 +144,7 @@ export default function MonitorWing(): React.ReactElement {
                 moduleId="CPU_001"
               />
               <KpiCard
-                label="Memory"
+                label={t('monitor.memoryUsage')}
                 value={`${memPct}`}
                 unit="%"
                 percent={memPct}
@@ -150,7 +152,7 @@ export default function MonitorWing(): React.ReactElement {
                 moduleId="MEM_001"
               />
               <KpiCard
-                label="Network"
+                label={t('monitor.networkUsage')}
                 value={`${netKb}`}
                 unit="KB/s"
                 percent={Math.min((netKb / 1000) * 100, 100)}
@@ -158,7 +160,7 @@ export default function MonitorWing(): React.ReactElement {
                 moduleId="NET_001"
               />
               <KpiCard
-                label="Temperature"
+                label={t('monitor.temperature')}
                 value={cpuTemp ? `${cpuTemp}` : 'N/A'}
                 unit="°C"
                 percent={cpuTemp ? Math.min((cpuTemp / 100) * 100, 100) : 0}

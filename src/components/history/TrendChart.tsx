@@ -1,4 +1,5 @@
 import { memo, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SessionListItem } from '../../types/v2';
 
 interface Props {
@@ -23,6 +24,7 @@ function buildPath(sessions: SessionListItem[], width: number, height: number): 
 }
 
 export const TrendChart = memo(function TrendChart({ sessions, range, onRangeChange }: Props) {
+  const { t } = useTranslation('logs');
   const W = 800;
   const H = 240;
 
@@ -77,7 +79,7 @@ export const TrendChart = memo(function TrendChart({ sessions, range, onRangeCha
       <div className="flex-1 relative mb-6">
         {filtered.length < 2 ? (
           <div className="flex items-center justify-center h-full text-text-secondary text-xs">
-            NOT ENOUGH DATA
+            {t('history.notEnoughData')}
           </div>
         ) : (
           <svg
@@ -118,7 +120,9 @@ export const TrendChart = memo(function TrendChart({ sessions, range, onRangeCha
       <div className="pt-4 border-t border-white/3 flex justify-between items-center bg-white/1 -mx-6 px-6">
         <div className="flex gap-12">
           <div>
-            <p className="text-[8px] text-text-muted uppercase tracking-[0.2em] mb-1.5">PEAK FPS</p>
+            <p className="text-[8px] text-text-muted uppercase tracking-[0.2em] mb-1.5">
+              {t('history.peakFps')}
+            </p>
             <p className="text-text-primary font-black text-2xl tracking-tighter">
               {peakFps.toFixed(0)}
               <span className="text-[12px] opacity-40 ml-1">FPS</span>
@@ -126,7 +130,7 @@ export const TrendChart = memo(function TrendChart({ sessions, range, onRangeCha
           </div>
           <div>
             <p className="text-[8px] text-text-muted uppercase tracking-[0.2em] mb-1.5">
-              AVG FRAME TIME
+              {t('history.avgFrameTime')}
             </p>
             <p className="text-text-primary font-black text-2xl tracking-tighter">
               {avgLatency.toFixed(1)}
@@ -135,10 +139,12 @@ export const TrendChart = memo(function TrendChart({ sessions, range, onRangeCha
           </div>
         </div>
         <div className="text-right">
-          <p className="text-[8px] text-text-muted uppercase tracking-[0.2em] mb-1.5">PROJECTION</p>
+          <p className="text-[8px] text-text-muted uppercase tracking-[0.2em] mb-1.5">
+            {t('history.projection')}
+          </p>
           <p className="text-accent-500 font-black text-xs uppercase tracking-[0.3em] flex items-center justify-end gap-3">
             <span className="w-1.5 h-1.5 bg-accent-500 rounded-full pulse-node" />
-            STABLE OUTLOOK
+            {t('history.stableOutlook')}
           </p>
         </div>
       </div>

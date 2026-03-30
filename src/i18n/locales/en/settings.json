@@ -1,0 +1,102 @@
+{
+  "title": "SETTINGS WING",
+  "appConfig": "APP CONFIG",
+  "system": "SYSTEM",
+  "restoreAll": "Restore All",
+  "restorePointAvailable": "[Restore point available]",
+  "saveSettings": "Save Settings",
+  "rootApproved": "[ROOT access approved]",
+  "general": {
+    "title": "General",
+    "apiSection": "API",
+    "apiKey": "Perplexity API Key",
+    "apiKeyEmpty": "API key is empty",
+    "apiKeyValid": "API key is valid (saved)",
+    "apiKeyTestFailed": "Test failed",
+    "saved": "Saved",
+    "saveFailed": "Save failed",
+    "startWithWindows": "Start with Windows",
+    "startWithWindowsDesc": "Launch NEXUS on system startup",
+    "minimizeToTray": "Minimize to Tray",
+    "minimizeToTrayDesc": "Keep running in system tray",
+    "applicationSection": "APPLICATION",
+    "language": "Language",
+    "languageJa": "日本語",
+    "languageEn": "English"
+  },
+  "apiKey": {
+    "title": "API Key Security",
+    "integrityCheck": "[ Integrity Check ]",
+    "systemAccessKey": "System Access Key",
+    "updateAuthKey": "Update Auth Key"
+  },
+  "ui": {
+    "title": "UI Customize",
+    "neonIntensity": "Neon Intensity",
+    "neonIntensityLabel": "Neon glow intensity",
+    "aiRendering": "AI Adaptive Rendering",
+    "autoPowerOpt": "Auto Power Optimization [Low Power]"
+  },
+  "hardware": {
+    "title": "Hardware Config Tree",
+    "integratedHub": "Integrated Hub V4.0"
+  },
+  "windows": {
+    "title": "Windows Settings",
+    "header": "WINDOWS / SETTINGS",
+    "power": "POWER",
+    "powerPlan": "Power Plan",
+    "balanced": "Balanced",
+    "highPerformance": "High Performance",
+    "powerSaver": "Power Saver",
+    "gaming": "GAMING",
+    "gameMode": "Game Mode",
+    "fullscreenOpt": "Fullscreen Opt.",
+    "gpuScheduling": "Hardware GPU Sched",
+    "visual": "VISUAL",
+    "visualEffects": "Visual Effects",
+    "bestPerformance": "Best Performance",
+    "bestAppearance": "Best Appearance",
+    "visualEffectsHint": "(Best Performance / Balanced / Best Appearance)"
+  },
+  "maintenance": {
+    "title": "MAINTENANCE",
+    "revertAll": "Revert all settings",
+    "revertAllDesc": "Revert all Windows settings changed by nexus",
+    "revertAllBtn": "↩ REVERT ALL",
+    "deleteAllData": "Delete app data",
+    "deleteAllDataDesc": "Permanently delete profiles, settings, and API keys",
+    "deleteAllDataBtn": "✕ DELETE ALL DATA",
+    "result": "RESULT",
+    "successCount": "success",
+    "failCount": "fail",
+    "revertConfirmTitle": "⚠ Confirm Settings Revert",
+    "revertConfirmDesc": "The following Windows settings changed by nexus will be reverted:",
+    "revertItems": {
+      "powerPlan": "Power plan",
+      "gameMode": "Game mode / Fullscreen optimization",
+      "gpuScheduling": "Hardware GPU scheduling",
+      "visualEffects": "Visual effects settings"
+    },
+    "deleteConfirmTitle": "⚠ Confirm Data Deletion",
+    "deleteConfirmDesc": "The following data will be permanently deleted:",
+    "deleteItems": {
+      "profiles": "Game profiles (profiles.json)",
+      "settings": "App settings (app_settings.json)",
+      "backup": "Windows settings backup (winopt_backup.json)",
+      "apiKey": "API key (keyring)"
+    },
+    "irreversible": "⚠ This action cannot be undone"
+  },
+  "advisor": {
+    "title": "SETTINGS OPTIMIZATION ADVISOR",
+    "optimizationScore": "OPTIMIZATION SCORE",
+    "hardwareSummary": "HARDWARE SUMMARY",
+    "warnings": "WARNINGS:",
+    "applyAllSafe": "APPLY ALL SAFE",
+    "analyzing": "ANALYZING SETTINGS...",
+    "noData": "NO DATA AVAILABLE",
+    "recommendations": "RECOMMENDATIONS",
+    "allOptimal": "ALL SETTINGS OPTIMAL"
+  }
+}

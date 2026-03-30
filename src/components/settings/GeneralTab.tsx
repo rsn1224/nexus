@@ -1,15 +1,18 @@
 import type React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useInitialData, useStateSync } from '../../hooks/useInitialData';
 import { testApiKey } from '../../services/perplexityService';
 import { useAppSettings } from '../../stores/useAppSettingsStore';
 import { ErrorBanner } from '../ui';
 import Button from '../ui/Button';
 import AppToggleSection from './AppToggleSection';
+import LanguageSection from './LanguageSection';
 
 const APP_VERSION = '0.1.0';
 
 export default function GeneralTab(): React.ReactElement {
+  const { t } = useTranslation(['settings', 'common']);
   const { settings, isLoading, error, fetchSettings, saveSettings, updateSettings } =
     useAppSettings();
 
@@ -32,9 +35,12 @@ export default function GeneralTab(): React.ReactElement {
     setIsSavingKey(true);
     try {
       await saveSettings({ ...settings, perplexityApiKey: apiKeyInput });
-      setTestResult({ valid: true, message: '保存しました' });
+      setTestResult({ valid: true, message: t('settings:general.saved') });
     } catch (err) {
-      setTestResult({ valid: false, message: err instanceof Error ? err.message : '保存に失敗' });
+      setTestResult({
+        valid: false,
+        message: err instanceof Error ? err.message : t('settings:general.saveFailed'),
+      });
     } finally {
       setIsSavingKey(false);
     }
@@ -42,7 +48,7 @@ export default function GeneralTab(): React.ReactElement {
 
   const handleTestApiKey = async (): Promise<void> => {
     if (!apiKeyInput.trim()) {
-      setTestResult({ valid: false, message: 'APIキーが空です' });
+      setTestResult({ valid: false, message: t('settings:general.apiKeyEmpty') });
       return;
     }
     setIsTestingKey(true);
@@ -57,12 +63,12 @@ export default function GeneralTab(): React.ReactElement {
       const result = await testApiKey();
       setTestResult({
         valid: result.ok,
-        message: result.ok ? 'APIキーは有効です（保存済み）' : result.error,
+        message: result.ok ? t('settings:general.apiKeyValid') : result.error,
       });
     } catch (err) {
       setTestResult({
         valid: false,
-        message: err instanceof Error ? err.message : 'テストに失敗しました',
+        message: err instanceof Error ? err.message : t('settings:general.apiKeyTestFailed'),
       });
     } finally {
       setIsTestingKey(false);
@@ -89,12 +95,14 @@ export default function GeneralTab(): React.ReactElement {
       <div className="glass-panel bloom-border p-6">
         <div className="flex items-center gap-3 mb-4">
           <span className="material-symbols-outlined text-white/30">api</span>
-          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">API</h3>
+          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">
+            {t('settings:general.apiSection')}
+          </h3>
         </div>
         <div className="space-y-4">
           <div>
             <label htmlFor="api-key" className="text-xs text-white/60 block mb-2">
-              Perplexity API Key
+              {t('settings:general.apiKey')}
             </label>
             <div className="flex items-center gap-2">
               <input
@@ -111,7 +119,7 @@ export default function GeneralTab(): React.ReactElement {
                 onClick={handleSaveApiKey}
                 disabled={isSavingKey || isLoading}
               >
-                {isSavingKey ? 'SAVING...' : 'SAVE'}
+                {isSavingKey ? t('common:saving') : t('common:save')}
               </Button>
               <Button
                 variant="secondary"
@@ -119,7 +127,7 @@ export default function GeneralTab(): React.ReactElement {
                 onClick={handleTestApiKey}
                 disabled={isTestingKey}
               >
-                {isTestingKey ? 'TESTING...' : 'TEST'}
+                {isTestingKey ? t('common:testing') : t('common:test')}
               </Button>
             </div>
           </div>
@@ -131,7 +139,7 @@ export default function GeneralTab(): React.ReactElement {
               <span
                 className={`text-xs font-data ${testResult.valid ? 'text-accent-500' : 'text-danger-500'}`}
               >
-                {testResult.valid ? 'VALID' : 'INVALID'}
+                {testResult.valid ? t('common:valid') : t('common:invalid')}
               </span>
               <span className="text-xs text-white/60 font-data">— {testResult.message}</span>
             </div>
@@ -148,19 +156,24 @@ export default function GeneralTab(): React.ReactElement {
         onToggleMinimizeToTray={handleToggleMinimizeToTray}
       />
 
+      {/* LANGUAGE Section */}
+      <LanguageSection />
+
       {/* ABOUT Section */}
       <div className="glass-panel bloom-border p-6">
         <div className="flex items-center gap-3 mb-4">
           <span className="material-symbols-outlined text-white/30">info</span>
-          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">ABOUT</h3>
+          <h3 className="text-[10px] tracking-widest text-white/60 uppercase">
+            {t('common:about')}
+          </h3>
         </div>
         <div className="space-y-3">
           <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-            <span className="text-xs text-white/60 font-data">Version</span>
+            <span className="text-xs text-white/60 font-data">{t('common:version')}</span>
             <span className="text-xs text-accent-500 font-data">{APP_VERSION}</span>
           </div>
           <div className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-            <span className="text-xs text-white/60 font-data">Built</span>
+            <span className="text-xs text-white/60 font-data">{t('common:built')}</span>
             <span className="text-xs text-accent-500 font-data">{buildDate}</span>
           </div>
         </div>

@@ -1,8 +1,10 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import Shell from './components/layout/Shell';
+import OnboardingWizard from './components/onboarding/OnboardingWizard';
 import { ErrorBoundary, LoadingFallback } from './components/ui';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useNavStore } from './stores/useNavStore';
+import { isOnboardingDone } from './stores/useOnboardingStore';
 import type { WingId } from './types';
 
 // ─── Lazy Wing imports ──────────────────────────────────────────────────────
@@ -22,6 +24,7 @@ const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
 
 export default function App(): React.ReactElement {
   const [activeWing, setActiveWing] = useState<WingId>('core');
+  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
 
   useKeyboardShortcuts();
 
@@ -35,7 +38,15 @@ export default function App(): React.ReactElement {
     setNavigate(handleWingChange);
   }, [setNavigate, handleWingChange]);
 
+  const handleOnboardingComplete = useCallback(() => {
+    setShowOnboarding(false);
+  }, []);
+
   const WingComponent = WING_COMPONENTS[activeWing];
+
+  if (showOnboarding) {
+    return <OnboardingWizard onComplete={handleOnboardingComplete} />;
+  }
 
   return (
     <Shell activeWing={activeWing} onWingChange={handleWingChange}>

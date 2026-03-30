@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface SessionRow {
   id: string;
@@ -19,6 +20,8 @@ export default function SessionTable({
   sessionData,
   getStatusColor,
 }: SessionTableProps): React.ReactElement {
+  const { t } = useTranslation('logs');
+
   return (
     <div className="glass-panel border border-white/10 relative overflow-hidden shadow-2xl">
       <div className="reflective-overlay absolute inset-0"></div>
@@ -26,17 +29,17 @@ export default function SessionTable({
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-xl font-bold flex items-center gap-3 tracking-tight">
             <span className="material-symbols-outlined text-accent-500">history</span>
-            セッション履歴
+            {t('history.sessionHistory')}
           </h2>
           <div className="flex items-center gap-4">
             <button
               type="button"
               className="font-label text-[9px] text-text-secondary/40 hover:text-accent-500 tracking-[0.2em] transition-colors uppercase font-bold"
             >
-              [ エクスポート ]
+              {t('history.export')}
             </button>
             <span className="px-3 py-1 bg-accent-500/10 border border-accent-500/30 text-accent-500 font-label text-[9px] tracking-[0.2em] font-bold">
-              {sessionData.length} 件
+              {t('history.sessions', { count: sessionData.length })}
             </span>
           </div>
         </div>
@@ -45,22 +48,22 @@ export default function SessionTable({
             <thead>
               <tr className="border-b border-white/10">
                 <th className="px-8 py-4 text-left font-label text-text-secondary/60 uppercase tracking-widest">
-                  セッションID
+                  {t('history.sessionId')}
                 </th>
                 <th className="px-8 py-4 text-left font-label text-text-secondary/60 uppercase tracking-widest">
-                  タイムスタンプ
+                  {t('history.timestamp')}
                 </th>
                 <th className="px-8 py-4 text-left font-label text-text-secondary/60 uppercase tracking-widest">
-                  実行時間
+                  {t('history.duration')}
                 </th>
                 <th className="px-8 py-4 text-left font-label text-text-secondary/60 uppercase tracking-widest">
-                  ステータス
+                  {t('history.status')}
                 </th>
                 <th className="px-8 py-4 text-left font-label text-text-secondary/60 uppercase tracking-widest">
-                  パフォーマンス
+                  {t('history.performance')}
                 </th>
                 <th className="px-8 py-4 text-left font-label text-text-secondary/60 uppercase tracking-widest">
-                  ノート
+                  {t('history.notes')}
                 </th>
               </tr>
             </thead>

@@ -1,5 +1,6 @@
 import type React from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import TelemetryBentoCard from './TelemetryBentoCard';
 
 interface Props {
@@ -31,24 +32,38 @@ const TelemetrySection = memo(function TelemetrySection({
   memUsed,
   memTotal,
 }: Props): React.ReactElement {
+  const { t } = useTranslation('core');
   const cpu = getThreshold(cpuUsage, 60, 80);
   const gpu = getThreshold(cpuTemp, 70, 80);
   const memPct = (parseFloat(memUsed) / parseFloat(memTotal)) * 100;
+
+  const cpuStatus =
+    cpuUsage > 80
+      ? t('telemetry.highLoad')
+      : cpuUsage > 60
+        ? t('telemetry.moderate')
+        : t('telemetry.optimal');
+  const gpuStatus =
+    cpuTemp > 80
+      ? t('telemetry.overheat')
+      : cpuTemp > 70
+        ? t('telemetry.warm')
+        : t('telemetry.healthy');
 
   return (
     <div className="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-6">
       <div className="glass-panel p-6 border-l-4 border-accent-500 hover:bg-accent-500/10 transition-all duration-500 relative">
         <TelemetryBentoCard
           icon="memory"
-          category="Processor"
-          title="CPU LOAD"
+          category={t('telemetry.processor')}
+          title={t('telemetry.cpuLoad')}
           value={cpuUsage.toFixed(0)}
           unit="%"
           barPercent={cpuUsage}
           barColor={cpu.barColor}
           glowClass={cpu.glowClass}
           detail="CORE_01: 4.2GHz"
-          status={cpuUsage > 80 ? 'HIGH LOAD' : cpuUsage > 60 ? 'MODERATE' : 'OPTIMAL'}
+          status={cpuStatus}
           statusColor={cpu.statusColor}
         />
       </div>
@@ -56,15 +71,15 @@ const TelemetrySection = memo(function TelemetrySection({
       <div className="glass-panel p-6 border-l-4 border-transparent hover:border-info-500/60 hover:bg-info-500/10 transition-all duration-500 relative">
         <TelemetryBentoCard
           icon="device_thermostat"
-          category="Graphics"
-          title="GPU TEMP"
+          category={t('telemetry.graphics')}
+          title={t('telemetry.gpuTemp')}
           value={cpuTemp.toFixed(0)}
           unit="C"
           barPercent={cpuTemp}
           barColor={gpu.barColor}
           glowClass={gpu.glowClass}
           detail="GPU_01: 1.8GHz"
-          status={cpuTemp > 80 ? 'OVERHEAT' : cpuTemp > 70 ? 'WARM' : 'HEALTHY'}
+          status={gpuStatus}
           statusColor={gpu.statusColor}
         />
       </div>
@@ -72,15 +87,15 @@ const TelemetrySection = memo(function TelemetrySection({
       <div className="glass-panel p-6 border-l-4 border-transparent hover:border-info-500/60 hover:bg-info-500/10 transition-all duration-500 relative">
         <TelemetryBentoCard
           icon="storage"
-          category="Memory"
-          title="RAM USAGE"
+          category={t('telemetry.memory')}
+          title={t('telemetry.ramUsage')}
           value={memUsed}
           unit="GB"
           barPercent={memPct}
           barColor="bg-accent-500"
           glowClass="glow-green"
-          detail={`Total: ${memTotal}GB`}
-          status="HEALTHY"
+          detail={`${t('telemetry.total')}: ${memTotal}GB`}
+          status={t('telemetry.healthy')}
           statusColor="text-accent-500"
         />
       </div>

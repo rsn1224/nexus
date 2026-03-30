@@ -1,5 +1,6 @@
 import type React from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface RingCoreProps {
   score: number;
@@ -10,8 +11,11 @@ interface RingCoreProps {
 const RingCore = memo(function RingCore({
   score,
   loading,
-  statusLabel = 'OPTIMAL',
+  statusLabel,
 }: RingCoreProps): React.ReactElement {
+  const { t } = useTranslation('core');
+  const label = statusLabel ?? t('dashboard.optimal');
+
   return (
     <div className="flex flex-col items-center justify-center py-10 relative overflow-hidden">
       {/* Background Ring */}
@@ -26,7 +30,7 @@ const RingCore = memo(function RingCore({
       {/* Core Content */}
       <div className="relative z-10 flex flex-col items-center">
         <div className="text-[10px] md:text-xs tracking-[0.3em] text-text-secondary uppercase mb-2">
-          Power Core
+          {t('dashboard.powerCore')}
         </div>
 
         {loading ? (
@@ -38,7 +42,7 @@ const RingCore = memo(function RingCore({
         )}
 
         <div className="text-[8px] md:text-[10px] bg-accent-500/10 text-accent-500 px-2 py-0.5 mt-2 rounded-full uppercase">
-          {statusLabel}
+          {label}
         </div>
       </div>
     </div>

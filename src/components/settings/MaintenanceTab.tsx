@@ -1,12 +1,14 @@
 import { invoke } from '@tauri-apps/api/core';
 import type React from 'react';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import log from '../../lib/logger';
 import type { RevertAllResult, RevertItem } from '../../types';
 import Button from '../ui/Button';
 import Modal from '../ui/Modal';
 
 export default function MaintenanceTab(): React.ReactElement {
+  const { t } = useTranslation(['settings', 'common']);
   const [isReverting, setIsReverting] = useState(false);
   const [isCleaning, setIsCleaning] = useState(false);
   const [revertResult, setRevertResult] = useState<RevertAllResult | null>(null);
@@ -49,13 +51,15 @@ export default function MaintenanceTab(): React.ReactElement {
   return (
     <>
       <div className="bg-base-800 border border-border-subtle rounded-lg p-3">
-        <div className="text-xs text-text-muted mb-2">MAINTENANCE</div>
+        <div className="text-xs text-text-muted mb-2">{t('settings:maintenance.title')}</div>
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs text-text-secondary">全設定リバート</div>
+              <div className="text-xs text-text-secondary">
+                {t('settings:maintenance.revertAll')}
+              </div>
               <div className="text-xs text-text-muted">
-                nexus が変更した Windows 設定を全て元に戻します
+                {t('settings:maintenance.revertAllDesc')}
               </div>
             </div>
             <Button
@@ -65,7 +69,7 @@ export default function MaintenanceTab(): React.ReactElement {
               disabled={isReverting}
               loading={isReverting}
             >
-              ↩ REVERT ALL
+              {t('settings:maintenance.revertAllBtn')}
             </Button>
           </div>
 
@@ -73,9 +77,11 @@ export default function MaintenanceTab(): React.ReactElement {
 
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-xs text-danger-500">アプリデータ削除</div>
+              <div className="text-xs text-danger-500">
+                {t('settings:maintenance.deleteAllData')}
+              </div>
               <div className="text-xs text-text-muted">
-                プロファイル・設定・API キーを完全に削除します
+                {t('settings:maintenance.deleteAllDataDesc')}
               </div>
             </div>
             <Button
@@ -85,7 +91,7 @@ export default function MaintenanceTab(): React.ReactElement {
               disabled={isCleaning}
               loading={isCleaning}
             >
-              ✕ DELETE ALL DATA
+              {t('settings:maintenance.deleteAllDataBtn')}
             </Button>
           </div>
         </div>
@@ -93,7 +99,9 @@ export default function MaintenanceTab(): React.ReactElement {
         {revertResult && (
           <div className="mt-3 border-t border-border-subtle pt-3">
             <div className="text-xs text-text-muted mb-1">
-              RESULT: {revertResult.successCount} 成功 / {revertResult.failCount} 失敗
+              {t('settings:maintenance.result')}: {revertResult.successCount}{' '}
+              {t('settings:maintenance.successCount')} / {revertResult.failCount}{' '}
+              {t('settings:maintenance.failCount')}
             </div>
             {revertResult.items.map((item) => (
               <div
@@ -115,26 +123,26 @@ export default function MaintenanceTab(): React.ReactElement {
       <Modal
         isOpen={showRevertConfirm}
         onClose={() => setShowRevertConfirm(false)}
-        title="⚠ 設定リバートの確認"
+        title={t('settings:maintenance.revertConfirmTitle')}
         size="md"
       >
         <div className="space-y-3">
           <div className="text-xs text-text-primary">
-            nexus が変更した以下の Windows 設定を元に戻します：
+            {t('settings:maintenance.revertConfirmDesc')}
           </div>
           <ul className="list-disc list-inside space-y-1 text-xs text-text-secondary">
-            <li>電源プラン</li>
-            <li>ゲームモード / フルスクリーン最適化</li>
-            <li>ハードウェア GPU スケジューリング</li>
-            <li>視覚効果設定</li>
+            <li>{t('settings:maintenance.revertItems.powerPlan')}</li>
+            <li>{t('settings:maintenance.revertItems.gameMode')}</li>
+            <li>{t('settings:maintenance.revertItems.gpuScheduling')}</li>
+            <li>{t('settings:maintenance.revertItems.visualEffects')}</li>
           </ul>
         </div>
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="secondary" size="sm" onClick={() => setShowRevertConfirm(false)}>
-            CANCEL
+            {t('common:cancel')}
           </Button>
           <Button variant="secondary" size="sm" onClick={handleRevertConfirm} loading={isReverting}>
-            ↩ REVERT ALL
+            {t('settings:maintenance.revertAllBtn')}
           </Button>
         </div>
       </Modal>
@@ -142,25 +150,27 @@ export default function MaintenanceTab(): React.ReactElement {
       <Modal
         isOpen={showCleanupConfirm}
         onClose={() => setShowCleanupConfirm(false)}
-        title="⚠ データ削除の確認"
+        title={t('settings:maintenance.deleteConfirmTitle')}
         size="md"
       >
         <div className="space-y-3">
-          <div className="text-xs text-text-primary">以下のデータが完全に削除されます：</div>
+          <div className="text-xs text-text-primary">
+            {t('settings:maintenance.deleteConfirmDesc')}
+          </div>
           <ul className="list-disc list-inside space-y-1 text-xs text-text-secondary">
-            <li>ゲームプロファイル (profiles.json)</li>
-            <li>アプリ設定 (app_settings.json)</li>
-            <li>Windows 設定バックアップ (winopt_backup.json)</li>
-            <li>API キー (keyring)</li>
+            <li>{t('settings:maintenance.deleteItems.profiles')}</li>
+            <li>{t('settings:maintenance.deleteItems.settings')}</li>
+            <li>{t('settings:maintenance.deleteItems.backup')}</li>
+            <li>{t('settings:maintenance.deleteItems.apiKey')}</li>
           </ul>
-          <div className="text-xs text-danger-500">⚠ この操作は元に戻せません</div>
+          <div className="text-xs text-danger-500">{t('settings:maintenance.irreversible')}</div>
         </div>
         <div className="flex justify-end gap-2 mt-4">
           <Button variant="secondary" size="sm" onClick={() => setShowCleanupConfirm(false)}>
-            CANCEL
+            {t('common:cancel')}
           </Button>
           <Button variant="danger" size="sm" onClick={handleCleanupConfirm} loading={isCleaning}>
-            DELETE ALL DATA
+            {t('settings:maintenance.deleteAllDataBtn')}
           </Button>
         </div>
       </Modal>

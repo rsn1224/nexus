@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { AppliedAction } from '../../types/v2';
 
 interface Props {
@@ -6,12 +7,14 @@ interface Props {
 }
 
 export const AppliedBadgeRow = memo(function AppliedBadgeRow({ appliedActions }: Props) {
+  const { t } = useTranslation('core');
+
   if (appliedActions.length === 0) return null;
 
   return (
     <div className="flex items-center gap-2 px-4 h-10 shrink-0 border-t border-border-subtle overflow-x-auto">
       <span className="text-text-secondary text-xs font-mono uppercase tracking-widest shrink-0">
-        APPLIED:
+        {t('dashboard.applied')}
       </span>
       {appliedActions.map((action) => (
         <span

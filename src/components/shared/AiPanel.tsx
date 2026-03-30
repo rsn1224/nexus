@@ -1,5 +1,6 @@
 import type React from 'react';
 import { lazy, Suspense, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { LocalSuggestion, SuggestionLevel } from '../../lib/localAi';
 
 const ReactMarkdown = lazy(() => import('react-markdown'));
@@ -40,10 +41,9 @@ function SuggestionMessage({ message }: { message: string }): React.ReactElement
   );
 }
 
-export default function AiPanel({
-  suggestions,
-  title = 'AI \u30a2\u30c9\u30d0\u30a4\u30b9',
-}: AiPanelProps): React.ReactElement {
+export default function AiPanel({ suggestions, title }: AiPanelProps): React.ReactElement {
+  const { t } = useTranslation();
+  const displayTitle = title ?? t('aiAdvice');
   const hasAlert = suggestions.some((s) => s.level === 'warn' || s.level === 'critical');
 
   const [expanded, setExpanded] = useState(hasAlert);
@@ -62,7 +62,7 @@ export default function AiPanel({
       >
         <div className="flex items-center gap-[6px]">
           <span className={`text-xs ${LEVEL_COLOR[topLevel]}`}>{LEVEL_ICON[topLevel]}</span>
-          <span className="text-xs font-semibold text-text-muted">{title}</span>
+          <span className="text-xs font-semibold text-text-muted">{displayTitle}</span>
         </div>
         <span className="text-xs text-text-muted">{expanded ? '\u25b2' : '\u25bc'}</span>
       </button>

@@ -38,42 +38,38 @@ describe('SettingsWing', () => {
   it('renders main sections correctly', () => {
     render(<SettingsWing />);
 
-    // Check main header
-    expect(screen.getByText('SETTINGS')).toBeInTheDocument();
-    expect(screen.getByText('WING')).toBeInTheDocument();
+    // Check main header (i18n key: "title")
+    expect(screen.getByText('title')).toBeInTheDocument();
 
-    // Check configuration module
+    // Check configuration module (kept as-is, not translated)
     expect(screen.getByText('CONFIGURATION_MODULE_07')).toBeInTheDocument();
 
-    // Check tabs
-    expect(screen.getByText('APP CONFIG')).toBeInTheDocument();
-    expect(screen.getByText('アプリ設定')).toBeInTheDocument();
-    expect(screen.getByText('SYSTEM')).toBeInTheDocument();
-    expect(screen.getByText('Windows 設定')).toBeInTheDocument();
+    // Check tabs (i18n keys)
+    expect(screen.getByText('appConfig')).toBeInTheDocument();
+    expect(screen.getByText('windows.title')).toBeInTheDocument();
   });
 
   it('renders UI customization section', () => {
     render(<SettingsWing />);
 
-    // Check UI customization elements
-    expect(screen.getByText('UI カスタマイズ')).toBeInTheDocument();
-    expect(screen.getByText('ネオン発光強度')).toBeInTheDocument();
-    // Check AI section exists - text is commented out
-    expect(screen.getByText('AI 適応レンダリング')).toBeInTheDocument();
-    expect(screen.getByText('自動電力最適化 [低電力]')).toBeInTheDocument();
+    // i18n keys for UI customization
+    expect(screen.getByText('ui.title')).toBeInTheDocument();
+    expect(screen.getByText('ui.neonIntensityLabel')).toBeInTheDocument();
+    expect(screen.getByText('ui.aiRendering')).toBeInTheDocument();
+    expect(screen.getByText('ui.autoPowerOpt')).toBeInTheDocument();
   });
 
   it('displays API key section', () => {
     render(<SettingsWing />);
 
-    // Check API key header
-    expect(screen.getByText('System Access Key')).toBeInTheDocument();
+    // i18n key for system access key
+    expect(screen.getByText('apiKey.systemAccessKey')).toBeInTheDocument();
 
     // Check masked key input
     const keyInput = screen.getByDisplayValue('••••••••••••••••');
     expect(keyInput).toBeInTheDocument();
 
-    // Check update button exists - find any button in the component
+    // Check buttons exist
     const buttons = screen.getAllByRole('button');
     expect(buttons.length).toBeGreaterThan(0);
   });
@@ -81,31 +77,30 @@ describe('SettingsWing', () => {
   it('renders hardware system tree', () => {
     render(<SettingsWing />);
 
-    // Check hardware elements
-    expect(screen.getByText('ハードウェア構成ツリー')).toBeInTheDocument();
+    // i18n key for hardware title
+    expect(screen.getByText('hardware.title')).toBeInTheDocument();
+    // Technical labels are kept as-is
     expect(screen.getByText('CORE_PROC_01')).toBeInTheDocument();
     expect(screen.getByText('MEMORY_ARRAY')).toBeInTheDocument();
     expect(screen.getByText('RENDER_ENGINE')).toBeInTheDocument();
     expect(screen.getByText('STORAGE_VOL')).toBeInTheDocument();
-    expect(screen.getByText('統合ハブ V4.0')).toBeInTheDocument();
+    expect(screen.getByText('hardware.integratedHub')).toBeInTheDocument();
   });
 
   it('renders action buttons', () => {
     render(<SettingsWing />);
 
-    // Check action buttons
-    expect(screen.getByText('全て元に戻す')).toBeInTheDocument();
-    expect(screen.getByText('設定を保存')).toBeInTheDocument();
+    // i18n keys for action buttons
+    expect(screen.getByText('restoreAll')).toBeInTheDocument();
+    expect(screen.getByText('saveSettings')).toBeInTheDocument();
   });
 
   it('displays neon intensity slider', () => {
     render(<SettingsWing />);
 
-    // Find the slider input by id
     const slider = screen.getByRole('slider');
     expect(slider).toBeInTheDocument();
 
-    // Check initial value - text is split between number and % symbol
     expect(screen.getByText('88')).toBeInTheDocument();
     expect(screen.getByText('%')).toBeInTheDocument();
   });
@@ -113,7 +108,6 @@ describe('SettingsWing', () => {
   it('displays toggle switches', () => {
     render(<SettingsWing />);
 
-    // Check toggle switches exist by role
     const toggleSwitches = screen.getAllByRole('switch');
     expect(toggleSwitches.length).toBe(2);
   });
@@ -130,8 +124,7 @@ describe('SettingsWing', () => {
 
     render(<SettingsWing />);
 
-    // Error should be handled (may not display directly in new UI)
-    expect(screen.getByText('SETTINGS')).toBeInTheDocument();
+    expect(screen.getByText('title')).toBeInTheDocument();
   });
 
   it('displays loading state correctly', () => {
@@ -147,7 +140,6 @@ describe('SettingsWing', () => {
     render(<SettingsWing />);
 
     // loading 時もタブバーは表示される
-    expect(screen.getByText('APP CONFIG')).toBeInTheDocument();
-    expect(screen.getByText('アプリ設定')).toBeInTheDocument();
+    expect(screen.getByText('appConfig')).toBeInTheDocument();
   });
 });

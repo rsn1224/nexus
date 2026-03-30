@@ -57,16 +57,16 @@ function getRank(total: number): ReadinessRank {
   return 'NOT_READY';
 }
 
-export function getRankStyle(rank: ReadinessRank): { label: string; color: string } {
+export function getRankStyle(rank: ReadinessRank): { label: string; className: string } {
   switch (rank) {
     case 'READY':
-      return { label: 'GAME READY', color: 'var(--color-success-500)' };
+      return { label: 'GAME READY', className: 'text-success-500' };
     case 'GOOD':
-      return { label: 'GOOD', color: 'var(--color-accent-500)' };
+      return { label: 'GOOD', className: 'text-accent-500' };
     case 'FAIR':
-      return { label: 'FAIR', color: 'var(--color-accent-400)' };
+      return { label: 'FAIR', className: 'text-accent-400' };
     case 'NOT_READY':
-      return { label: 'NOT READY', color: 'var(--color-danger-500)' };
+      return { label: 'NOT READY', className: 'text-danger-500' };
     default:
       return assertNever(rank);
   }

@@ -1,9 +1,9 @@
-# DESIGN.md — nexus アプリケーション設計書 v3
+# DESIGN.md — nexus アプリケーション設計書 v4
 
 > **目的:** Claude Code / Cascade が参照することで、実装・レビュー時のブレをゼロにする。
 > 「どう見えるか」ではなく「どう実装するか」の粒度で書く。
 >
-> **最終更新:** 2026-03-19 (v3.0)
+> **最終更新:** 2026-03-30 (v4.0)
 > **旧バージョン:** `docs/archive/DESIGN_v1.md`
 
 ---
@@ -29,42 +29,36 @@
 ```
 src/
 ├── components/
-│   ├── home/         — ダッシュボード（HomeWing）
-│   ├── performance/  — CPU 優先度最適化（BoostWing）
-│   ├── games/        — ゲームランチャー（LauncherWing）
-│   ├── network/      — ネットワーク最適化（NetoptWing）
+│   ├── dashboard/    — ダッシュボード概要（DashboardWing）
+│   ├── gaming/       — ゲーム最適化（GamingWing）
+│   ├── monitor/      — システム監視（MonitorWing）
+│   ├── history/      — セッション履歴（HistoryWing）
 │   ├── settings/     — アプリ設定 + Windows 設定（SettingsWing）
-│   ├── hardware/     — CPU/GPU/RAM 監視（HardwareWing）
-│   ├── storage/      — ストレージ監視（StorageWing）
-│   ├── log/          — スクリプト実行ログ（LogWing）
-│   ├── layout/       — Shell, TitleBar
+│   ├── layout/       — Shell, Sidebar, BottomTabBar
 │   ├── shared/       — AiPanel, PerplexityPanel
+│   ├── onboarding/   — 初期セットアップウィザード
 │   └── ui/           — 共通コンポーネント
+├── wings/            — React.lazy コード分割バウンダリ（barrel re-export）
 ├── stores/           — Zustand ストア（状態管理 + set/get のみ）
-├── hooks/            — セレクターフック（stores/ から分離）
+├── hooks/            — セレクターフック + windowsSettingsHooks
 ├── lib/              — 純粋関数 + Tauri invoke ラッパー
 │   ├── gameReadiness/ — ゲームレディネススコア計算
 │   ├── ai/            — AI プロンプト生成
+│   ├── canvas/        — Canvas レンダラー
 │   ├── navigation.ts  — ナビゲーション定数 + buildBreadcrumbs
-│   ├── gameProfile.ts — プロファイル CRUD invoke
 │   └── ...            — その他ドメイン別ユーティリティ
-├── services/         — 外部 API クライアント
-└── types/            — 型定義（18 ドメイン別ファイル + re-export index.ts）
+├── services/         — 外部 API クライアント（perplexityService）
+└── types/            — 型定義（11 ドメイン別ファイル + v2系 + re-export index.ts）
 ```
 
 ### WingId 一覧
 
 ```typescript
-export type WingId =
-  | 'home'
-  | 'performance'
-  | 'games'
-  | 'network'
-  | 'settings'
-  | 'hardware'
-  | 'storage'
-  | 'log';
+// src/types/wing.ts — Single Source of Truth
+export type WingId = 'core' | 'arsenal' | 'tactics' | 'logs' | 'settings';
 ```
+
+> ⚠️ **既知の技術的負債:** WingId のコード名（core/arsenal/tactics/logs）はディレクトリ名（dashboard/gaming/monitor/history）と一致していない。Phase B で統一予定。
 
 ### App.tsx パターン（mountedWings 廃止済み）
 

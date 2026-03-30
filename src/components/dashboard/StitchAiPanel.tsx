@@ -1,5 +1,6 @@
 import type React from 'react';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface StitchAiPanelProps {
   suggestions: string[];
@@ -14,6 +15,7 @@ const StitchAiPanel = memo(function StitchAiPanel({
   onRollback,
   loading,
 }: StitchAiPanelProps): React.ReactElement {
+  const { t } = useTranslation('core');
   const currentTimestamp = new Date().toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit',
@@ -39,7 +41,7 @@ const StitchAiPanel = memo(function StitchAiPanel({
                 STITCH AI
               </h3>
               <div className="text-[10px] tracking-widest text-white/60 uppercase">
-                Active Liaison
+                {t('dashboard.activeLiaison')}
               </div>
             </div>
           </div>
@@ -48,7 +50,7 @@ const StitchAiPanel = memo(function StitchAiPanel({
           <div className="w-full md:w-2/3 p-8">
             {/* Timestamp */}
             <div className="text-[10px] font-data text-white/40 mb-3">
-              [{currentTimestamp}] SYSTEM ANALYSIS
+              [{currentTimestamp}] {t('dashboard.systemAnalysis')}
             </div>
 
             {/* Message */}
@@ -58,10 +60,12 @@ const StitchAiPanel = memo(function StitchAiPanel({
                     <span key={s}>
                       {i > 0 && ' '}
                       <span className="text-warning-500">{s}</span>
-                      {i < suggestions.length - 1 ? '.' : ' — recommended for optimal performance.'}
+                      {i < suggestions.length - 1
+                        ? '.'
+                        : ` ${t('dashboard.recommendedForOptimal')}`}
                     </span>
                   ))
-                : 'All systems nominal. No optimization suggestions at this time.'}
+                : t('dashboard.allNominal')}
             </div>
 
             {/* Action Buttons */}
@@ -72,7 +76,7 @@ const StitchAiPanel = memo(function StitchAiPanel({
                 disabled={loading}
                 className="px-4 py-2 bg-accent-500/20 text-accent-500 text-[10px] tracking-widest uppercase rounded-sm border border-accent-500/30 hover:bg-accent-500/30 transition-colors disabled:opacity-50"
               >
-                Apply Suggestion
+                {t('dashboard.applySuggestion')}
               </button>
               <button
                 type="button"
@@ -80,7 +84,7 @@ const StitchAiPanel = memo(function StitchAiPanel({
                 disabled={loading}
                 className="px-4 py-2 bg-white/5 text-white/60 text-[10px] tracking-widest uppercase rounded-sm border border-white/10 hover:bg-white/10 transition-colors disabled:opacity-50"
               >
-                Rollback
+                {t('dashboard.rollback')}
               </button>
             </div>
           </div>
@@ -94,15 +98,15 @@ const StitchAiPanel = memo(function StitchAiPanel({
           <div className="flex items-center gap-2 mb-4">
             <span className="material-symbols-outlined text-[20px] text-warning-500">warning</span>
             <div className="text-[10px] tracking-widest text-warning-500 uppercase">
-              Critical Alert
+              {t('dashboard.criticalAlert')}
             </div>
           </div>
 
           {/* Alert Content */}
           <div className="text-sm text-text-primary mb-6 leading-relaxed">
             {suggestions.length > 0
-              ? `${suggestions.length} optimization(s) pending. Apply now to improve system performance.`
-              : 'No critical alerts. System operating within normal parameters.'}
+              ? t('dashboard.optimizationsPending', { count: suggestions.length })
+              : t('dashboard.noAlerts')}
           </div>
 
           {/* Resolve Button */}
@@ -110,7 +114,7 @@ const StitchAiPanel = memo(function StitchAiPanel({
             type="button"
             className="w-full py-2 bg-warning-500 text-black font-black text-[10px] tracking-widest uppercase rounded-sm hover:brightness-110 transition-all"
           >
-            RESOLVE NOW
+            {t('dashboard.resolveNow')}
           </button>
         </div>
       </div>

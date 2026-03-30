@@ -1,0 +1,102 @@
+{
+  "title": "設定",
+  "appConfig": "アプリ設定",
+  "system": "システム",
+  "restoreAll": "全て元に戻す",
+  "restorePointAvailable": "[復元ポイント利用可能]",
+  "saveSettings": "設定を保存",
+  "rootApproved": "[ROOT権限承認済み]",
+  "general": {
+    "title": "一般",
+    "apiSection": "API",
+    "apiKey": "Perplexity API Key",
+    "apiKeyEmpty": "APIキーが空です",
+    "apiKeyValid": "APIキーは有効です（保存済み）",
+    "apiKeyTestFailed": "テストに失敗しました",
+    "saved": "保存しました",
+    "saveFailed": "保存に失敗",
+    "startWithWindows": "Windows と一緒に起動",
+    "startWithWindowsDesc": "システム起動時に NEXUS を起動する",
+    "minimizeToTray": "トレイに最小化",
+    "minimizeToTrayDesc": "システムトレイで動作を継続する",
+    "applicationSection": "アプリケーション",
+    "language": "言語",
+    "languageJa": "日本語",
+    "languageEn": "English"
+  },
+  "apiKey": {
+    "title": "API キー設定",
+    "integrityCheck": "[ 整合性チェック ]",
+    "systemAccessKey": "System Access Key",
+    "updateAuthKey": "認証キーを更新"
+  },
+  "ui": {
+    "title": "UI カスタマイズ",
+    "neonIntensity": "Neon Intensity",
+    "neonIntensityLabel": "ネオン発光強度",
+    "aiRendering": "AI 適応レンダリング",
+    "autoPowerOpt": "自動電力最適化 [低電力]"
+  },
+  "hardware": {
+    "title": "ハードウェア構成ツリー",
+    "integratedHub": "統合ハブ V4.0"
+  },
+  "windows": {
+    "title": "Windows 設定",
+    "header": "WINDOWS / 設定",
+    "power": "電源",
+    "powerPlan": "電源プラン",
+    "balanced": "バランス",
+    "highPerformance": "高パフォーマンス",
+    "powerSaver": "省電力",
+    "gaming": "ゲーミング",
+    "gameMode": "ゲームモード",
+    "fullscreenOpt": "フルスクリーン最適化",
+    "gpuScheduling": "ハードウェア GPU スケジューリング",
+    "visual": "ビジュアル",
+    "visualEffects": "視覚効果",
+    "bestPerformance": "最高のパフォーマンス",
+    "bestAppearance": "最高の外観",
+    "visualEffectsHint": "（最高パフォーマンス / バランス / 最高外観）"
+  },
+  "maintenance": {
+    "title": "メンテナンス",
+    "revertAll": "全設定リバート",
+    "revertAllDesc": "nexus が変更した Windows 設定を全て元に戻します",
+    "revertAllBtn": "↩ 全て元に戻す",
+    "deleteAllData": "アプリデータ削除",
+    "deleteAllDataDesc": "プロファイル・設定・API キーを完全に削除します",
+    "deleteAllDataBtn": "✕ 全データ削除",
+    "result": "結果",
+    "successCount": "成功",
+    "failCount": "失敗",
+    "revertConfirmTitle": "⚠ 設定リバートの確認",
+    "revertConfirmDesc": "nexus が変更した以下の Windows 設定を元に戻します：",
+    "revertItems": {
+      "powerPlan": "電源プラン",
+      "gameMode": "ゲームモード / フルスクリーン最適化",
+      "gpuScheduling": "ハードウェア GPU スケジューリング",
+      "visualEffects": "視覚効果設定"
+    },
+    "deleteConfirmTitle": "⚠ データ削除の確認",
+    "deleteConfirmDesc": "以下のデータが完全に削除されます：",
+    "deleteItems": {
+      "profiles": "ゲームプロファイル (profiles.json)",
+      "settings": "アプリ設定 (app_settings.json)",
+      "backup": "Windows 設定バックアップ (winopt_backup.json)",
+      "apiKey": "API キー (keyring)"
+    },
+    "irreversible": "⚠ この操作は元に戻せません"
+  },
+  "advisor": {
+    "title": "設定最適化アドバイザー",
+    "optimizationScore": "最適化スコア",
+    "hardwareSummary": "ハードウェア概要",
+    "warnings": "警告:",
+    "applyAllSafe": "安全な設定を全て適用",
+    "analyzing": "設定を分析中...",
+    "noData": "データがありません",
+    "recommendations": "推奨事項",
+    "allOptimal": "全ての設定が最適です"
+  }
+}

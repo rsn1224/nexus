@@ -1,4 +1,5 @@
 ﻿import type React from 'react';
+import { useTranslation } from 'react-i18next';
 import { progressWidth } from '../../lib/styles';
 import type { AdvisorResult } from '../../types';
 import Button from '../ui/Button';
@@ -20,15 +21,18 @@ export default function AdvisorScoreCard({
   onApplyAllSafe,
   onRefresh,
 }: AdvisorScoreCardProps): React.ReactElement {
+  const { t } = useTranslation(['settings', 'common']);
   const safeCount = advisorResult.recommendations.filter((r) => r.safetyLevel === 'safe').length;
 
   return (
     <div className="mb-4">
-      <h3 className="text-text-primary text-[14px] mb-2">SETTINGS OPTIMIZATION ADVISOR</h3>
+      <h3 className="text-text-primary text-[14px] mb-2">{t('settings:advisor.title')}</h3>
 
       <div className="mb-3">
         <div className="flex justify-between items-center mb-1">
-          <span className="text-text-secondary text-xs">OPTIMIZATION SCORE</span>
+          <span className="text-text-secondary text-xs">
+            {t('settings:advisor.optimizationScore')}
+          </span>
           <span className={`${scoreTextClass(advisorResult.optimizationScore)} text-xs font-bold`}>
             {advisorResult.optimizationScore}%
           </span>
@@ -48,13 +52,15 @@ export default function AdvisorScoreCard({
       </div>
 
       <div className="p-2 bg-base-800 rounded-lg mb-3">
-        <div className="text-text-secondary text-xs mb-1">HARDWARE SUMMARY</div>
+        <div className="text-text-secondary text-xs mb-1">
+          {t('settings:advisor.hardwareSummary')}
+        </div>
         <div className="text-text-primary text-xs">{advisorResult.hardwareSummary}</div>
       </div>
 
       {advisorResult.warnings.length > 0 && (
         <div className="mb-3">
-          <div className="text-accent-500 text-xs mb-1">WARNINGS:</div>
+          <div className="text-accent-500 text-xs mb-1">{t('settings:advisor.warnings')}</div>
           {advisorResult.warnings.map((warning) => (
             <div
               key={`warning-${warning.substring(0, 30)}`}
@@ -73,10 +79,10 @@ export default function AdvisorScoreCard({
           onClick={onApplyAllSafe}
           disabled={safeCount === 0}
         >
-          APPLY ALL SAFE ({safeCount})
+          {t('settings:advisor.applyAllSafe')} ({safeCount})
         </Button>
         <Button variant="ghost" size="sm" onClick={onRefresh}>
-          REFRESH
+          {t('common:refresh')}
         </Button>
       </div>
     </div>

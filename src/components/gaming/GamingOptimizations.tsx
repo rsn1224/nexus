@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ToggleV2 } from '../ui/ToggleV2';
 
 interface OptimizationToggle {
@@ -63,11 +64,15 @@ export default function GamingOptimizations({
   optimizations,
   onToggleOptimization,
 }: GamingOptimizationsProps): React.ReactElement {
+  const { t } = useTranslation('tactics');
+
   return (
     <div className="space-y-4">
       <div className="flex items-center gap-4 mb-6">
         <span className="material-symbols-outlined text-accent-500 text-2xl">tune</span>
-        <h2 className="text-xl font-bold text-text-primary tracking-tight">最適化オプション</h2>
+        <h2 className="text-xl font-bold text-text-primary tracking-tight">
+          {t('gaming.optimizationOptions')}
+        </h2>
       </div>
       {optimizations.map((opt) => (
         <OptimizationToggleItem

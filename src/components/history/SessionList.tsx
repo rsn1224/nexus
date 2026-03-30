@@ -1,4 +1,5 @@
 import { memo, useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SessionListItem } from '../../types/v2';
 
 interface Props {
@@ -16,6 +17,7 @@ export const SessionList = memo(function SessionList({
   onDelete,
   loading,
 }: Props) {
+  const { t } = useTranslation('logs');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const deleteTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -37,7 +39,7 @@ export const SessionList = memo(function SessionList({
   if (loading && sessions.length === 0) {
     return (
       <div className="glass-panel p-8 flex items-center justify-center text-text-secondary text-xs">
-        LOADING...
+        {t('history.loading')}
       </div>
     );
   }
@@ -45,8 +47,8 @@ export const SessionList = memo(function SessionList({
   if (sessions.length === 0) {
     return (
       <div className="glass-panel p-8 flex flex-col items-center justify-center gap-2">
-        <span className="text-text-secondary text-xs uppercase">NO SESSIONS</span>
-        <span className="text-text-muted text-xs">プレイ後にセッションが記録されます</span>
+        <span className="text-text-secondary text-xs uppercase">{t('history.noSessions')}</span>
+        <span className="text-text-muted text-xs">{t('history.noSessionsDesc')}</span>
       </div>
     );
   }
@@ -92,6 +94,8 @@ export const SessionList = memo(function SessionList({
                 confirmDelete={confirmDelete === s.id}
                 onSelect={onSelect}
                 onDeleteClick={handleDeleteClick}
+                deleteLabel={t('history.delete')}
+                confirmLabel={t('history.confirmDelete')}
               />
             ))}
           </tbody>
@@ -109,12 +113,16 @@ const SessionRow = memo(function SessionRow({
   confirmDelete,
   onSelect,
   onDeleteClick,
+  deleteLabel,
+  confirmLabel,
 }: {
   session: SessionListItem;
   isSelected: boolean;
   confirmDelete: boolean;
   onSelect: (id: string) => void;
   onDeleteClick: (id: string, e: React.MouseEvent) => void;
+  deleteLabel: string;
+  confirmLabel: string;
 }) {
   const start = new Date(session.startedAt);
   const dateStr = `${start.getFullYear()}.${String(start.getMonth() + 1).padStart(2, '0')}.${String(start.getDate()).padStart(2, '0')}`;
@@ -161,7 +169,7 @@ const SessionRow = memo(function SessionRow({
               : 'border-white/10 text-text-muted hover:border-danger-500/40 hover:text-danger-500'
           }`}
         >
-          {confirmDelete ? 'CONFIRM?' : 'DELETE'}
+          {confirmDelete ? confirmLabel : deleteLabel}
         </button>
       </td>
     </tr>

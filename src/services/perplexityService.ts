@@ -1,10 +1,21 @@
 import { invoke } from '@tauri-apps/api/core';
 import log from '../lib/logger';
-import type { AiBottleneckResponse } from '../types';
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
+
+export interface AiRecommendation {
+  title: string;
+  description: string;
+  applicableInNexus: boolean;
+  action: string | null;
+}
+
+export interface AiBottleneckResponse {
+  analysis: string;
+  recommendations: AiRecommendation[];
+}
 
 export interface AiBottleneckRequest {
   gameName: string;

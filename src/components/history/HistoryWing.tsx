@@ -1,5 +1,6 @@
 import type React from 'react';
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistoryActions } from '../../stores/useHistoryStore';
 import SessionTable from './SessionTable';
 import TacticalAiInsight from './TacticalAiInsight';
@@ -16,6 +17,7 @@ interface SessionRow {
 }
 
 export default function HistoryWing(): React.ReactElement {
+  const { t } = useTranslation('logs');
   const { fetchSessions } = useHistoryActions();
 
   useEffect(() => {
@@ -105,7 +107,7 @@ export default function HistoryWing(): React.ReactElement {
             <div className="flex items-center gap-4 mb-2">
               <div className="h-px w-12 bg-accent-500"></div>
               <span className="font-label text-accent-500 text-[10px] tracking-[0.3em] font-bold">
-                LOGS_MODULE_05
+                {t('history.moduleLabel')}
               </span>
             </div>
             <h1 className="text-6xl font-black tracking-tighter text-text-primary mb-2">
@@ -115,32 +117,32 @@ export default function HistoryWing(): React.ReactElement {
               </span>
             </h1>
             <p className="font-label text-text-secondary/40 text-[10px] tracking-[0.2em] uppercase">
-              Total Sessions: {sessionData.length} {/* */} {/* Last Sync: JUST_NOW */}
+              {t('history.totalSessions', { count: sessionData.length })}
             </p>
           </div>
           <div className="flex gap-4">
             <div className="relative group">
               <span className="absolute -top-5 right-0 font-label text-[8px] text-warning-500/70 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap tracking-widest">
-                [同期中]
+                {t('history.syncing')}
               </span>
               <button
                 type="button"
                 className="relative group px-6 py-2.5 border border-text-secondary/20 text-text-secondary/60 hover:text-warning-500 hover:border-warning-500/50 font-label text-[10px] tracking-widest uppercase transition-all bg-white/2 glass-panel"
               >
                 <div className="hud-btn-scan"></div>
-                同期
+                {t('history.sync')}
               </button>
             </div>
             <div className="relative group">
               <span className="absolute -top-5 right-0 font-label text-[8px] text-accent-500 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse whitespace-nowrap tracking-widest">
-                [クリア可能]
+                {t('history.clearable')}
               </span>
               <button
                 type="button"
                 className="relative px-8 py-2.5 bg-accent-500/10 border border-accent-500 text-accent-500 font-black text-[10px] tracking-widest uppercase transition-all hover:bg-accent-500/20 glass-panel"
               >
                 <div className="scanning-line animate-pulse opacity-20"></div>
-                クリア
+                {t('history.clear')}
               </button>
             </div>
           </div>
@@ -158,7 +160,7 @@ export default function HistoryWing(): React.ReactElement {
                 <div className="flex items-center gap-4 mb-10">
                   <span className="material-symbols-outlined text-accent-500">trending_up</span>
                   <h2 className="text-xl font-bold text-text-primary tracking-tight">
-                    パフォーマンストレンド
+                    {t('history.performanceTrend')}
                   </h2>
                 </div>
                 <TrendChart sessions={[]} range="7d" onRangeChange={() => {}} />

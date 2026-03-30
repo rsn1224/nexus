@@ -1,9 +1,11 @@
 import type React from 'react';
 import { memo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const FooterMetrics = memo(function FooterMetrics(): React.ReactElement {
+  const { t } = useTranslation('core');
   const [sessionTime, setSessionTime] = useState('');
-  const networkLink = 'ONLINE';
+  const networkLink = t('dashboard.online');
   const currentYear = new Date().getFullYear();
 
   useEffect(() => {
@@ -32,7 +34,7 @@ const FooterMetrics = memo(function FooterMetrics(): React.ReactElement {
       <div className="flex items-center gap-2">
         <span className="material-symbols-outlined text-[16px] text-white/40">schedule</span>
         <div className="text-[10px] font-data text-white/40 uppercase tracking-widest">
-          Session Time: <span className="text-accent-500">{sessionTime}</span>
+          {t('dashboard.sessionTime')}: <span className="text-accent-500">{sessionTime}</span>
         </div>
       </div>
 
@@ -40,13 +42,13 @@ const FooterMetrics = memo(function FooterMetrics(): React.ReactElement {
       <div className="flex items-center gap-2">
         <span className="material-symbols-outlined text-[16px] text-accent-500">wifi</span>
         <div className="text-[10px] font-data text-accent-500 uppercase tracking-widest">
-          Network Link: {networkLink}
+          {t('dashboard.networkLink')}: {networkLink}
         </div>
       </div>
 
       {/* Copyright */}
       <div className="text-[10px] font-data text-white/20 uppercase tracking-widest">
-        © {currentYear} NEXUS v2
+        © {currentYear} {t('dashboard.copyright')}
       </div>
     </div>
   );

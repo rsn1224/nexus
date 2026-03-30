@@ -1,0 +1,37 @@
+{
+  "welcome": {
+    "title": "NEXUS",
+    "subtitle": "Personal Gaming Dashboard",
+    "description1": "NEXUS is a dashboard that optimizes your PC for gaming. It provides unified management of hardware monitoring, process optimization, and network tuning.",
+    "description2": "First, we'll scan your system and suggest optimal settings.",
+    "begin": "Get Started"
+  },
+  "scan": {
+    "title": "System Scan",
+    "subtitle": "Checking your system status",
+    "taskHardware": "Hardware Info",
+    "taskSteam": "Steam Game Detection",
+    "taskSettings": "App Settings",
+    "scanning": "Scanning...",
+    "next": "Next"
+  },
+  "readiness": {
+    "title": "Readiness Summary",
+    "subtitle": "Your PC's gaming readiness",
+    "axisResource": "Resources",
+    "axisOptimization": "Optimization",
+    "axisPerformance": "Performance",
+    "na": "N/A",
+    "recommendations": "Recommended Actions",
+    "noHardware": "Hardware info unavailable. Score cannot be calculated.",
+    "next": "Next"
+  },
+  "complete": {
+    "title": "Setup Complete",
+    "subtitle": "NEXUS is ready",
+    "description1": "Optimal settings have been suggested based on the system scan results.",
+    "description2": "You can review and adjust details anytime from the dashboard.",
+    "goToDashboard": "Go to Dashboard"
+  },
+  "skip": "Skip"
+}

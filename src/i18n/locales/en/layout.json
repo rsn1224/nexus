@@ -1,0 +1,28 @@
+{
+  "nav": {
+    "dashboard": "DASHBOARD",
+    "arsenal": "ARSENAL",
+    "tactics": "TACTICS",
+    "logs": "LOGS",
+    "settings": "SETTINGS"
+  },
+  "sidebar": {
+    "systemStatus": "SYSTEM STATUS",
+    "system": "SYSTEM",
+    "optimizeNow": "OPTIMIZE NOW"
+  },
+  "titleBar": {
+    "nexus": "NEXUS",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "minimize": "Minimize",
+    "maximize": "Maximize",
+    "close": "Close"
+  },
+  "bottomTab": {
+    "hud": "HUD",
+    "play": "PLAY",
+    "monitor": "MONITOR",
+    "gear": "GEAR"
+  }
+}

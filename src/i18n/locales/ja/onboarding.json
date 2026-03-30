@@ -1,0 +1,37 @@
+{
+  "welcome": {
+    "title": "NEXUS",
+    "subtitle": "Personal Gaming Dashboard",
+    "description1": "NEXUS はあなたの PC をゲーミングに最適化するダッシュボードです。ハードウェア監視、プロセス最適化、ネットワークチューニングを一元管理します。",
+    "description2": "まず、システムの状態をスキャンして最適な設定を提案します。",
+    "begin": "始める"
+  },
+  "scan": {
+    "title": "System Scan",
+    "subtitle": "システムの状態を確認しています",
+    "taskHardware": "ハードウェア情報",
+    "taskSteam": "Steam ゲーム検出",
+    "taskSettings": "アプリ設定",
+    "scanning": "スキャン中...",
+    "next": "次へ"
+  },
+  "readiness": {
+    "title": "Readiness Summary",
+    "subtitle": "あなたの PC のゲーミング準備度",
+    "axisResource": "リソース",
+    "axisOptimization": "最適化",
+    "axisPerformance": "パフォーマンス",
+    "na": "N/A",
+    "recommendations": "推奨アクション",
+    "noHardware": "ハードウェア情報を取得できませんでした。スコアは利用できません。",
+    "next": "次へ"
+  },
+  "complete": {
+    "title": "セットアップ完了",
+    "subtitle": "NEXUS の準備が整いました",
+    "description1": "システムスキャンの結果に基づいて、最適な設定が提案されています。",
+    "description2": "ダッシュボードからいつでも詳細を確認・調整できます。",
+    "goToDashboard": "ダッシュボードへ"
+  },
+  "skip": "スキップ"
+}

@@ -11,7 +11,7 @@ describe('LoadingFallback', () => {
 
   it('ローディングテキストが表示される', () => {
     render(<LoadingFallback />);
-    expect(screen.getByText('読み込み中...')).toBeInTheDocument();
+    expect(screen.getByText('loading')).toBeInTheDocument();
   });
 
   it('data-testid が設定される', () => {
@@ -34,7 +34,7 @@ describe('LoadingFallback', () => {
 
   it('テキストに正しいスタイルが設定される', () => {
     render(<LoadingFallback />);
-    const text = screen.getByText('読み込み中...');
+    const text = screen.getByText('loading');
     expect(text).toHaveClass('text-xs', 'text-text-muted');
   });
 

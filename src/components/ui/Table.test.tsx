@@ -46,7 +46,7 @@ describe('Table', () => {
 
   it('loading 中に読み込み表示がされる', () => {
     render(<Table data={[]} columns={mockColumns} loading={true} />);
-    expect(screen.getByText('読み込み中...')).toBeInTheDocument();
+    expect(screen.getByText('loading')).toBeInTheDocument();
   });
 
   it('カスタム empty メッセージが表示される', () => {

@@ -1,4 +1,5 @@
 import type React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface GameLauncherProps {
   recentGames: {
@@ -15,13 +16,17 @@ export default function GameLauncher({
   recentGames,
   onLaunchGame,
 }: GameLauncherProps): React.ReactElement {
+  const { t } = useTranslation('tactics');
+
   return (
     <div className="glass-panel border border-white/10 relative overflow-hidden shadow-2xl">
       <div className="reflective-overlay absolute inset-0"></div>
       <div className="p-8 relative z-10">
         <div className="flex items-center gap-4 mb-8">
           <span className="material-symbols-outlined text-accent-500 text-2xl">rocket_launch</span>
-          <h2 className="text-xl font-bold text-text-primary tracking-tight">ゲームランチャー</h2>
+          <h2 className="text-xl font-bold text-text-primary tracking-tight">
+            {t('gaming.gameLauncher')}
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {recentGames.map((game) => (
@@ -45,7 +50,7 @@ export default function GameLauncher({
                       {game.name}
                     </h3>
                     <p className="text-text-secondary/60 text-[9px]">
-                      最終プレイ: {game.lastPlayed}
+                      {t('gaming.lastPlayed', { time: game.lastPlayed })}
                     </p>
                   </div>
                 </div>
@@ -57,7 +62,7 @@ export default function GameLauncher({
                     type="button"
                     className="px-4 py-2 bg-accent-500/10 border border-accent-500/30 text-accent-500 text-[10px] font-black tracking-widest uppercase hover:bg-accent-500/20 transition-all"
                   >
-                    起動
+                    {t('gaming.launch')}
                   </button>
                 </div>
               </div>
