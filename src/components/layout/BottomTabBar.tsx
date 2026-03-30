@@ -9,9 +9,9 @@ interface BottomTabBarProps {
 }
 
 const TAB_CONFIG = [
-  { id: 'core' as WingId, icon: 'grid_view', i18nKey: 'bottomTab.hud' },
-  { id: 'arsenal' as WingId, icon: 'sports_esports', i18nKey: 'bottomTab.play' },
-  { id: 'tactics' as WingId, icon: 'monitoring', i18nKey: 'bottomTab.monitor' },
+  { id: 'dashboard' as WingId, icon: 'grid_view', i18nKey: 'bottomTab.hud' },
+  { id: 'gaming' as WingId, icon: 'sports_esports', i18nKey: 'bottomTab.play' },
+  { id: 'monitor' as WingId, icon: 'monitoring', i18nKey: 'bottomTab.monitor' },
   { id: 'settings' as WingId, icon: 'settings', i18nKey: 'bottomTab.gear' },
 ] as const;
 

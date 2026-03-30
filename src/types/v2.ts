@@ -3,8 +3,6 @@
 // 各ドメイン別ファイルから re-export する。直接 import 先を変える必要なし。
 // =============================================================================
 
-export type WingId = 'core' | 'arsenal' | 'tactics' | 'logs' | 'settings';
-
 export type {
   AiAnalysisRequest,
   AiAnalysisResponse,
@@ -34,7 +32,6 @@ export type {
   OptimizeStep,
   OptimizeStepRisk,
 } from './v2optimize';
-
 export type {
   GameSession,
   SessionListItem,
@@ -46,3 +43,4 @@ export type {
   SuggestionCategory,
   SuggestionPriority,
 } from './v2suggest';
+export type { WingId } from './wing';

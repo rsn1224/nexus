@@ -12,18 +12,18 @@ const DashboardWing = lazy(() => import('./wings/DashboardWing'));
 const GamingWing = lazy(() => import('./wings/GamingWing'));
 const MonitorWing = lazy(() => import('./wings/MonitorWing'));
 const HistoryWing = lazy(() => import('./wings/HistoryWing'));
-const SettingsWing = lazy(() => import('./components/settings/SettingsWing'));
+const SettingsWing = lazy(() => import('./wings/SettingsWing'));
 
 const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
-  core: DashboardWing,
-  arsenal: GamingWing,
-  tactics: MonitorWing,
-  logs: HistoryWing,
+  dashboard: DashboardWing,
+  gaming: GamingWing,
+  monitor: MonitorWing,
+  history: HistoryWing,
   settings: SettingsWing,
 };
 
 export default function App(): React.ReactElement {
-  const [activeWing, setActiveWing] = useState<WingId>('core');
+  const [activeWing, setActiveWing] = useState<WingId>('dashboard');
   const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
 
   useKeyboardShortcuts();

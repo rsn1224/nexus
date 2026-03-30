@@ -9,10 +9,10 @@ interface SidebarProps {
 }
 
 const WING_CONFIG = [
-  { id: 'core' as WingId, i18nKey: 'nav.dashboard', icon: 'grid_view' },
-  { id: 'arsenal' as WingId, i18nKey: 'nav.arsenal', icon: 'sports_esports' },
-  { id: 'tactics' as WingId, i18nKey: 'nav.tactics', icon: 'monitoring' },
-  { id: 'logs' as WingId, i18nKey: 'nav.logs', icon: 'terminal' },
+  { id: 'dashboard' as WingId, i18nKey: 'nav.dashboard', icon: 'grid_view' },
+  { id: 'gaming' as WingId, i18nKey: 'nav.arsenal', icon: 'sports_esports' },
+  { id: 'monitor' as WingId, i18nKey: 'nav.tactics', icon: 'monitoring' },
+  { id: 'history' as WingId, i18nKey: 'nav.logs', icon: 'terminal' },
   { id: 'settings' as WingId, i18nKey: 'nav.settings', icon: 'settings' },
 ] as const;
 
