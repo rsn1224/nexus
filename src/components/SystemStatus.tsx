@@ -78,8 +78,8 @@ function KpiCard({
   children: React.ReactNode;
 }): React.ReactElement {
   return (
-    <div className="bg-base-800 border border-accent-500/25 rounded p-4 flex flex-col gap-1 hover:border-accent-500/40 transition-colors">
-      <div className="text-[10px] font-semibold tracking-[0.12em] text-text-primary uppercase">
+    <div className="bg-base-800 border border-accent-500/25 rounded p-4 hover:border-accent-500/40 transition-colors">
+      <div className="text-[10px] font-semibold tracking-[0.12em] text-text-primary uppercase mb-1">
         {label}
       </div>
       {children}
