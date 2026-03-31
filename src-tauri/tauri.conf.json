@@ -12,10 +12,10 @@
   "app": {
     "windows": [
       {
-        "title": "NEXUS",
+        "title": "NEXUS v4",
         "width": 1000,
         "height": 650,
-        "minWidth": 900,
+        "minWidth": 800,
         "minHeight": 600,
         "decorations": false
       }

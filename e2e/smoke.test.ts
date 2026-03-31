@@ -1,58 +1,71 @@
 import { expect, test } from '@playwright/test';
 
-test.describe('Smoke Tests', () => {
-  test('アプリが起動して基本UIが表示される', async ({ page }) => {
-    // アプリにアクセス
+test.describe('NEXUS v4 Smoke Tests', () => {
+  test('アプリが起動してタイトルバーが表示される', async ({ page }) => {
     await page.goto('/');
 
-    // ページタイトルを確認（実際のタイトルに合わせる）
-    await expect(page).toHaveTitle(/Tauri \+ React \+ Typescript/i);
+    // タイトルバーの NEXUS テキストを確認
+    const title = page.locator('[data-testid="titlebar"]');
+    await expect(title).toBeVisible();
 
-    // Shellのサイドバーが存在することを確認
-    const sidebar = page.locator('nav[data-testid="sidebar"]');
-    await expect(sidebar).toBeVisible();
-
-    // COREナビゲーションアイテムが存在することを確認
-    const coreNav = page.locator('[data-testid="nav-core"]');
-    await expect(coreNav).toBeVisible();
-
-    // Core Wingが初期表示されることを確認
-    const coreWing = page.locator('[data-testid="wing-core"]');
-    await expect(coreWing).toBeVisible();
-
-    // Core Wingのヘッダーが正しく表示されることを確認
-    const coreHeader = page.locator('text=DASHBOARD');
-    await expect(coreHeader).toBeVisible();
+    const nexusText = page.locator('text=NEXUS');
+    await expect(nexusText).toBeVisible();
   });
 
-  test('サイドバーの基本構造が正しい', async ({ page }) => {
+  test('SystemStatus セクションが表示される', async ({ page }) => {
     await page.goto('/');
 
-    // サイドバーの幅を確認
-    const sidebar = page.locator('nav[data-testid="sidebar"]');
-    await expect(sidebar).toBeVisible();
-
-    // NEXUSロゴが存在することを確認
-    const logo = page.locator('text=NEXUS');
-    await expect(logo).toBeVisible();
-
-    // SYSTEM STATUSサブタイトルが存在することを確認
-    const subtitle = page.locator('text=SYSTEM STATUS');
-    await expect(subtitle).toBeVisible();
-
-    // COREアイテムがアクティブ状態であることを確認
-    const coreNavItem = page.locator('[data-testid="nav-core"]');
-    await expect(coreNavItem).toBeVisible();
-    // アクティブ状態のスタイルを確認
-    await expect(coreNavItem).toHaveClass(/bg-accent-500\/10/);
+    // システムステータスセクションの存在を確認
+    const statusSection = page.locator('[data-testid="system-status"]');
+    await expect(statusSection).toBeVisible({ timeout: 10000 });
   });
 
-  test('ウィンドウサイズが適切に設定されている', async ({ page }) => {
+  test('Optimizations セクションが表示される', async ({ page }) => {
     await page.goto('/');
 
-    // ビューポートサイズを確認
+    const optimizeSection = page.locator('[data-testid="optimizations"]');
+    await expect(optimizeSection).toBeVisible({ timeout: 10000 });
+  });
+
+  test('Settings パネルが開閉する', async ({ page }) => {
+    await page.goto('/');
+
+    // Settings ボタンをクリック
+    const settingsButton = page.locator('[data-testid="open-settings"]');
+    await expect(settingsButton).toBeVisible();
+    await settingsButton.click();
+
+    // パネルが開く
+    const settingsPanel = page.locator('[data-testid="settings-panel"]');
+    await expect(settingsPanel).toBeVisible();
+
+    // Esc で閉じる
+    await page.keyboard.press('Escape');
+    await expect(settingsPanel).not.toBeVisible();
+  });
+
+  test('History パネルが開閉する', async ({ page }) => {
+    await page.goto('/');
+
+    // History ボタンをクリック
+    const historyButton = page.locator('[data-testid="open-history"]');
+    await expect(historyButton).toBeVisible();
+    await historyButton.click();
+
+    // パネルが開く
+    const historyPanel = page.locator('[data-testid="history-panel"]');
+    await expect(historyPanel).toBeVisible();
+
+    // バックドロップクリックで閉じる
+    await page.locator('[data-testid="slide-panel-backdrop"]').click();
+    await expect(historyPanel).not.toBeVisible();
+  });
+
+  test('ウィンドウサイズが最小要件を満たしている', async ({ page }) => {
+    await page.goto('/');
+
     const viewport = page.viewportSize();
-    expect(viewport?.width).toBeGreaterThanOrEqual(900);
+    expect(viewport?.width).toBeGreaterThanOrEqual(800);
     expect(viewport?.height).toBeGreaterThanOrEqual(600);
   });
 });

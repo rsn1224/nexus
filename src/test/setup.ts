@@ -4,7 +4,7 @@ import { vi } from 'vitest';
 // i18n mock — returns translation keys as-is for testing
 vi.mock('react-i18next', () => ({
   useTranslation: (ns?: string | string[]) => {
-    const defaultNs = Array.isArray(ns) ? ns[0] : (ns ?? 'common');
+    const _defaultNs = Array.isArray(ns) ? ns[0] : (ns ?? 'common');
     return {
       t: (key: string, opts?: Record<string, unknown>) => {
         // Strip namespace prefix if present (e.g., "settings:general.apiKey" → "general.apiKey")

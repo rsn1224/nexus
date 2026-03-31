@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 Format: [Keep a Changelog](https://keepachangelog.com/)
 
+## [4.0.0] - 2026-03-31
+
+### Changed
+- **コンセプト刷新**: 5 Wing 多画面 → Main 1画面「ゲーム前の30秒ルーティン」
+- Wing 概念廃止: `BottomTabBar` / `Sidebar` / 全 Wing コンポーネント削除
+- デザインシステム刷新: Stitch/Razer Green → Cyan (`#06b6d4`) 単色アクセント・装飾なし
+- Rust バックエンド再編: 旧コマンド群 → 7コマンド体系（status / optimize / diagnose / history / settings）
+- `tauri.conf.json`: productName → "NEXUS v4", minWidth → 800px
+- TypeScript 型定義: v2 型ファイル全削除 → system.ts / optimize.ts に統合
+
+### Added
+- `src/components/Main.tsx` — 全セクション統合（スクロール不要）
+- `src/components/SystemStatus.tsx` — CPU/GPU/RAM/Temp KPI グリッド
+- `src/components/Diagnostics.tsx` — 異常時のみ表示アラートリスト
+- `src/components/Optimizations.tsx` — チェックリスト + OPTIMIZE + before/after diff + REVERT ALL 2段確認
+- `src/components/QuickInfo.tsx` — 最終最適化日時・Settings/History ボタン
+- `src/components/SettingsPanel.tsx` — NexusSettings フォーム（DNS / 保護プロセス / ポーリング間隔）
+- `src/components/HistoryPanel.tsx` — 最適化セッション履歴（新しい順・アコーディオン）
+- `src/components/ui/SlidePanel.tsx` — Esc / バックドロップで閉じる右スライドパネル
+- `src/stores/useSystemStore.ts` — 5秒ポーリング + SystemStatus + DiagnosticAlert
+- `src/stores/useOptimizeStore.ts` — 候補選択 / 適用 / リバート / 履歴
+- `src/stores/useSettingsStore.ts` — NexusSettings CRUD
+- `src/lib/tauri-commands.ts` — 全 invoke ラッパー集約
+- `src/lib/formatters.ts` — v4 専用フォーマッター（temp / gb / percent / timestamp）
+- E2E smoke tests: v4 UI 向け書き直し（settings/history パネル開閉確認）
+
+### Removed
+- Stitch UI 全残骸（glass-panel / bloom-border / stitch-* / #44D62C）
+- v2 型定義ファイル（v2.ts / v2ai.ts / v2health.ts 等 7ファイル）
+- 旧ストア（useNavStore / useEcoModeStore / useModalStore / usePulseStore 等）
+- 旧 lib（ai/ / buildHealthInput / healthScore / gameReadiness / suggestionEngine 等）
+- 旧 E2E テスト（wings.test.ts / navigation.test.ts / game-profile.test.ts）
+
 ## [Unreleased]
 
 ### Changed

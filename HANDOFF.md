@@ -11,6 +11,11 @@
 
 | 項目 | 状態 |
 |------|------|
+| **NEXUS v4 Phase 0: クリーンアップ** | ✅ 完了（Stitch UI・v2 型・旧コンポーネント・旧ストア全削除） |
+| **NEXUS v4 Phase 1: 設計ドキュメント** | ✅ 完了（DESIGN.md・ROADMAP.md・CLAUDE.md v4 更新） |
+| **NEXUS v4 Phase 2: Rust バックエンド** | ✅ 完了（7コマンド体系・status/optimize/diagnose/history/settings） |
+| **NEXUS v4 Phase 3: フロントエンド実装** | ✅ 完了（Main 1画面 + SettingsPanel/HistoryPanel スライドパネル） |
+| **NEXUS v4 Phase 4: 統合・リリース** | ✅ 完了（E2E smoke tests・tauri.conf.json 更新・品質ゲート全pass） |
 | ベースライン（T1-T10） | ✅ 完了 |
 | オーバーホール（OH1-OH8, OH-B3, OH-E1〜E4） | ✅ 完了 |
 | 再構築 Phase 0 | ✅ 完了 |
