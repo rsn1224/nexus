@@ -69,13 +69,13 @@ const Main = memo(function Main(): React.ReactElement {
 
   return (
     <main className="pt-16 h-full flex flex-col overflow-hidden">
-      <div className="flex flex-col gap-4 px-4 py-4 overflow-y-auto [scrollbar-gutter:stable]">
+      <div className="flex flex-col gap-4 px-4 py-4 pb-10 overflow-y-auto [scrollbar-gutter:stable]">
         <SystemStatus />
         <Diagnostics />
         <Optimizations />
       </div>
 
-      <footer className="mt-auto shrink-0 px-4 h-8 border-t border-border-subtle bg-base-900 flex items-center justify-between gap-2">
+      <footer className="fixed bottom-0 left-0 right-0 h-8 border-t border-border-subtle bg-base-900 flex items-center justify-between px-4 gap-2 z-10">
         <QuickInfo />
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" onClick={handleOpenHistory}>

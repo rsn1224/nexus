@@ -17,12 +17,10 @@ const QuickInfo = memo(function QuickInfo(): React.ReactElement {
 
 function InfoItem({ label, value }: { label: string; value: string }): React.ReactElement {
   return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-[10px] font-semibold tracking-[0.12em] text-text-muted uppercase">
-        {label}
-      </span>
-      <span className="text-[12px] text-text-primary">{value}</span>
-    </div>
+    <span className="text-[10px] font-mono text-text-muted">
+      <span className="font-semibold tracking-[0.12em] uppercase">{label}</span>{' '}
+      <span className="text-text-secondary">{value}</span>
+    </span>
   );
 }
 
