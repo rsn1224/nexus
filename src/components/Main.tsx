@@ -69,7 +69,7 @@ const Main = memo(function Main(): React.ReactElement {
 
   return (
     <main className="pt-16 h-full flex flex-col overflow-hidden">
-      <div className="flex flex-col gap-4 px-4 py-4 overflow-y-auto">
+      <div className="flex flex-col gap-4 px-4 py-4 overflow-y-auto [scrollbar-gutter:stable]">
         <SystemStatus />
         <Diagnostics />
         <Optimizations />

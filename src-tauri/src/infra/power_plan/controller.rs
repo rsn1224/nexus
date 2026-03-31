@@ -52,6 +52,21 @@ impl PowerPlanController {
         "電源スキーム GUID:", // 日本語（別バージョン）
     ];
 
+    /// `guid_part`（GUID 以降の行末まで）からプラン表示名を抽出する
+    ///
+    /// 入力例: `"(Ultimate Performance)  *"` → `Some("Ultimate Performance")`
+    /// アクティブプランの行末 ` *` を正しく除外するため、
+    /// 最初の `(` と最後の `)` の間のテキストを抽出する。
+    pub(super) fn extract_plan_display_name(guid_part: &str) -> Option<String> {
+        let start = guid_part.find('(')?;
+        let end = guid_part.rfind(')')?;
+        if start >= end {
+            return None;
+        }
+        let name = guid_part[start + 1..end].trim().to_string();
+        if name.is_empty() { None } else { Some(name) }
+    }
+
     /// 行からGUIDを抽出する（日英対応）
     pub(super) fn extract_guid_from_line(line: &str) -> Option<&str> {
         for pattern in Self::GUID_PATTERNS {
@@ -175,14 +190,7 @@ impl PowerPlanController {
                 let guid_str = guid.to_string();
                 let guid_part = line.split(&guid_str).nth(1).unwrap_or("").trim();
 
-                let parts: Vec<&str> = guid_part.split_whitespace().collect();
-                if parts.len() >= 2 {
-                    let display_name = parts[1..]
-                        .join(" ")
-                        .trim_matches('(')
-                        .trim_matches(')')
-                        .to_string();
-
+                if let Some(display_name) = Self::extract_plan_display_name(guid_part) {
                     plans.push((guid_str, display_name));
                 }
             }
@@ -286,6 +294,26 @@ impl Default for PowerPlanController {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_extract_plan_display_name_active_with_asterisk() {
+        // アクティブなプランの行末には " *" が付く
+        // (Ultimate Performance)  * → "Ultimate Performance" を返すべき
+        let display = PowerPlanController::extract_plan_display_name("(Ultimate Performance)  *");
+        assert_eq!(display, Some("Ultimate Performance".to_string()));
+    }
+
+    #[test]
+    fn test_extract_plan_display_name_inactive() {
+        let display = PowerPlanController::extract_plan_display_name("(Balanced)");
+        assert_eq!(display, Some("Balanced".to_string()));
+    }
+
+    #[test]
+    fn test_extract_plan_display_name_japanese() {
+        let display = PowerPlanController::extract_plan_display_name("(バランス) *");
+        assert_eq!(display, Some("バランス".to_string()));
+    }
 
     #[test]
     fn test_decode_powercfg_utf8() {
