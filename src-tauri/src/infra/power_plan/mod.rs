@@ -4,11 +4,8 @@
 mod controller;
 mod helpers;
 
+pub use controller::PowerPlanController;
 pub use helpers::*;
-
-// controller items re-exported for tests
-#[cfg(test)]
-use controller::*;
 
 // ─── テスト ──────────────────────────────────────────────────────────────────
 

@@ -15,7 +15,8 @@ mod state;
 mod types;
 
 use crate::commands::{
-    ai, app_settings, boost, cleanup, core_parking, hardware, memory, netopt, ops, session, timer,
+    ai, app_settings, boost, cleanup, core_parking, diagnose, hardware, memory, netopt, ops,
+    session, status, timer, v4_history, v4_optimize, v4_settings,
 };
 #[cfg(windows)]
 use crate::commands::{windows_settings, winopt};
@@ -152,6 +153,15 @@ macro_rules! invoke_handler {
             memory::manual_memory_cleanup,
             memory::start_auto_memory_cleanup,
             memory::stop_auto_memory_cleanup,
+            // V4 COMMANDS
+            status::get_system_status,
+            v4_optimize::get_optimization_candidates,
+            v4_optimize::apply_optimizations,
+            v4_optimize::revert_all,
+            diagnose::diagnose,
+            v4_history::get_history,
+            v4_settings::get_v4_settings,
+            v4_settings::update_v4_settings,
             // ─── WINDOWS ONLY (渡された追加コマンド) ───
             $($windows_only,)*
         ]
