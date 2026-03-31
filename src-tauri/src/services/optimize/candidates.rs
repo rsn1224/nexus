@@ -92,7 +92,8 @@ fn power_plan_display() -> String {
     {
         let ctrl = crate::infra::power_plan::PowerPlanController::new();
         if let Ok(Some(guid)) = ctrl.get_active_plan_guid() {
-            return guid_to_plan_name(&guid);
+            let plans = ctrl.list_available_plans().unwrap_or_default();
+            return guid_to_plan_name_with_list(&guid, &plans);
         }
         String::from("Unknown")
     }
@@ -116,6 +117,19 @@ fn guid_to_plan_name(guid: &str) -> String {
         return "Ultimate Performance".into();
     }
     guid.into()
+}
+
+/// static マッピング優先、未知 GUID は powercfg /list の結果から解決する
+fn guid_to_plan_name_with_list(guid: &str, plans: &[(String, String)]) -> String {
+    let static_name = guid_to_plan_name(guid);
+    if static_name != guid {
+        return static_name;
+    }
+    plans
+        .iter()
+        .find(|(g, _)| g.eq_ignore_ascii_case(guid))
+        .map(|(_, name)| name.clone())
+        .unwrap_or_else(|| guid.to_string())
 }
 
 fn timer_display() -> String {
@@ -211,6 +225,29 @@ mod tests {
     fn test_guid_to_plan_name_unknown() {
         let guid = "00000000-0000-0000-0000-000000000000";
         assert_eq!(guid_to_plan_name(guid), guid);
+    }
+
+    #[test]
+    fn test_guid_to_plan_name_with_list_custom_guid() {
+        let guid = "43d7a294-f4db-44fa-9e1c-51b5285f839a";
+        let plans = vec![(
+            "43d7a294-f4db-44fa-9e1c-51b5285f839a".to_string(),
+            "Ultimate Performance".to_string(),
+        )];
+        assert_eq!(guid_to_plan_name_with_list(guid, &plans), "Ultimate Performance");
+    }
+
+    #[test]
+    fn test_guid_to_plan_name_with_list_known_guid_ignores_list() {
+        let guid = "381b4222-f694-41f0-9685-ff5bb260df2e";
+        let plans = vec![("381b4222-f694-41f0-9685-ff5bb260df2e".to_string(), "WrongName".to_string())];
+        assert_eq!(guid_to_plan_name_with_list(guid, &plans), "Balanced");
+    }
+
+    #[test]
+    fn test_guid_to_plan_name_with_list_completely_unknown() {
+        let guid = "ffffffff-ffff-ffff-ffff-ffffffffffff";
+        assert_eq!(guid_to_plan_name_with_list(guid, &[]), guid);
     }
 }
 

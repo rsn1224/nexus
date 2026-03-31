@@ -60,7 +60,9 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
                   REC
                 </span>
               )}
-              <span className="text-[10px] text-text-muted shrink-0 ml-2">{c.current_state}</span>
+              <span className="text-[10px] text-text-muted shrink-0 ml-2 max-w-[80px] truncate">
+                {c.current_state}
+              </span>
             </div>
           ))
         )}

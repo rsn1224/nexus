@@ -27,7 +27,7 @@ const SystemStatus = memo(function SystemStatus(): React.ReactElement {
     <section aria-label="システムステータス">
       <SectionHeader title="SYSTEM STATUS" color="muted" />
 
-      <div className="grid grid-cols-4 gap-2 mt-2">
+      <div className="grid grid-cols-4 gap-3 mt-2">
         <KpiCard label="CPU">
           <Kpi value={status?.cpu_percent ?? null} unit="%" thresholds={CPU_THRESHOLDS} />
         </KpiCard>
@@ -47,7 +47,7 @@ const SystemStatus = memo(function SystemStatus(): React.ReactElement {
         </KpiCard>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 mt-2">
+      <div className="grid grid-cols-2 gap-3 mt-2">
         <KpiCard label="DISK FREE">
           {status ? (
             <span
@@ -78,8 +78,8 @@ function KpiCard({
   children: React.ReactNode;
 }): React.ReactElement {
   return (
-    <div className="bg-linear-to-b from-base-800 to-base-900 border border-accent-500/15 rounded p-4 flex flex-col gap-1 hover:border-accent-500/40 transition-colors">
-      <span className="text-[9px] font-semibold tracking-[0.2em] text-text-muted uppercase">
+    <div className="bg-linear-to-b from-base-800 to-base-900 border border-accent-500/25 rounded p-4 flex flex-col gap-1 hover:border-accent-500/40 transition-colors">
+      <span className="text-[9px] font-semibold tracking-[0.2em] text-text-secondary uppercase">
         {label}
       </span>
       {children}
