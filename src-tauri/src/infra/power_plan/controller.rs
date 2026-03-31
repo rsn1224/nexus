@@ -6,9 +6,22 @@ use std::process::Command;
 use crate::error::AppError;
 use crate::types::game::PowerPlan;
 
-/// powercfg 出力を Shift_JIS → UTF-8 にデコード
+/// powercfg 出力をデコード（UTF-8 優先、次に Shift-JIS）
+///
+/// Windows 11 の powercfg は UTF-8 を出力する。
+/// 旧環境向けに Shift-JIS フォールバックを残す。
 #[cfg(windows)]
 pub(super) fn decode_powercfg(bytes: &[u8]) -> String {
+    // UTF-16 LE BOM チェック
+    if bytes.starts_with(&[0xFF, 0xFE]) {
+        let (decoded, _, _) = encoding_rs::UTF_16LE.decode(bytes);
+        return decoded.to_string();
+    }
+    // UTF-8 を最初に試みる（Windows 11 標準）
+    if let Ok(s) = std::str::from_utf8(bytes) {
+        return s.to_string();
+    }
+    // フォールバック: Shift-JIS（旧 Windows 環境）
     let (decoded, _, _) = encoding_rs::SHIFT_JIS.decode(bytes);
     decoded.to_string()
 }
@@ -182,5 +195,44 @@ impl PowerPlanController {
 impl Default for PowerPlanController {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_decode_powercfg_utf8() {
+        // Windows 11 の powercfg は UTF-8 で出力する
+        let input = "電源設定の GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (バランス)"
+            .as_bytes()
+            .to_vec();
+        let result = decode_powercfg(&input);
+        assert!(
+            result.contains("381b4222"),
+            "UTF-8 入力が正しくデコードされていない: {:?}",
+            result
+        );
+        assert!(
+            result.contains("バランス"),
+            "日本語が正しくデコードされていない: {:?}",
+            result
+        );
+    }
+
+    #[test]
+    fn test_decode_powercfg_ascii() {
+        // 英語環境の出力
+        let input = b"Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High Performance)";
+        let result = decode_powercfg(input);
+        assert!(result.contains("8c5e7fda"), "ASCII 入力が壊れた: {:?}", result);
+    }
+
+    #[test]
+    fn test_extract_guid_from_line_japanese() {
+        let line = "電源設定の GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (バランス)";
+        let guid = PowerPlanController::extract_guid_from_line(line);
+        assert_eq!(guid, Some("381b4222-f694-41f0-9685-ff5bb260df2e"));
     }
 }

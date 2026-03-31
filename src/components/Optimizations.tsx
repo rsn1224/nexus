@@ -1,5 +1,5 @@
 import type React from 'react';
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 import { useOptimizeStore } from '../stores/useOptimizeStore';
 import Button from './ui/Button';
 import ErrorBanner from './ui/ErrorBanner';
@@ -12,20 +12,14 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
     selected,
     isLoadingCandidates,
     isApplying,
-    isReverting,
     lastResult,
     error,
     fetchCandidates,
     toggleCandidate,
     applySelected,
-    revertAll,
     clearResult,
     clearError,
   } = useOptimizeStore();
-
-  const [revertConfirm, setRevertConfirm] = useState(false);
-  const [revertCountdown, setRevertCountdown] = useState(3);
-  const revertTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     void fetchCandidates();
@@ -36,32 +30,6 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
     const id = setTimeout(() => clearResult(), 3000);
     return () => clearTimeout(id);
   }, [lastResult, clearResult]);
-
-  const startRevertConfirm = useCallback(() => {
-    setRevertConfirm(true);
-    setRevertCountdown(3);
-    revertTimerRef.current = setInterval(() => {
-      setRevertCountdown((c) => {
-        if (c <= 1) {
-          clearInterval(revertTimerRef.current ?? undefined);
-          revertTimerRef.current = null;
-          setRevertConfirm(false);
-          return 3;
-        }
-        return c - 1;
-      });
-    }, 1000);
-  }, []);
-
-  const handleRevertConfirmed = useCallback(async () => {
-    if (revertTimerRef.current) {
-      clearInterval(revertTimerRef.current);
-      revertTimerRef.current = null;
-    }
-    setRevertConfirm(false);
-    await revertAll();
-    void fetchCandidates();
-  }, [revertAll, fetchCandidates]);
 
   const handleApply = useCallback(async () => {
     await applySelected();
@@ -121,32 +89,15 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
-        <Button
-          variant="primary"
-          fullWidth
-          loading={isApplying}
-          disabled={selected.size === 0 || isApplying}
-          onClick={() => void handleApply()}
-        >
-          OPTIMIZE ({selected.size})
-        </Button>
-
-        {revertConfirm ? (
-          <Button
-            variant="danger"
-            fullWidth
-            loading={isReverting}
-            onClick={() => void handleRevertConfirmed()}
-          >
-            CONFIRM REVERT ({revertCountdown}s)
-          </Button>
-        ) : (
-          <Button variant="ghost" fullWidth disabled={isReverting} onClick={startRevertConfirm}>
-            REVERT ALL
-          </Button>
-        )}
-      </div>
+      <Button
+        variant="primary"
+        fullWidth
+        loading={isApplying}
+        disabled={selected.size === 0 || isApplying}
+        onClick={() => void handleApply()}
+      >
+        OPTIMIZE ({selected.size})
+      </Button>
     </section>
   );
 });
