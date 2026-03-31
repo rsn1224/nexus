@@ -1,4 +1,4 @@
-import type { HardwareInfo } from '../types';
+import type { HardwareInfo } from '../types/hardware';
 
 export const defaultHardwareInfo: HardwareInfo = {
   cpuName: 'Unknown CPU',

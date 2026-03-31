@@ -1,6 +1,6 @@
 import { sendNotification } from '@tauri-apps/plugin-notification';
 import log from '../lib/logger';
-import type { ResourceSnapshot } from '../types';
+import type { ResourceSnapshot } from '../types/pulse';
 
 // ─── Alert Thresholds ─────────────────────────────────────────────────────────
 

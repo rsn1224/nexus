@@ -1,12 +1,12 @@
+import type React from 'react';
 import TitleBar from './components/layout/TitleBar';
+import Main from './components/Main';
 
 export default function App(): React.ReactElement {
   return (
-    <div className="min-h-screen bg-base-900 text-text-primary">
+    <div className="h-screen bg-base-900 text-text-primary flex flex-col overflow-hidden">
       <TitleBar />
-      <main className="pt-8 px-4">
-        <p className="text-sm text-text-secondary">NEXUS v4 — coming soon</p>
-      </main>
+      <Main />
     </div>
   );
 }

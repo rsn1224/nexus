@@ -2,7 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { create } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 import log from '../lib/logger';
-import type { AppSettings } from '../types';
+import type { AppSettings } from '../types/settings';
 
 interface AppSettingsStore {
   settings: AppSettings | null;

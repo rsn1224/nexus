@@ -6,7 +6,7 @@ vi.mock('../lib/logger', () => ({
 }));
 
 import { invoke } from '@tauri-apps/api/core';
-import type { AppSettings } from '../types';
+import type { AppSettings } from '../types/settings';
 import { useAppSettingsStore } from './useAppSettingsStore';
 
 const MOCK_SETTINGS: AppSettings = {

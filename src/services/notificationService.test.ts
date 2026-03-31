@@ -8,7 +8,7 @@ vi.mock('../lib/logger', () => ({
 }));
 
 import { sendNotification } from '@tauri-apps/plugin-notification';
-import type { ResourceSnapshot } from '../types';
+import type { ResourceSnapshot } from '../types/pulse';
 import { checkAndNotify, resetNotificationTimestamps } from './notificationService';
 
 function makeSnapshot(overrides: Partial<ResourceSnapshot> = {}): ResourceSnapshot {
