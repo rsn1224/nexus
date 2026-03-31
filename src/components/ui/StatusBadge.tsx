@@ -21,7 +21,7 @@ export default function StatusBadge({
     );
   }
 
-  let colorClass = 'text-success-500';
+  let colorClass = 'text-accent-500';
   if (value >= thresholds.danger) {
     colorClass = 'text-danger-500';
   } else if (value >= thresholds.warn) {

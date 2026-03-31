@@ -47,19 +47,20 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
           <span className="text-[11px] text-text-muted">LOADING...</span>
         ) : (
           candidates.map((c) => (
-            <div key={c.id} className="flex items-start gap-2 p-2 rounded hover:bg-base-800">
+            <div
+              key={c.id}
+              className="flex items-center gap-2 bg-base-800/50 rounded px-3 py-2 mb-1 hover:bg-base-800 transition-colors"
+            >
               <Checkbox checked={selected.has(c.id)} onChange={() => toggleCandidate(c.id)} />
-              <div className="flex flex-col gap-0.5 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-[12px] text-text-primary">{c.label}</span>
-                  {c.is_recommended && (
-                    <span className="text-[9px] font-bold tracking-widest text-accent-500 uppercase">
-                      REC
-                    </span>
-                  )}
-                </div>
-                <span className="text-[11px] text-text-muted truncate">{c.current_state}</span>
-              </div>
+              <span className="text-[12px] text-text-primary flex-1 min-w-0 truncate">
+                {c.label}
+              </span>
+              {c.is_recommended && (
+                <span className="bg-accent-500/20 text-accent-500 text-[8px] font-bold tracking-wider px-1.5 py-0.5 rounded-sm uppercase shrink-0">
+                  REC
+                </span>
+              )}
+              <span className="text-[10px] text-text-muted shrink-0 ml-2">{c.current_state}</span>
             </div>
           ))
         )}
@@ -80,8 +81,11 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
             </div>
           ))}
           {lastResult.failed.map((item) => (
-            <div key={item.id} className="flex gap-2 text-[11px]">
-              <span className="text-danger-500">✗</span>
+            <div
+              key={item.id}
+              className="bg-danger-500/10 border-l-2 border-danger-500 px-3 py-2 rounded flex gap-2 text-[11px]"
+            >
+              <span className="text-danger-500 shrink-0">✗</span>
               <span className="text-text-secondary">{item.id}</span>
               <span className="text-text-muted">{item.reason}</span>
             </div>
@@ -95,6 +99,7 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
         loading={isApplying}
         disabled={selected.size === 0 || isApplying}
         onClick={() => void handleApply()}
+        className="h-12 text-[13px] tracking-[0.2em] rounded-md"
       >
         OPTIMIZE ({selected.size})
       </Button>

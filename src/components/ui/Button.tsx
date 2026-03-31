@@ -38,7 +38,7 @@ export default function Button({
 
   const variantClasses = {
     primary:
-      'bg-accent-500 text-base-900 border-accent-500 font-bold uppercase tracking-wide hover:bg-accent-400 hover:shadow-md hover:shadow-accent-500/30 focus:ring-2 focus:ring-accent-500 focus:ring-opacity-50',
+      'bg-gradient-to-r from-accent-600 to-accent-500 text-base-900 border-accent-500 font-bold uppercase tracking-wide hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] focus:ring-2 focus:ring-accent-500 focus:ring-opacity-50',
     ghost:
       'border border-border-subtle text-text-secondary hover:bg-base-700 focus:ring-2 focus:ring-border-subtle focus:ring-opacity-50',
     danger:

@@ -26,7 +26,10 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
   return (
     <header className="fixed top-0 w-full z-50 h-16 bg-base-900 border-b border-border-subtle flex items-center justify-between px-4 select-none">
       <div className="flex items-center gap-3" data-tauri-drag-region>
-        <h1 className="text-2xl font-black tracking-tighter text-accent-500" data-tauri-drag-region>
+        <h1
+          className="text-[13px] font-bold tracking-[0.3em] text-accent-500"
+          data-tauri-drag-region
+        >
           NEXUS
         </h1>
       </div>
@@ -34,6 +37,7 @@ const TitleBar = memo(function TitleBar(): React.ReactElement {
       <div className="flex-1 h-full" data-tauri-drag-region />
 
       <div className="flex items-center gap-1">
+        <span className="text-[9px] text-text-muted mr-2">v4.0</span>
         <WinButton onClick={handleMinimize} label="最小化">
           <span className="material-symbols-outlined text-[14px]">remove</span>
         </WinButton>

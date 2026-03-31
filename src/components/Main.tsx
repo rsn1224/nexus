@@ -75,7 +75,7 @@ const Main = memo(function Main(): React.ReactElement {
         <Optimizations />
       </div>
 
-      <footer className="shrink-0 px-4 py-3 border-t border-border-subtle flex items-center justify-between gap-2">
+      <footer className="shrink-0 px-4 h-8 border-t border-border-subtle bg-base-900 flex items-center justify-between gap-2">
         <QuickInfo />
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="sm" onClick={handleOpenHistory}>

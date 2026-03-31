@@ -97,10 +97,12 @@ Main 1画面（スクロール不要）+ スライドパネル 2枚（Settings, 
 | 項目 | 値 |
 |------|-----|
 | `border-radius` | `4px` 統一 |
-| カード背景 | `bg-base-800` + `border border-border-subtle` |
-| カード hover | `border-border-active` |
-| 装飾 | **なし**（グロー・グラデーション・シャドウ・アニメーション禁止） |
-| 唯一の例外 | OPTIMIZE ボタン hover 時の微小 `box-shadow` |
+| カード背景 | `bg-linear-to-b from-base-800 to-base-900` + `border border-accent-500/15` |
+| カード hover | `border-accent-500/40` |
+| KPI 数字 | `text-[32px] font-bold leading-none font-mono text-accent-500` |
+| KPI ラベル | `text-[9px] font-semibold tracking-[0.2em] uppercase text-text-muted` |
+| 装飾 | **なし**（グロー・シャドウ・アニメーション禁止） |
+| 唯一の例外 | OPTIMIZE / primary ボタン: グラデーション + hover したときの微小 `box-shadow` |
 
 ---
 
