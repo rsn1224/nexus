@@ -28,49 +28,49 @@ const SystemStatus = memo(function SystemStatus(): React.ReactElement {
       <SectionHeader title="SYSTEM STATUS" color="muted" />
 
       <div className="grid grid-cols-4 gap-3 mt-2">
-        <KpiCard label="CPU">
-          <Kpi value={status?.cpu_percent ?? null} unit="%" thresholds={CPU_THRESHOLDS} />
-        </KpiCard>
-        <KpiCard label="GPU">
-          <Kpi value={status?.gpu_percent ?? null} unit="%" thresholds={GPU_THRESHOLDS} />
-        </KpiCard>
-        <KpiCard label="GPU TEMP">
-          <Kpi value={status?.gpu_temp_c ?? null} unit="°C" thresholds={TEMP_THRESHOLDS} />
-        </KpiCard>
-        <KpiCard label="RAM">
-          <Kpi value={ramPercent} unit="%" thresholds={RAM_THRESHOLDS} />
+        <StatCard label="CPU">
+          <StatValue value={status?.cpu_percent ?? null} unit="%" thresholds={CPU_THRESHOLDS} />
+        </StatCard>
+        <StatCard label="GPU">
+          <StatValue value={status?.gpu_percent ?? null} unit="%" thresholds={GPU_THRESHOLDS} />
+        </StatCard>
+        <StatCard label="GPU TEMP">
+          <StatValue value={status?.gpu_temp_c ?? null} unit="°C" thresholds={TEMP_THRESHOLDS} />
+        </StatCard>
+        <StatCard label="RAM">
+          <StatValue value={ramPercent} unit="%" thresholds={RAM_THRESHOLDS} />
           {status && (
-            <span className="text-[10px] text-text-muted">
+            <p className="text-xs text-text-muted mt-1">
               {formatGb(status.ram_used_gb)} / {formatGb(status.ram_total_gb)}
-            </span>
+            </p>
           )}
-        </KpiCard>
+        </StatCard>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-2">
-        <KpiCard label="DISK FREE">
+        <StatCard label="DISK FREE">
           {status ? (
-            <span
-              className={`text-[32px] font-bold leading-none font-mono ${kpiColor(0, { warn: 50, danger: 10 })}`}
+            <p
+              className={`text-[32px] font-bold leading-none font-mono mt-2 ${kpiColor(0, { warn: 50, danger: 10 })}`}
             >
               {formatGb(status.disk_free_gb)}
-              <span className="text-[12px] text-text-secondary ml-1">GB</span>
-            </span>
+              <span className="text-xs text-text-secondary ml-1">GB</span>
+            </p>
           ) : (
-            <span className="text-[32px] font-bold text-text-muted leading-none font-mono">--</span>
+            <p className="text-[32px] font-bold text-text-muted leading-none font-mono mt-2">--</p>
           )}
-        </KpiCard>
-        <KpiCard label="SESSIONS">
-          <span className="text-[32px] font-bold text-accent-500 leading-none font-mono">
+        </StatCard>
+        <StatCard label="SESSIONS">
+          <p className="text-[32px] font-bold text-accent-500 leading-none font-mono mt-2">
             {sessionCount}
-          </span>
-        </KpiCard>
+          </p>
+        </StatCard>
       </div>
     </section>
   );
 });
 
-function KpiCard({
+function StatCard({
   label,
   children,
 }: {
@@ -78,16 +78,14 @@ function KpiCard({
   children: React.ReactNode;
 }): React.ReactElement {
   return (
-    <div className="bg-base-800 border border-accent-500/25 rounded p-4 hover:border-accent-500/40 transition-colors">
-      <div className="text-[10px] font-semibold tracking-[0.12em] text-text-primary uppercase mb-1">
-        {label}
-      </div>
+    <div className="bg-base-800 border border-accent-500/25 rounded p-4">
+      <p className="text-xs font-bold uppercase tracking-widest text-text-secondary">{label}</p>
       {children}
     </div>
   );
 }
 
-function Kpi({
+function StatValue({
   value,
   unit,
   thresholds = { warn: 50, danger: 80 },
@@ -98,17 +96,19 @@ function Kpi({
 }): React.ReactElement {
   if (value === null) {
     return (
-      <span className="text-[32px] font-bold text-text-muted leading-none font-mono">
-        --<span className="text-[12px] ml-1">{unit}</span>
-      </span>
+      <p className="text-[32px] font-bold text-text-muted leading-none font-mono mt-2">
+        --<span className="text-xs ml-1">{unit}</span>
+      </p>
     );
   }
 
   return (
-    <span className={`text-[32px] font-bold leading-none font-mono ${kpiColor(value, thresholds)}`}>
+    <p
+      className={`text-[32px] font-bold leading-none font-mono mt-2 ${kpiColor(value, thresholds)}`}
+    >
       {value.toFixed(1)}
-      <span className="text-[12px] text-text-secondary ml-1">{unit}</span>
-    </span>
+      <span className="text-xs text-text-secondary ml-1">{unit}</span>
+    </p>
   );
 }
 

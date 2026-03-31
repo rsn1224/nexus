@@ -25,17 +25,15 @@ vi.mock('../stores/useOptimizeStore', () => ({
 describe('SystemStatus', () => {
   it('上段カードに CPU/GPU/GPU TEMP/RAM ラベルが DOM に存在する', () => {
     render(<SystemStatus />);
-    // ラベルが DOM に存在することを確認（存在しなければ getByText が throw する）
     expect(screen.getByText('CPU')).toBeTruthy();
     expect(screen.getByText('GPU')).toBeTruthy();
     expect(screen.getByText('GPU TEMP')).toBeTruthy();
     expect(screen.getByText('RAM')).toBeTruthy();
   });
 
-  it('上段ラベルは text-[10px] tracking-[0.12em] text-text-secondary クラスを持つ', () => {
+  it('ラベルは tracking-widest text-text-secondary font-bold クラスを持つ', () => {
     const { container } = render(<SystemStatus />);
-    // KpiCard ラベル要素（上段・下段共通）の最初の要素を確認
-    const labelEls = container.querySelectorAll('[class*="tracking-\\[0\\.12em\\]"]');
+    const labelEls = container.querySelectorAll('[class*="tracking-widest"]');
     // 上段4枚 + 下段2枚 = 6枚のラベルが存在するはず
     expect(labelEls.length).toBeGreaterThanOrEqual(6);
   });
