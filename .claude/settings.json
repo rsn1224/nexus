@@ -29,21 +29,6 @@
         ]
       }
     ],
-    "SubagentStop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "echo [SUBAGENT DONE] >> C:/Users/rsn12/dev/nexus/.claude/subagent.log 2>nul || true"
-          },
-          {
-            "type": "command",
-            "command": "powershell -Command \"if (Test-Path 'C:/Users/rsn12/dev/nexus/HANDOFF.md') { $ts = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; Add-Content 'C:/Users/rsn12/dev/nexus/HANDOFF.md' \\\"`n## [Subagent Completed] $ts\\\"\" }\""
-          }
-        ]
-      }
-    ],
     "TeammateIdle": [
       {
         "matcher": "",

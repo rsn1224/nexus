@@ -1,62 +1,12 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
-import Shell from './components/layout/Shell';
-import OnboardingWizard from './components/onboarding/OnboardingWizard';
-import { ErrorBoundary, LoadingFallback } from './components/ui';
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { useNavStore } from './stores/useNavStore';
-import { isOnboardingDone } from './stores/useOnboardingStore';
-import type { WingId } from './types';
-
-// ─── Lazy Wing imports ──────────────────────────────────────────────────────
-const DashboardWing = lazy(() => import('./wings/DashboardWing'));
-const GamingWing = lazy(() => import('./wings/GamingWing'));
-const MonitorWing = lazy(() => import('./wings/MonitorWing'));
-const HistoryWing = lazy(() => import('./wings/HistoryWing'));
-const SettingsWing = lazy(() => import('./wings/SettingsWing'));
-
-const WING_COMPONENTS: Record<WingId, React.ComponentType> = {
-  dashboard: DashboardWing,
-  gaming: GamingWing,
-  monitor: MonitorWing,
-  history: HistoryWing,
-  settings: SettingsWing,
-};
+import TitleBar from './components/layout/TitleBar';
 
 export default function App(): React.ReactElement {
-  const [activeWing, setActiveWing] = useState<WingId>('dashboard');
-  const [showOnboarding, setShowOnboarding] = useState(() => !isOnboardingDone());
-
-  useKeyboardShortcuts();
-
-  const setNavigate = useNavStore((s) => s.setNavigate);
-
-  const handleWingChange = useCallback((wing: WingId): void => {
-    setActiveWing(wing);
-  }, []);
-
-  useEffect(() => {
-    setNavigate(handleWingChange);
-  }, [setNavigate, handleWingChange]);
-
-  const handleOnboardingComplete = useCallback(() => {
-    setShowOnboarding(false);
-  }, []);
-
-  const WingComponent = WING_COMPONENTS[activeWing];
-
-  if (showOnboarding) {
-    return <OnboardingWizard onComplete={handleOnboardingComplete} />;
-  }
-
   return (
-    <Shell activeWing={activeWing} onWingChange={handleWingChange}>
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
-          <div data-testid={`wing-${activeWing}`}>
-            <WingComponent />
-          </div>
-        </Suspense>
-      </ErrorBoundary>
-    </Shell>
+    <div className="min-h-screen bg-base-900 text-text-primary">
+      <TitleBar />
+      <main className="pt-8 px-4">
+        <p className="text-sm text-text-secondary">NEXUS v4 — coming soon</p>
+      </main>
+    </div>
   );
 }

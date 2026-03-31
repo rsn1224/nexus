@@ -4,13 +4,8 @@
 export { assertNever } from '../lib/assert';
 export * from './advisor';
 export * from './hardware';
-export * from './navigation';
 export * from './network';
 export * from './performance';
-export * from './power';
 export * from './process';
 export * from './pulse';
 export * from './settings';
-export * from './storage';
-export * from './watchdog';
-export * from './wing';
