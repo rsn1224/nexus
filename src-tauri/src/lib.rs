@@ -54,6 +54,12 @@ pub fn run() {
         )))
         .invoke_handler(build_invoke_handler())
         .setup(|app| {
+            // 開発ビルドのみ DevTools を自動オープン（Ctrl+Shift+I でも開閉可能）
+            #[cfg(debug_assertions)]
+            if let Some(window) = app.get_webview_window("main") {
+                window.open_devtools();
+            }
+
             let handle = app.handle().clone();
 
             // UnifiedEmitter（pulse=2s / ops+game=3s / hardware=5s — 1秒ベースループ）
