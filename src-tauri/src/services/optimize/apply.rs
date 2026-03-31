@@ -166,12 +166,25 @@ fn apply_power_plan() -> Result<AppliedItem, AppError> {
             .unwrap_or_else(|| before_guid.clone());
 
         super::revert_store::save_value("power_plan", &before_guid);
-        ctrl.switch_to_guid("e9a42b02-d5df-448d-aa00-03f14749eb61")?;
+
+        // Ultimate Performance が未インストールの環境では duplicatescheme で作成し、
+        // 失敗時は High Performance にフォールバックする
+        let target_guid = ctrl.ensure_ultimate_performance()?;
+        let after_name = if target_guid
+            .to_lowercase()
+            .starts_with("8c5e7fda")
+        {
+            "High Performance (fallback)"
+        } else {
+            "Ultimate Performance"
+        };
+
+        ctrl.switch_to_guid(&target_guid)?;
 
         Ok(AppliedItem {
             id: "power_plan".into(),
             before: before_name,
-            after: "Ultimate Performance".into(),
+            after: after_name.into(),
         })
     }
     #[cfg(not(windows))]
