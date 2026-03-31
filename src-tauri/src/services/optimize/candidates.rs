@@ -91,11 +91,16 @@ fn power_plan_display() -> String {
     #[cfg(windows)]
     {
         let ctrl = crate::infra::power_plan::PowerPlanController::new();
-        if let Ok(Some(guid)) = ctrl.get_active_plan_guid() {
-            let plans = ctrl.list_available_plans().unwrap_or_default();
-            return guid_to_plan_name_with_list(&guid, &plans);
+        match ctrl.get_active_plan_guid() {
+            Ok(Some(guid)) => {
+                tracing::debug!("power_plan active GUID: {}", guid);
+                let plans = ctrl.list_available_plans().unwrap_or_default();
+                tracing::debug!("power_plan available plans: {:?}", plans);
+                let name = guid_to_plan_name_with_list(&guid, &plans);
+                if name.is_empty() { "Unknown".into() } else { name }
+            }
+            _ => String::from("Unknown"),
         }
-        String::from("Unknown")
     }
     #[cfg(not(windows))]
     "N/A".into()
