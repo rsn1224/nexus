@@ -55,14 +55,14 @@ const Optimizations = memo(function Optimizations(): React.ReactElement {
               <span className="text-[12px] text-text-primary flex-1 min-w-0 truncate">
                 {c.label}
               </span>
-              {c.is_recommended && (
-                <span className="bg-accent-500/20 text-accent-500 text-[8px] font-bold tracking-wider px-1.5 py-0.5 rounded-sm uppercase shrink-0">
-                  REC
-                </span>
-              )}
-              <span className="text-[10px] text-text-muted shrink-0 ml-2 max-w-[80px] truncate">
-                {c.current_state}
-              </span>
+              <div className="flex items-center gap-2 shrink-0 max-w-[40%]">
+                {c.is_recommended && (
+                  <span className="bg-accent-500/20 text-accent-500 text-[8px] font-bold tracking-wider px-1.5 py-0.5 rounded-sm uppercase shrink-0">
+                    REC
+                  </span>
+                )}
+                <span className="text-[10px] text-text-muted truncate">{c.current_state}</span>
+              </div>
             </div>
           ))
         )}
