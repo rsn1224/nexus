@@ -1,6 +1,5 @@
 //! スタンバイメモリクリーナー本体
 
-use std::process::Command;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 use tracing::{error, info, warn};
@@ -123,26 +122,15 @@ impl MemoryCleaner {
 
     /// 空きメモリが閾値以下かチェック
     fn should_cleanup_memory(threshold_mb: u64) -> Result<bool, AppError> {
-        let output = Command::new("powershell")
-            .args([
-                "-Command",
-                "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory"
-            ])
-            .output()
-            .map_err(|e| AppError::Command(format!("PowerShell実行エラー: {}", e)))?;
+        let stdout = crate::infra::powershell::run_powershell(
+            "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory",
+        )?;
 
-        if !output.status.success() {
-            return Err(AppError::Command("空きメモリ取得失敗".to_string()));
-        }
-
-        let stdout = String::from_utf8_lossy(&output.stdout);
-
-        if let Ok(free_kb) = stdout.trim().parse::<u64>() {
-            let free_mb = free_kb / 1024;
-            return Ok(free_mb <= threshold_mb);
-        }
-
-        Err(AppError::Command("空きメモリの解析に失敗".to_string()))
+        stdout
+            .trim()
+            .parse::<u64>()
+            .map(|free_kb| free_kb / 1024 <= threshold_mb)
+            .map_err(|_| AppError::Command("空きメモリの解析に失敗".to_string()))
     }
 
     /// スタンバイリストをクリーニング
@@ -150,20 +138,9 @@ impl MemoryCleaner {
         let start_time = std::time::SystemTime::now();
         let start_memory = Self::get_available_memory()?;
 
-        let result = Command::new("powershell")
-            .args([
-                "-Command",
-                "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices;
-                public class Memory {
-                    [DllImport(\"psapi.dll\")]
-                    public static extern int EmptyWorkingSet(IntPtr hProcess);
-                    [DllImport(\"kernel32.dll\")]
-                    public static extern IntPtr GetCurrentProcess();
-                }
-                [Memory]::EmptyWorkingSet([Memory]::GetCurrentProcess());'",
-            ])
-            .output()
-            .map_err(|e| AppError::Command(format!("PowerShell実行エラー: {}", e)))?;
+        let cleanup_result = crate::infra::powershell::run_powershell(
+            "Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public class Memory { [DllImport(\"psapi.dll\")] public static extern int EmptyWorkingSet(IntPtr hProcess); [DllImport(\"kernel32.dll\")] public static extern IntPtr GetCurrentProcess(); }'; [Memory]::EmptyWorkingSet([Memory]::GetCurrentProcess())",
+        );
 
         let end_memory = Self::get_available_memory()?;
         let freed_mb = if end_memory > start_memory {
@@ -178,13 +155,9 @@ impl MemoryCleaner {
             .as_secs();
 
         Ok(MemoryCleanupResult {
-            success: result.status.success(),
+            success: cleanup_result.is_ok(),
             freed_mb,
-            error: if result.status.success() {
-                None
-            } else {
-                Some(String::from_utf8_lossy(&result.stderr).to_string())
-            },
+            error: cleanup_result.err().map(|e| e.to_string()),
             timestamp,
         })
     }
@@ -192,25 +165,15 @@ impl MemoryCleaner {
     /// 利用可能なメモリを取得（MB）
     #[cfg(windows)]
     fn get_available_memory() -> Result<u64, AppError> {
-        let output = Command::new("powershell")
-            .args([
-                "-Command",
-                "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory"
-            ])
-            .output()
-            .map_err(|e| AppError::Command(format!("PowerShell実行エラー: {}", e)))?;
+        let stdout = crate::infra::powershell::run_powershell(
+            "Get-CimInstance -ClassName Win32_OperatingSystem | Select-Object -ExpandProperty FreePhysicalMemory",
+        )?;
 
-        if !output.status.success() {
-            return Err(AppError::Command("空きメモリ取得失敗".to_string()));
-        }
-
-        let stdout = String::from_utf8_lossy(&output.stdout);
-
-        if let Ok(free_kb) = stdout.trim().parse::<u64>() {
-            return Ok(free_kb / 1024);
-        }
-
-        Err(AppError::Command("空きメモリの解析に失敗".to_string()))
+        stdout
+            .trim()
+            .parse::<u64>()
+            .map(|free_kb| free_kb / 1024)
+            .map_err(|_| AppError::Command("空きメモリの解析に失敗".to_string()))
     }
 
     #[cfg(not(windows))]

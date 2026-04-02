@@ -9,6 +9,7 @@ interface OptimizationRowProps {
   onToggle: (id: string) => void;
   isLast?: boolean;
   result?: 'success' | 'failed' | null;
+  currentState?: string;
 }
 
 export function OptimizationRow({
@@ -18,6 +19,7 @@ export function OptimizationRow({
   onToggle,
   isLast = false,
   result = null,
+  currentState,
 }: OptimizationRowProps): React.ReactElement {
   return (
     <label
@@ -47,7 +49,12 @@ export function OptimizationRow({
         {checked && <Check className="w-3 h-3 text-base-950" strokeWidth={3} />}
       </div>
 
-      <span className="text-[12px] font-mono text-text-primary">{label}</span>
+      <span className="text-[12px] font-mono text-text-primary flex-1">{label}</span>
+      {currentState && (
+        <span className="text-[10px] font-mono text-text-muted truncate max-w-[120px]">
+          {currentState}
+        </span>
+      )}
     </label>
   );
 }

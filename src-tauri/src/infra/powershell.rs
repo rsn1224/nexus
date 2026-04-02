@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use crate::error::AppError;
 use tracing::debug;
 
@@ -46,9 +44,4 @@ pub fn run_powershell(command: &str) -> Result<String, AppError> {
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     Ok(stdout.trim().to_string())
-}
-
-/// PowerShell コマンドを実行し、失敗時はデフォルト値を返す（ベストエフォート実行）
-pub fn run_powershell_or_default(command: &str) -> String {
-    run_powershell(command).unwrap_or_default()
 }

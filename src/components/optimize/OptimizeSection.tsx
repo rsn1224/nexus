@@ -67,6 +67,7 @@ const OptimizeSection = memo(function OptimizeSection({
                 onToggle={toggleCandidate}
                 isLast={index === candidates.length - 1}
                 result={appliedIds.has(c.id) ? 'success' : failedIds.has(c.id) ? 'failed' : null}
+                currentState={c.current_state}
               />
             ));
           })()

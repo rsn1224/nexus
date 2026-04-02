@@ -13,7 +13,7 @@ pub struct WindowsSettings {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "PascalCase")]
 pub enum PowerPlan {
     Balanced,
     HighPerformance,
