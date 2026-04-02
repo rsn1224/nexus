@@ -1,13 +1,19 @@
+# 新機能実装
+
 機能名: $ARGUMENTS
+
+$ARGUMENTS が空の場合は「使用例: /feat dark-mode」と伝えて停止すること。機能名はケバブケースで指定する。
 
 ## Phase 1: 調査（コード変更禁止）
 
 以下を調査して報告すること:
+
 - 影響するストア・コンポーネント（ファイル:行番号を明示）
 - 既存の類似実装（再利用できるものを優先）
 - 追加するファイルと変更するファイルの候補リスト
 
-<constraints>
+### 制約
+
 - TS/TSX: 200行制限（scripts/check-file-size.mjs が CI で強制）
 - Rust: 300行制限
 - デザイントークン: src/index.css の CSS 変数のみ使用（ハードコード色禁止）
@@ -17,7 +23,6 @@
 - Rust 4層ルール厳守: commands → services → infra/parsers（逆方向禁止）
 - 新 Rust コマンドは src-tauri/src/lib.rs の invoke_handler に必ず登録
 - System::new_all() を各コマンドで直接呼ばない（PulseState を使う）
-</constraints>
 
 調査完了後、`docs/specs/$ARGUMENTS/proposal.md` を以下の内容で生成すること:
 
@@ -91,7 +96,7 @@
 
 ## 完了条件
 
-- `npm run check` — エラー 0
-- `npm run typecheck` — 型エラー 0
-- `cargo clippy -- -D warnings` — warning 0
-- `npm run test` — 全テストグリーン
+- `npm run check` でエラー 0件
+- `npm run typecheck` で型エラー 0件
+- `cargo clippy -- -D warnings` で warning 0件
+- `npm run test` で全テストグリーン
