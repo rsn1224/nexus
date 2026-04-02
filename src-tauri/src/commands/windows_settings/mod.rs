@@ -38,6 +38,7 @@ mod tests {
         };
 
         // シリアライズ・デシリアライズテスト
+        // unwrap: テストコード - serde_json の標準的な型のシリアライズは必ず成功する
         let json = serde_json::to_string(&settings).unwrap();
         let deserialized: WindowsSettings = serde_json::from_str(&json).unwrap();
 

@@ -160,17 +160,17 @@ impl WatchdogEngine {
         let app_data_dir = app
             .path()
             .app_data_dir()
-            .map_err(|e| AppError::Io(format!("Failed to get app data dir: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("アプリデータディレクトリの取得に失敗しました: {}", e)))?;
 
         std::fs::create_dir_all(&app_data_dir)
-            .map_err(|e| AppError::Io(format!("Failed to create app data dir: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("アプリデータディレクトリの作成に失敗しました: {}", e)))?;
 
         let rules_path = app_data_dir.join("watchdog_rules.json");
         let json = serde_json::to_string_pretty(&self.rules)
-            .map_err(|e| AppError::Io(format!("Failed to serialize rules: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("ルールのシリアライズに失敗しました: {}", e)))?;
 
         std::fs::write(&rules_path, json)
-            .map_err(|e| AppError::Io(format!("Failed to write rules file: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("ルールファイルの書き込みに失敗しました: {}", e)))?;
 
         info!("Watchdog rules saved to {:?}", rules_path);
         Ok(())
@@ -181,7 +181,7 @@ impl WatchdogEngine {
         let app_data_dir = app
             .path()
             .app_data_dir()
-            .map_err(|e| AppError::Io(format!("Failed to get app data dir: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("アプリデータディレクトリの取得に失敗しました: {}", e)))?;
 
         let rules_path = app_data_dir.join("watchdog_rules.json");
 
@@ -190,10 +190,10 @@ impl WatchdogEngine {
         }
 
         let json = std::fs::read_to_string(&rules_path)
-            .map_err(|e| AppError::Io(format!("Failed to read rules file: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("ルールファイルの読み込みに失敗しました: {}", e)))?;
 
         let rules: Vec<WatchdogRule> = serde_json::from_str(&json)
-            .map_err(|e| AppError::Io(format!("Failed to deserialize rules: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("ルールのデシリアライズに失敗しました: {}", e)))?;
 
         info!("Watchdog rules loaded from {:?}", rules_path);
         Ok(rules)

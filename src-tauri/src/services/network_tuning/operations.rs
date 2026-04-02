@@ -4,8 +4,6 @@ use crate::error::AppError;
 #[cfg(windows)]
 use crate::infra::registry;
 #[cfg(windows)]
-use std::process::Command;
-#[cfg(windows)]
 use tracing::{info, warn};
 
 use super::types::*;
@@ -120,7 +118,7 @@ pub fn set_delayed_ack(_disabled: bool) -> Result<(), AppError> {
 pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
     if !(-1..=70).contains(&index) {
         return Err(AppError::InvalidInput(
-            "Network Throttling Index must be -1 to 70".into(),
+            "Network Throttling Index は -1〜70 の範囲で指定してください".into(),
         ));
     }
 
@@ -134,7 +132,7 @@ pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
 pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
     if !(-1..=70).contains(&index) {
         return Err(AppError::InvalidInput(
-            "Network Throttling Index must be -1 to 70".into(),
+            "Network Throttling Index は -1〜70 の範囲で指定してください".into(),
         ));
     }
     Err(AppError::Command("Windows 専用機能です".into()))
@@ -145,7 +143,7 @@ pub fn set_network_throttling(index: i32) -> Result<(), AppError> {
 pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
     if percent > 100 {
         return Err(AppError::InvalidInput(
-            "QoS bandwidth must be 0-100%".into(),
+            "QoS 帯域幅は 0〜100% の範囲で指定してください".into(),
         ));
     }
 
@@ -167,7 +165,7 @@ pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
 pub fn set_qos_reserved_bandwidth(percent: u32) -> Result<(), AppError> {
     if percent > 100 {
         return Err(AppError::InvalidInput(
-            "QoS bandwidth must be 0-100%".into(),
+            "QoS 帯域幅は 0〜100% の範囲で指定してください".into(),
         ));
     }
     Err(AppError::Command("Windows 専用機能です".into()))
@@ -184,18 +182,14 @@ pub fn set_tcp_auto_tuning(level: TcpAutoTuningLevel) -> Result<(), AppError> {
         TcpAutoTuningLevel::Experimental => "experimental",
     };
 
-    let output = Command::new("netsh")
-        .args(["int", "tcp", "set", "global", "autotuninglevel=", level_str])
-        .output()
-        .map_err(|e| AppError::Command(format!("netsh command failed: {}", e)))?;
-
-    if !output.status.success() {
-        let error = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!(
-            "netsh autotuninglevel failed: {}",
-            error
-        )));
-    }
+    crate::infra::netsh::run_netsh(&[
+        "int",
+        "tcp",
+        "set",
+        "global",
+        "autotuninglevel=",
+        level_str,
+    ])?;
 
     info!("TCP Auto-Tuning 設定: {:?}", level);
     Ok(())

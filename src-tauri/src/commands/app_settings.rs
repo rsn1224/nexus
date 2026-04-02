@@ -29,12 +29,12 @@ fn get_settings_path(app: &AppHandle) -> Result<PathBuf, AppError> {
     let app_data_dir = app
         .path()
         .app_data_dir()
-        .map_err(|e| AppError::Io(format!("Failed to get app data directory: {e}")))?;
+        .map_err(|e| AppError::Io(format!("アプリデータディレクトリの取得に失敗しました: {e}")))?;
 
     let nexus_dir = app_data_dir.join("nexus");
     if !nexus_dir.exists() {
         fs::create_dir_all(&nexus_dir)
-            .map_err(|e| AppError::Io(format!("Failed to create nexus directory: {e}")))?;
+            .map_err(|e| AppError::Io(format!("nexus ディレクトリの作成に失敗しました: {e}")))?;
     }
     Ok(nexus_dir.join("app_settings.json"))
 }

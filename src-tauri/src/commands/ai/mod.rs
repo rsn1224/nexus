@@ -8,23 +8,6 @@ pub use commands::*;
 mod tests {
     use super::parser::parse_ai_recommendations;
     use super::types::*;
-    use serde_json;
-
-    #[test]
-    fn test_perplexity_request_serialization() {
-        let request = PerplexityRequest {
-            model: "sonar".to_string(),
-            messages: vec![PerplexityMessage {
-                role: "user".to_string(),
-                content: "test".to_string(),
-            }],
-            max_tokens: Some(100),
-        };
-
-        let json = serde_json::to_string(&request).unwrap();
-        assert!(json.contains("sonar"));
-        assert!(json.contains("test"));
-    }
 
     #[test]
     fn test_parse_suggestions() {

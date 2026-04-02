@@ -4,8 +4,6 @@
 use crate::error::AppError;
 #[cfg(windows)]
 use crate::infra::registry;
-#[cfg(windows)]
-use std::process::Command;
 
 #[cfg(windows)]
 use super::types::*;
@@ -49,12 +47,8 @@ pub(super) fn get_delayed_ack_status() -> Result<bool, AppError> {
 
 #[cfg(windows)]
 pub(super) fn get_tcp_auto_tuning_level() -> Result<TcpAutoTuningLevel, AppError> {
-    let output = Command::new("netsh")
-        .args(["int", "tcp", "show", "global"])
-        .output()
-        .map_err(|e| AppError::Command(format!("netsh command failed: {}", e)))?;
-
-    let output_str = String::from_utf8_lossy(&output.stdout);
+    let output_str =
+        crate::infra::netsh::run_netsh(&["int", "tcp", "show", "global"])?;
 
     if output_str.contains("disabled") {
         Ok(TcpAutoTuningLevel::Disabled)

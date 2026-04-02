@@ -10,7 +10,7 @@ pub fn sessions_dir(app: &AppHandle) -> Result<std::path::PathBuf, AppError> {
     let data_dir = app
         .path()
         .app_data_dir()
-        .map_err(|e| AppError::Internal(format!("Failed to get app data dir: {e}")))?;
+        .map_err(|e| AppError::Internal(format!("アプリデータディレクトリの取得に失敗しました: {e}")))?;
     let sessions_dir = data_dir.join("sessions");
     fs::create_dir_all(&sessions_dir).map_err(|e| AppError::Io(e.to_string()))?;
     Ok(sessions_dir)
@@ -20,20 +20,20 @@ pub fn sessions_dir(app: &AppHandle) -> Result<std::path::PathBuf, AppError> {
 pub(super) fn validate_session_id(id: &str) -> Result<(), AppError> {
     if id.is_empty() {
         return Err(AppError::InvalidInput(
-            "Session ID cannot be empty".to_string(),
+            "セッション ID が空です".to_string(),
         ));
     }
 
     // 英数字とハイフンのみ許可（パストラバーサル防止）
     if !id.chars().all(|c| c.is_alphanumeric() || c == '-') {
         return Err(AppError::InvalidInput(
-            "Session ID can only contain alphanumeric characters and hyphens".to_string(),
+            "セッション ID には英数字とハイフンのみ使用できます".to_string(),
         ));
     }
 
     if id.len() > 100 {
         return Err(AppError::InvalidInput(
-            "Session ID too long (max 100 characters)".to_string(),
+            "セッション ID が長すぎます（最大 100 文字）".to_string(),
         ));
     }
 
@@ -78,7 +78,7 @@ pub fn list_sessions(app: &AppHandle) -> Result<Vec<SessionListItem>, AppError> 
         let file_name = path
             .file_stem()
             .and_then(|s| s.to_str())
-            .ok_or_else(|| AppError::Internal("Invalid file name".to_string()))?;
+            .ok_or_else(|| AppError::Internal("無効なファイル名です".to_string()))?;
 
         validate_session_id(file_name)?;
 

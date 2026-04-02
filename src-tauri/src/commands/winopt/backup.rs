@@ -10,7 +10,7 @@ use tracing::info;
 
 pub(crate) fn backup_path() -> Result<PathBuf, AppError> {
     let mut path = std::env::var("LOCALAPPDATA").map_err(|_| {
-        AppError::Command("Cannot get LOCALAPPDATA environment variable".to_string())
+        AppError::Command("LOCALAPPDATA 環境変数の取得に失敗しました".to_string())
     })?;
     path.push_str("\\nexus\\winopt_backup.json");
     Ok(PathBuf::from(path))
@@ -23,10 +23,10 @@ pub(crate) fn load_backup() -> Result<HashMap<String, String>, AppError> {
     }
 
     let content = std::fs::read_to_string(path)
-        .map_err(|e| AppError::Io(format!("Failed to read backup file: {}", e)))?;
+        .map_err(|e| AppError::Io(format!("バックアップファイルの読み込みに失敗しました: {}", e)))?;
 
     serde_json::from_str(&content)
-        .map_err(|e| AppError::Serialization(format!("Failed to parse backup file: {}", e)))
+        .map_err(|e| AppError::Serialization(format!("バックアップファイルの解析に失敗しました: {}", e)))
 }
 
 pub(crate) fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppError> {
@@ -35,14 +35,14 @@ pub(crate) fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppErr
     // Create directory if it doesn't exist
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent)
-            .map_err(|e| AppError::Io(format!("Failed to create backup directory: {}", e)))?;
+            .map_err(|e| AppError::Io(format!("バックアップディレクトリの作成に失敗しました: {}", e)))?;
     }
 
     let content = serde_json::to_string_pretty(backup)
-        .map_err(|e| AppError::Serialization(format!("Failed to serialize backup: {}", e)))?;
+        .map_err(|e| AppError::Serialization(format!("バックアップのシリアライズに失敗しました: {}", e)))?;
 
     std::fs::write(path, content)
-        .map_err(|e| AppError::Io(format!("Failed to write backup file: {}", e)))?;
+        .map_err(|e| AppError::Io(format!("バックアップファイルの書き込みに失敗しました: {}", e)))?;
 
     Ok(())
 }
@@ -69,7 +69,7 @@ pub(crate) fn validate_guid(s: &str) -> Result<&str, AppError> {
         Ok(trimmed)
     } else {
         Err(AppError::InvalidInput(format!(
-            "Invalid GUID format: {}",
+            "無効な GUID 形式です: {}",
             s
         )))
     }
@@ -79,7 +79,7 @@ pub(crate) fn validate_guid(s: &str) -> Result<&str, AppError> {
 pub(crate) fn validate_u32_value(s: &str) -> Result<u32, AppError> {
     s.trim()
         .parse::<u32>()
-        .map_err(|_| AppError::InvalidInput(format!("Invalid numeric value: {}", s)))
+        .map_err(|_| AppError::InvalidInput(format!("無効な数値です: {}", s)))
 }
 
 /// マウス速度値のバリデーション（"0" or "1" or "2"）
@@ -88,7 +88,7 @@ pub(crate) fn validate_mouse_speed(s: &str) -> Result<&str, AppError> {
     match trimmed {
         "0" | "1" | "2" => Ok(trimmed),
         _ => Err(AppError::InvalidInput(format!(
-            "Invalid mouse speed value: {}. Expected 0, 1, or 2",
+            "無効なマウス速度値です: {}（0、1、2 のいずれかを指定してください）",
             s
         ))),
     }

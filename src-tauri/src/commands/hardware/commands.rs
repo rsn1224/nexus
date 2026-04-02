@@ -26,8 +26,12 @@ pub fn get_hardware_info(state: State<'_, SharedState>) -> Result<HardwareInfo, 
         .map(|cpu: &sysinfo::Cpu| cpu.brand().to_string())
         .unwrap_or_else(|| "Unknown CPU".to_string());
 
-    let cpu_cores = s.sys.cpus().len() as u32;
-    let cpu_threads = cpu_cores;
+    let cpu_threads = s.sys.cpus().len() as u32;
+    let cpu_cores = s
+        .cpu_topology
+        .as_ref()
+        .map(|t| t.physical_cores as u32)
+        .unwrap_or(cpu_threads);
     let cpu_base_ghz = s
         .sys
         .cpus()
@@ -210,18 +214,18 @@ pub fn save_eco_mode_config(app: AppHandle, config: EcoModeConfig) -> Result<(),
     let app_data_dir = app
         .path()
         .resolve("app_data", tauri::path::BaseDirectory::AppData)
-        .map_err(|_| AppError::Command("Failed to get app data directory".to_string()))?;
+        .map_err(|_| AppError::Command("アプリデータディレクトリの取得に失敗しました".to_string()))?;
 
     let config_path = app_data_dir.join("eco_config.json");
 
     std::fs::create_dir_all(&app_data_dir)
-        .map_err(|e| AppError::Command(format!("Failed to create app data directory: {}", e)))?;
+        .map_err(|e| AppError::Command(format!("アプリデータディレクトリの作成に失敗しました: {}", e)))?;
 
     let config_json = serde_json::to_string_pretty(&config)
-        .map_err(|e| AppError::Command(format!("Failed to serialize config: {}", e)))?;
+        .map_err(|e| AppError::Command(format!("設定のシリアライズに失敗しました: {}", e)))?;
 
     std::fs::write(&config_path, config_json)
-        .map_err(|e| AppError::Command(format!("Failed to save config: {}", e)))?;
+        .map_err(|e| AppError::Command(format!("設定の保存に失敗しました: {}", e)))?;
 
     info!("Eco mode configuration saved to: {:?}", config_path);
     Ok(())

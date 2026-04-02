@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./styles/nexus.css";
 @import "@fontsource-variable/inter";
 @import "@fontsource/noto-sans-jp/400.css";
 @import "@fontsource/noto-sans-jp/700.css";
@@ -6,17 +7,17 @@
 @theme {
   /* ─── NEXUS v4: Minimal Dark ──────────────────────── */
 
-  /* Background layers */
-  --color-base-950: #08080d;
-  --color-base-900: #0a0a0f;
-  --color-base-800: #12121a;
-  --color-base-700: #1e293b;
-  --color-base-600: #334155;
-  --color-base-500: #475569;
+  /* Background layers (= nexus.css --s-0 〜 --s-5) */
+  --color-base-950: #05060b;
+  --color-base-900: #08090f;
+  --color-base-800: #0d0e17;
+  --color-base-700: #12131e;
+  --color-base-600: #191a28;
+  --color-base-500: #202235;
 
-  /* Accent: Cyan (single accent color) */
+  /* Accent: Cyan (= nexus.css --c / --c-mid / --c) */
   --color-accent-600: #0891b2;
-  --color-accent-500: #06b6d4;
+  --color-accent-500: #22d3ee;
   --color-accent-400: #22d3ee;
 
   /* Semantic */
@@ -24,14 +25,14 @@
   --color-warning-500: #f59e0b;
   --color-danger-500: #ef4444;
 
-  /* Text */
+  /* Text (= nexus.css --t-1 / --t-2 / --t-3) */
   --color-text-primary: #e2e8f0;
   --color-text-secondary: #94a3b8;
-  --color-text-muted: #475569;
+  --color-text-muted: #64748b;
 
-  /* Borders */
-  --color-border-subtle: #1e293b;
-  --color-border-active: #334155;
+  /* Borders (= nexus.css --c-border に近似) */
+  --color-border-subtle: rgba(34, 211, 238, 0.12);
+  --color-border-active: rgba(34, 211, 238, 0.2);
 
   /* Fonts */
   --font-sans: "Inter", "system-ui", sans-serif;
@@ -76,6 +77,6 @@ body,
 
 /* ─── Selection ───────────────────────────────────────── */
 ::selection {
-  background: rgba(6, 182, 212, 0.2);
+  background: rgba(34, 211, 238, 0.2);
   color: var(--color-text-primary);
 }

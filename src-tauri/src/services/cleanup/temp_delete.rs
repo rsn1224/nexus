@@ -5,7 +5,7 @@ use std::fs;
 use std::path::PathBuf;
 use tracing::{info, warn};
 
-use super::temp_scan::{expand_env_path, TEMP_DIRS};
+use super::temp_scan::{TEMP_DIRS, expand_env_path};
 use super::types::CleanupResult;
 
 /// 指定されたパスのファイルを削除する

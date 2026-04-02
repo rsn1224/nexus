@@ -1,6 +1,9 @@
 pub mod cpu_affinity;
 pub mod etw;
 pub mod gpu;
+pub mod netsh;
+pub mod perplexity_client;
+pub mod ping;
 pub mod process_control;
 
 #[cfg(windows)]

@@ -1,7 +1,6 @@
 //! コア ping 測定ロジック
 
 use crate::error::AppError;
-use std::process::Command;
 use tracing::info;
 
 use super::NetworkQualitySnapshot;
@@ -13,7 +12,7 @@ pub fn measure_network_quality(
 ) -> Result<NetworkQualitySnapshot, AppError> {
     if !(1..=50).contains(&count) {
         return Err(AppError::InvalidInput(
-            "Ping count must be between 1 and 50".into(),
+            "Ping カウントは 1〜50 の範囲で指定してください".into(),
         ));
     }
 
@@ -24,17 +23,7 @@ pub fn measure_network_quality(
         target, count
     );
 
-    let output = Command::new("ping")
-        .args(["-n", &count.to_string(), target])
-        .output()
-        .map_err(|e| AppError::Command(format!("ping command failed: {}", e)))?;
-
-    if !output.status.success() {
-        let error = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("ping failed: {}", error)));
-    }
-
-    let output_str = String::from_utf8_lossy(&output.stdout);
+    let output_str = crate::infra::ping::run_ping(target, count)?;
 
     let mut rtt_values = Vec::new();
     let mut received_count = 0u32;
@@ -91,7 +80,9 @@ pub fn measure_network_quality(
 /// ping ターゲットのバリデーション
 pub(super) fn validate_ping_target(target: &str) -> Result<(), AppError> {
     if target.is_empty() {
-        return Err(AppError::InvalidInput("Target cannot be empty".into()));
+        return Err(AppError::InvalidInput(
+            "ターゲットを指定してください".into(),
+        ));
     }
 
     if target.parse::<std::net::Ipv4Addr>().is_ok() {
@@ -107,7 +98,7 @@ pub(super) fn validate_ping_target(target: &str) -> Result<(), AppError> {
     }
 
     Err(AppError::InvalidInput(
-        "Invalid ping target. Use IPv4 address or domain name.".into(),
+        "無効な Ping ターゲットです。IPv4 アドレスまたはドメイン名を指定してください".into(),
     ))
 }
 

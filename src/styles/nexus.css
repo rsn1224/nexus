@@ -1,0 +1,414 @@
+/* ============================================================
+ * NEXUS v4.1 — nx- Design System
+ * FF14 HUD 思想のサイバー×メカニカルダークテーマ
+ * ============================================================ */
+
+/* ─── Design Tokens ──────────────────────────────────────── */
+:root {
+  /* Surfaces (s-0 = 最深〜s-6 = 最明) */
+  --s-0: #05060b;
+  --s-1: #08090f;
+  --s-2: #0d0e17;
+  --s-3: #12131e;
+  --s-4: #191a28;
+  --s-5: #202235;
+  --s-6: #282b3e;
+
+  /* Cyan accent (メインアクセント) */
+  --c: #22d3ee;
+  --c-mid: #0891b2;
+  --c-deep: #0e7490;
+  --c-bg: rgba(34, 211, 238, 0.07);
+  --c-bg2: rgba(34, 211, 238, 0.13);
+  --c-border: rgba(34, 211, 238, 0.2);
+  --c-glow: rgba(34, 211, 238, 0.35);
+
+  /* Gold (セクションラベル) */
+  --g: #c8a84b;
+  --g-bg: rgba(200, 168, 75, 0.1);
+  --g-border: rgba(200, 168, 75, 0.28);
+
+  /* Semantic */
+  --nx-success: #22c55e;
+  --nx-warning: #f59e0b;
+  --nx-danger: #ef4444;
+
+  /* Text */
+  --t-1: #e2e8f0;
+  --t-2: #94a3b8;
+  --t-3: #64748b;
+  --t-4: #3d4760;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 140ms;
+  --dur-med: 240ms;
+  --dur-slow: 380ms;
+}
+
+/* ─── Keyframes ──────────────────────────────────────────── */
+@keyframes nx-pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes nx-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes nx-boost-sheen {
+  0% {
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  100% {
+    transform: translateX(400%) skewX(-15deg);
+  }
+}
+
+@keyframes nx-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes nx-fadeup {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes nx-spin-ring {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ─── Overlay / Panel ────────────────────────────────────── */
+.nx-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 11, 0.72);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+  animation: nx-fadeup var(--dur-fast) var(--ease-out);
+}
+
+.nx-panel {
+  position: absolute;
+  background: var(--s-2);
+  border: 1px solid var(--c-border);
+  border-radius: 4px;
+  z-index: 50;
+  animation: nx-fadeup var(--dur-med) var(--ease-out);
+}
+
+.nx-panel-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.12);
+}
+
+.nx-panel-ttl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--g);
+}
+
+.nx-panel-x {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  color: var(--t-3);
+  cursor: pointer;
+  border-radius: 2px;
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
+}
+.nx-panel-x:hover {
+  color: var(--t-1);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Tabs ───────────────────────────────────────────────── */
+.nx-tabs {
+  display: flex;
+  gap: 1px;
+  background: var(--s-1);
+  border: 1px solid rgba(34, 211, 238, 0.1);
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.nx-tab {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--t-3);
+  background: transparent;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
+}
+.nx-tab:hover {
+  color: var(--t-2);
+  background: rgba(255, 255, 255, 0.04);
+}
+.nx-tab--active {
+  color: var(--c);
+  background: var(--c-bg2);
+}
+.nx-tab--active:hover {
+  color: var(--c);
+  background: var(--c-bg2);
+}
+
+/* ─── Card ───────────────────────────────────────────────── */
+.nx-card {
+  background: var(--s-2);
+  border: 1px solid rgba(34, 211, 238, 0.1);
+  border-radius: 4px;
+  padding: 12px 14px;
+}
+
+.nx-card--active {
+  border-color: var(--c-border);
+  background: var(--c-bg);
+}
+
+/* ─── Settings Row ───────────────────────────────────────── */
+.nx-s-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+.nx-s-row:last-child {
+  border-bottom: none;
+}
+
+.nx-s-lbl {
+  font-size: 11px;
+  color: var(--t-2);
+  letter-spacing: 0.04em;
+}
+
+.nx-s-sub {
+  font-size: 10px;
+  color: var(--t-3);
+  margin-top: 2px;
+}
+
+/* ─── Toggle ─────────────────────────────────────────────── */
+.nx-tog {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: var(--s-5);
+  border: 1px solid var(--t-4);
+  border-radius: 9px;
+  cursor: pointer;
+  transition:
+    background var(--dur-fast),
+    border-color var(--dur-fast);
+  flex-shrink: 0;
+}
+.nx-tog::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  background: var(--t-3);
+  border-radius: 50%;
+  transition:
+    transform var(--dur-fast) var(--ease-spring),
+    background var(--dur-fast);
+}
+.nx-tog[data-on="true"] {
+  background: var(--c-bg2);
+  border-color: var(--c-mid);
+}
+.nx-tog[data-on="true"]::after {
+  transform: translateX(14px);
+  background: var(--c);
+}
+
+/* ─── Tag / Badge ────────────────────────────────────────── */
+.nx-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 2px;
+}
+.nx-tag--cyan {
+  color: var(--c);
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+}
+.nx-tag--gold {
+  color: var(--g);
+  background: var(--g-bg);
+  border: 1px solid var(--g-border);
+}
+
+/* ─── Corner Marks (FF14 スタイル) ───────────────────────── */
+.nx-corner-marks {
+  position: relative;
+}
+.nx-corner-marks::before,
+.nx-corner-marks::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: var(--c-border);
+  border-style: solid;
+}
+.nx-corner-marks::before {
+  top: -1px;
+  left: -1px;
+  border-width: 1px 0 0 1px;
+}
+.nx-corner-marks::after {
+  bottom: -1px;
+  right: -1px;
+  border-width: 0 1px 1px 0;
+}
+
+/* ─── Preset Card (BoostView) ────────────────────────────── */
+.nx-preset-card {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--s-3);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast),
+    background var(--dur-fast);
+  text-align: left;
+}
+.nx-preset-card:hover {
+  border-color: rgba(34, 211, 238, 0.25);
+  background: var(--s-4);
+}
+.nx-preset-card--active {
+  border-color: var(--c-border);
+  background: var(--c-bg);
+}
+
+/* ─── Slider ─────────────────────────────────────────────── */
+.nx-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 3px;
+  background: var(--s-5);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+.nx-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--c);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+.nx-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.3);
+}
+
+/* ─── Section Label ──────────────────────────────────────── */
+.nx-section-lbl {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--g);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--g-border);
+  margin-bottom: 8px;
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .nx-overlay,
+  .nx-panel,
+  .nx-tog::after,
+  .nx-preset-card,
+  .nx-tab {
+    animation: none;
+    transition: none;
+  }
+  @keyframes nx-pulse-ring {
+    from,
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes nx-slide-in {
+    from,
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes nx-fadeup {
+    from,
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}

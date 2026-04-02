@@ -26,14 +26,22 @@ export const useSystemStore = create<SystemStore>((set) => ({
 
   refresh: async () => {
     set({ isLoading: true, error: null });
-    try {
-      const [status, alerts] = await Promise.all([commands.getSystemStatus(), commands.diagnose()]);
-      set({ status, alerts, isLoading: false });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
-      log.error({ err }, 'system refresh failed: %s', msg);
+    const [statusResult, alertsResult] = await Promise.allSettled([
+      commands.getSystemStatus(),
+      commands.diagnose(),
+    ]);
+    const status = statusResult.status === 'fulfilled' ? statusResult.value : null;
+    const alerts = alertsResult.status === 'fulfilled' ? alertsResult.value : [];
+    if (statusResult.status === 'rejected') {
+      const msg =
+        statusResult.reason instanceof Error
+          ? statusResult.reason.message
+          : String(statusResult.reason);
+      log.error({ err: statusResult.reason }, 'system status fetch failed: %s', msg);
       set({ isLoading: false, error: msg });
+      return;
     }
+    set({ status, alerts, isLoading: false });
   },
 
   startPolling: () => {

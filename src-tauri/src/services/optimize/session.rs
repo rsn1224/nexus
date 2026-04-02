@@ -32,8 +32,8 @@ pub(super) fn save_session(
     dir.push("sessions");
     std::fs::create_dir_all(&dir).map_err(|e| AppError::Io(e.to_string()))?;
 
-    let json =
-        serde_json::to_string_pretty(&session).map_err(|e| AppError::Serialization(e.to_string()))?;
+    let json = serde_json::to_string_pretty(&session)
+        .map_err(|e| AppError::Serialization(e.to_string()))?;
     std::fs::write(dir.join(format!("{id}.json")), json)
         .map_err(|e| AppError::Io(e.to_string()))?;
 

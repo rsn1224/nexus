@@ -7,9 +7,9 @@
 use tracing::{info, warn};
 
 use crate::error::AppError;
+use crate::infra::cpu_affinity;
 #[cfg(windows)]
 use crate::infra::power_plan;
-use crate::infra::cpu_affinity;
 use crate::services::core_parking;
 use crate::state::SharedState;
 use crate::types::game::{BoostLevel, GameProfile, ProfileApplyResult};

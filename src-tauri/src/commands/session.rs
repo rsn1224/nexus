@@ -40,9 +40,6 @@ pub fn update_session_note(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::services::session_store;
-    use crate::types::game::{HardwareSnapshot, SessionSummary};
     use std::fs;
     use tempfile::TempDir;
 
@@ -53,7 +50,6 @@ mod tests {
     #[test]
     fn test_validate_session_id_command() {
         // コマンドレベルのバリデーションテストはsession_storeでカバー
-        assert!(true); // placeholder
     }
 
     #[test]
@@ -158,6 +154,5 @@ mod tests {
     #[test]
     fn test_compare_sessions_command() {
         // 比較ロジックのテストはsession_storeでカバー
-        assert!(true); // placeholder
     }
 }

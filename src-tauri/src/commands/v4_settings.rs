@@ -23,10 +23,7 @@ pub fn get_v4_settings(app: tauri::AppHandle) -> Result<NexusSettings, AppError>
 }
 
 #[tauri::command]
-pub fn update_v4_settings(
-    app: tauri::AppHandle,
-    settings: NexusSettings,
-) -> Result<(), AppError> {
+pub fn update_v4_settings(app: tauri::AppHandle, settings: NexusSettings) -> Result<(), AppError> {
     let path = settings_path(&app)?;
     if let Some(parent) = path.parent() {
         std::fs::create_dir_all(parent).map_err(|e| AppError::Io(e.to_string()))?;

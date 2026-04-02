@@ -63,7 +63,9 @@ fn apply_single(
         "svc_search" => apply_svc_stop(id, "WSearch"),
         "svc_sysmain" => apply_svc_stop(id, "SysMain"),
         "timer_res" => apply_timer(),
-        _ => Err(AppError::InvalidInput(format!("Unknown optimization: {id}"))),
+        _ => Err(AppError::InvalidInput(format!(
+            "Unknown optimization: {id}"
+        ))),
     }
 }
 
@@ -170,10 +172,7 @@ fn apply_power_plan() -> Result<AppliedItem, AppError> {
         // Ultimate Performance が未インストールの環境では duplicatescheme で作成し、
         // 失敗時は High Performance にフォールバックする
         let target_guid = ctrl.ensure_ultimate_performance()?;
-        let after_name = if target_guid
-            .to_lowercase()
-            .starts_with("8c5e7fda")
-        {
+        let after_name = if target_guid.to_lowercase().starts_with("8c5e7fda") {
             "High Performance (fallback)"
         } else {
             "Ultimate Performance"

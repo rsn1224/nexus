@@ -16,7 +16,7 @@ mod tests {
 
     #[test]
     fn test_power_plan_controller_default() {
-        let _unused_controller = PowerPlanController::default();
+        let _unused_controller = PowerPlanController {};
     }
 
     #[test]
@@ -77,17 +77,14 @@ mod tests {
         let controller = PowerPlanController::new();
         let result = controller.list_available_plans();
 
-        match result {
-            Ok(plans) => {
-                if !plans.is_empty() {
-                    for (guid, name) in &plans {
-                        assert!(!guid.is_empty(), "GUID が空");
-                        assert!(!name.is_empty(), "表示名が空");
-                        assert!(guid.len() == 36, "GUID の長さが不正: {}", guid);
-                    }
+        if let Ok(plans) = result {
+            if !plans.is_empty() {
+                for (guid, name) in &plans {
+                    assert!(!guid.is_empty(), "GUID が空");
+                    assert!(!name.is_empty(), "表示名が空");
+                    assert!(guid.len() == 36, "GUID の長さが不正: {}", guid);
                 }
             }
-            Err(_) => {}
         }
     }
 

@@ -146,13 +146,13 @@ fn test_cooldown() {
     // クールダウン期間内
     engine
         .cooldowns_mut()
-        .insert(("test".to_string(), 1234).into(), now - 1000);
+        .insert(("test".to_string(), 1234), now - 1000);
     assert!(engine.is_in_cooldown("test", 1234, 2, now)); // 2秒クールダウン
 
     // クールダウン期間外
     engine
         .cooldowns_mut()
-        .insert(("test".to_string(), 1234).into(), now - 5000);
+        .insert(("test".to_string(), 1234), now - 5000);
     assert!(!engine.is_in_cooldown("test", 1234, 2, now));
 }
 

@@ -36,12 +36,12 @@ fn parse_powercfg_output(output: &str) -> Result<u32, AppError> {
                 let percent_str = parts[1].trim_end_matches('%');
                 return percent_str
                     .parse::<u32>()
-                    .map_err(|_| AppError::PowerPlan("Failed to parse percentage".to_string()));
+                    .map_err(|_| AppError::PowerPlan("パーセント値の解析に失敗しました".to_string()));
             }
         }
     }
     Err(AppError::PowerPlan(
-        "Minimum value not found in powercfg output".to_string(),
+        "powercfg の出力に最小値が見つかりませんでした".to_string(),
     ))
 }
 

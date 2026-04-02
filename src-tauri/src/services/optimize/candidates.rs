@@ -7,24 +7,24 @@ pub fn get_candidates() -> Vec<OptCandidate> {
 
     out.push(OptCandidate {
         id: "cpu_priority".into(),
-        label: "CPU Priority".into(),
-        description: "Set idle processes to low priority".into(),
-        current_state: "Normal".into(),
+        label: "CPU 優先度".into(),
+        description: "アイドルプロセスを低優先度に設定".into(),
+        current_state: "通常".into(),
         is_recommended: true,
     });
 
     out.push(OptCandidate {
         id: "nagle_off".into(),
-        label: "Nagle Algorithm".into(),
-        description: "Disable Nagle for lower latency".into(),
+        label: "Nagle アルゴリズム".into(),
+        description: "Nagle を無効化してレイテンシを低減".into(),
         current_state: nagle_display(),
         is_recommended: !nagle_is_off(),
     });
 
     out.push(OptCandidate {
         id: "dns_optimize".into(),
-        label: "DNS Server".into(),
-        description: "Switch to 1.1.1.1 (Cloudflare)".into(),
+        label: "DNS サーバー".into(),
+        description: "1.1.1.1（Cloudflare）に切り替え".into(),
         current_state: dns_display(),
         is_recommended: true,
     });
@@ -32,8 +32,8 @@ pub fn get_candidates() -> Vec<OptCandidate> {
     let plan = power_plan_display();
     out.push(OptCandidate {
         id: "power_plan".into(),
-        label: "Power Plan".into(),
-        description: "Switch to Ultimate Performance".into(),
+        label: "電源プラン".into(),
+        description: "Ultimate Performance に切り替え".into(),
         current_state: plan.clone(),
         is_recommended: !plan.contains("Ultimate"),
     });
@@ -43,8 +43,8 @@ pub fn get_candidates() -> Vec<OptCandidate> {
 
     out.push(OptCandidate {
         id: "timer_res".into(),
-        label: "Timer Resolution".into(),
-        description: "Set to 0.5ms for precise timing".into(),
+        label: "タイマー精度".into(),
+        description: "0.5ms に設定して精密なタイミングを実現".into(),
         current_state: timer_display(),
         is_recommended: true,
     });
@@ -67,7 +67,7 @@ fn nagle_is_off() -> bool {
 
 fn nagle_display() -> String {
     if nagle_is_off() {
-        "OFF (already optimized)".into()
+        "OFF（最適化済み）".into()
     } else {
         "ON".into()
     }
@@ -97,7 +97,11 @@ fn power_plan_display() -> String {
                 let plans = ctrl.list_available_plans().unwrap_or_default();
                 tracing::debug!("power_plan available plans: {:?}", plans);
                 let name = guid_to_plan_name_with_list(&guid, &plans);
-                if name.is_empty() { "Unknown".into() } else { name }
+                if name.is_empty() {
+                    "Unknown".into()
+                } else {
+                    name
+                }
             }
             _ => String::from("Unknown"),
         }
@@ -147,29 +151,29 @@ fn append_registry(out: &mut Vec<OptCandidate>) {
     let items: &[(&str, &str, &str, &str, &str)] = &[
         (
             "reg_responsiveness",
-            "SystemResponsiveness",
-            "Reduce system overhead for gaming",
+            "システム応答性",
+            "ゲーミング向けシステムオーバーヘッドを削減",
             r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile",
             "SystemResponsiveness",
         ),
         (
             "reg_priority_sep",
-            "Win32PrioritySeparation",
-            "Optimize foreground process priority",
+            "プロセス優先度分離",
+            "フォアグラウンドプロセスの優先度を最適化",
             r"SYSTEM\CurrentControlSet\Control\PriorityControl",
             "Win32PrioritySeparation",
         ),
         (
             "reg_throttle",
-            "NetworkThrottlingIndex",
-            "Disable network throttling",
+            "ネットワークスロットリング",
+            "ネットワークスロットリングを無効化",
             r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile",
             "NetworkThrottlingIndex",
         ),
         (
             "reg_game_dvr",
-            "Game DVR",
-            "Disable background game recording",
+            "ゲーム録画（Game DVR）",
+            "バックグラウンドゲーム録画を無効化",
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR",
             "AppCaptureEnabled",
         ),
@@ -179,7 +183,11 @@ fn append_registry(out: &mut Vec<OptCandidate>) {
         #[cfg(windows)]
         let current = {
             let v = crate::infra::registry::read_hklm_dword_or(_subkey, _vname, u32::MAX);
-            if v == u32::MAX { "not set".into() } else { v.to_string() }
+            if v == u32::MAX {
+                "not set".into()
+            } else {
+                v.to_string()
+            }
         };
         #[cfg(not(windows))]
         let current: String = "N/A".into();
@@ -194,18 +202,63 @@ fn append_registry(out: &mut Vec<OptCandidate>) {
     }
 }
 
+fn append_services(out: &mut Vec<OptCandidate>) {
+    let svcs: &[(&str, &str, &str, &str)] = &[
+        (
+            "svc_search",
+            "Windows Search",
+            "インデクサーを一時停止してCPU負荷を低減",
+            "WSearch",
+        ),
+        (
+            "svc_sysmain",
+            "SysMain (Superfetch)",
+            "Superfetch を一時停止してメモリ使用量を削減",
+            "SysMain",
+        ),
+    ];
+
+    for &(id, label, desc, _svc) in svcs {
+        #[cfg(windows)]
+        let current = crate::infra::powershell::run_powershell(&format!(
+            "(Get-Service -Name '{}' -ErrorAction SilentlyContinue).Status",
+            _svc
+        ))
+        .unwrap_or_else(|_| "Unknown".into())
+        .trim()
+        .to_string();
+
+        #[cfg(not(windows))]
+        let current: String = "N/A".into();
+
+        out.push(OptCandidate {
+            id: id.into(),
+            label: label.into(),
+            description: desc.into(),
+            current_state: current.clone(),
+            is_recommended: current == "Running",
+        });
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_nagle_display_off_shows_optimized_label() {
-        // OFF の場合は "OFF (already optimized)" を返す
+        // OFF の場合は "OFF（最適化済み）" を返す
         // ON 時は "ON" を返す — ロジックの文字列を直接検証
-        let off_str: String = "OFF (already optimized)".into();
+        let off_str: String = "OFF（最適化済み）".into();
         let on_str: String = "ON".into();
-        assert!(off_str.contains("already optimized"), "OFF 表示に already optimized が含まれない");
-        assert!(!on_str.contains("already optimized"), "ON 表示が誤った文字列");
+        assert!(
+            off_str.contains("最適化済み"),
+            "OFF 表示に 最適化済み が含まれない"
+        );
+        assert!(
+            !on_str.contains("最適化済み"),
+            "ON 表示が誤った文字列"
+        );
     }
 
     #[test]
@@ -239,13 +292,19 @@ mod tests {
             "43d7a294-f4db-44fa-9e1c-51b5285f839a".to_string(),
             "Ultimate Performance".to_string(),
         )];
-        assert_eq!(guid_to_plan_name_with_list(guid, &plans), "Ultimate Performance");
+        assert_eq!(
+            guid_to_plan_name_with_list(guid, &plans),
+            "Ultimate Performance"
+        );
     }
 
     #[test]
     fn test_guid_to_plan_name_with_list_known_guid_ignores_list() {
         let guid = "381b4222-f694-41f0-9685-ff5bb260df2e";
-        let plans = vec![("381b4222-f694-41f0-9685-ff5bb260df2e".to_string(), "WrongName".to_string())];
+        let plans = vec![(
+            "381b4222-f694-41f0-9685-ff5bb260df2e".to_string(),
+            "WrongName".to_string(),
+        )];
         assert_eq!(guid_to_plan_name_with_list(guid, &plans), "Balanced");
     }
 
@@ -253,34 +312,5 @@ mod tests {
     fn test_guid_to_plan_name_with_list_completely_unknown() {
         let guid = "ffffffff-ffff-ffff-ffff-ffffffffffff";
         assert_eq!(guid_to_plan_name_with_list(guid, &[]), guid);
-    }
-}
-
-fn append_services(out: &mut Vec<OptCandidate>) {
-    let svcs: &[(&str, &str, &str, &str)] = &[
-        ("svc_search", "Windows Search", "Temporarily stop indexer", "WSearch"),
-        ("svc_sysmain", "SysMain", "Temporarily stop Superfetch", "SysMain"),
-    ];
-
-    for &(id, label, desc, _svc) in svcs {
-        #[cfg(windows)]
-        let current = crate::infra::powershell::run_powershell(&format!(
-            "(Get-Service -Name '{}' -ErrorAction SilentlyContinue).Status",
-            _svc
-        ))
-        .unwrap_or_else(|_| "Unknown".into())
-        .trim()
-        .to_string();
-
-        #[cfg(not(windows))]
-        let current: String = "N/A".into();
-
-        out.push(OptCandidate {
-            id: id.into(),
-            label: label.into(),
-            description: desc.into(),
-            current_state: current.clone(),
-            is_recommended: current == "Running",
-        });
     }
 }

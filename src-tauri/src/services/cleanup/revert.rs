@@ -170,7 +170,7 @@ mod tests {
 
     #[test]
     fn test_revert_all_result_counts() {
-        let items = vec![
+        let items = [
             RevertItem {
                 category: "テスト1".to_string(),
                 label: "項目1".to_string(),

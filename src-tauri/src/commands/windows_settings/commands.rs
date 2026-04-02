@@ -61,12 +61,12 @@ pub fn set_power_plan(plan: PowerPlan) -> Result<(), AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to set power plan: {}", e);
-            AppError::Command(format!("Failed to set power plan: {}", e))
+            AppError::Command(format!("電源プランの設定に失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Powercfg failed: {}", stderr)));
+        return Err(AppError::Command(format!("powercfg が失敗しました: {}", stderr)));
     }
 
     info!("set_power_plan: successfully set power plan to {}", plan);
@@ -97,13 +97,13 @@ pub fn toggle_game_mode() -> Result<bool, AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to toggle game mode: {}", e);
-            AppError::Command(format!("Failed to toggle game mode: {}", e))
+            AppError::Command(format!("ゲームモードの切り替えに失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(AppError::Command(format!(
-            "Game mode toggle failed: {}",
+            "ゲームモードの切り替えに失敗しました: {}",
             stderr
         )));
     }
@@ -139,13 +139,13 @@ pub fn toggle_fullscreen_optimization() -> Result<bool, AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to toggle fullscreen optimization: {}", e);
-            AppError::Command(format!("Failed to toggle fullscreen optimization: {}", e))
+            AppError::Command(format!("フルスクリーン最適化の切り替えに失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(AppError::Command(format!(
-            "Fullscreen optimization toggle failed: {}",
+            "フルスクリーン最適化の切り替えに失敗しました: {}",
             stderr
         )));
     }
@@ -181,13 +181,13 @@ pub fn toggle_hardware_gpu_scheduling() -> Result<bool, AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to toggle hardware GPU scheduling: {}", e);
-            AppError::Command(format!("Failed to toggle hardware GPU scheduling: {}", e))
+            AppError::Command(format!("ハードウェア GPU スケジューリングの切り替えに失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(AppError::Command(format!(
-            "Hardware GPU scheduling toggle failed: {}",
+            "ハードウェア GPU スケジューリングの切り替えに失敗しました: {}",
             stderr
         )));
     }
@@ -224,13 +224,13 @@ pub fn set_visual_effects(effect: VisualEffects) -> Result<(), AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to set visual effects: {}", e);
-            AppError::Command(format!("Failed to set visual effects: {}", e))
+            AppError::Command(format!("視覚効果の設定に失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(AppError::Command(format!(
-            "Visual effects setting failed: {}",
+            "視覚効果の設定に失敗しました: {}",
             stderr
         )));
     }

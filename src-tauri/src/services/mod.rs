@@ -1,9 +1,9 @@
 pub mod boost;
 pub mod cleanup;
-pub mod diagnose_service;
 pub mod core_parking;
 pub mod cpu_topology;
 pub mod credentials;
+pub mod diagnose_service;
 pub mod frame_time;
 pub mod game_monitor;
 pub mod hardware;

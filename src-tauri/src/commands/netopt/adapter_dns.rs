@@ -3,7 +3,7 @@ use tracing::info;
 
 use crate::error::AppError;
 
-use super::types::{decode_output, validate_adapter_name, validate_ipv4, NetworkAdapter};
+use super::types::{NetworkAdapter, decode_output, validate_adapter_name, validate_ipv4};
 
 #[tauri::command]
 pub async fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
@@ -13,11 +13,11 @@ pub async fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
         let output = Command::new("ipconfig")
             .arg("/all")
             .output()
-            .map_err(|e| AppError::Command(format!("Failed to execute ipconfig: {}", e)))?;
+            .map_err(|e| AppError::Command(format!("ipconfig の実行に失敗しました: {}", e)))?;
 
         if !output.status.success() {
             let stderr = decode_output(&output.stderr);
-            return Err(AppError::Command(format!("Ipconfig failed: {}", stderr)));
+            return Err(AppError::Command(format!("ipconfig が失敗しました: {}", stderr)));
         }
 
         let stdout = decode_output(&output.stdout);
@@ -93,11 +93,11 @@ pub async fn get_current_dns() -> Result<Vec<String>, AppError> {
         let output = Command::new("netsh")
             .args(["interface", "ip", "show", "dns"])
             .output()
-            .map_err(|e| AppError::Command(format!("Failed to execute netsh: {}", e)))?;
+            .map_err(|e| AppError::Command(format!("netsh の実行に失敗しました: {}", e)))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Command(format!("Netsh failed: {}", stderr)));
+            return Err(AppError::Command(format!("netsh が失敗しました: {}", stderr)));
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -153,12 +153,12 @@ pub async fn set_dns(adapter: String, primary: String, secondary: String) -> Res
                 "primary",
             ])
             .output()
-            .map_err(|e| AppError::Command(format!("Failed to set primary DNS: {}", e)))?;
+            .map_err(|e| AppError::Command(format!("プライマリ DNS の設定に失敗しました: {}", e)))?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
             return Err(AppError::Command(format!(
-                "Failed to set primary DNS: {}",
+                "プライマリ DNS の設定に失敗しました: {}",
                 stderr
             )));
         }
@@ -175,12 +175,12 @@ pub async fn set_dns(adapter: String, primary: String, secondary: String) -> Res
                     "index=2",
                 ])
                 .output()
-                .map_err(|e| AppError::Command(format!("Failed to set secondary DNS: {}", e)))?;
+                .map_err(|e| AppError::Command(format!("セカンダリ DNS の設定に失敗しました: {}", e)))?;
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);
                 return Err(AppError::Command(format!(
-                    "Failed to set secondary DNS: {}",
+                    "セカンダリ DNS の設定に失敗しました: {}",
                     stderr
                 )));
             }
@@ -202,7 +202,7 @@ pub async fn ping_host(target: String) -> Result<super::types::PingResult, AppEr
         let output = Command::new("ping")
             .args(["-n", "1", &target])
             .output()
-            .map_err(|e| AppError::Command(format!("Failed to execute ping: {}", e)))?;
+            .map_err(|e| AppError::Command(format!("ping の実行に失敗しました: {}", e)))?;
 
         let stdout = String::from_utf8_lossy(&output.stdout);
         let success = output.status.success();

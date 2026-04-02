@@ -18,6 +18,7 @@ mod tests {
             success: true,
         };
 
+        // unwrap: テストコード - serde_json の標準的な型のシリアライズは必ず成功する
         let serialized = serde_json::to_string(&result).unwrap();
         let deserialized: PingResult = serde_json::from_str(&serialized).unwrap();
 

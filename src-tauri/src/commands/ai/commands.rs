@@ -2,14 +2,12 @@
 //! フロントエンドからAPIキーを隠蔽し、Rust側でAPI通信を行う
 
 use crate::error::AppError;
+use crate::infra::perplexity_client::{self, PerplexityMessage};
 use crate::services::credentials;
-use tracing::{debug, error, info};
+use tracing::{error, info};
 
 use super::parser::parse_ai_recommendations;
-use super::types::{
-    AiBottleneckRequest, AiBottleneckResponse, PerplexityMessage, PerplexityRequest,
-    PerplexityResponse,
-};
+use super::types::{AiBottleneckRequest, AiBottleneckResponse};
 
 /// プロセス最適化提案を取得
 #[tauri::command]
@@ -24,53 +22,21 @@ pub async fn get_optimization_suggestions(
         process_names.join(", ")
     );
 
-    let request = PerplexityRequest {
-        model: "sonar".to_string(),
-        messages: vec![PerplexityMessage {
-            role: "user".to_string(),
-            content: prompt,
-        }],
-        max_tokens: Some(500),
-    };
-
-    info!("Sending request to Perplexity API");
-    debug!(
-        "Request: model={}, process_count={}",
-        request.model,
+    info!(
+        "Perplexity API に最適化提案リクエスト送信: プロセス数={}",
         process_names.len()
     );
 
-    let client = reqwest::Client::new();
-    let response = client
-        .post("https://api.perplexity.ai/chat/completions")
-        .header("Authorization", format!("Bearer {}", api_key))
-        .header("Content-Type", "application/json")
-        .json(&request)
-        .send()
-        .await
-        .map_err(|e| AppError::Network(format!("API リクエスト失敗: {}", e)))?;
-
-    if !response.status().is_success() {
-        let status = response.status();
-        error!("Perplexity API error: {}", status);
-        return Err(AppError::Network(format!(
-            "Perplexity API エラー: {}",
-            status
-        )));
-    }
-
-    let data: PerplexityResponse = response
-        .json()
-        .await
-        .map_err(|e| AppError::Network(format!("レスポンス解析失敗: {}", e)))?;
-
-    let content: Option<&str> = data
-        .choices
-        .first()
-        .map(|choice| choice.message.content.as_str());
-
-    let content: &str = content
-        .ok_or_else(|| AppError::Network("レスポンスにコンテンツがありません".to_string()))?;
+    let content = perplexity_client::call_api(
+        &api_key,
+        "sonar",
+        vec![PerplexityMessage {
+            role: "user".to_string(),
+            content: prompt,
+        }],
+        Some(500),
+    )
+    .await?;
 
     // 番号付きリストを配列に変換
     let suggestions: Vec<String> = content
@@ -95,7 +61,7 @@ pub async fn get_optimization_suggestions(
         .take(3)
         .collect();
 
-    info!("Received {} suggestions from Perplexity", suggestions.len());
+    info!("Perplexity API から {} 件の提案を受信", suggestions.len());
     Ok(suggestions)
 }
 
@@ -105,40 +71,28 @@ pub async fn test_api_key() -> Result<bool, AppError> {
     let api_key = credentials::load_api_key("perplexity_api_key")?
         .ok_or_else(|| AppError::InvalidInput("Perplexity API キーが未設定です".to_string()))?;
 
-    let request = PerplexityRequest {
-        model: "sonar".to_string(),
-        messages: vec![PerplexityMessage {
+    info!("Perplexity API キーをテスト中");
+
+    match perplexity_client::call_api(
+        &api_key,
+        "sonar",
+        vec![PerplexityMessage {
             role: "user".to_string(),
             content: "Hello".to_string(),
         }],
-        max_tokens: Some(1),
-    };
-
-    info!("Testing Perplexity API key");
-
-    let client = reqwest::Client::new();
-    let response = client
-        .post("https://api.perplexity.ai/chat/completions")
-        .header("Authorization", format!("Bearer {}", api_key))
-        .header("Content-Type", "application/json")
-        .json(&request)
-        .send()
-        .await
-        .map_err(|e| AppError::Network(format!("API リクエスト失敗: {}", e)))?;
-
-    match response.status().as_u16() {
-        200 => {
-            info!("API key test successful");
+        Some(1),
+    )
+    .await
+    {
+        Ok(_) => {
+            info!("API キーテスト成功");
             Ok(true)
         }
-        401 => {
-            error!("API key test failed: Invalid key");
+        Err(AppError::Network(msg)) if msg.contains("401") => {
+            error!("API キーテスト失敗: 無効なキー");
             Err(AppError::InvalidInput("APIキーが無効です".to_string()))
         }
-        status => {
-            error!("API key test failed: HTTP {}", status);
-            Err(AppError::Network(format!("HTTP {}", status)))
-        }
+        Err(e) => Err(e),
     }
 }
 
@@ -187,49 +141,20 @@ pub async fn analyze_bottleneck_ai(
         pct_1_low = request.pct_1_low,
     );
 
-    // 既存の PerplexityRequest 構造体を再利用
-    let api_request = PerplexityRequest {
-        model: "sonar".to_string(),
-        messages: vec![PerplexityMessage {
+    info!("AI ボトルネック分析を Perplexity API に送信");
+
+    let content = perplexity_client::call_api(
+        &api_key,
+        "sonar",
+        vec![PerplexityMessage {
             role: "user".to_string(),
             content: prompt,
         }],
-        max_tokens: Some(800),
-    };
+        Some(800),
+    )
+    .await?;
 
-    info!("AI ボトルネック分析を Perplexity API に送信");
-
-    let client = reqwest::Client::new();
-    let response = client
-        .post("https://api.perplexity.ai/chat/completions")
-        .header("Authorization", format!("Bearer {}", api_key))
-        .header("Content-Type", "application/json")
-        .json(&api_request)
-        .send()
-        .await
-        .map_err(|e| AppError::Network(format!("API リクエスト失敗: {}", e)))?;
-
-    if !response.status().is_success() {
-        let status = response.status();
-        error!("Perplexity API error: {}", status);
-        return Err(AppError::Network(format!(
-            "Perplexity API エラー: {}",
-            status
-        )));
-    }
-
-    let data: PerplexityResponse = response
-        .json()
-        .await
-        .map_err(|e| AppError::Network(format!("レスポンス解析失敗: {}", e)))?;
-
-    let content = data
-        .choices
-        .first()
-        .map(|c| c.message.content.as_str())
-        .ok_or_else(|| AppError::Network("レスポンスにコンテンツがありません".to_string()))?;
-
-    let recommendations = parse_ai_recommendations(content);
+    let recommendations = parse_ai_recommendations(&content);
 
     info!(
         "AI ボトルネック分析完了: {} 件の推奨事項",
@@ -237,7 +162,7 @@ pub async fn analyze_bottleneck_ai(
     );
 
     Ok(AiBottleneckResponse {
-        analysis: content.to_string(),
+        analysis: content,
         recommendations,
     })
 }

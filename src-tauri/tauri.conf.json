@@ -13,10 +13,12 @@
     "windows": [
       {
         "title": "NEXUS v4",
-        "width": 1000,
-        "height": 650,
-        "minWidth": 800,
+        "width": 440,
+        "height": 720,
+        "minWidth": 440,
         "minHeight": 600,
+        "maxWidth": 440,
+        "resizable": false,
         "decorations": false
       }
     ],

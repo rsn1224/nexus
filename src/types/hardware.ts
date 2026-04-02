@@ -37,13 +37,6 @@ export interface CpuTopology {
   brand: string;
 }
 
-export interface CoreParkingState {
-  /** AC 電源時のコアパーキング最小コア率（0=パーキング有効, 100=無効） */
-  minCoresPercentAc: number;
-  /** DC（バッテリー）時のコアパーキング最小コア率 */
-  minCoresPercentDc: number;
-}
-
 export type ThermalAlertLevel = 'Warning' | 'Critical' | 'Normal';
 
 export interface ThermalAlert {

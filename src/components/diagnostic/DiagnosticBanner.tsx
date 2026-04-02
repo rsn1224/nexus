@@ -23,8 +23,15 @@ const DiagnosticBanner = memo(function DiagnosticBanner(): React.ReactElement | 
               : 'border-warning-500/30 bg-warning-500/5 text-warning-500',
           ].join(' ')}
         >
-          <span className="font-semibold shrink-0">{alert.title}</span>
-          <span className="text-text-muted">{alert.detail}</span>
+          <div className="flex flex-col gap-0.5 flex-1 min-w-0">
+            <div className="flex items-baseline gap-2">
+              <span className="font-semibold shrink-0">{alert.title}</span>
+              <span className="text-text-muted">{alert.detail}</span>
+            </div>
+            {alert.action_hint && (
+              <span className="text-[10px] font-mono text-text-muted">→ {alert.action_hint}</span>
+            )}
+          </div>
         </div>
       ))}
     </section>

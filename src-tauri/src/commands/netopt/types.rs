@@ -36,7 +36,7 @@ pub struct PingResult {
 /// IPv4アドレスのバリデーション
 pub fn validate_ipv4(ip: &str) -> Result<(), AppError> {
     ip.parse::<Ipv4Addr>()
-        .map_err(|_| AppError::InvalidInput(format!("Invalid IPv4 address: {}", ip)))?;
+        .map_err(|_| AppError::InvalidInput(format!("無効な IPv4 アドレスです: {}", ip)))?;
     Ok(())
 }
 
@@ -44,7 +44,7 @@ pub fn validate_ipv4(ip: &str) -> Result<(), AppError> {
 pub fn validate_adapter_name(name: &str) -> Result<(), AppError> {
     if name.is_empty() || name.len() > 256 {
         return Err(AppError::InvalidInput(
-            "Adapter name must be 1-256 characters".into(),
+            "アダプタ名は 1〜256 文字で指定してください".into(),
         ));
     }
     // シェルメタ文字を拒否
@@ -55,7 +55,7 @@ pub fn validate_adapter_name(name: &str) -> Result<(), AppError> {
         )
     }) {
         return Err(AppError::InvalidInput(format!(
-            "Adapter name contains forbidden characters: {}",
+            "アダプタ名に使用できない文字が含まれています: {}",
             name
         )));
     }
@@ -66,7 +66,7 @@ pub fn validate_adapter_name(name: &str) -> Result<(), AppError> {
 pub fn validate_ping_target(target: &str) -> Result<(), AppError> {
     if target.is_empty() || target.len() > 253 {
         return Err(AppError::InvalidInput(
-            "Target must be 1-253 characters".into(),
+            "ターゲットは 1〜253 文字で指定してください".into(),
         ));
     }
     // IPアドレスとして有効 OR ホスト名として有効
@@ -81,7 +81,7 @@ pub fn validate_ping_target(target: &str) -> Result<(), AppError> {
         return Ok(());
     }
     Err(AppError::InvalidInput(format!(
-        "Invalid ping target: {}. Only IP addresses or hostnames (alphanumeric, '-', '.') are allowed",
+        "無効な ping ターゲットです: {}（IPv4 アドレスまたはホスト名のみ指定できます）",
         target
     )))
 }

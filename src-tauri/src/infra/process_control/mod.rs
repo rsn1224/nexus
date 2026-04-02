@@ -25,10 +25,7 @@ mod tests {
         let current_pid = unsafe { GetCurrentProcess() as u32 };
         let result = ProcessController::new(current_pid);
 
-        match result {
-            Ok(_) => {}
-            Err(_) => {}
-        }
+        let _ = result;
     }
 
     #[test]

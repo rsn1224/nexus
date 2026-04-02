@@ -118,33 +118,29 @@ pub fn query_all_gpus() -> Result<Vec<NvmlGpuData>, AppError> {
 
     // 各 GPU をイテレーション
     for i in 0..count {
-        let device = nvml
-            .device_by_index(i)
-            .map_err(|e| {
-                warn!("nvml device_by_index({}) 失敗: {:?}", i, e);
-                AppError::Internal(format!("nvml device_by_index({}) 失敗: {:?}", i, e))
-            })?;
+        let device = nvml.device_by_index(i).map_err(|e| {
+            warn!("nvml device_by_index({}) 失敗: {:?}", i, e);
+            AppError::Internal(format!("nvml device_by_index({}) 失敗: {:?}", i, e))
+        })?;
 
         // GPU 名
-        let name = device.name().unwrap_or_else(|_| format!("NVIDIA GPU {}", i));
+        let name = device
+            .name()
+            .unwrap_or_else(|_| format!("NVIDIA GPU {}", i));
 
         // VRAM 情報
-        let mem = device
-            .memory_info()
-            .map_err(|e| {
-                warn!("GPU {} memory_info 失敗: {:?}", i, e);
-                AppError::Internal(format!("GPU {} memory_info 失敗: {:?}", i, e))
-            })?;
+        let mem = device.memory_info().map_err(|e| {
+            warn!("GPU {} memory_info 失敗: {:?}", i, e);
+            AppError::Internal(format!("GPU {} memory_info 失敗: {:?}", i, e))
+        })?;
         let vram_total_mb = mem.total / 1024 / 1024;
         let vram_used_mb = mem.used / 1024 / 1024;
 
         // 使用率（GPU コア）
-        let utilization = device
-            .utilization_rates()
-            .map_err(|e| {
-                warn!("GPU {} utilization_rates 失敗: {:?}", i, e);
-                AppError::Internal(format!("GPU {} utilization_rates 失敗: {:?}", i, e))
-            })?;
+        let utilization = device.utilization_rates().map_err(|e| {
+            warn!("GPU {} utilization_rates 失敗: {:?}", i, e);
+            AppError::Internal(format!("GPU {} utilization_rates 失敗: {:?}", i, e))
+        })?;
         let usage_percent = utilization.gpu;
 
         // 温度
@@ -196,7 +192,7 @@ mod tests {
             let gpus = result.unwrap();
             assert_eq!(gpus.len(), 0);
         }
-        
+
         // Windows 環境でもエラーにならないことを確認
         #[cfg(windows)]
         {

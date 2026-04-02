@@ -33,7 +33,7 @@ pub fn get_settings_advice() -> Result<crate::services::settings_advisor::Adviso
 
     // Get current settings
     let current_settings = get_current_settings_snapshot()
-        .map_err(|e| AppError::Internal(format!("Failed to get current settings: {}", e)))?;
+        .map_err(|e| AppError::Internal(format!("現在の設定の取得に失敗しました: {}", e)))?;
 
     // Convert to snapshot format expected by analyzer
     let snapshot = crate::services::settings_advisor::WindowsSettingsSnapshot {

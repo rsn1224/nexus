@@ -151,13 +151,17 @@ mod tests {
         // GPU がない環境でもパニックしない
         match info.usage_percent {
             Some(usage) => {
-                assert!(usage >= 0.0 && usage <= 100.0, "GPU 使用率が異常値: {}%", usage);
+                assert!(
+                    (0.0_f32..=100.0).contains(&usage),
+                    "GPU 使用率が異常値: {}%",
+                    usage
+                );
             }
             None => {
                 // GPU がない場合（正常）
             }
         }
-        
+
         match info.temperature_c {
             Some(temp) => {
                 assert!(temp > -50.0 && temp < 150.0, "GPU 温度が異常値: {}℃", temp);
@@ -166,7 +170,7 @@ mod tests {
                 // GPU がない場合（正常）
             }
         }
-        
+
         match info.vram_used_mb {
             Some(vram) => {
                 assert!(vram > 0, "VRAM 使用量が異常値: {}MB", vram);

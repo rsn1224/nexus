@@ -120,7 +120,12 @@ pub fn revert_net_setting(id: &str) -> Result<(), AppError> {
             }
             "network_throttle" => {
                 // Restore original throttle setting (requires admin)
-                let value: u32 = original_value.trim().parse().unwrap_or(10);
+                let value: u32 = original_value.trim().parse().map_err(|_| {
+                    AppError::InvalidInput(format!(
+                        "バックアップ値が不正です: '{}'",
+                        original_value.trim()
+                    ))
+                })?;
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKLM:\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile' -Name 'NetworkThrottlingIndex' -Value {} -Type DWord -Force",
                     value
@@ -128,7 +133,12 @@ pub fn revert_net_setting(id: &str) -> Result<(), AppError> {
             }
             "nagle_algorithm" => {
                 // Restore original Nagle setting (requires admin)
-                let value: u32 = original_value.trim().parse().unwrap_or(2);
+                let value: u32 = original_value.trim().parse().map_err(|_| {
+                    AppError::InvalidInput(format!(
+                        "バックアップ値が不正です: '{}'",
+                        original_value.trim()
+                    ))
+                })?;
                 run_powershell(&format!(
                     "Set-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters' -Name 'TcpAckFrequency' -Value {} -Type DWord -Force",
                     value

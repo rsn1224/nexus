@@ -10,11 +10,11 @@ pub(super) fn get_current_power_plan() -> Result<PowerPlan, AppError> {
     let output = Command::new("powercfg")
         .args(["/getactivescheme"])
         .output()
-        .map_err(|e| AppError::Command(format!("Failed to get power plan: {}", e)))?;
+        .map_err(|e| AppError::Command(format!("電源プランの取得に失敗しました: {}", e)))?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("Powercfg failed: {}", stderr)));
+        return Err(AppError::Command(format!("powercfg が失敗しました: {}", stderr)));
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -38,7 +38,7 @@ pub(super) fn get_game_mode_status() -> Result<bool, AppError> {
             "AllowAutoGameMode",
         ])
         .output()
-        .map_err(|e| AppError::Command(format!("Failed to query game mode: {}", e)))?;
+        .map_err(|e| AppError::Command(format!("ゲームモードの状態取得に失敗しました: {}", e)))?;
 
     if !output.status.success() {
         // レジストリキーが存在しない場合、デフォルトで有効とみなす
@@ -60,7 +60,7 @@ pub(super) fn get_fullscreen_optimization_status() -> Result<bool, AppError> {
         ])
         .output()
         .map_err(|e| {
-            AppError::Command(format!("Failed to query fullscreen optimization: {}", e))
+            AppError::Command(format!("フルスクリーン最適化の状態取得に失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
@@ -83,7 +83,7 @@ pub(super) fn get_hardware_gpu_scheduling_status() -> Result<bool, AppError> {
         ])
         .output()
         .map_err(|e| {
-            AppError::Command(format!("Failed to query hardware GPU scheduling: {}", e))
+            AppError::Command(format!("ハードウェア GPU スケジューリングの状態取得に失敗しました: {}", e))
         })?;
 
     if !output.status.success() {
@@ -105,7 +105,7 @@ pub(super) fn get_visual_effects_setting() -> Result<VisualEffects, AppError> {
             "VisualFXSetting",
         ])
         .output()
-        .map_err(|e| AppError::Command(format!("Failed to query visual effects: {}", e)))?;
+        .map_err(|e| AppError::Command(format!("視覚効果の状態取得に失敗しました: {}", e)))?;
 
     if !output.status.success() {
         // レジストリキーが存在しない場合、デフォルトでBalancedとみなす

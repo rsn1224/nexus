@@ -2,34 +2,6 @@
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize)]
-pub(super) struct PerplexityRequest {
-    pub model: String,
-    pub messages: Vec<PerplexityMessage>,
-    pub max_tokens: Option<u32>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub(super) struct PerplexityMessage {
-    pub role: String,
-    pub content: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub(super) struct PerplexityResponse {
-    pub choices: Vec<PerplexityChoice>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub(super) struct PerplexityChoice {
-    pub message: PerplexityMessageContent,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub(super) struct PerplexityMessageContent {
-    pub content: String,
-}
-
 /// AI ボトルネック分析リクエスト
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]

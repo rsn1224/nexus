@@ -1,30 +1,21 @@
 import type React from 'react';
 import { memo, useCallback, useEffect, useState } from 'react';
-import { useSettingsStore } from '../stores/useSettingsStore';
-import type { NexusSettings } from '../types';
-import Button from './ui/Button';
-import ErrorBanner from './ui/ErrorBanner';
-import SlidePanel from './ui/SlidePanel';
+import { useSettingsStore } from '../../stores/useSettingsStore';
+import type { NexusSettings } from '../../types';
+import Button from '../ui/Button';
+import ErrorBanner from '../ui/ErrorBanner';
 
 const DNS_OPTIONS = ['system', '8.8.8.8', '1.1.1.1', '9.9.9.9'] as const;
 
-interface SettingsPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const SettingsPanel = memo(function SettingsPanel({
-  isOpen,
-  onClose,
-}: SettingsPanelProps): React.ReactElement {
+const SettingsView = memo(function SettingsView(): React.ReactElement {
   const { settings, isLoading, isSaving, error, fetchSettings, updateSettings, clearError } =
     useSettingsStore();
 
   const [form, setForm] = useState<NexusSettings | null>(null);
 
   useEffect(() => {
-    if (isOpen) void fetchSettings();
-  }, [isOpen, fetchSettings]);
+    void fetchSettings();
+  }, [fetchSettings]);
 
   useEffect(() => {
     if (settings) setForm(settings);
@@ -33,18 +24,21 @@ const SettingsPanel = memo(function SettingsPanel({
   const handleSave = useCallback(async () => {
     if (!form) return;
     await updateSettings(form);
-    onClose();
-  }, [form, updateSettings, onClose]);
+  }, [form, updateSettings]);
 
   return (
-    <SlidePanel isOpen={isOpen} onClose={onClose} title="SETTINGS">
+    <div className="h-full flex flex-col gap-4 p-4 overflow-y-auto max-w-[600px]">
+      <h2 className="text-[11px] font-bold uppercase tracking-[0.15em] text-text-primary leading-none">
+        Settings
+      </h2>
+
       {isLoading || !form ? (
-        <span className="text-[11px] text-text-muted">LOADING...</span>
+        <span className="text-[11px] text-text-muted">読み込み中...</span>
       ) : (
         <div className="flex flex-col gap-6">
           {error && <ErrorBanner message={error} variant="error" onDismiss={clearError} />}
 
-          <SettingGroup label="PROTECTED PROCESSES">
+          <SettingGroup label="保護プロセス">
             <textarea
               className="w-full h-24 bg-base-800 border border-border-subtle rounded p-2 text-[11px] text-text-primary resize-none focus:outline-none focus:border-border-active"
               value={form.protected_processes.join('\n')}
@@ -75,7 +69,7 @@ const SettingsPanel = memo(function SettingsPanel({
             </select>
           </SettingGroup>
 
-          <SettingGroup label={`POLLING INTERVAL: ${form.polling_interval_secs}s`}>
+          <SettingGroup label={`ポーリング間隔: ${form.polling_interval_secs}s`}>
             <input
               type="range"
               min={1}
@@ -90,12 +84,12 @@ const SettingsPanel = memo(function SettingsPanel({
             </div>
           </SettingGroup>
 
-          <Button variant="primary" fullWidth loading={isSaving} onClick={() => void handleSave()}>
-            SAVE
+          <Button variant="primary" loading={isSaving} onClick={() => void handleSave()}>
+            保存
           </Button>
         </div>
       )}
-    </SlidePanel>
+    </div>
   );
 });
 
@@ -116,4 +110,4 @@ function SettingGroup({
   );
 }
 
-export default SettingsPanel;
+export default SettingsView;
