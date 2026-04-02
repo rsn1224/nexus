@@ -19,18 +19,75 @@
 - System::new_all() を各コマンドで直接呼ばない（PulseState を使う）
 </constraints>
 
-調査完了後、「以下のファイルを変更します:（一覧）。実装してよいですか？」と確認を求めること。
+調査完了後、`docs/specs/$ARGUMENTS/proposal.md` を以下の内容で生成すること:
+
+```markdown
+# [機能名]: Proposal
+
+## 背景・動機
+（なぜこの機能が必要か）
+
+## ゴール
+（実装後に達成できること）
+
+## 非ゴール
+（スコープ外の内容）
+
+## 影響ファイル
+
+### フロントエンド
+（変更するファイルと追加するファイルの一覧）
+
+### Rust バックエンド
+（変更するファイルと追加するファイルの一覧）
+
+## 想定 Rust コマンド候補
+（関数名・引数型・戻り値型の概案）
+
+## 実装方針メモ
+（技術的な選択肢と推奨アプローチ）
+
+## 懸念・リスク
+（既知の問題や注意点）
+```
+
+生成後、変更ファイル一覧を提示して実装の承認を求めること。
 
 ## Phase 2: 実装（承認後のみ）
 
-<tasks>
-1. 型定義（src/types/ または該当ファイル）
-2. Rust コマンド実装（services 層 → commands 層の順で）
-3. tauri-commands.ts に invoke ラッパーを追加
-4. Zustand ストア（useShallow セレクタを使う）
-5. コンポーネント実装
-6. /check を実行して全 PASS を確認
-</tasks>
+承認を受けたら、実装を開始する前に `docs/specs/$ARGUMENTS/` へ以下を生成すること:
+
+**spec.md**（技術設計）:
+
+```markdown
+# [機能名]: Spec
+
+## Rust 側 API
+詳細: コマンド関数シグネチャ・入出力型
+
+## TypeScript 側
+詳細: invoke ラッパーの型定義・Zustand ストア設計
+
+## コンポーネント設計
+詳細: Props 型・状態管理方針
+```
+
+**tasks.md**（実装チェックリスト）:
+
+```markdown
+# [機能名]: Tasks
+
+- [ ] 型定義（src/types/）
+- [ ] Rust コマンド実装（services 層）
+- [ ] Rust コマンド実装（commands 層）
+- [ ] invoke_handler 登録（src-tauri/src/lib.rs）
+- [ ] tauri-commands.ts に invoke ラッパー追加
+- [ ] Zustand ストア実装
+- [ ] コンポーネント実装
+- [ ] /check 全 PASS 確認
+```
+
+その後、tasks.md のチェックリストに沿って実装を進めること。各タスク完了時にチェックを入れること。
 
 ## 完了条件
 

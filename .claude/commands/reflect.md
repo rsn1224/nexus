@@ -1,4 +1,6 @@
-このセッションの振り返りを行い、`.claude/critical-context.md` を更新してください。
+# セッション振り返り
+
+このセッションの振り返りを行い、`HANDOFF.md` を更新してください。
 
 ## 振り返り内容
 
@@ -7,12 +9,13 @@
 3. 次のセッションで引き続き取り組むべきタスク（優先順）
 4. 気づいた設計上の注意点・落とし穴
 
-## critical-context.md の更新
+## HANDOFF.md の更新
 
+`HANDOFF.md` が存在しない場合は作成する。
 既存の内容を踏まえて更新する（上書きではなく最新情報を反映）。
 
 更新後に以下を実行すること:
 
 ```bash
-git add .claude/critical-context.md && git commit -m "chore: update session context"
+git add HANDOFF.md && git commit -m "chore: update handoff context"
 ```
