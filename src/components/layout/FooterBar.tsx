@@ -12,7 +12,7 @@ const FooterBar = memo(function FooterBar(): React.ReactElement {
         <button
           type="button"
           onClick={openSettings}
-          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-semibold tracking-[0.1em] uppercase text-text-muted hover:text-text-primary hover:bg-base-700 transition-colors"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-semibold tracking-widest uppercase text-text-muted hover:text-text-primary hover:bg-base-700 transition-colors"
           aria-label="設定を開く"
         >
           <Settings size={10} />
@@ -21,7 +21,7 @@ const FooterBar = memo(function FooterBar(): React.ReactElement {
         <button
           type="button"
           onClick={openHistory}
-          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-semibold tracking-[0.1em] uppercase text-text-muted hover:text-text-primary hover:bg-base-700 transition-colors"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-semibold tracking-widest uppercase text-text-muted hover:text-text-primary hover:bg-base-700 transition-colors"
           aria-label="履歴を開く"
         >
           <History size={10} />
@@ -33,7 +33,7 @@ const FooterBar = memo(function FooterBar(): React.ReactElement {
         <button
           type="button"
           onClick={openRevertDialog}
-          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-semibold tracking-[0.1em] uppercase text-warning-500/70 hover:text-warning-500 hover:bg-warning-500/10 border border-transparent hover:border-warning-500/30 transition-colors"
+          className="flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-semibold tracking-widest uppercase text-warning-500/70 hover:text-warning-500 hover:bg-warning-500/10 border border-transparent hover:border-warning-500/30 transition-colors"
           aria-label="全設定を元に戻す"
         >
           <AlertTriangle size={10} />
