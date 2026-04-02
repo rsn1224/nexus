@@ -1,41 +1,75 @@
-# スタイルパターン
+# スタイルパターン（v4）
 
-## ボタンスタイル
+## ボタン
 
 ```tsx
-// 標準
-className="font-[var(--font-mono)] text-[10px] px-[10px] py-[2px] bg-transparent border border-border-subtle text-text-secondary cursor-pointer tracking-[0.1em]"
+// 標準ボタン
+<button
+  type="button"
+  className="text-[11px] tracking-[0.1em] uppercase font-semibold px-3 py-1 border border-border-subtle text-secondary hover:border-accent-500 hover:text-accent-500 rounded transition-colors"
+>
+  ACTION
+</button>
 
-// プライマリ
-className="... border-(--color-accent-500) text-(--color-accent-500)"
+// プライマリ（アクセント）ボタン
+<button
+  type="button"
+  className="text-[11px] tracking-[0.1em] uppercase font-semibold px-3 py-1 border border-accent-500 text-accent-500 hover:bg-accent-500/10 rounded transition-colors"
+>
+  APPLY
+</button>
 
-// 危険
-className="... border-danger-600 text-danger-500"
+// 危険ボタン
+<button
+  type="button"
+  className="text-[11px] tracking-[0.1em] uppercase font-semibold px-3 py-1 border border-danger-500 text-danger-500 hover:bg-danger-500/10 rounded transition-colors"
+>
+  REVERT
+</button>
 
-// 確認中（2ステップ目）
-className="... bg-danger-500 text-base-900"
+// disabled 状態
+<button
+  type="button"
+  disabled={isLoading}
+  className="... disabled:opacity-50 disabled:cursor-not-allowed"
+>
 ```
 
-## 状態表示テンプレート
+## 動的クラス（条件付き）
 
 ```tsx
-// loading
-<div className="flex items-center justify-center h-[120px] font-[var(--font-mono)] text-[11px] text-text-muted tracking-[0.1em]">
-  LOADING...
+// OK: cn() で条件 className
+import { cn } from "@/lib/cn";
+
+<div className={cn(
+  "text-[12px] font-mono",
+  value >= 80 ? "text-danger-500" : value >= 50 ? "text-warning-500" : "text-success-500"
+)}>
+  {Math.round(value)}%
 </div>
 
-// empty
-<div className="flex items-center justify-center h-[120px] font-[var(--font-mono)] text-[11px] text-text-muted tracking-[0.1em]">
-  NO ENTRIES — PRESS + ADD
-</div>
-```
-
-## 動的スタイル（条件付きクラス）
-
-```tsx
 // NG: インラインスタイル
-style={{ color: isActive ? 'var(--color-cyan-500)' : 'var(--color-text-muted)' }}
+style={{ color: 'var(--color-accent-500)' }}
+```
 
-// OK: 条件className
-className={isActive ? 'text-cyan-500' : 'text-text-muted'}
+## 空・ローディング状態
+
+```tsx
+// 空状態
+<div className="flex items-center justify-center h-[80px] text-[11px] text-muted tracking-[0.1em]">
+  NO DATA
+</div>
+
+// ローディング（border spinner のみ許可）
+<div className="w-4 h-4 rounded-full border border-border-subtle border-t-accent-500 animate-spin" />
+```
+
+## hover はTailwind ユーティリティを使う
+
+```tsx
+// OK: Tailwind hover: ユーティリティ
+<div className="text-secondary hover:text-primary transition-colors">
+
+// NG: インラインスタイル変更
+style={{ color: isHovered ? ... : ... }}
 ```

@@ -1,16 +1,46 @@
-# CSS 変数一覧
+# CSS 変数 / カラートークン一覧（v4）
 
-## 存在する CSS 変数
+## 背景（6段階）
 
 ```
-背景:     bg-base-900 / bg-base-800 / bg-base-700 / bg-base-600 / bg-base-500
-アクセント: text-(--color-accent-500) / border-(--color-accent-500)
-シアン:   text-cyan-500 / border-cyan-500
-危険:     text-danger-500 / border-danger-600
-成功:     text-[var(--color-success-500)]
-テキスト: text-text-primary / text-text-secondary / text-text-muted
-ボーダー: border-border-subtle / border-border-active
-フォント: font-[var(--font-mono)]
+bg-base-950   # 最も暗い（アプリ背景）
+bg-base-900
+bg-base-800   # カード背景
+bg-base-700
+bg-base-600
+bg-base-500
+```
+
+## アクセント（Cyan 単色 — #06b6d4）
+
+```
+text-accent-500       # テキスト
+bg-accent-500         # 背景
+border-accent-500     # ボーダー
+bg-accent-500/10      # 薄い背景（hover など）
+```
+
+## セマンティックカラー
+
+```
+text-success-500 / bg-success-500 / border-success-500   # 正常 #22c55e
+text-warning-500 / bg-warning-500 / border-warning-500   # 警告 #f59e0b
+text-danger-500  / bg-danger-500  / border-danger-500    # 危険 #ef4444
+```
+
+## テキスト
+
+```
+text-primary    # メインテキスト
+text-secondary  # サブテキスト
+text-muted      # 補足テキスト・プレースホルダー
+```
+
+## ボーダー
+
+```
+border-border-subtle   # 通常ボーダー
+border-border-active   # アクティブ・フォーカス状態
 ```
 
 ## 存在しない変数（使用禁止）
@@ -20,16 +50,16 @@
 --color-primary-*
 --color-surface
 --color-border（末尾なし — border-subtle / border-active を使う）
---color-warning-500
+bg-base-1000 / bg-base-400（範囲外）
 ```
 
-## 色の意味（厳守）
+## 色の使い分けガイド
 
-| 用途 | Tailwind クラス |
-|------|----------------|
-| 管理・操作系ヘッダー | `text-(--color-accent-500)` |
-| 監視・情報系ヘッダー | `text-cyan-500` |
-| CPU < 20% | `text-cyan-500` |
-| CPU 20–50% | `text-(--color-accent-500)` |
-| CPU ≥ 50% | `text-danger-500` |
-| エラーバナー | `bg-base-800 border-b border-danger-600 text-danger-500` |
+| 用途 | クラス |
+|------|--------|
+| セクション見出し・アクセント強調 | `text-accent-500` |
+| アクティブ・選択状態 | `text-accent-500` / `border-accent-500` |
+| 正常値・成功メッセージ | `text-success-500` |
+| 警告値・注意 | `text-warning-500` |
+| 危険・エラー | `text-danger-500` |
+| カード | `bg-base-800 border border-border-subtle rounded` |
