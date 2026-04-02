@@ -1,5 +1,5 @@
 import type React from 'react';
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback, useEffect, useMemo } from 'react';
 import { useOptimizeStore } from '../../stores/useOptimizeStore';
 import Button from '../ui/Button';
 import ErrorBanner from '../ui/ErrorBanner';
@@ -37,6 +37,8 @@ const OptimizeSection = memo(function OptimizeSection({
     const id = setTimeout(() => clearResult(), 5000);
     return () => clearTimeout(id);
   }, [lastResult, clearResult]);
+
+  const candidatesMap = useMemo(() => new Map(candidates.map((c) => [c.id, c])), [candidates]);
 
   const handleApply = useCallback(async () => {
     await applySelected();
@@ -80,17 +82,19 @@ const OptimizeSection = memo(function OptimizeSection({
           <span className="text-[10px] font-bold tracking-[0.12em] text-text-muted uppercase">
             Applied
           </span>
-          <div className="flex flex-wrap gap-x-4 gap-y-0.5">
+          <div className="flex flex-wrap gap-x-4 gap-y-1">
             {lastResult.applied.map((item) => (
-              <span key={item.id} className="text-[11px] text-text-secondary">
-                <span className="text-success-500 mr-1">✓</span>
-                {item.id}
+              <div key={item.id} className="flex flex-col">
+                <span className="text-[11px] text-text-secondary">
+                  <span className="text-success-500 mr-1">✓</span>
+                  {candidatesMap.get(item.id)?.label ?? item.id}
+                </span>
                 {item.before !== item.after && (
-                  <span className="text-text-muted ml-1">
+                  <span className="text-[10px] text-text-muted ml-4">
                     {item.before} → {item.after}
                   </span>
                 )}
-              </span>
+              </div>
             ))}
           </div>
           {lastResult.failed.length > 0 && (
@@ -98,7 +102,7 @@ const OptimizeSection = memo(function OptimizeSection({
               {lastResult.failed.map((item) => (
                 <span key={item.id} className="text-[11px] text-danger-500">
                   <span className="mr-1">✗</span>
-                  {item.id}: {item.reason}
+                  {candidatesMap.get(item.id)?.label ?? item.id}: {item.reason}
                 </span>
               ))}
             </div>
