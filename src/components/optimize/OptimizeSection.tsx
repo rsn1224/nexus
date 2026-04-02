@@ -55,16 +55,21 @@ const OptimizeSection = memo(function OptimizeSection({
         {isLoadingCandidates ? (
           <span className="text-[11px] text-text-muted px-4 py-3">読み込み中...</span>
         ) : (
-          candidates.map((c, index) => (
-            <OptimizationRow
-              key={c.id}
-              id={c.id}
-              label={c.label}
-              checked={selected.has(c.id)}
-              onToggle={toggleCandidate}
-              isLast={index === candidates.length - 1}
-            />
-          ))
+          (() => {
+            const appliedIds = new Set(lastResult?.applied.map((r) => r.id) ?? []);
+            const failedIds = new Set(lastResult?.failed.map((r) => r.id) ?? []);
+            return candidates.map((c, index) => (
+              <OptimizationRow
+                key={c.id}
+                id={c.id}
+                label={c.label}
+                checked={selected.has(c.id)}
+                onToggle={toggleCandidate}
+                isLast={index === candidates.length - 1}
+                result={appliedIds.has(c.id) ? 'success' : failedIds.has(c.id) ? 'failed' : null}
+              />
+            ));
+          })()
         )}
       </div>
 

@@ -8,6 +8,7 @@ interface OptimizationRowProps {
   checked: boolean;
   onToggle: (id: string) => void;
   isLast?: boolean;
+  result?: 'success' | 'failed' | null;
 }
 
 export function OptimizationRow({
@@ -16,6 +17,7 @@ export function OptimizationRow({
   checked,
   onToggle,
   isLast = false,
+  result = null,
 }: OptimizationRowProps): React.ReactElement {
   return (
     <label
@@ -24,6 +26,8 @@ export function OptimizationRow({
         'flex items-center gap-3 px-4 py-3 cursor-pointer select-none transition-opacity',
         !isLast && 'border-b border-dashed border-border-subtle',
         checked ? 'opacity-100' : 'opacity-60 hover:opacity-80',
+        result === 'success' && 'border-l-2 border-success-500',
+        result === 'failed' && 'border-l-2 border-danger-500',
       )}
     >
       <input

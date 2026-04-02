@@ -174,13 +174,7 @@ const ActionStrip = memo(function ActionStrip(): React.ReactElement {
         isLoading={memLoading}
         onClick={() => void handleMemory()}
       />
-      <ActionButton
-        label="🔕 NOTIFY"
-        feedback={undefined}
-        isLoading={false}
-        disabled
-        onClick={() => undefined}
-      />
+      {/* NOTIFY: v4.0 未実装のため除外。実装時に再追加する */}
     </section>
   );
 });

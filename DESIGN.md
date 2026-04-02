@@ -115,6 +115,9 @@ shadow-lg / shadow-xl        → 禁止（shadow-sm のみ許可）
 bg-gradient-to-*             → 禁止
 glow-* / bloom-*             → 禁止
 animate-* / transition-*     → 禁止（OPTIMIZE ボタン hover の box-shadow 除く）
+animate-spin                 → 許可（border spinner パターン限定）
+                               条件: border + border-t-transparent + rounded-full + animate-spin の組み合わせのみ
+                               単独使用・装飾目的での使用は禁止
 text-[Npx] 任意値            → 上記タイポグラフィ表の値のみ許可
 font-[N] 任意値              → font-normal/medium/semibold/bold のみ
 rounded (裸)                 → rounded（4px）統一
@@ -237,7 +240,29 @@ src/
 
 ---
 
-## 9. 品質基準
+## 9. コンポーネント挙動仕様
+
+### ActionStrip — NOTIFY
+
+NOTIFY は v4.0 では機能未実装のため **JSX から除外**（非表示）。
+- `disabled` 状態での「準備中」テキスト表示禁止
+- 機能実装時に ActionStrip へ再追加する
+
+### Optimizations — 完了後ボーダー
+
+最適化実行完了後、OptimizationRow の左端に結果をボーダーで表示する：
+
+| 状態 | クラス |
+|------|--------|
+| 成功 | `border-l-2 border-success-500` |
+| 失敗 | `border-l-2 border-danger-500` |
+| 未実行 | ボーダーなし |
+
+`<label>` 要素に直接付与する（`border-b border-dashed` は下ボーダーなので干渉しない）。
+
+---
+
+## 10. 品質基準
 
 - TS/TSX **200行制限** / `any` 禁止 / `console.log` 禁止 / インラインスタイル禁止
 - Rust `unwrap()` 禁止 / clippy 警告 0 / **300行制限**
