@@ -29,7 +29,7 @@ Tauri v2 + React 19 + TypeScript + Rust で構築。
 
 ### 前提条件
 
-- Node.js 20+
+- Node.js >= 22.0.0
 - Rust (stable)
 - Windows 10/11（実行環境）
 

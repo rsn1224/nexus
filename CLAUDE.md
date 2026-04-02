@@ -1,333 +1,290 @@
-# NEXUS v4.1 — Claude Code 実装指示書
-## このファイルの使い方
+# nexus — CLAUDE.md
 
-1. このファイルを読んだ後、**作業対象ファイルの一覧を宣言**してから実装を開始すること
-2. 既存ファイルを編集する場合は、変更前の該当箇所をコメントで残すこと
-3. 新規ファイルを作成する場合は、このファイルの「ファイル構成」セクションを更新すること
-4. タスク番号を指定された場合は、そのタスクの「要件」と「制約」のみを実装し、他タスクには触れないこと
-> **対象:** `src/app/App.tsx` + `src/styles/nexus.css` の既存コードベース  
-> **スタック:** React 18 / TypeScript / Tailwind CSS v4 / Zustand / Tauri (Rust) / Lucide React  
-> **デザインシステム:** `nx-` プレフィックス + CSS カスタムプロパティ (`nexus.css`)
+Claude Code がこのプロジェクトで作業するときのルール。グローバル `~/.claude/CLAUDE.md` に加えて適用される。
 
 ---
 
 ## プロジェクト概要
 
-Windows 向けゲーミング PC 最適化アプリ。UI は「FF14 HUD 設計思想」に基づくサイバー×メカニカルなダークモード。  
-440px 固定幅ウィジェット、各四隅に FF14 ライクな Corner Marks を配置するクロス・フォーカス設計。
+**nexus** | Personal Gaming Dashboard
+（React 19 + Tauri v2 + TypeScript + Zustand v5 + Tailwind v4 + Biome v2 + Rust edition 2021）
+
+**実行環境:** Node.js >= 22.0.0 / npm >= 10.0.0 / Rust stable / Windows 10/11
+
+**コンセプト:** ゲーム前の30秒ルーティン。開く → 状態確認 → 最適化 → 閉じる。
+
+**画面構成:** Main 1画面（スクロール不要）+ スライドパネル 2枚（Settings, History）
 
 ---
 
-## 現在のファイル構成
+## 開発コマンド
 
+```bash
+npm run dev        # Vite 開発サーバー（フロントのみ）
+npm run tauri dev  # Tauri フル起動（推奨）
+npm run check      # Biome lint + format
+npm run typecheck  # tsc --noEmit
+npm run test       # Vitest
+cd src-tauri && cargo test
+cd src-tauri && cargo clippy -- -D warnings
+cd src-tauri && cargo fmt
 ```
+
+---
+
+## アーキテクチャ
+
+### フロントエンド
+
+```text
 src/
-├── app/
-│   └── App.tsx          # メイン UI（コンポーネント全体）
-└── styles/
-    └── nexus.css        # デザイントークン・アニメーション定義
+├── App.tsx / App.css            # ルートコンポーネント
+├── main.tsx                     # Vite エントリーポイント
+├── index.css                    # デザイントークン CSS（@theme）
+├── design-tokens.ts             # トークン定義 SSOT（TypeScript）
+├── components/
+│   ├── Main.tsx                 # 全セクション統合（1画面）
+│   ├── Diagnostics.tsx          # 異常時のみ表示
+│   ├── actions/
+│   │   └── ActionStrip.tsx      # アクション行
+│   ├── diagnostic/
+│   │   └── DiagnosticBanner.tsx # 診断バナー
+│   ├── layout/
+│   │   ├── AppShell.tsx         # アプリシェル
+│   │   ├── TopBar.tsx           # トップバー
+│   │   ├── Sidebar.tsx          # サイドバー
+│   │   └── FooterBar.tsx        # フッターバー
+│   ├── optimize/
+│   │   └── OptimizeSection.tsx  # 最適化セクション
+│   ├── panels/
+│   │   ├── SettingsPanel.tsx    # 設定スライドパネル
+│   │   ├── HistoryPanel.tsx     # 履歴スライドパネル
+│   │   └── QuickPanels.tsx      # クイックパネル
+│   ├── system/
+│   │   └── KpiGrid.tsx          # KPI グリッド
+│   ├── ui/                      # Button, Card, Toggle, StatusBadge, ErrorBanner,
+│   │                            #   LoadingState, SlidePanel, OptimizationRow 等
+│   └── views/                   # DashboardView, BoostView, HardwareView, MemoryView,
+│                                #   MonitorView, NetworkView, OptimizeView, SettingsView,
+│                                #   TimerView, WindowsView
+├── stores/
+│   ├── useSystemStore.ts        # SystemStatus + Diagnostics（5秒ポーリング）
+│   ├── useOptimizeStore.ts      # candidates / apply / revert
+│   ├── useSettingsStore.ts      # settings CRUD
+│   ├── useAppSettingsStore.ts   # アプリ設定
+│   ├── useHardwareStore.ts      # ハードウェア情報
+│   ├── useMemoryStore.ts        # メモリ情報
+│   ├── useNavStore.ts           # ナビゲーション状態
+│   ├── useNetworkStore.ts       # ネットワーク情報
+│   ├── useTimerStore.ts         # タイマー
+│   └── useWindowsStore.ts       # Windows 設定
+├── lib/
+│   ├── tauri-commands.ts        # invoke ラッパー全集約
+│   ├── formatters.ts            # 温度・容量・パーセンテージ
+│   ├── logger.ts                # console.log 禁止、これを使う
+│   ├── cn.ts                    # classname マージユーティリティ
+│   └── constants.ts             # 定数定義
+├── hooks/
+│   └── useFocusTrap.ts          # フォーカストラップ
+├── types/
+│   ├── system.ts                # SystemStatus, DiagnosticAlert
+│   ├── optimize.ts              # OptCandidate, ApplyResult, Session
+│   ├── settings.ts              # Settings
+│   └── index.ts                 # re-export のみ
+├── i18n/
+│   └── locales/ en/ ja/         # 国際化リソース
+└── services/
+    ├── notificationService.ts
+    └── perplexityService.ts
+```
+
+### バックエンド（Rust 4層アーキテクチャ）
+
+```text
+src-tauri/src/
+├── commands/    # Tauri コマンドハンドラーのみ（薄いレイヤー）
+├── services/    # ビジネスロジック（テスト可能な純粋ロジック）
+├── infra/       # 外部システム接続（PowerShell, Registry, FileSystem）
+└── parsers/     # VDF, ログ等のパーサー
+```
+
+**依存方向（逆方向禁止）:** `commands → services → infra/parsers`
+
+- `commands/` にビジネスロジックを書かない。`services/` に委譲する。
+- `services/` は外部 I/O を直接呼ばない。`infra/` を通す。
+- 新コマンド追加時: `src-tauri/src/lib.rs` の `invoke_handler` にも登録
+- エラーは `src-tauri/src/error.rs` の `AppError` を使う。
+
+### System インスタンス
+
+- `sysinfo::System` は `PulseState` が保持する1インスタンスのみ
+- **`System::new_all()` を各コマンドで直接呼び出すことは禁止**
+
+---
+
+## Zustand v5 推奨パターン
+
+```tsx
+// ✅ useShallow セレクタ（過剰再レンダリング防止）
+const { cpu, gpu } = useSystemStore(
+  useShallow((s) => ({ cpu: s.cpuPercent, gpu: s.gpuPercent }))
+);
+
+// ❌ ファサードセレクタ（新規作成禁止）
+const selectViewModel = (s) => ({ ... }); // 毎回新オブジェクト生成
 ```
 
 ---
 
-## デザイントークン（変更禁止）
-
-```css
-/* Surfaces */
---s-0: #05060b  /* 最深背景 */
---s-1: #08090f  /* App背景 */
---s-2: #0d0e17  /* カード */
---s-3: #12131e
---s-4: #191a28
---s-5: #202235
---s-6: #282b3e
-
-/* Accent */
---c:        #22d3ee   /* クリスタルシアン（メインアクセント）*/
---c-mid:    #0891b2
---c-deep:   #0e7490
---c-bg:     rgba(34,211,238,0.07)
---c-bg2:    rgba(34,211,238,0.13)
---c-border: rgba(34,211,238,0.2)
---c-glow:   rgba(34,211,238,0.35)
-
---g:        #c8a84b   /* ゴールド（セクションラベル）*/
---g-bg:     rgba(200,168,75,0.1)
---g-border: rgba(200,168,75,0.28)
-
-/* Semantic */
---success: #22c55e
---warning: #f59e0b
---danger:  #ef4444
-
-/* Text */
---t-1: #e2e8f0  /* プライマリ */
---t-2: #94a3b8  /* セカンダリ */
---t-3: #64748b  /* ミュート */
---t-4: #3d4760  /* フェイント */
-
-/* Fonts */
---f-mono: 'JetBrains Mono', ui-monospace, monospace
---f-jp:   'Noto Sans JP', sans-serif
-
-/* Motion */
---ease-out:    cubic-bezier(0.16, 1, 0.3, 1)
---ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1)
---dur-fast: 140ms
---dur-med:  240ms
---dur-slow: 380ms
-```
-
----
-
-## 実装ルール（必須・変更禁止）
-
-### 1. クラス名命名規則
-- **既存の `nx-` クラスは変更・削除禁止**
-- 新規 UI 部品を追加する場合は必ず `nx-` プレフィックスを付与
-- Tailwind ユーティリティはベースレイアウトに使用可。グロー / グラデーション / 疑似要素は `nexus.css` 側で定義
-
-### 2. 状態管理
-- KPI（CPU / GPU / TEMP / RAM）は独立した `useEffect` + `setInterval` で管理し、最適化操作系 State と**混在させない**
-- `isExecuting` / `resultState` / `activePanel` は操作系 State として `App.tsx` で管理
-- **数値は必ず `Math.round()` で整数化**してから描画（KPI バーの width も同様）
-
-### 3. アニメーション
-- 新規アニメーションは `nexus.css` に `@keyframes` として追加
-- 既存の `pulse-ring` / `shimmer` / `boost-sheen` / `slide-in` / `fadeup` / `spin-ring` を参照・再利用すること
-
-### 4. Tauri / Rust 連携（現在未実装）
-- バックエンド呼び出しは `await invoke<T>('command_name', { ...args })` の形式
-- 現状はモック値（擬似乱数）で動作。`invoke` は将来差し替え用コメントを残す
-
-### 5. アクセシビリティ
-- インタラクティブ要素には必ず `title` または `aria-label` を付与
-- `role="tablist"` / `role="tab"` は既存タブに付与済み。踏襲すること
-
----
-
-## 既存コンポーネント一覧
-
-| コンポーネント | 説明 | 主な State |
-|---|---|---|
-| Header | ロゴ・LIVE バッジ・電源ボタン | — |
-| Tabs | 最適化 / モニター / ブースト | `activeTab` |
-| KPI Row | CPU・GPU・TEMP・RAM カード | `kpi` (interval) |
-| Alert Banner | Thermal Throttling 警告 | `showAlert` |
-| Boost Meter | System Performance バー | `currentBoostPct` (算出値) |
-| Opt List | 最適化項目チェックリスト | `items` |
-| Applied Panel | 実行後の差分表示（6秒後自動消去） | `resultState` |
-| CTA | EXECUTE / 前に戻る | `isExecuting`, `selectedCount` |
-| Quick Actions | ゲーム・表示・保護・機能 | — |
-| Footer | 設定・履歴・REVERT ALL | `activePanel` |
-| Settings Panel | スライドイン設定パネル | `activePanel` |
-| History Panel | スライドイン履歴パネル | `activePanel` |
-| ToggleRow | 設定トグル行（内部 State） | `on` |
-
----
-
-## 型定義
+## 実装済みストア設計
 
 ```typescript
-type Item = {
-  id: string;
-  label: string;
-  state: string;
-  on: boolean;
-  before: string;
-  after: string;
-};
+// src/stores/useSystemStore.ts
+// SystemStatus ポーリング（5秒間隔）+ DiagnosticAlert
+// Tauri: invoke('get_system_status') / invoke('diagnose')
 
-// KPI
-type KpiState = {
-  cpu: number;   // 5〜95
-  gpu: number;   // 2〜99
-  temp: number;  // 60〜100
-  ram: number;   // 20〜95
-};
+// src/stores/useOptimizeStore.ts
+// OptCandidate リスト / apply / revert
+// Tauri: invoke('get_optimization_candidates') / invoke('apply_optimizations') / invoke('revert_all')
 
-// Result
-type ResultState = {
-  success: string[];  // Item.id の集合
-  failed: string[];
-} | null;
+// src/stores/useSettingsStore.ts
+// Settings CRUD
+// Tauri: invoke('get_settings') / invoke('update_settings')
 ```
 
 ---
 
-## 主要ロジック
+## セキュリティー必須事項
 
-### handleExec（最適化実行）
-```typescript
-const handleExec = () => {
-  const selected = items.filter(i => i.on);
-  if (!selected.length) return;
-  setIsExecuting(true);
-  setTimeout(() => {
-    setIsExecuting(false);
-    setResultState({ success: selected.map(i => i.id), failed: [] });
-    setTimeout(() => setResultState(null), 6000); // 6秒後自動クリア
-  }, 1800);
-};
+- フロントエンドからのユーザー入力は必ずバリデーション
+- PowerShell コマンド構築に `format!` + ユーザー入力を直接使用禁止 → `infra/powershell.rs` のヘルパーで対応
+- 新コマンド追加時は `src-tauri/capabilities/default.json` に permission を追加
+- CSP 変更禁止（変更が必要な場合はレビュー必須）
+
+---
+
+## テスト
+
+- TS: Vitest（`*.test.ts` / `*.test.tsx`）
+- Rust: `#[cfg(test)] mod tests` in `services/` レイヤー
+- E2E: `e2e/` ディレクトリー（Playwright）
+- カバレッジ目標: 80% 以上
+
+---
+
+## コミット前チェックリスト（全項目必須）
+
+```bash
+npm run check          # Biome format + lint
+npm run typecheck      # tsc --noEmit
+npm run test           # vitest run
+npm run lint           # CSS 変数・アーキテクチャ・ファイルサイズ・インラインスタイル等
+cargo check            # Rust 型チェック
+cargo clippy           # Rust lint（警告 0）
+cargo test             # Rust ユニットテスト
 ```
 
-### Boost 計算
-```typescript
-const currentBoostPct = resultState
-  ? Math.min(95, 62 + selectedCount * 5)
-  : 32;
+---
+
+## デフォルト要件（変更不可）
+
+| 要件 | 説明 |
+| ------ | ------ |
+| lint エラー 0 | `npm run check` + `cargo clippy` |
+| 型エラー 0 | `npm run typecheck` |
+| 全テスト green | unit + E2E |
+| console.log 禁止 | `log.info` / `tracing::info!` を使う |
+| any 型禁止 | Biome の `noExplicitAny: error` |
+| インラインスタイル禁止 | Tailwind v4 className を使う |
+| unwrap() 禁止 | `AppError` によるハンドリングを徹底（テスト: 理由コメント付き許可） |
+| System::new_all() 禁止 | PulseState 共有を使用 |
+| PowerShell 直接実行禁止 | `infra/powershell.rs` のヘルパーを使用 |
+| TS/TSX 200行制限 | `scripts/check-file-size.mjs`（STRICT_MODE）が CI で強制 |
+| Rust 300行制限 | `scripts/check-file-size.mjs` が CI で強制 |
+| ハードコード色禁止 | デザイントークン CSS 変数を使用（DESIGN.md 参照） |
+| animate-spin 限定許可 | border spinner パターン（`border + border-t-transparent + rounded-full`）のみ使用可 |
+
+---
+
+## デザインシステム Quick Reference
+
+> **SSOT: `src/design-tokens.ts` | CSS 実体: `src/index.css` @theme**
+> 値を変更するときは **両方** 更新すること。詳細は [DESIGN.md](DESIGN.md) を参照。
+>
+> ⚠️ `nexus.css` 由来の `nx-` プレフィックスクラス（`nx-panel`, `nx-card` 等）は**廃止済み**。
+> 新規コードでの使用禁止。既存コードも見つけ次第 Tailwind className へ移行すること。
+
+### カラー（ダークモード専用、Cyan 単色アクセント）
+
+- 背景: `base-950` から `base-500`（6段階）
+- テキスト: `text-primary` / `text-secondary` / `text-muted`
+- アクセント: `accent-500` (#06b6d4 Cyan) | 唯一のアクセントカラー
+- セマンティック: `success-500` / `warning-500` / `danger-500`
+
+### タイポグラフィ
+
+| 用途 | サイズ | ウェイト |
+| ------ | -------- | ------- |
+| KPI 数字 | `text-[24px]` | `font-bold` |
+| セクション見出し | `text-[11px] tracking-[0.15em] uppercase` | `font-bold` |
+| 本文 | `text-[12px]` | `font-normal` |
+| ラベル | `text-[10px] tracking-[0.12em]` | `font-semibold` |
+| ボタン | `text-[11px] tracking-[0.1em] uppercase` | `font-semibold` |
+
+### レイアウト
+
+- `border-radius: 4px` 統一
+- カード: `bg-base-800 border border-border-subtle rounded`
+- 装飾: **なし**（グロー・グラデーション・シャドウ・アニメーション禁止）
+- 例外: `animate-spin` は border spinner パターン限定で許可
+
+---
+
+## Rust コマンド — フロントエンド連携状態
+
+| コマンド | 状態 | フロントエンド連携 |
+| ------ | ------ | ------ |
+| `get_system_status` | polling 5 秒 | `useSystemStore` |
+| `diagnose` | polling 5 秒 | `useSystemStore` |
+| `get_optimization_candidates` | on mount | `useOptimizeStore` |
+| `apply_optimizations` | `isApplying: boolean` | `useOptimizeStore` |
+| `revert_all` | on demand | `useOptimizeStore` |
+| `get_settings` / `update_settings` | CRUD | `useSettingsStore` |
+| `get_history` | on mount | `useOptimizeStore` |
+
+---
+
+## 実装済み機能（v4.0 完了）
+
+| フェーズ | 内容 |
+| ------ | ------ |
+| Phase 0 | クリーンアップ（旧 Wing/Stitch/v2 型全削除） |
+| Phase 1 | 設計ドキュメント（DESIGN.md v4 + ROADMAP + CLAUDE.md 更新） |
+| Phase 2 | Rust バックエンド（7コマンド体系・status/optimize/diagnose/history/settings） |
+| Phase 3 | フロントエンド実装（Main 1画面 + SettingsPanel/HistoryPanel スライドパネル） |
+| Phase 4 | 統合・リリース（E2E テスト・品質ゲート全パス） |
+
+今後の予定 → [ROADMAP.md](ROADMAP.md) 参照
+
+---
+
+## コスト監視
+
+```bash
+bash scripts/check-cost.sh         # 本日のコスト
+bash scripts/check-cost.sh live    # リアルタイムダッシュボード
+bash scripts/check-cost.sh blocks  # 現在の5時間ブロック
 ```
 
-### KPI 更新（2秒間隔）
-```typescript
-useEffect(() => {
-  const timer = setInterval(() => {
-    setKpi(prev => ({
-      cpu:  Math.max(5,  Math.min(95,  prev.cpu  + (Math.random() - 0.48) * 6)),
-      gpu:  Math.max(2,  Math.min(99,  prev.gpu  + (Math.random() - 0.5)  * 4)),
-      temp: Math.max(60, Math.min(100, prev.temp + (Math.random() - 0.5)  * 3)),
-      ram:  Math.max(20, Math.min(95,  prev.ram  + (Math.random() - 0.5)  * 2)),
-    }));
-  }, 2000);
-  return () => clearInterval(timer);
-}, []);
-```
-## タスク実行推奨順
-
-| 順序 | タスク | 理由 |
-|---|---|---|
-| 1st | Task 2 (Zustand 分割) | State 設計が確定してから UI を増やす |
-| 2nd | Task 1 (タブビュー) | Zustand 完了後に `kpi` props 渡しが楽になる |
-| 3rd | Task 3 (Quick Actions) | 既存 `nx-panel` 流用なので独立して実施可 |
-| 4th | Task 4 (Tauri 連携) | バックエンド実装後に差し替え |
 ---
 
-## Next Steps（実装待ちタスク）
+## 参照先
 
-### Task 1: タブ切り替えビュー実装
-**概要:** 「モニター」「ブースト」タブのメインビューを実装する。
-
-**要件:**
-- `activeTab === 'monitor'` → `MonitorView` コンポーネントを `nx-main` 内に表示
-- `activeTab === 'boost'` → `BoostView` コンポーネントを表示
-- `activeTab === 'optimize'` → 既存の最適化ビューをそのまま表示
-
-**MonitorView の内容（最低限）:**
-- CPU / GPU / TEMP / RAM の時系列グラフ（直近30秒を描く線）
-- プロセス一覧テーブル（PID, 名前, CPU%, MEM%）
-- グラフは `recharts` または `canvas` で実装。カラーは `--c` / `--success` / `--warning` / 紫 `rgba(139,92,246,1)` を使用
-
-**BoostView の内容（最低限）:**
-- プリセット選択（ゲーミング / バランス / 省電力）→ `nx-` スタイルの選択カード
-- 現在適用中プリセットのバッジ表示
-- 詳細スライダー（CPU 優先度 / メモリクリア頻度）→ `nx-` スタイル
-
-**制約:**
-- KPI データは既存の `kpi` State を `props` として渡す（新規 interval を立てない）
-- コンポーネントは `src/app/views/` ディレクトリに分割して配置
-
----
-
-### Task 2: Zustand ストア分割
-**概要:** 現在 `App.tsx` にある State を Zustand ストアに移行する。
-
-**設計:**
-
-```typescript
-// src/stores/telemetryStore.ts
-// KPI メトリクス（高頻度更新）
-interface TelemetryStore {
-  kpi: KpiState;
-  startPolling: () => void;
-  stopPolling: () => void;
-}
-
-// src/stores/optimizationStore.ts
-// 最適化操作系 State
-interface OptimizationStore {
-  items: Item[];
-  isExecuting: boolean;
-  resultState: ResultState;
-  activePanel: string | null;
-  showAlert: boolean;
-  toggleItem: (id: string) => void;
-  execute: () => void;
-  revert: () => void;
-  setActivePanel: (panel: string | null) => void;
-  dismissAlert: () => void;
-}
-```
-
-**制約:**
-- 2ストアは**絶対に混在させない**（telemetry と optimization を分離する目的は再レンダリングの最小化）
-- `App.tsx` のコンポーネント構造・クラス名・表示ロジックは変更しない
-- 移行後、既存の表示・アニメーションが正常に動作することを確認
-
----
-
-### Task 3: Quick Actions ダイアログ実装
-**概要:** 「ゲーム」「表示」「保護」「機能」ボタンのクリック時に詳細パネルを表示する。
-
-**要件:**
-- 既存の `nx-panel` / `nx-overlay` の仕組みを**再利用**する（新規モーダル機構は作らない）
-- `activePanel` の値に `'game'` / `'display'` / `'security'` / `'modules'` を追加
-
-**各パネルの内容（最低限）:**
-
-| パネル | 内容 |
-|---|---|
-| `game` | ゲームプロファイル選択（FPS / RPG / RTS）、フォアグラウンド優先度トグル |
-| `display` | リフレッシュレート表示、G-Sync / FreeSync トグル、HDR トグル |
-| `security` | ファイアウォール状態、Windows Defender 状態のバッジ表示 |
-| `modules` | インストール済み最適化モジュール一覧（有効 / 無効トグル） |
-
-**制約:**
-- パネルのヘッダーは既存の `nx-panel-hd` / `nx-panel-ttl` / `nx-panel-x` クラスを使用
-- コンテンツは既存の `nx-s-row` / `nx-tog` スタイルを流用して統一感を保つ
-
----
-
-### Task 4: Tauri バックエンド連携（将来実装）
-**概要:** Rust 側 `invoke` 経由でリアルシステム情報を取得する。
-
-**Rust コマンド（予定）:**
-```rust
-#[tauri::command]
-async fn get_system_metrics() -> Result<KpiState, String> { ... }
-
-#[tauri::command]
-async fn execute_optimization(item_ids: Vec<String>) -> Result<OptimizationResult, String> { ... }
-
-#[tauri::command]
-async fn revert_optimization() -> Result<(), String> { ... }
-```
-
-**フロントエンド対応:**
-- `telemetryStore.ts` の `startPolling` 内で `await invoke<KpiState>('get_system_metrics')` に差し替え
-- `optimizationStore.ts` の `execute` で `await invoke<OptimizationResult>('execute_optimization', { itemIds: ... })` に差し替え
-- **現時点では擬似乱数ロジックの直前に `// TODO: replace with invoke` コメントを追加するだけでよい**
-
----
-
-## 実装時の注意事項
-
-1. **既存の CSS クラスは一切削除・変更しない**。追加のみ許可。
-2. `nexus.css` のカラー変数は変更禁止。新しいバリアントが必要な場合は `--c-*` / `--g-*` の命名規則に従って追加。
-3. アニメーションは `prefers-reduced-motion` を考慮すること：
-   ```css
-   @media (prefers-reduced-motion: reduce) {
-     .nx-pulse-dot { animation: none; }
-     /* 等 */
-   }
-   ```
-4. 日本語テキストは `font-family: var(--f-jp)` を適用すること（`nx-opt-label`、`nx-s-lbl` 等の既存パターンに倣う）。
-5. 数値表示（KPI、ブースト等）は `font-feature-settings: "tnum"` で等幅数字を維持すること。
-
----
-
-## 作業開始前チェックリスト
-
-- [ ] `src/app/App.tsx` の現在の State 構造を把握する
-- [ ] `src/styles/nexus.css` のトークン・クラス名を確認する
-- [ ] 対象タスクの「制約」セクションを読む 
-- [ ] 既存コンポーネントへの副作用がないことを確認する
+| 内容 | ファイル |
+| ------ | -------- |
+| デザイントークン SSOT | `src/design-tokens.ts` |
+| デザイン仕様（全体） | `DESIGN.md` |
+| ロードマップ | `ROADMAP.md` |
+| 引き継ぎログ | `HANDOFF.md` |
+| Tauri v2 注意点 | `.claude/rules/tauri-v2-gotchas.md` |
+| メモリー管理ルール | `.claude/rules/memory-decisions.md` |
