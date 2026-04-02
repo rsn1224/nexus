@@ -11,4 +11,5 @@ export interface DiagnosticAlert {
   severity: 'warning' | 'danger';
   title: string;
   detail: string;
+  action_hint: string;
 }

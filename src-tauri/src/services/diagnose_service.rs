@@ -12,12 +12,14 @@ pub fn diagnose(status: &SystemStatus) -> Vec<DiagnosticAlert> {
             severity: Severity::Danger,
             title: "GPU thermal throttling".to_string(),
             detail: format!("{:.0}°C exceeds 90°C threshold", status.gpu_temp_c),
+            action_hint: "ゲームを中断し、ケースの冷却を確認してください".to_string(),
         });
     } else if status.gpu_temp_c > 80.0 {
         alerts.push(DiagnosticAlert {
             severity: Severity::Warning,
             title: "GPU high temperature".to_string(),
             detail: format!("{:.0}°C exceeds 80°C threshold", status.gpu_temp_c),
+            action_hint: "ケースのエアフロー・ファン設定を確認してください".to_string(),
         });
     }
 
@@ -32,6 +34,7 @@ pub fn diagnose(status: &SystemStatus) -> Vec<DiagnosticAlert> {
                     "{:.0}% used ({:.1}/{:.1} GB)",
                     ram_pct, status.ram_used_gb, status.ram_total_gb
                 ),
+                action_hint: "不要なアプリを終了するか、MEMORYボタンで解放できます".to_string(),
             });
         }
     }
@@ -42,12 +45,14 @@ pub fn diagnose(status: &SystemStatus) -> Vec<DiagnosticAlert> {
             severity: Severity::Danger,
             title: "Storage critically low".to_string(),
             detail: format!("{:.1} GB free", status.disk_free_gb),
+            action_hint: "不要なファイルを削除してください".to_string(),
         });
     } else if status.disk_free_gb < 50.0 {
         alerts.push(DiagnosticAlert {
             severity: Severity::Warning,
             title: "Storage low".to_string(),
             detail: format!("{:.1} GB free", status.disk_free_gb),
+            action_hint: "ストレージの空き容量を増やすことを推奨します".to_string(),
         });
     }
 

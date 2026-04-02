@@ -64,6 +64,7 @@ pub struct DiagnosticAlert {
     pub severity: Severity,
     pub title: String,
     pub detail: String,
+    pub action_hint: String,
 }
 
 // ─── History ─────────────────────────────────────────────────────────────────
@@ -98,4 +99,3 @@ impl Default for NexusSettings {
         }
     }
 }
-
