@@ -24,7 +24,10 @@ pub async fn start(app: AppHandle) {
     let state = app.state::<std::sync::Mutex<AppState>>();
     let mut active_games: HashMap<u32, ActiveGame> = HashMap::new();
 
-    info!("unified_emitter: 起動（base=1s, pulse=2s, ops=3s, hardware=5s）");
+    info!("unified_emitter: 起動（base=1s, pulse=2s, ops=3s, hardware=5s, gpu=3s）");
+
+    // GPU 動的データキャッシュ（3秒ごとに更新）
+    let mut cached_gpu = crate::services::hardware::get_gpu_dynamic_info();
 
     loop {
         let cycle_start = tokio::time::Instant::now();
@@ -99,8 +102,8 @@ pub async fn start(app: AppHandle) {
                 .map(|d| d.as_millis() as u64)
                 .unwrap_or(0);
 
-            // GPU 動的データを取得
-            let gpu_dynamic = crate::services::hardware::get_gpu_dynamic_info();
+            // GPU 動的データは 3 秒ごとに更新（NVML の過負荷を防ぐ）
+            // キャッシュは loop スコープの cached_gpu を使用（後段で更新）
 
             let snap = ResourceSnapshot {
                 timestamp,
@@ -112,9 +115,9 @@ pub async fn start(app: AppHandle) {
                 disk_write_kb,
                 net_recv_kb,
                 net_sent_kb,
-                gpu_usage_percent: gpu_dynamic.usage_percent,
-                gpu_temp_c: gpu_dynamic.temperature_c,
-                gpu_vram_used_mb: gpu_dynamic.vram_used_mb,
+                gpu_usage_percent: cached_gpu.usage_percent,
+                gpu_temp_c: cached_gpu.temperature_c,
+                gpu_vram_used_mb: cached_gpu.vram_used_mb,
             };
 
             let procs: ProcData = if need_processes {
@@ -172,8 +175,9 @@ pub async fn start(app: AppHandle) {
             }
         }
 
-        // ─── [5] Ops + game_monitor（tick % 3 == 0 → 3 秒）──────────────────
+        // ─── [5] GPU キャッシュ更新 + Ops + game_monitor（tick % 3 == 0 → 3 秒）──
         if tick.is_multiple_of(3) {
+            cached_gpu = crate::services::hardware::get_gpu_dynamic_info();
             if let Some((ref ops_list, ref pid_names)) = maybe_procs {
                 if let Err(e) = app.emit("nexus://ops", ops_list) {
                     error!("unified_emitter: ops 送信失敗: {}", e);
