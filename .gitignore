@@ -34,3 +34,17 @@ reports/
 
 # MCP server database
 sqlite_mcp_server.db
+
+# Coverage reports
+coverage/
+
+# AI tool configs
+CLAUDE.md
+.claude/
+.windsurf/
+.windsurfrules
+HANDOFF.md
+
+# Local dev artifacts
+stitch-assets/
+.githooks/
