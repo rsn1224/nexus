@@ -7,6 +7,62 @@
 
 ---
 
+## セッション引き継ぎ — 2026-04-03
+
+> **セッション種別:** CLAUDE.md ルール遵守検証（機能開発ではない）
+> **ブランチ:** `master`（`origin/master` と同期済み）
+> **テスト:** ✅ 18ファイル / 164テスト 全パス
+> **未コミット変更:** あり（下記参照）
+
+### 完了したタスク（このセッション）
+
+| タスク | 結果 |
+|--------|------|
+| CLAUDE.md 読み込み内容の確認・要約 | ✅ 完了 |
+| 新規 API エンドポイント追加時の適用ルール確認 | ✅ 完了 |
+| プロジェクト構造探索（Phase 1〜3） | ✅ 完了（C:\dev\ 配下 5プロジェクト特定）|
+| バリデーションユーティリティー関数の追加 | ✅ 完了（未コミット） |
+| 禁止ルール動作テスト | ✅ 完了（5ケース全て正常動作確認）|
+| テスト自動実行フロー検証（意図的失敗→修正） | ✅ 完了（1ターンで根本原因修正）|
+| データパイプライン検証 | ⏭️ スキップ（Tauri IPC アーキテクチャのため HTTP API なし）|
+
+### 未コミットの変更（要対応）
+
+```bash
+modified:   src/types/index.ts        # barrel export 1行追加
+untracked:  src/lib/validators.ts     # isInRange() 関数（新規）
+untracked:  src/lib/validators.test.ts # isInRange テスト 5件（新規）
+```
+
+**検証目的で追加したファイルのため、次のセッションで以下を判断してください:**
+
+- **プロジェクトに残す場合** → `feat(lib): isInRange バリデーターを追加` でコミット
+- **不要な場合** → `git checkout src/types/index.ts && rm src/lib/validators.*` で削除
+
+### 次のセッションで最初に確認すべきこと
+
+1. `git status` — 未コミット変更の確認
+2. `npm test` — テスト全件パス確認（期待値: 164件）
+3. `v3.1 オンボーディング Phase 1`（🔵 pending）が次の実装タスク
+
+### 既知の問題・TODO
+
+| 優先度 | 内容 |
+|--------|------|
+| MEDIUM | `validators.ts` / `validators.test.ts` のコミット or 削除判断が未実施 |
+| INFO | `v3.1 オンボーディング Phase 1` が pending のまま |
+
+### 設計決定とその理由
+
+| 決定 | 理由 |
+|------|------|
+| `isInRange` を `boolean` 返却にした | `assertNever`（型ガード）と用途が異なる。テスタブルで汎用的 |
+| ファイル名 `validators.ts` | 既存 `formatters.ts` / `assert.ts` の命名スタイル（機能名）に準拠 |
+| `lib/index.ts` を作らず `types/index.ts` に export 追加 | 既存 `export { assertNever } from '../lib/assert'` パターンを踏襲。lib/index.ts は未存在 |
+| `@AC` タグを付与しない | Nexus 既存テストに未導入のため、追加すると不整合になる |
+
+---
+
 ## 現在のステータス
 
 | 項目 | 状態 |

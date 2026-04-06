@@ -17,9 +17,27 @@ import type { ApplyResult, OptCandidate, OptSession } from '../types';
 import { useOptimizeStore } from './useOptimizeStore';
 
 const MOCK_CANDIDATES: OptCandidate[] = [
-  { id: 'opt-1', label: '最適化A', description: '説明A', current_state: 'off', is_recommended: true },
-  { id: 'opt-2', label: '最適化B', description: '説明B', current_state: 'off', is_recommended: false },
-  { id: 'opt-3', label: '最適化C', description: '説明C', current_state: 'on', is_recommended: true },
+  {
+    id: 'opt-1',
+    label: '最適化A',
+    description: '説明A',
+    current_state: 'off',
+    is_recommended: true,
+  },
+  {
+    id: 'opt-2',
+    label: '最適化B',
+    description: '説明B',
+    current_state: 'off',
+    is_recommended: false,
+  },
+  {
+    id: 'opt-3',
+    label: '最適化C',
+    description: '説明C',
+    current_state: 'on',
+    is_recommended: true,
+  },
 ];
 
 const MOCK_APPLY_RESULT: ApplyResult = {
@@ -101,7 +119,10 @@ describe('useOptimizeStore', () => {
   });
 
   it('toggleCandidate removes already-selected item from selection', () => {
-    useOptimizeStore.setState({ candidates: MOCK_CANDIDATES, selected: new Set(['opt-1', 'opt-2']) });
+    useOptimizeStore.setState({
+      candidates: MOCK_CANDIDATES,
+      selected: new Set(['opt-1', 'opt-2']),
+    });
     useOptimizeStore.getState().toggleCandidate('opt-1');
     expect(useOptimizeStore.getState().selected.has('opt-1')).toBe(false);
     expect(useOptimizeStore.getState().selected.has('opt-2')).toBe(true);
@@ -117,7 +138,10 @@ describe('useOptimizeStore', () => {
   });
 
   it('deselectAll clears all selections', () => {
-    useOptimizeStore.setState({ candidates: MOCK_CANDIDATES, selected: new Set(['opt-1', 'opt-2']) });
+    useOptimizeStore.setState({
+      candidates: MOCK_CANDIDATES,
+      selected: new Set(['opt-1', 'opt-2']),
+    });
     useOptimizeStore.getState().deselectAll();
     expect(useOptimizeStore.getState().selected.size).toBe(0);
   });

@@ -24,7 +24,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -Command \"if (Test-Path 'C:/Users/rsn12/dev/nexus/HANDOFF.md') { Write-Output '=== HANDOFF.md (top 50) ==='; Get-Content 'C:/Users/rsn12/dev/nexus/HANDOFF.md' -TotalCount 50 }; if (Test-Path 'C:/Users/rsn12/dev/nexus/ROADMAP.md') { Write-Output '=== ROADMAP.md (top 30) ==='; Get-Content 'C:/Users/rsn12/dev/nexus/ROADMAP.md' -TotalCount 30 }\""
+            "command": "powershell -Command \"if (Test-Path 'c:/dev/nexus/HANDOFF.md') { Write-Output '=== HANDOFF.md (top 50) ==='; Get-Content 'c:/dev/nexus/HANDOFF.md' -TotalCount 50 }; if (Test-Path 'c:/dev/nexus/ROADMAP.md') { Write-Output '=== ROADMAP.md (top 30) ==='; Get-Content 'c:/dev/nexus/ROADMAP.md' -TotalCount 30 }\""
           }
         ]
       }
@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -Command \"if (Test-Path 'C:/Users/rsn12/dev/nexus/HANDOFF.md') { Get-Content 'C:/Users/rsn12/dev/nexus/HANDOFF.md' -TotalCount 20 }; exit 0\""
+            "command": "powershell -Command \"if (Test-Path 'c:/dev/nexus/HANDOFF.md') { Get-Content 'c:/dev/nexus/HANDOFF.md' -TotalCount 20 }; exit 0\""
           }
         ]
       }
@@ -46,7 +46,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -Command \"Set-Location 'C:/Users/rsn12/dev/nexus'; $f=$false; if (Test-Path 'package.json') { npm run check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; npm run typecheck 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if (Test-Path 'Cargo.toml') { cargo check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; cargo clippy -- -D warnings 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if ($f) { Write-Output 'Quality checks failed. Fix issues before completing this task.'; exit 2 } else { exit 0 }\""
+            "command": "powershell -Command \"Set-Location 'c:/dev/nexus'; $f=$false; if (Test-Path 'package.json') { npm run check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; npm run typecheck 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if (Test-Path 'Cargo.toml') { cargo check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; cargo clippy -- -D warnings 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if ($f) { Write-Output 'Quality checks failed. Fix issues before completing this task.'; exit 2 } else { exit 0 }\""
           }
         ]
       }
@@ -57,7 +57,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /d %CD% && node scripts/pre-edit-check.cjs 2>nul || true"
+            "command": "node scripts/pre-edit-check.cjs 2>/dev/null || true"
           }
         ]
       }
@@ -68,19 +68,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd /d %CD% && node scripts/quality-gate.cjs 2>nul || true"
+            "command": "node scripts/quality-gate.cjs 2>/dev/null || true"
           },
           {
             "type": "command",
-            "command": "cd /d %CD% && node scripts/update-handoff.cjs 2>nul || true"
+            "command": "node scripts/update-handoff.cjs 2>/dev/null || true"
           },
           {
             "type": "command",
-            "command": "cd /d %CD% && node scripts/auto-review.cjs 2>nul || true"
+            "command": "node scripts/auto-review.cjs 2>/dev/null || true"
           },
           {
             "type": "command",
-            "command": "cd /d %CD% && npx @biomejs/biome check --write $(git diff --name-only --diff-filter=M HEAD | grep -E '\\.(ts|tsx)$' | tr '\n' ' ') 2>nul || true"
+            "command": "npx @biomejs/biome check --write $(git diff --name-only --diff-filter=M HEAD | grep -E '\\.(ts|tsx)$' | tr '\n' ' ') 2>/dev/null || true"
           }
         ]
       }
