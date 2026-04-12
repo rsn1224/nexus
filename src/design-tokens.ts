@@ -4,12 +4,12 @@
 export const NEXUS_TOKENS = {
   color: {
     base: {
-      950: '#08080d',
-      900: '#0a0a0f',
-      800: '#12121a',
-      700: '#1e293b',
-      600: '#334155',
-      500: '#475569',
+      950: '#05060b',
+      900: '#08090f',
+      800: '#0d0e17',
+      700: '#12131e',
+      600: '#191a28',
+      500: '#202235',
     },
     accent: {
       600: '#0891b2',
@@ -22,11 +22,11 @@ export const NEXUS_TOKENS = {
     text: {
       primary: '#e2e8f0',
       secondary: '#94a3b8',
-      muted: '#475569',
+      muted: '#64748b',
     },
     border: {
-      subtle: '#1e293b',
-      active: '#334155',
+      subtle: 'rgba(34, 211, 238, 0.12)',
+      active: 'rgba(34, 211, 238, 0.2)',
     },
   },
   typography: {
