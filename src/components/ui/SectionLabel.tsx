@@ -6,7 +6,7 @@ interface SectionLabelProps {
 
 export default function SectionLabel({ label }: SectionLabelProps): React.ReactElement {
   return (
-    <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-text-muted">
+    <span className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent-500">
       {label}
     </span>
   );
