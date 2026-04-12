@@ -1,5 +1,6 @@
 import type React from 'react';
 import { memo, useEffect, useRef } from 'react';
+import { NEXUS_TOKENS } from '../../design-tokens';
 import { formatGb, formatTemp } from '../../lib/formatters';
 import { useHardwareStore } from '../../stores/useHardwareStore';
 import { useSystemStore } from '../../stores/useSystemStore';
@@ -24,7 +25,7 @@ interface ChartRowProps {
 
 function ChartRow({ label, value, unit, data, color }: ChartRowProps): React.ReactElement {
   return (
-    <div className="nx-card nx-corner-marks flex items-center gap-3 py-2">
+    <div className="bg-base-800 border border-border-subtle rounded flex items-center gap-3 py-2">
       <div className="w-[52px] shrink-0">
         <div className="text-[9px] font-bold tracking-[0.18em] uppercase text-text-muted">
           {label}
@@ -71,7 +72,9 @@ const MonitorView = memo(function MonitorView(): React.ReactElement {
   return (
     <div className="flex flex-col gap-2">
       {/* ─ セクションラベル */}
-      <div className="nx-section-lbl">REALTIME METRICS</div>
+      <div className="text-[11px] font-bold tracking-[0.15em] uppercase text-accent-500 mb-2">
+        REALTIME METRICS
+      </div>
 
       {/* ─ 4 メトリクスチャート */}
       <div className="flex flex-col gap-1.5">
@@ -80,36 +83,38 @@ const MonitorView = memo(function MonitorView(): React.ReactElement {
           value={status ? status.cpu_percent.toFixed(0) : na}
           unit="%"
           data={cpuBuf.current}
-          color="var(--c)"
+          color={NEXUS_TOKENS.color.accent[400]}
         />
         <ChartRow
           label="GPU"
           value={status ? status.gpu_percent.toFixed(0) : na}
           unit="%"
           data={gpuBuf.current}
-          color="var(--nx-success)"
+          color={NEXUS_TOKENS.color.success[500]}
         />
         <ChartRow
           label="TEMP"
           value={status ? status.gpu_temp_c.toFixed(0) : na}
           unit="°C"
           data={tempBuf.current}
-          color="var(--nx-warning)"
+          color={NEXUS_TOKENS.color.warning[500]}
         />
         <ChartRow
           label="RAM"
           value={ramPct !== null ? ramPct.toFixed(0) : na}
           unit="%"
           data={ramBuf.current}
-          color="rgba(139,92,246,1)"
+          color={NEXUS_TOKENS.color.text.secondary}
         />
       </div>
 
       {/* ─ ハードウェアサマリー */}
       {hardwareInfo && (
         <>
-          <div className="nx-section-lbl mt-2">HARDWARE</div>
-          <div className="nx-card flex flex-col gap-2">
+          <div className="text-[11px] font-bold tracking-[0.15em] uppercase text-accent-500 mb-2 mt-2">
+            HARDWARE
+          </div>
+          <div className="bg-base-800 border border-border-subtle rounded p-3 flex flex-col gap-2">
             <HwRow label="CPU" value={hardwareInfo.cpuName} />
             <HwRow
               label="CORES"
@@ -132,8 +137,10 @@ const MonitorView = memo(function MonitorView(): React.ReactElement {
 
 function HwRow({ label, value }: { label: string; value: string }): React.ReactElement {
   return (
-    <div className="nx-s-row">
-      <span className="nx-s-lbl">{label}</span>
+    <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+      <span className="text-[11px] font-bold tracking-[0.15em] uppercase text-accent-500">
+        {label}
+      </span>
       <span className="text-[11px] text-text-primary">{value}</span>
     </div>
   );
