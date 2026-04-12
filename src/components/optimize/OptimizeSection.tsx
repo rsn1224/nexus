@@ -114,7 +114,7 @@ const OptimizeSection = memo(function OptimizeSection({
       {(() => {
         const boostPct = lastResult !== null ? Math.min(95, 62 + selected.size * 5) : 32;
         return (
-          <div className="nx-card nx-corner-marks flex flex-col gap-1.5 py-2.5">
+          <div className="bg-base-800 border border-border-subtle rounded flex flex-col gap-1.5 py-2.5">
             <div className="flex justify-between items-center">
               <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-text-muted">
                 SYSTEM PERFORMANCE
@@ -123,8 +123,8 @@ const OptimizeSection = memo(function OptimizeSection({
             </div>
             <div className="h-[3px] rounded overflow-hidden bg-base-600">
               <div
-                className="h-full rounded transition-all duration-300 bg-accent-400"
-                style={{ width: `${boostPct}%` } as React.CSSProperties}
+                className="h-full rounded transition-[width] duration-300 bg-accent-400 w-(--progress-w)"
+                style={{ '--progress-w': `${boostPct}%` } as React.CSSProperties}
               />
             </div>
           </div>
