@@ -10,6 +10,7 @@ import { useMemoryStore } from '../../stores/useMemoryStore';
 import type { QuickPanel } from '../../stores/useUiStore';
 import { useWindowsStore } from '../../stores/useWindowsStore';
 import type { VisualEffects } from '../../types';
+import { Toggle } from '../ui/Toggle';
 
 function ToggleRow({
   label,
@@ -25,21 +26,12 @@ function ToggleRow({
   onToggle: () => void;
 }): React.ReactElement {
   return (
-    <div className="nx-s-row">
+    <div className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-b-0">
       <div>
-        <div className="nx-s-lbl">{label}</div>
-        {sub && <div className="nx-s-sub">{sub}</div>}
+        <div className="text-[11px] text-text-secondary tracking-[0.04em]">{label}</div>
+        {sub && <div className="text-[10px] text-text-muted mt-0.5">{sub}</div>}
       </div>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={value}
-        aria-label={label}
-        onClick={onToggle}
-        disabled={disabled}
-        className={`nx-tog${disabled ? ' opacity-40 cursor-not-allowed' : ''}`}
-        data-on={String(value)}
-      />
+      <Toggle enabled={value} onToggle={onToggle} disabled={disabled} />
     </div>
   );
 }
@@ -95,9 +87,9 @@ export const QuickPanelContent = memo(function QuickPanelContent({
           disabled={isLoading}
           onToggle={handleGameMode}
         />
-        <div className="nx-s-row">
-          <div className="nx-s-lbl">Game Profile</div>
-          <span className="text-[10px] text-(--t-3)">Coming Soon</span>
+        <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+          <div className="text-[11px] text-text-secondary tracking-[0.04em]">Game Profile</div>
+          <span className="text-[10px] text-text-muted">Coming Soon</span>
         </div>
       </div>
     );
@@ -121,8 +113,8 @@ export const QuickPanelContent = memo(function QuickPanelContent({
     const vfx = settings?.visualEffects ?? 'Balanced';
     return (
       <div className="flex flex-col px-3 pb-3 gap-1">
-        <div className="nx-s-row">
-          <div className="nx-s-lbl">Visual Effects</div>
+        <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+          <div className="text-[11px] text-text-secondary tracking-[0.04em]">Visual Effects</div>
         </div>
         <div className="flex gap-2">
           {(['BestPerformance', 'Balanced', 'BestAppearance'] as VisualEffects[]).map((v) => (
@@ -134,8 +126,8 @@ export const QuickPanelContent = memo(function QuickPanelContent({
               className={[
                 'flex-1 py-1.5 rounded text-[9px] font-bold tracking-widest uppercase transition-colors border',
                 vfx === v
-                  ? 'border-(--c-border) bg-(--c-bg) text-(--c)'
-                  : 'border-transparent bg-(--s-4) text-(--t-3) hover:text-(--t-2)',
+                  ? 'border-border-active bg-accent-500/10 text-accent-400'
+                  : 'border-transparent bg-base-600 text-text-muted hover:text-text-secondary',
               ].join(' ')}
             >
               {v === 'BestPerformance' ? 'Perf' : v === 'Balanced' ? 'Bal' : 'Look'}
@@ -149,21 +141,19 @@ export const QuickPanelContent = memo(function QuickPanelContent({
   // modules
   return (
     <div className="flex flex-col px-3 pb-3 gap-2">
-      <div className="nx-s-row">
-        <div className="nx-s-lbl">Memory Cleanup</div>
+      <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+        <div className="text-[11px] text-text-secondary tracking-[0.04em]">Memory Cleanup</div>
         <button
           type="button"
           onClick={handleCleanup}
           disabled={isCleaning}
-          className="px-3 py-1 rounded text-[9px] font-bold tracking-widest uppercase border-(--c-border) bg-(--c-bg) text-(--c) border transition-colors disabled:opacity-40"
+          className="px-3 py-1 rounded text-[9px] font-bold tracking-widest uppercase border border-border-active bg-accent-500/10 text-accent-400 transition-colors disabled:opacity-40"
         >
           {isCleaning ? '...' : 'RUN'}
         </button>
       </div>
       {lastResult?.freedMb !== null && lastResult?.freedMb !== undefined && (
-        <div className="text-[10px] text-(--nx-success)">
-          {lastResult.freedMb.toFixed(0)} MB freed
-        </div>
+        <div className="text-[10px] text-success-500">{lastResult.freedMb.toFixed(0)} MB freed</div>
       )}
     </div>
   );
