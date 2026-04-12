@@ -35,9 +35,7 @@ export const Toggle = memo(function Toggle({
         <span
           className={[
             'absolute top-0.5 w-4 h-4 rounded-full transition-transform duration-200',
-            enabled
-              ? 'bg-accent-500 translate-x-5 shadow-[0_0_6px_rgba(68,214,44,0.6)]'
-              : 'bg-text-muted translate-x-0.5',
+            enabled ? 'bg-accent-500 translate-x-5' : 'bg-text-muted translate-x-0.5',
           ].join(' ')}
         />
       </span>
