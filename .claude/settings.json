@@ -66,12 +66,25 @@
             "command": "node scripts/pre-edit-check.cjs 2>/dev/null || true"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-bash.sh"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit",
+        "matcher": "Edit|Write|MultiEdit",
         "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit.sh"
+          },
           {
             "type": "command",
             "command": "node scripts/quality-gate.cjs 2>/dev/null || true"
@@ -86,7 +99,23 @@
           },
           {
             "type": "command",
-            "command": "npx @biomejs/biome check --write $(git diff --name-only --diff-filter=M HEAD | grep -E '\\.(ts|tsx)$' | tr '\n' ' ') 2>/dev/null || true"
+            "command": "npx @biomejs/biome check --write $(git diff --name-only --diff-filter=M HEAD | grep -E '\\.(ts|tsx)$' | tr '\\n' ' ') 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/stop-quality-gate.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -Command \"[System.Console]::Beep(800,150); Start-Sleep -Milliseconds 80; [System.Console]::Beep(1000,200)\"",
+            "timeout": 5
           }
         ]
       }
