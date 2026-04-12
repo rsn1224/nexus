@@ -26,7 +26,7 @@ function ToggleRow({
   onToggle: () => void;
 }): React.ReactElement {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-b-0">
+    <div className="flex items-center justify-between py-2 border-b border-border-subtle last:border-b-0">
       <div>
         <div className="text-[11px] text-text-secondary tracking-[0.04em]">{label}</div>
         {sub && <div className="text-[10px] text-text-muted mt-0.5">{sub}</div>}
@@ -87,7 +87,7 @@ export const QuickPanelContent = memo(function QuickPanelContent({
           disabled={isLoading}
           onToggle={handleGameMode}
         />
-        <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+        <div className="flex items-center justify-between py-2 border-b border-border-subtle last:border-b-0">
           <div className="text-[11px] text-text-secondary tracking-[0.04em]">Game Profile</div>
           <span className="text-[10px] text-text-muted">Coming Soon</span>
         </div>
@@ -113,7 +113,7 @@ export const QuickPanelContent = memo(function QuickPanelContent({
     const vfx = settings?.visualEffects ?? 'Balanced';
     return (
       <div className="flex flex-col px-3 pb-3 gap-1">
-        <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+        <div className="flex items-center justify-between py-2 border-b border-border-subtle last:border-b-0">
           <div className="text-[11px] text-text-secondary tracking-[0.04em]">Visual Effects</div>
         </div>
         <div className="flex gap-2">
@@ -126,7 +126,7 @@ export const QuickPanelContent = memo(function QuickPanelContent({
               className={[
                 'flex-1 py-1.5 rounded text-[9px] font-bold tracking-widest uppercase transition-colors border',
                 vfx === v
-                  ? 'border-border-active bg-accent-500/10 text-accent-400'
+                  ? 'border-border-active bg-accent-500/10 text-accent-500'
                   : 'border-transparent bg-base-600 text-text-muted hover:text-text-secondary',
               ].join(' ')}
             >
@@ -141,13 +141,13 @@ export const QuickPanelContent = memo(function QuickPanelContent({
   // modules
   return (
     <div className="flex flex-col px-3 pb-3 gap-2">
-      <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
+      <div className="flex items-center justify-between py-2 border-b border-border-subtle last:border-b-0">
         <div className="text-[11px] text-text-secondary tracking-[0.04em]">Memory Cleanup</div>
         <button
           type="button"
           onClick={handleCleanup}
           disabled={isCleaning}
-          className="px-3 py-1 rounded text-[9px] font-bold tracking-widest uppercase border border-border-active bg-accent-500/10 text-accent-400 transition-colors disabled:opacity-40"
+          className="px-3 py-1 rounded text-[9px] font-bold tracking-widest uppercase border border-border-active bg-accent-500/10 text-accent-500 transition-colors disabled:opacity-40"
         >
           {isCleaning ? '...' : 'RUN'}
         </button>
