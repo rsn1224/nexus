@@ -50,13 +50,18 @@ const Main = memo(function Main(): React.ReactElement {
         <DiagnosticBanner />
 
         {/* Layer 3: タブバー */}
-        <div className="nx-tabs shrink-0">
+        <div className="flex gap-px bg-base-900 border border-border-subtle rounded p-0.5 shrink-0">
           {TABS.map((tab) => (
             <button
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`nx-tab${activeTab === tab ? ' nx-tab--active' : ''}`}
+              className={[
+                'flex-1 py-1.5 px-2 text-[10px] font-bold tracking-[0.12em] uppercase rounded-sm cursor-pointer transition-colors',
+                activeTab === tab
+                  ? 'text-accent-400 bg-accent-500/10'
+                  : 'text-text-muted bg-transparent hover:text-text-secondary hover:bg-white/4',
+              ].join(' ')}
             >
               {TAB_LABELS[tab]}
             </button>
@@ -88,20 +93,22 @@ const Main = memo(function Main(): React.ReactElement {
       {activeQuickPanel && (
         <>
           <div
-            className="nx-overlay"
+            className="fixed inset-0 bg-base-950/70 backdrop-blur-sm z-40 cursor-default"
             onClick={() => setActiveQuickPanel(null)}
             aria-hidden="true"
           />
           <div
-            className="nx-panel bottom-[72px] left-4 right-4"
+            className="absolute bg-base-700 border border-border-subtle rounded z-50 bottom-18 left-4 right-4"
             role="dialog"
             aria-label={PANEL_TITLES[activeQuickPanel]}
           >
-            <div className="nx-panel-hd">
-              <span className="nx-panel-ttl">{PANEL_TITLES[activeQuickPanel]}</span>
+            <div className="flex items-center justify-between px-3.5 pt-2.5 pb-2 border-b border-border-subtle">
+              <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-accent-500">
+                {PANEL_TITLES[activeQuickPanel]}
+              </span>
               <button
                 type="button"
-                className="nx-panel-x"
+                className="flex items-center justify-center w-5 h-5 text-text-muted rounded transition-colors hover:text-text-primary hover:bg-white/4"
                 onClick={() => setActiveQuickPanel(null)}
                 aria-label="パネルを閉じる"
               >
