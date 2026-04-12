@@ -84,7 +84,9 @@ const BoostView = memo(function BoostView(): React.ReactElement {
     <div className="flex flex-col gap-3">
       {/* ─ プリセット選択 */}
       <div>
-        <div className="nx-section-lbl">POWER PRESET</div>
+        <div className="text-[11px] font-bold tracking-[0.15em] uppercase text-accent-500 mb-2">
+          POWER PRESET
+        </div>
         <div className="flex gap-2">
           {PRESETS.map((p) => {
             const isActive = activePreset === p.id;
@@ -94,7 +96,12 @@ const BoostView = memo(function BoostView(): React.ReactElement {
                 type="button"
                 onClick={() => void handlePreset(p.plan)}
                 disabled={isLoading}
-                className={`nx-preset-card${isActive ? ' nx-preset-card--active' : ''}`}
+                className={[
+                  'flex-1 px-3 py-2.5 bg-base-700 border rounded cursor-pointer transition-colors text-left',
+                  isActive
+                    ? 'border-border-active bg-accent-500/10'
+                    : 'border-white/[0.07] hover:border-border-active hover:bg-base-600',
+                ].join(' ')}
               >
                 <div
                   className={`text-[10px] font-bold tracking-[0.15em] ${isActive ? 'text-accent-400' : 'text-text-secondary'}`}
@@ -104,7 +111,9 @@ const BoostView = memo(function BoostView(): React.ReactElement {
                 <div className="text-[9px] mt-0.5 text-text-muted">{p.sub}</div>
                 {isActive && (
                   <div className="mt-2">
-                    <span className="nx-tag nx-tag--cyan">ACTIVE</span>
+                    <span className="inline-flex items-center px-1.5 py-0.5 text-[9px] font-bold tracking-[0.12em] uppercase rounded-sm text-accent-400 bg-accent-500/10 border border-border-subtle">
+                      ACTIVE
+                    </span>
                   </div>
                 )}
               </button>
@@ -115,12 +124,16 @@ const BoostView = memo(function BoostView(): React.ReactElement {
 
       {/* ─ CPU 優先度スライダー */}
       <div>
-        <div className="nx-section-lbl">CPU PRIORITY</div>
-        <div className="nx-card flex flex-col gap-3">
-          <div className="nx-s-row">
+        <div className="text-[11px] font-bold tracking-[0.15em] uppercase text-accent-500 mb-2">
+          CPU PRIORITY
+        </div>
+        <div className="bg-base-800 border border-border-subtle rounded p-3 flex flex-col gap-3">
+          <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
             <div>
-              <div className="nx-s-lbl">Process Priority</div>
-              <div className="nx-s-sub">
+              <div className="text-[11px] text-text-secondary tracking-[0.04em]">
+                Process Priority
+              </div>
+              <div className="text-[10px] text-text-muted mt-0.5">
                 ゲームプロセスへの CPU 時間割り当て
                 {/* TODO: replace with invoke('set_cpu_priority', { percent: cpuPriority }) */}
               </div>
@@ -134,7 +147,7 @@ const BoostView = memo(function BoostView(): React.ReactElement {
             step={5}
             value={cpuPriority}
             onChange={(e) => setCpuPriority(Number(e.target.value))}
-            className="nx-slider"
+            className="styled-range"
             aria-label="CPU 優先度"
           />
         </div>
@@ -142,12 +155,16 @@ const BoostView = memo(function BoostView(): React.ReactElement {
 
       {/* ─ メモリクリア頻度 */}
       <div>
-        <div className="nx-section-lbl">MEMORY CLEANUP</div>
-        <div className="nx-card">
-          <div className="nx-s-row">
+        <div className="text-[11px] font-bold tracking-[0.15em] uppercase text-accent-500 mb-2">
+          MEMORY CLEANUP
+        </div>
+        <div className="bg-base-800 border border-border-subtle rounded p-3">
+          <div className="flex items-center justify-between py-2 border-b border-white/4 last:border-b-0">
             <div>
-              <div className="nx-s-lbl">Cleanup Frequency</div>
-              <div className="nx-s-sub">
+              <div className="text-[11px] text-text-secondary tracking-[0.04em]">
+                Cleanup Frequency
+              </div>
+              <div className="text-[10px] text-text-muted mt-0.5">
                 自動メモリ解放の頻度
                 {/* TODO: replace with invoke('set_mem_cleanup_freq', { level: memFreq }) */}
               </div>
@@ -164,7 +181,7 @@ const BoostView = memo(function BoostView(): React.ReactElement {
               step={1}
               value={memFreq}
               onChange={(e) => setMemFreq(Number(e.target.value))}
-              className="nx-slider"
+              className="styled-range"
               aria-label="メモリクリア頻度"
             />
           </div>
