@@ -11,7 +11,13 @@
       "Read(**/*.key)",
       "Write(**/.env*)",
       "Write(**/*.pem)",
-      "Write(**/*.key)"
+      "Write(**/*.key)",
+      "Bash(git reset --hard*)",
+      "Bash(git clean -f*)",
+      "Bash(git clean -fd*)",
+      "Bash(curl * | pwsh*)",
+      "Bash(wget * | sh*)",
+      "Write(**/.claude/settings.local.json)"
     ]
   },
   "env": {
