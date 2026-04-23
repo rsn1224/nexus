@@ -10,6 +10,7 @@ import OptimizeSection from './optimize/OptimizeSection';
 import HistoryPanel from './panels/HistoryPanel';
 import { QuickPanelContent } from './panels/QuickPanels';
 import SettingsPanel from './panels/SettingsPanel';
+import { CommandPalette } from './shadcn';
 import KpiGrid from './system/KpiGrid';
 import RevertDialog from './ui/RevertDialog';
 import BoostView from './views/BoostView';
@@ -81,6 +82,9 @@ const Main = memo(function Main(): React.ReactElement {
         {/* フッター */}
         <FooterBar />
       </main>
+
+      {/* Command Palette (Ctrl/Cmd+K) — shadcn PoC */}
+      <CommandPalette />
 
       {/* スライドパネル */}
       <SettingsPanel />

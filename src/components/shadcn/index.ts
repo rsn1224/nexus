@@ -5,6 +5,7 @@
  * 既存 src/components/ui/* と並行配置。既存実装を破壊しない。
  */
 export { Button, type ButtonProps, buttonVariants } from './button';
+export { CommandPalette } from './CommandPalette';
 export {
   Command,
   CommandDialog,
