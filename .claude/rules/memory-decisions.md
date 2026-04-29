@@ -1,5 +1,4 @@
 ---
-name: memory-decisions
 description: Claude Code メモリシステムの設計判断と何を保存すべきか
 ---
 
@@ -25,11 +24,12 @@ description: Claude Code メモリシステムの設計判断と何を保存す�
 ## メモリファイルの場所
 
 ```
-C:\Users\rsn12\.claude\projects\c--Users-rsn12-dev\memory\
+C:\temp\claude_config\projects\c--dev\memory\
 ```
 
 - `MEMORY.md` — インデックスのみ（本文を書かない）
 - 各 `.md` ファイル — frontmatter + 本文
+- 旧パス `C:\Users\rsn12\.claude\projects\c--Users-rsn12-dev\memory\` は 2026-04-07 に統合済み（参照のみ可）
 
 ## 保存のタイミング
 

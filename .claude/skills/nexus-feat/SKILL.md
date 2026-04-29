@@ -1,3 +1,10 @@
+---
+name: nexus-feat
+description: >
+  nexus プロジェクトの新機能開発ワークフロー。機能企画 → 設計 → 実装 → テスト → ドキュメント更新の 5 ステップ。
+  TRIGGER when: user says "新機能作成", "feat 追加", "機能実装" or runs /nexus-feat (旧 /feat).
+---
+
 # 新機能実装
 
 機能名: $ARGUMENTS
@@ -96,7 +103,7 @@ $ARGUMENTS が空の場合は「使用例: /feat dark-mode」と伝えて停止�
 
 ## 完了条件
 
-- `npm run check` でエラー 0件
-- `npm run typecheck` で型エラー 0件
+- `pnpm check` でエラー 0件
+- `pnpm typecheck` で型エラー 0件
 - `cargo clippy -- -D warnings` で warning 0件
-- `npm run test` で全テストグリーン
+- `pnpm test` で全テストグリーン

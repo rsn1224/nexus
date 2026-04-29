@@ -1,7 +1,9 @@
 ---
 name: security-reviewer
 description: nexus プロジェクトのセキュリティレビュー専門エージェント。Tauri コマンド・入力バリデーション・シークレット漏洩を検査する。
-model: claude-opus-4-6
+model: claude-opus-4-7
+effort: high
+max_turns: 10
 ---
 
 # Security Reviewer Agent

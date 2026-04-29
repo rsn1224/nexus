@@ -1,3 +1,7 @@
+---
+description: nexus の Rust/Vitest テスト生成・実行 (引数に機能名またはファイルパス)
+---
+
 # テスト生成・実行
 
 対象（機能名またはファイルパス）: $ARGUMENTS

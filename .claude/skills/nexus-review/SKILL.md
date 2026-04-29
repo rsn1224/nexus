@@ -3,9 +3,11 @@ name: nexus-review
 description: >
   nexus プロジェクトのコードレビューチェックリスト（v4）。
   コンポーネント・Zustand ストア・Rust コマンドのスタイル・状態管理・アーキテクチャを検証する。
-  Use when user says "レビューして", "review", "REQUIRES_CHANGES or APPROVED",
+  TRIGGER when: user says "レビューして", "review", "REQUIRES_CHANGES or APPROVED",
   "コードを確認して", or runs /review.
-  Do NOT use for Rust-only changes (use nexus-rust-rules instead).
+  Rust コードのレビューは rules/rust-implementation.md を参照。
+  汎用コードレビューには superpowers:requesting-code-review を使う。
+  Do NOT use for Rust-only changes (see rules/rust-implementation.md instead).
 ---
 
 # nexus レビューチェックリスト（v4）

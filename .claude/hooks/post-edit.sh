@@ -62,15 +62,6 @@ if [[ "$FILE_PATH" == *.ts || "$FILE_PATH" == *.tsx ]]; then
         fi
     fi
 
-    TSC_OUT=$(npm run typecheck 2>&1)
-    TSC_EXIT=$?
-    if [[ $TSC_EXIT -ne 0 ]]; then
-        ERROR_COUNT=$(echo "$TSC_OUT" | grep -c "error TS")
-        echo "[post-edit] tsc --noEmit: ${ERROR_COUNT} error(s) after editing $FILE_PATH" >&2
-        echo "$TSC_OUT" | grep "error TS" | head -10 >&2
-        exit 1
-    fi
-
     exit 0
 fi
 

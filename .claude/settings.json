@@ -1,28 +1,4 @@
 {
-  "permissions": {
-    "deny": [
-      "Bash(git push --force*)",
-      "Bash(git push -f*)",
-      "Bash(rm -rf*)",
-      "Bash(curl * | bash*)",
-      "Bash(wget * | bash*)",
-      "Read(**/.env*)",
-      "Read(**/*.pem)",
-      "Read(**/*.key)",
-      "Write(**/.env*)",
-      "Write(**/*.pem)",
-      "Write(**/*.key)",
-      "Bash(git reset --hard*)",
-      "Bash(git clean -f*)",
-      "Bash(git clean -fd*)",
-      "Bash(curl * | pwsh*)",
-      "Bash(wget * | sh*)",
-      "Write(**/.claude/settings.local.json)"
-    ]
-  },
-  "env": {
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
-  },
   "hooks": {
     "PreCompact": [
       {
@@ -52,21 +28,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "powershell -Command \"Set-Location 'c:/dev/nexus'; $f=$false; if (Test-Path 'package.json') { npm run check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; npm run typecheck 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if (Test-Path 'Cargo.toml') { cargo check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; cargo clippy -- -D warnings 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if ($f) { Write-Output 'Quality checks failed. Fix issues before completing this task.'; exit 2 } else { exit 0 }\""
+            "command": "powershell -Command \"Set-Location 'c:/dev/nexus'; $f=$false; if (Test-Path 'package.json') { npm run check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; npm run typecheck 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true } }; if (Test-Path 'src-tauri/Cargo.toml') { $env:PATH = $env:USERPROFILE + '\\.cargo\\bin;' + $env:PATH; Push-Location src-tauri; cargo check 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; cargo clippy -- -D warnings 2>$null; if ($LASTEXITCODE -ne 0) { $f=$true }; Pop-Location }; if ($f) { Write-Output 'Quality checks failed. Fix issues before completing this task.'; exit 2 } else { exit 0 }\""
           }
         ]
       }
     ],
     "PreToolUse": [
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node scripts/pre-edit-check.cjs 2>/dev/null || true"
-          }
-        ]
-      },
       {
         "matcher": "Bash",
         "hooks": [
@@ -83,23 +50,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/post-edit.sh"
-          },
-          {
-            "type": "command",
-            "command": "node scripts/quality-gate.cjs 2>/dev/null || true"
-          },
-          {
-            "type": "command",
-            "command": "node scripts/update-handoff.cjs 2>/dev/null || true"
-          },
-          {
-            "type": "command",
-            "command": "node scripts/auto-review.cjs 2>/dev/null || true"
-          },
-          {
-            "type": "command",
-            "command": "npx @biomejs/biome check --write $(git diff --name-only --diff-filter=M HEAD | grep -E '\\.(ts|tsx)$' | tr '\\n' ' ') 2>/dev/null || true"
+            "command": "bash .claude/hooks/post-edit.sh",
+            "timeout": 30
           }
         ]
       }
@@ -109,12 +61,24 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/stop-quality-gate.sh",
+            "command": "bash c:/dev/.claude/hooks/stop-quality-gate.sh",
             "timeout": 5
           },
           {
             "type": "command",
             "command": "powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -Command \"[System.Console]::Beep(800,150); Start-Sleep -Milliseconds 80; [System.Console]::Beep(1000,200)\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "idle_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell.exe -NoProfile -NonInteractive -WindowStyle Hidden -Command \"[System.Console]::Beep(600,300)\"",
             "timeout": 5
           }
         ]

@@ -2,6 +2,7 @@
 name: backend-dev
 description: Rust/Tauri のバックエンド実装を担当
 isolation: worktree
+max_turns: 30
 ---
 
 # backend-dev

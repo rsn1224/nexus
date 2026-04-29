@@ -1,3 +1,12 @@
+---
+name: nexus-plan-feature
+description: >
+  nexus の機能計画立案ワークフロー。要件分解 → タスク抽出 → 優先度付けの 3 ステップ。
+  TRIGGER when: user says "機能計画", "plan feature", "タスク分解" or runs /nexus-plan-feature (旧 /plan-feature).
+---
+
+# plan-feature
+
 機能名: $ARGUMENTS
 
 $ARGUMENTS が空の場合は「機能名を引数で指定してください（例: /plan-feature dark-mode）」と伝えて処理を停止すること。

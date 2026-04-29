@@ -1,3 +1,8 @@
+---
+description: Figma → コード変換ルール（nexus/ プロジェクト固有、Cyan 単色アクセント）
+globs: "src/**/*.{ts,tsx,css}"
+---
+
 # Figma → コード変換ルール（nexus/ プロジェクト固有）
 
 > `figma-implement-design` スキルを使う際は、このファイルのルールを**全て適用**すること。

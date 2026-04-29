@@ -2,6 +2,7 @@
 name: perf-analyzer
 description: nexus のパフォーマンス分析エージェント。ポーリング間隔・React再レンダリング・Zustandセレクター・Rust処理効率を分析する。
 model: claude-sonnet-4-6
+max_turns: 10
 ---
 
 # Performance Analyzer Agent

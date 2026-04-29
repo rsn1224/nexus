@@ -1,3 +1,7 @@
+---
+description: nexus のコードレビューを nexus 固有チェック + 汎用 code-reviewer agent で実行する
+---
+
 # コードレビュー
 
 nexus のコードレビューを実行します。

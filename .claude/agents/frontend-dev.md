@@ -2,6 +2,7 @@
 name: frontend-dev
 description: React/TypeScript のフロントエンド実装を担当
 isolation: worktree
+max_turns: 30
 ---
 
 # frontend-dev
