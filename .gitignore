@@ -34,3 +34,9 @@ reports/
 
 # MCP server database
 sqlite_mcp_server.db
+
+# Rust build artifacts
+src-tauri/target/
+
+# Claude Code personal settings
+.claude/settings.local.json
