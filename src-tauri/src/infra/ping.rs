@@ -20,10 +20,7 @@ pub fn run_ping(target: &str, count: u32) -> Result<String, AppError> {
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         if !stderr.trim().is_empty() {
-            return Err(AppError::Command(format!(
-                "ping 失敗: {}",
-                stderr.trim()
-            )));
+            return Err(AppError::Command(format!("ping 失敗: {}", stderr.trim())));
         }
     }
 

@@ -9,9 +9,8 @@ use tracing::info;
 // ─── Backup Management ────────────────────────────────────────────────────────────
 
 pub(crate) fn backup_path() -> Result<PathBuf, AppError> {
-    let mut path = std::env::var("LOCALAPPDATA").map_err(|_| {
-        AppError::Command("LOCALAPPDATA 環境変数の取得に失敗しました".to_string())
-    })?;
+    let mut path = std::env::var("LOCALAPPDATA")
+        .map_err(|_| AppError::Command("LOCALAPPDATA 環境変数の取得に失敗しました".to_string()))?;
     path.push_str("\\nexus\\winopt_backup.json");
     Ok(PathBuf::from(path))
 }
@@ -22,11 +21,16 @@ pub(crate) fn load_backup() -> Result<HashMap<String, String>, AppError> {
         return Ok(HashMap::new());
     }
 
-    let content = std::fs::read_to_string(path)
-        .map_err(|e| AppError::Io(format!("バックアップファイルの読み込みに失敗しました: {}", e)))?;
+    let content = std::fs::read_to_string(path).map_err(|e| {
+        AppError::Io(format!(
+            "バックアップファイルの読み込みに失敗しました: {}",
+            e
+        ))
+    })?;
 
-    serde_json::from_str(&content)
-        .map_err(|e| AppError::Serialization(format!("バックアップファイルの解析に失敗しました: {}", e)))
+    serde_json::from_str(&content).map_err(|e| {
+        AppError::Serialization(format!("バックアップファイルの解析に失敗しました: {}", e))
+    })
 }
 
 pub(crate) fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppError> {
@@ -34,15 +38,24 @@ pub(crate) fn save_backup(backup: &HashMap<String, String>) -> Result<(), AppErr
 
     // Create directory if it doesn't exist
     if let Some(parent) = path.parent() {
-        std::fs::create_dir_all(parent)
-            .map_err(|e| AppError::Io(format!("バックアップディレクトリの作成に失敗しました: {}", e)))?;
+        std::fs::create_dir_all(parent).map_err(|e| {
+            AppError::Io(format!(
+                "バックアップディレクトリの作成に失敗しました: {}",
+                e
+            ))
+        })?;
     }
 
-    let content = serde_json::to_string_pretty(backup)
-        .map_err(|e| AppError::Serialization(format!("バックアップのシリアライズに失敗しました: {}", e)))?;
+    let content = serde_json::to_string_pretty(backup).map_err(|e| {
+        AppError::Serialization(format!("バックアップのシリアライズに失敗しました: {}", e))
+    })?;
 
-    std::fs::write(path, content)
-        .map_err(|e| AppError::Io(format!("バックアップファイルの書き込みに失敗しました: {}", e)))?;
+    std::fs::write(path, content).map_err(|e| {
+        AppError::Io(format!(
+            "バックアップファイルの書き込みに失敗しました: {}",
+            e
+        ))
+    })?;
 
     Ok(())
 }

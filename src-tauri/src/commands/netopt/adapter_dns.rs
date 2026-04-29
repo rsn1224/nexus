@@ -17,7 +17,10 @@ pub async fn get_network_adapters() -> Result<Vec<NetworkAdapter>, AppError> {
 
         if !output.status.success() {
             let stderr = decode_output(&output.stderr);
-            return Err(AppError::Command(format!("ipconfig が失敗しました: {}", stderr)));
+            return Err(AppError::Command(format!(
+                "ipconfig が失敗しました: {}",
+                stderr
+            )));
         }
 
         let stdout = decode_output(&output.stdout);
@@ -97,7 +100,10 @@ pub async fn get_current_dns() -> Result<Vec<String>, AppError> {
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
-            return Err(AppError::Command(format!("netsh が失敗しました: {}", stderr)));
+            return Err(AppError::Command(format!(
+                "netsh が失敗しました: {}",
+                stderr
+            )));
         }
 
         let stdout = String::from_utf8_lossy(&output.stdout);
@@ -153,7 +159,9 @@ pub async fn set_dns(adapter: String, primary: String, secondary: String) -> Res
                 "primary",
             ])
             .output()
-            .map_err(|e| AppError::Command(format!("プライマリ DNS の設定に失敗しました: {}", e)))?;
+            .map_err(|e| {
+                AppError::Command(format!("プライマリ DNS の設定に失敗しました: {}", e))
+            })?;
 
         if !output.status.success() {
             let stderr = String::from_utf8_lossy(&output.stderr);
@@ -175,7 +183,9 @@ pub async fn set_dns(adapter: String, primary: String, secondary: String) -> Res
                     "index=2",
                 ])
                 .output()
-                .map_err(|e| AppError::Command(format!("セカンダリ DNS の設定に失敗しました: {}", e)))?;
+                .map_err(|e| {
+                    AppError::Command(format!("セカンダリ DNS の設定に失敗しました: {}", e))
+                })?;
 
             if !output.status.success() {
                 let stderr = String::from_utf8_lossy(&output.stderr);

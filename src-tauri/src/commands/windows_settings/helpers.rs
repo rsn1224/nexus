@@ -14,7 +14,10 @@ pub(super) fn get_current_power_plan() -> Result<PowerPlan, AppError> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("powercfg が失敗しました: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "powercfg が失敗しました: {}",
+            stderr
+        )));
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -60,7 +63,10 @@ pub(super) fn get_fullscreen_optimization_status() -> Result<bool, AppError> {
         ])
         .output()
         .map_err(|e| {
-            AppError::Command(format!("フルスクリーン最適化の状態取得に失敗しました: {}", e))
+            AppError::Command(format!(
+                "フルスクリーン最適化の状態取得に失敗しました: {}",
+                e
+            ))
         })?;
 
     if !output.status.success() {
@@ -83,7 +89,10 @@ pub(super) fn get_hardware_gpu_scheduling_status() -> Result<bool, AppError> {
         ])
         .output()
         .map_err(|e| {
-            AppError::Command(format!("ハードウェア GPU スケジューリングの状態取得に失敗しました: {}", e))
+            AppError::Command(format!(
+                "ハードウェア GPU スケジューリングの状態取得に失敗しました: {}",
+                e
+            ))
         })?;
 
     if !output.status.success() {

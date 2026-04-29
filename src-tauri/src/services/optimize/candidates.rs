@@ -255,10 +255,7 @@ mod tests {
             off_str.contains("最適化済み"),
             "OFF 表示に 最適化済み が含まれない"
         );
-        assert!(
-            !on_str.contains("最適化済み"),
-            "ON 表示が誤った文字列"
-        );
+        assert!(!on_str.contains("最適化済み"), "ON 表示が誤った文字列");
     }
 
     #[test]

@@ -214,12 +214,18 @@ pub fn save_eco_mode_config(app: AppHandle, config: EcoModeConfig) -> Result<(),
     let app_data_dir = app
         .path()
         .resolve("app_data", tauri::path::BaseDirectory::AppData)
-        .map_err(|_| AppError::Command("アプリデータディレクトリの取得に失敗しました".to_string()))?;
+        .map_err(|_| {
+            AppError::Command("アプリデータディレクトリの取得に失敗しました".to_string())
+        })?;
 
     let config_path = app_data_dir.join("eco_config.json");
 
-    std::fs::create_dir_all(&app_data_dir)
-        .map_err(|e| AppError::Command(format!("アプリデータディレクトリの作成に失敗しました: {}", e)))?;
+    std::fs::create_dir_all(&app_data_dir).map_err(|e| {
+        AppError::Command(format!(
+            "アプリデータディレクトリの作成に失敗しました: {}",
+            e
+        ))
+    })?;
 
     let config_json = serde_json::to_string_pretty(&config)
         .map_err(|e| AppError::Command(format!("設定のシリアライズに失敗しました: {}", e)))?;

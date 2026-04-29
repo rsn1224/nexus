@@ -34,9 +34,9 @@ fn parse_powercfg_output(output: &str) -> Result<u32, AppError> {
             let parts: Vec<&str> = line.split_whitespace().collect();
             if parts.len() >= 2 {
                 let percent_str = parts[1].trim_end_matches('%');
-                return percent_str
-                    .parse::<u32>()
-                    .map_err(|_| AppError::PowerPlan("パーセント値の解析に失敗しました".to_string()));
+                return percent_str.parse::<u32>().map_err(|_| {
+                    AppError::PowerPlan("パーセント値の解析に失敗しました".to_string())
+                });
             }
         }
     }

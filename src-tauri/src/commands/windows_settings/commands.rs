@@ -66,7 +66,10 @@ pub fn set_power_plan(plan: PowerPlan) -> Result<(), AppError> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(AppError::Command(format!("powercfg が失敗しました: {}", stderr)));
+        return Err(AppError::Command(format!(
+            "powercfg が失敗しました: {}",
+            stderr
+        )));
     }
 
     info!("set_power_plan: successfully set power plan to {}", plan);
@@ -139,7 +142,10 @@ pub fn toggle_fullscreen_optimization() -> Result<bool, AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to toggle fullscreen optimization: {}", e);
-            AppError::Command(format!("フルスクリーン最適化の切り替えに失敗しました: {}", e))
+            AppError::Command(format!(
+                "フルスクリーン最適化の切り替えに失敗しました: {}",
+                e
+            ))
         })?;
 
     if !output.status.success() {
@@ -181,7 +187,10 @@ pub fn toggle_hardware_gpu_scheduling() -> Result<bool, AppError> {
         .output()
         .map_err(|e| {
             warn!("Failed to toggle hardware GPU scheduling: {}", e);
-            AppError::Command(format!("ハードウェア GPU スケジューリングの切り替えに失敗しました: {}", e))
+            AppError::Command(format!(
+                "ハードウェア GPU スケジューリングの切り替えに失敗しました: {}",
+                e
+            ))
         })?;
 
     if !output.status.success() {

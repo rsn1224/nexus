@@ -41,8 +41,14 @@ mod tests {
         let r_max = set_network_throttling(70);
         assert!(r_max.is_ok() || r_max.is_err());
         // 境界を 1 つ超えた値は常に InvalidInput
-        assert!(matches!(set_network_throttling(-2), Err(AppError::InvalidInput(_))));
-        assert!(matches!(set_network_throttling(71), Err(AppError::InvalidInput(_))));
+        assert!(matches!(
+            set_network_throttling(-2),
+            Err(AppError::InvalidInput(_))
+        ));
+        assert!(matches!(
+            set_network_throttling(71),
+            Err(AppError::InvalidInput(_))
+        ));
     }
 
     #[test]

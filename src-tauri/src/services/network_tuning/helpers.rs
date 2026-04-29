@@ -47,8 +47,7 @@ pub(super) fn get_delayed_ack_status() -> Result<bool, AppError> {
 
 #[cfg(windows)]
 pub(super) fn get_tcp_auto_tuning_level() -> Result<TcpAutoTuningLevel, AppError> {
-    let output_str =
-        crate::infra::netsh::run_netsh(&["int", "tcp", "show", "global"])?;
+    let output_str = crate::infra::netsh::run_netsh(&["int", "tcp", "show", "global"])?;
 
     if output_str.contains("disabled") {
         Ok(TcpAutoTuningLevel::Disabled)

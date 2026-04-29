@@ -7,10 +7,9 @@ use tauri::{AppHandle, Manager};
 
 /// セッション保存先ディレクトリを取得（app_data_dir/sessions/）
 pub fn sessions_dir(app: &AppHandle) -> Result<std::path::PathBuf, AppError> {
-    let data_dir = app
-        .path()
-        .app_data_dir()
-        .map_err(|e| AppError::Internal(format!("アプリデータディレクトリの取得に失敗しました: {e}")))?;
+    let data_dir = app.path().app_data_dir().map_err(|e| {
+        AppError::Internal(format!("アプリデータディレクトリの取得に失敗しました: {e}"))
+    })?;
     let sessions_dir = data_dir.join("sessions");
     fs::create_dir_all(&sessions_dir).map_err(|e| AppError::Io(e.to_string()))?;
     Ok(sessions_dir)
@@ -19,9 +18,7 @@ pub fn sessions_dir(app: &AppHandle) -> Result<std::path::PathBuf, AppError> {
 /// セッション ID をバリデーション
 pub(super) fn validate_session_id(id: &str) -> Result<(), AppError> {
     if id.is_empty() {
-        return Err(AppError::InvalidInput(
-            "セッション ID が空です".to_string(),
-        ));
+        return Err(AppError::InvalidInput("セッション ID が空です".to_string()));
     }
 
     // 英数字とハイフンのみ許可（パストラバーサル防止）

@@ -157,13 +157,19 @@ impl WatchdogEngine {
 
     /// ルール永続化
     pub fn save_rules(&self, app: &AppHandle) -> Result<(), AppError> {
-        let app_data_dir = app
-            .path()
-            .app_data_dir()
-            .map_err(|e| AppError::Io(format!("アプリデータディレクトリの取得に失敗しました: {}", e)))?;
+        let app_data_dir = app.path().app_data_dir().map_err(|e| {
+            AppError::Io(format!(
+                "アプリデータディレクトリの取得に失敗しました: {}",
+                e
+            ))
+        })?;
 
-        std::fs::create_dir_all(&app_data_dir)
-            .map_err(|e| AppError::Io(format!("アプリデータディレクトリの作成に失敗しました: {}", e)))?;
+        std::fs::create_dir_all(&app_data_dir).map_err(|e| {
+            AppError::Io(format!(
+                "アプリデータディレクトリの作成に失敗しました: {}",
+                e
+            ))
+        })?;
 
         let rules_path = app_data_dir.join("watchdog_rules.json");
         let json = serde_json::to_string_pretty(&self.rules)
@@ -178,10 +184,12 @@ impl WatchdogEngine {
 
     /// ルール読み込み
     pub fn load_rules(app: &AppHandle) -> Result<Vec<WatchdogRule>, AppError> {
-        let app_data_dir = app
-            .path()
-            .app_data_dir()
-            .map_err(|e| AppError::Io(format!("アプリデータディレクトリの取得に失敗しました: {}", e)))?;
+        let app_data_dir = app.path().app_data_dir().map_err(|e| {
+            AppError::Io(format!(
+                "アプリデータディレクトリの取得に失敗しました: {}",
+                e
+            ))
+        })?;
 
         let rules_path = app_data_dir.join("watchdog_rules.json");
 

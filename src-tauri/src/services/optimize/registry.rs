@@ -21,7 +21,9 @@ pub(super) fn location(id: &str) -> Result<(&'static str, &'static str), AppErro
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR",
             "AppCaptureEnabled",
         )),
-        _ => Err(AppError::InvalidInput(format!("不明なレジストリ ID です: {id}"))),
+        _ => Err(AppError::InvalidInput(format!(
+            "不明なレジストリ ID です: {id}"
+        ))),
     }
 }
 
@@ -32,7 +34,9 @@ pub(super) fn target_value(id: &str) -> Result<u32, AppError> {
         "reg_priority_sep" => Ok(38),
         "reg_throttle" => Ok(0xFFFF_FFFF),
         "reg_game_dvr" => Ok(0),
-        _ => Err(AppError::InvalidInput(format!("不明なレジストリ ID です: {id}"))),
+        _ => Err(AppError::InvalidInput(format!(
+            "不明なレジストリ ID です: {id}"
+        ))),
     }
 }
 
