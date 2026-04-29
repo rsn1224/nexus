@@ -7,7 +7,7 @@ on:
       - 'src/**'
       - 'src-tauri/**'
       - 'package.json'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
       - 'tsconfig*.json'
       - 'vite.config.*'
       - 'vitest.config.*'
@@ -19,7 +19,7 @@ on:
       - 'src/**'
       - 'src-tauri/**'
       - 'package.json'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
       - 'tsconfig*.json'
       - 'vite.config.*'
       - 'vitest.config.*'
@@ -33,9 +33,6 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true  # Node.js 20 deprecation対応 (2026-06-02 強制移行)
-
 jobs:
   frontend:
     name: Frontend
@@ -43,31 +40,33 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-      # ── 追加: node_modules キャッシュ ──
+          node-version: '24'
+          cache: 'pnpm'
+      # ── node_modules キャッシュ ──
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-      # ── ここまで追加 ──
-      - run: npm run typecheck
-      - run: npm run check
-      - run: npm run lint
+        run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm check
+      - run: pnpm lint
       - name: File size check (warning)
         run: node scripts/check-file-size.mjs
       - name: Architecture check (warning)
         run: node scripts/check-architecture.mjs
       - name: Inline styles check
         run: node scripts/check-inline-styles.mjs
-      - run: npm run test:coverage
+      - run: pnpm test:coverage
 
   rust-lint:
     name: Rust Lint
@@ -78,7 +77,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          cache-on-failure: true    # ← 追加
+          cache-on-failure: true
       - name: Install Linux deps
         run: |
           sudo apt-get update
@@ -100,7 +99,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          cache-on-failure: true    # ← 追加
+          cache-on-failure: true
       - name: Install Linux deps
         run: |
           sudo apt-get update
@@ -122,7 +121,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          cache-on-failure: true    # ← 追加
+          cache-on-failure: true
       - name: cargo test
         working-directory: src-tauri
         run: cargo test
@@ -141,27 +140,29 @@ jobs:
     continue-on-error: true  # 初期は失敗しても CI 全体はブロックしない
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
+          node-version: '24'
+          cache: 'pnpm'
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          cache-on-failure: true    # ← 追加
-      # ── 追加: node_modules キャッシュ ──
+          cache-on-failure: true
+      # ── node_modules キャッシュ ──
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: node-modules-${{ hashFiles('package-lock.json') }}
+          key: node-modules-${{ hashFiles('pnpm-lock.yaml') }}
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
-      # ── ここまで追加 ──
+        run: pnpm install --frozen-lockfile
       - run: npx playwright install --with-deps
       - name: Build Tauri app
-        run: npm run tauri build -- --debug
+        run: pnpm tauri build -- --debug
       - name: Run E2E tests
         run: npx playwright test
