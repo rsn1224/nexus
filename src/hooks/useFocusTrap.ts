@@ -30,8 +30,10 @@ export function useFocusTrap(ref: RefObject<HTMLDivElement | null>, isActive: bo
       if (e.key !== 'Tab') return;
       const items = focusables();
       if (items.length === 0) return;
-      const first = items[0];
-      const last = items[items.length - 1];
+      // biome-ignore lint/style/noNonNullAssertion: length > 0 を直前にガード済み
+      const first = items[0]!;
+      // biome-ignore lint/style/noNonNullAssertion: length > 0 を直前にガード済み
+      const last = items[items.length - 1]!;
       if (e.shiftKey) {
         if (document.activeElement === first) {
           e.preventDefault();

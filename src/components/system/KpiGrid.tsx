@@ -8,19 +8,14 @@ const GPU_THRESHOLDS = { warn: 70, danger: 90 } as const;
 const TEMP_THRESHOLDS = { warn: 80, danger: 95 } as const;
 const RAM_THRESHOLDS = { warn: 80, danger: 90 } as const;
 
-// シアン (#22d3ee) = --c, 警告 = --nx-warning, 危険 = --nx-danger
-const COLOR_NORMAL = '#22d3ee';
-const COLOR_WARN = '#f59e0b';
-const COLOR_DANGER = '#ef4444';
-
-function getStatusColor(
+function getStatusColorClass(
   value: number | null,
   thresholds: { warn: number; danger: number },
 ): string {
-  if (value === null) return COLOR_NORMAL;
-  if (value >= thresholds.danger) return COLOR_DANGER;
-  if (value >= thresholds.warn) return COLOR_WARN;
-  return COLOR_NORMAL;
+  if (value === null) return 'text-accent-400';
+  if (value >= thresholds.danger) return 'text-danger-500';
+  if (value >= thresholds.warn) return 'text-warning-500';
+  return 'text-accent-400';
 }
 
 interface KpiCardProps {
@@ -28,22 +23,22 @@ interface KpiCardProps {
   value: string;
   unit: string;
   sub?: string;
-  color: string;
+  colorClass: string;
 }
 
-function KpiCard({ label, value, unit, sub, color }: KpiCardProps): React.ReactElement {
+function KpiCard({ label, value, unit, sub, colorClass }: KpiCardProps): React.ReactElement {
   return (
-    <div className="nx-card nx-corner-marks flex-1 flex flex-col justify-between p-2.5 h-[72px]">
+    <div className="bg-base-800 border border-border-subtle rounded flex-1 flex flex-col justify-between p-2.5 h-18">
       <span className="text-[9px] font-bold tracking-[0.2em] uppercase text-text-muted">
         {label}
       </span>
       <div className="flex items-baseline gap-0.5">
-        <span className="text-[22px] font-bold leading-none" style={{ color }}>
+        <span className={`text-[22px] font-bold leading-none font-mono ${colorClass}`}>
           {value}
         </span>
         <span className="text-[9px] text-text-muted">{unit}</span>
       </div>
-      {sub && <span className="text-[8px] text-text-muted">{sub}</span>}
+      {sub && <span className="text-[9px] text-text-muted">{sub}</span>}
     </div>
   );
 }
@@ -75,10 +70,10 @@ const KpiGrid = memo(function KpiGrid(): React.ReactElement {
   const ramPercent =
     status && status.ram_total_gb > 0 ? (status.ram_used_gb / status.ram_total_gb) * 100 : null;
 
-  const cpuColor = getStatusColor(status?.cpu_percent ?? null, CPU_THRESHOLDS);
-  const gpuColor = getStatusColor(status?.gpu_percent ?? null, GPU_THRESHOLDS);
-  const tempColor = getStatusColor(status?.gpu_temp_c ?? null, TEMP_THRESHOLDS);
-  const ramColor = getStatusColor(ramPercent, RAM_THRESHOLDS);
+  const cpuColorClass = getStatusColorClass(status?.cpu_percent ?? null, CPU_THRESHOLDS);
+  const gpuColorClass = getStatusColorClass(status?.gpu_percent ?? null, GPU_THRESHOLDS);
+  const tempColorClass = getStatusColorClass(status?.gpu_temp_c ?? null, TEMP_THRESHOLDS);
+  const ramColorClass = getStatusColorClass(ramPercent, RAM_THRESHOLDS);
 
   const na = '--';
 
@@ -92,26 +87,26 @@ const KpiGrid = memo(function KpiGrid(): React.ReactElement {
         label="CPU"
         value={status ? status.cpu_percent.toFixed(0) : na}
         unit="%"
-        color={cpuColor}
+        colorClass={cpuColorClass}
       />
       <KpiCard
         label="GPU"
         value={status ? status.gpu_percent.toFixed(0) : na}
         unit="%"
-        color={gpuColor}
+        colorClass={gpuColorClass}
       />
       <KpiCard
         label="TEMP"
         value={status ? status.gpu_temp_c.toFixed(0) : na}
         unit="°C"
-        color={tempColor}
+        colorClass={tempColorClass}
         sub={tempWarn}
       />
       <KpiCard
         label="RAM"
         value={ramPercent !== null ? ramPercent.toFixed(0) : na}
         unit="%"
-        color={ramColor}
+        colorClass={ramColorClass}
         sub={ramSub}
       />
     </section>
